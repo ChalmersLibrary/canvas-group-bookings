@@ -1,6 +1,7 @@
 'use strict';
 
 require('dotenv').config();
+const db = require('../db');
 
 const { AuthorizationCode } = require('simple-oauth2');
 
@@ -48,13 +49,26 @@ function createApplication(app, callbackUrl) {
             const accessToken = await client.getToken(options);
             const accessTokenJSONString = JSON.stringify(accessToken);
 
+            console.log(accessToken);
+
             console.log('The resulting token: ', accessToken.token);
             
-            // Add the access token to the session object
-            // TODO: should be persisted to db!
-            req.session.accessToken = accessToken;
+            await db.query("select now()");
 
-            res.redirect("/");
+            // Add the access token to db
+            await db.query("INSERT INTO user_token (canvas_user_id, canvas_domain, data) VALUES ($1, $2, $3)", [
+                accessToken.token.user.id, 
+                request.session.lti.custom_canvas_api_domain ? request.session.lti.custom_canvas_api_domain : new URL(process.env.AUTH_HOST).hostname,
+                accessToken.token
+            ]).then((result) => {
+                console.log("Access token persisted to db, bound to user id " + accessToken.token.user.id);
+                req.session.accessToken = accessToken.token;
+                res.redirect("/");
+
+            }).catch((error) => {
+                console.log(error);
+                return res.status(500).json(error);
+            });
         } 
         catch (error) {
             console.error('Access Token Error', error.message);
@@ -102,7 +116,7 @@ async function providerRefreshToken(req) {
         req.session.accessToken = newAccessToken;
         console.log("Access token refreshed.");
         return new TokenResult(true);
-    } 
+    }
     catch (error) {
       console.error('Error refreshing access token: ', error.message);
       return new TokenResult(false, "Error refreshing access token");

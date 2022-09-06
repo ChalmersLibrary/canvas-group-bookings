@@ -4,18 +4,41 @@ const pkg = require('./package.json');
 const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
+const pg = require('pg');
 const fileStore = require('session-file-store')(session);
+const pgSessionStore = require('connect-pg-simple')(session);
 const helmet = require('helmet');
 const cors = require('cors');
-
 const auth = require('./src/auth/oauth2');
 const lti = require('./src/lti/canvas');
 const canvasApi = require('./src/api/canvas');
+
+// Uncomment to use PostgreSQL
+const db = require('./src/db');
 
 const port = process.env.PORT || 3000;
 const cookieMaxAge = 3600000 * 72; // 72h
 const fileStoreOptions = { ttl: 3600 * 12, retries: 3 };
 
+// PostgreSQL Session store
+
+const sessionOptions = { 
+    store: new pgSessionStore({
+        pool: db,
+        tableName: "user_session",
+        createTableIfMissing: true
+    }),
+    name: process.env.SESSION_NAME ? process.env.SESSION_NAME : "LTI_TEST_SID",
+    secret: process.env.SESSION_SECRET ? process.env.SESSION_SECRET : "keyboard cat dog mouse",
+    resave: false,
+    saveUninitialized: false,
+    rolling: true,
+    cookie: { maxAge: cookieMaxAge  }
+};
+
+
+// Uncomment to use Session File Store
+/*
 const sessionOptions = { 
     store: new fileStore(fileStoreOptions),
     name: process.env.SESSION_NAME ? process.env.SESSION_NAME : "LTI_TEST_SID",
@@ -25,6 +48,7 @@ const sessionOptions = {
     rolling: true,
     cookie: { maxAge: cookieMaxAge  }
 };
+*/
 
 const app = express();
 
@@ -65,6 +89,29 @@ app.use(session(sessionOptions));
 app.post('/lti', lti.handleLaunch('/'));
 
 auth.createApplication(app, process.env.AUTH_REDIRECT_CALLBACK);
+
+app.get('/test', async (req, res) => {
+    console.log("Testing endpoint requested.");
+
+    req.session.test = 1;
+
+    let result = await db.query("SELECT version()").then((result) => {
+            return res.send({
+                status: 'up',
+                result: result.rows
+            });
+        }).catch((error) => {
+            console.error(error);
+            
+            return res.send({
+                status: 'up',
+                result: error
+            });
+    });
+
+    console.log("Db query done.");
+
+});
 
 app.get('/', async (req, res) => {
     if (req.session.views) {
