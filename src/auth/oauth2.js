@@ -62,8 +62,21 @@ function createApplication(app, callbackUrl) {
                 accessToken.token
             ]).then((result) => {
                 console.log("Access token persisted to db, bound to user id " + accessToken.token.user.id);
+
                 req.session.accessToken = accessToken.token;
-                res.redirect("/");
+                
+                // The token object should probably not be in session data,
+                // but if we set it before redirect we must persist it with session.save()
+                req.session.save(function(err) {
+                    if (err) {
+                        console.error(err);
+                        return res.status(500).json(error);
+                    }
+
+                    console.log("Session saved from OAuth2 callback, redirecting.");
+                    
+                    return res.redirect("/");
+                });
 
             }).catch((error) => {
                 console.log(error);
@@ -71,7 +84,7 @@ function createApplication(app, callbackUrl) {
             });
         }
         catch (error) {
-            console.error('Access Token Error', error.message);
+            console.error('Access Token Error: ', error.message);
             return res.status(500).json(error);
         }
     });
