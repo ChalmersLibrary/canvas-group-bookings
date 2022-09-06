@@ -58,7 +58,7 @@ function createApplication(app, callbackUrl) {
             // Add the access token to db
             await db.query("INSERT INTO user_token (canvas_user_id, canvas_domain, data) VALUES ($1, $2, $3)", [
                 accessToken.token.user.id, 
-                request.session.lti.custom_canvas_api_domain ? request.session.lti.custom_canvas_api_domain : new URL(process.env.AUTH_HOST).hostname,
+                req.session.lti.custom_canvas_api_domain ? req.session.lti.custom_canvas_api_domain : new URL(process.env.AUTH_HOST).hostname,
                 accessToken.token
             ]).then((result) => {
                 console.log("Access token persisted to db, bound to user id " + accessToken.token.user.id);
@@ -69,7 +69,7 @@ function createApplication(app, callbackUrl) {
                 console.log(error);
                 return res.status(500).json(error);
             });
-        } 
+        }
         catch (error) {
             console.error('Access Token Error', error.message);
             return res.status(500).json('Authentication failed');
