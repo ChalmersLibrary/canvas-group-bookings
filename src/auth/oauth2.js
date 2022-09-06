@@ -136,6 +136,14 @@ async function providerRefreshToken(req) {
     }
 }
 
+async function persistAccessToken(token) {
+
+}
+
+async function getAccessToken(canvas_user_id, domain) {
+
+}
+
 module.exports = {
     createApplication,
     checkToken,
