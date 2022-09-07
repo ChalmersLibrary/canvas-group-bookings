@@ -4,6 +4,7 @@ const pkg = require('./package.json');
 const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
+const winston = require('winston');
 const pg = require('pg');
 const fileStore = require('session-file-store')(session);
 const pgSessionStore = require('connect-pg-simple')(session);
@@ -77,11 +78,30 @@ app.use(function (req, res, next) {
     next();
 });
 
+const logger = winston.createLogger({
+    level: 'info',
+    format: winston.format.json(),
+    defaultMeta: { service: 'user-service' },
+    transports: [
+      //
+      // - Write all logs with importance level of `error` or less to `error.log`
+      // - Write all logs with importance level of `info` or less to `combined.log`
+      //
+      new winston.transports.File({ filename: './logs/error.log', level: 'error' }),
+      new winston.transports.File({ filename: './logs/combined.log' }),
+    ]
+});
+
 if (process.env.NODE_ENV === "production") {
     app.set('trust proxy', 1);
     sessionOptions.cookie.secure = 'true';
     sessionOptions.cookie.sameSite = 'none'; 
     sessionOptions.cookie.httpOnly = '';
+}
+if (process.env.NODE_ENV !== 'production') {
+    logger.add(new winston.transports.Console({
+      format: winston.format.simple(),
+    }));
 }
 
 app.use(session(sessionOptions));
@@ -98,6 +118,7 @@ app.get('/test', async (req, res) => {
     let result = await db.query("SELECT version()").then((result) => {
             return res.send({
                 status: 'up',
+                session: req.session,
                 result: result.rows
             });
         }).catch((error) => {
@@ -105,12 +126,12 @@ app.get('/test', async (req, res) => {
             
             return res.send({
                 status: 'up',
+                session: req.session,
                 result: error
             });
     });
 
     console.log("Db query done.");
-
 });
 
 app.get('/', async (req, res) => {
