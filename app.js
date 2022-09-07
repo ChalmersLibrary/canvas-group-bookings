@@ -4,7 +4,7 @@ const pkg = require('./package.json');
 const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
-const winston = require('winston');
+const log = require('./src/logging/log');
 const pg = require('pg');
 const fileStore = require('session-file-store')(session);
 const pgSessionStore = require('connect-pg-simple')(session);
@@ -78,30 +78,11 @@ app.use(function (req, res, next) {
     next();
 });
 
-const logger = winston.createLogger({
-    level: 'info',
-    format: winston.format.json(),
-    defaultMeta: { service: 'user-service' },
-    transports: [
-      //
-      // - Write all logs with importance level of `error` or less to `error.log`
-      // - Write all logs with importance level of `info` or less to `combined.log`
-      //
-      new winston.transports.File({ filename: './logs/error.log', level: 'error' }),
-      new winston.transports.File({ filename: './logs/combined.log' }),
-    ]
-});
-
 if (process.env.NODE_ENV === "production") {
     app.set('trust proxy', 1);
     sessionOptions.cookie.secure = 'true';
     sessionOptions.cookie.sameSite = 'none'; 
     sessionOptions.cookie.httpOnly = '';
-}
-if (process.env.NODE_ENV !== 'production') {
-    logger.add(new winston.transports.Console({
-      format: winston.format.simple(),
-    }));
 }
 
 app.use(session(sessionOptions));
@@ -111,9 +92,9 @@ app.post('/lti', lti.handleLaunch('/'));
 auth.createApplication(app, process.env.AUTH_REDIRECT_CALLBACK);
 
 app.get('/test', async (req, res) => {
-    console.log("Testing endpoint requested.");
+    await log.info("Testing endpoint requested.");
 
-    req.session.test = 1;
+    req.session.test = true;
 
     let result = await db.query("SELECT version()").then((result) => {
             return res.send({
@@ -131,7 +112,7 @@ app.get('/test', async (req, res) => {
             });
     });
 
-    console.log("Db query done.");
+    await log.info("Db query done.");
 });
 
 app.get('/', async (req, res) => {
