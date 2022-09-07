@@ -34,7 +34,7 @@ function createApplication(app, callbackUrl) {
     // Initial page redirecting to Canvas
     app.get('/auth', (req, res) => {
         console.log(authorizationUri);
-        res.redirect(authorizationUri);
+        return res.redirect(authorizationUri);
     });
     
     // Callback service parsing the authorization token and asking for the access token
