@@ -4,7 +4,7 @@ const pkg = require('./package.json');
 const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
-const log = require('./src/logging/log');
+const log = require('./src/logging/');
 const pg = require('pg');
 const fileStore = require('session-file-store')(session);
 const pgSessionStore = require('connect-pg-simple')(session);
@@ -89,7 +89,7 @@ app.use(session(sessionOptions));
 
 app.post('/lti', lti.handleLaunch('/'));
 
-auth.createApplication(app, process.env.AUTH_REDIRECT_CALLBACK);
+auth.setupAuthEndpoints(app, process.env.AUTH_REDIRECT_CALLBACK);
 
 app.get('/test', async (req, res) => {
     await log.info("Testing endpoint requested.");
@@ -116,6 +116,7 @@ app.get('/test', async (req, res) => {
 });
 
 app.get('/', async (req, res) => {
+    // Just for fun to see that something is happening
     if (req.session.views) {
         req.session.views++;
     }
@@ -126,46 +127,48 @@ app.get('/', async (req, res) => {
     console.log(req.session);
     console.log("Checking access token...");
 
-    const token = await auth.checkToken(req, res);
-    console.log(token);
+    await auth.checkAccessToken(req).then(async (result) => {
+        console.log(result);
 
-    if (token.success === false) {
-        console.log("Redirect to auth flow...");
-
-        return res.redirect("/auth");
-    }
-    else {
-        console.log("Access token ok, send response to client.");
-
-        if (req.session.lti) {
-            let courseId = req.session.lti.custom_canvas_course_id ? req.session.lti.custom_canvas_course_id : "lti_context_id:" + req.session.lti.context_id;
-
-            await canvasApi.getCourseGroups(courseId, req).then((courseGroups) => {
+        if (result.success === true) {
+            // Check that we have an LTI object in the session    
+            if (req.session.lti) {
+                // Numerical course_id if running Public, if Anonymous we use context_id
+                let courseId = req.session.lti.custom_canvas_course_id ? req.session.lti.custom_canvas_course_id : "lti_context_id:" + req.session.lti.context_id;
+    
+                // Load groups that the logged in user belongs to in the course context
+                await canvasApi.getCourseGroups(courseId, req).then((courseGroups) => {
+                    return res.send({
+                        status: 'up',
+                        id: req.session.id,
+                        version: pkg.version,
+                        session: req.session,
+                        groups: courseGroups
+                    });    
+                }).catch((error) => {
+                    console.error(error);
+                    return res.error(error);
+                });    
+            }
+            else {
                 return res.send({
                     status: 'up',
-                    id: req.session.id,
                     version: pkg.version,
-                    session: req.session,
-                    groups: courseGroups
-                });    
-            }).catch((error) => {
-                console.error(error);
-    
-                return res.error(error);
-            });    
+                    groups: {
+                        error: true,
+                        message: "This app must be launched at endpoint /lti to get the LTI context from Canvas."
+                    }
+                });
+            }
         }
         else {
-            return res.send({
-                status: 'up',
-                id: req.session.id,
-                version: pkg.version,
-                groups: {
-                    error: true,
-                    message: "This app must be launched at endpoint /lti to get the context from Canvas."
-                }
-            });
-        }
-    }
+            console.log("Redirect to auth flow...");
+            return res.redirect("/auth");
+        }    
+    }).catch((error) => {
+        console.error(error);
+        return res.error(error);
+    });
 });
 
 app.listen(port, () => console.log(`Application listening on port ${port}.`));

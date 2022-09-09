@@ -20,55 +20,65 @@ async function getCourseGroups(courseId, request) {
         thisApiPath = thisApiPath + "&only_own_groups=true";
     }
 
-    while (errorCount < 4 && thisApiPath && request.session.accessToken.access_token) {
-        console.log("GET " + thisApiPath);
-    
-        try {
-            const response = await axios.get(thisApiPath, {
-                headers: {
-                    "User-Agent": "Chalmers/Azure/Request",
-                    "Authorization": request.session.accessToken.token_type + " " + request.session.accessToken.access_token
-                }
-            });
-
-            apiData.push(response.data);
-
-            if (response.headers["X-Request-Cost"]) {
-                console.log("Request cost: " + response.headers["X-Request-Cost"]);
-            }
-
-            if (response.headers["link"]) {
-                let link = LinkHeader.parse(response.headers["link"]);
+    await oauth.findAccessToken(request.session.user.id).then(async (token) => {
+        while (errorCount < 4 && thisApiPath && token) {
+            console.log("GET " + thisApiPath);
         
-                if (link.has("rel", "next")) {
-                    thisApiPath = link.get("rel", "next")[0].uri;
+            try {
+                const response = await axios.get(thisApiPath, {
+                    headers: {
+                        "User-Agent": "Chalmers/Azure/Request",
+                        "Authorization": token.token_type + " " + token.access_token
+                    }
+                });
+    
+                apiData.push(response.data);
+    
+                if (response.headers["X-Request-Cost"]) {
+                    console.log("Request cost: " + response.headers["X-Request-Cost"]);
+                }
+    
+                if (response.headers["link"]) {
+                    let link = LinkHeader.parse(response.headers["link"]);
+            
+                    if (link.has("rel", "next")) {
+                        thisApiPath = link.get("rel", "next")[0].uri;
+                    }
+                    else {
+                        thisApiPath = false;
+                    }
                 }
                 else {
                     thisApiPath = false;
                 }
             }
-            else {
-                thisApiPath = false;
-            }
-        }
-        catch (error) {
-            errorCount++;
-            console.error(error);
-        
-            if (error.response.status == 401 && error.response.headers['www-authenticate']) { // refresh token, then try again
-                await oauth.providerRefreshToken(request);
-            }
-            else if (error.response.status == 401 && !error.response.headers['www-authenticate']) { // no access, redirect to auth
-                console.error("Not authorized in Canvas for use of this API endpoint.");
-                console.error(JSON.stringify(error));
-                return(error);
-            }
-            else {
+            catch (error) {
+                errorCount++;
                 console.error(error);
-                return(error);  
+            
+                if (error.response.status == 401 && error.response.headers['www-authenticate']) { // refresh token, then try again
+                    await oauth.refreshAccessToken(request).then((result) => {
+                        if (result.success) {
+
+                        }
+                    });
+                }
+                else if (error.response.status == 401 && !error.response.headers['www-authenticate']) { // no access, redirect to auth
+                    console.error("Not authorized in Canvas for use of this API endpoint.");
+                    console.error(JSON.stringify(error));
+                    return(error);
+                }
+                else {
+                    console.error(error);
+                    return(error);
+                }
             }
-        }
-    }
+        }    
+    }).catch((error) => {
+        console.error(error);
+        return (error);
+    });
+
 
     // Compile new object from all pages.
     apiData.forEach((page) => {

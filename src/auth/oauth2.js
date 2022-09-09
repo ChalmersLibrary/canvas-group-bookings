@@ -2,7 +2,7 @@
 
 require('dotenv').config();
 const db = require('../db');
-
+const log = require('../logging')
 const { AuthorizationCode } = require('simple-oauth2');
 
 const clientConfig = {
@@ -24,7 +24,7 @@ function TokenResult(success, message) {
     this.message = message;
 };
 
-function createApplication(app, callbackUrl) {
+function setupAuthEndpoints(app, callbackUrl) {
     // Authorization uri definition
     const authorizationUri = client.authorizeURL({
         redirect_uri: callbackUrl,
@@ -33,7 +33,7 @@ function createApplication(app, callbackUrl) {
     
     // Initial page redirecting to Canvas
     app.get('/auth', (req, res) => {
-        console.log(authorizationUri);
+        log.info(authorizationUri);
         return res.redirect(authorizationUri);
     });
     
@@ -47,105 +47,167 @@ function createApplication(app, callbackUrl) {
     
         try {
             const accessToken = await client.getToken(options);
-            const accessTokenJSONString = JSON.stringify(accessToken);
+            log.info('The resulting token: ' + accessToken.token);
 
-            console.log(accessToken);
-
-            console.log('The resulting token: ', accessToken.token);
-            
-            await db.query("select now()");
-
-            // Add the access token to db
-            await db.query("INSERT INTO user_token (canvas_user_id, canvas_domain, data) VALUES ($1, $2, $3)", [
-                accessToken.token.user.id, 
-                req.session.lti ? (req.session.lti.custom_canvas_api_domain ? req.session.lti.custom_canvas_api_domain : new URL(process.env.AUTH_HOST).hostname) : new URL(process.env.AUTH_HOST).hostname,
-                accessToken.token
-            ]).then((result) => {
-                console.log("Access token persisted to db, bound to user id " + accessToken.token.user.id);
-
-                req.session.accessToken = accessToken.token;
+            // Persist the access token to db
+            await persistAccessToken(accessToken.token).then((result) => {
+                // Save the user object to session for faster access
+                req.session.user = accessToken.token.user;
                 
-                // The token object should probably not be in session data,
-                // but if we set it before redirect we must persist it with session.save()
+                // If we set it before redirect we must persist it with session.save()
                 req.session.save(function(err) {
                     if (err) {
-                        console.error(err);
-                        return res.status(500).json(error);
+                        log.error(err);
+                        return res.status(500).json(err);
                     }
 
-                    console.log("Session saved from OAuth2 callback, redirecting.");
+                    log.info("Session saved from OAuth2 callback, redirecting.");
                     
                     return res.redirect("/");
                 });
-
             }).catch((error) => {
-                console.log(error);
+                console.error(error);
                 return res.status(500).json(error);
             });
         }
         catch (error) {
-            console.error('Access Token Error: ', error.message);
+            log.error('Access Token Error: ', error.message);
             return res.status(500).json(error);
         }
     });
 };
 
-async function checkToken(req, res) {
-    if (!req.session.accessToken) {
-        console.error("No access token, redirecting to OAuth flow...");
-        return new TokenResult(false, "No access token, init OAuth2 flow");
+async function checkAccessToken(req) {
+    if (!req.session.user) {
+        log.error("No user object in session, redirecting to OAuth flow...");
+        return new TokenResult(false, "No user object in session, init OAuth2 flow to get one");
     }
     else {
-        let accessToken = client.createToken(req.session.accessToken);
+        await findAccessToken(req.session.user.id).then((token) => {
+            log.info("Got access token: " + token);
 
-        if (accessToken.expired()) {
-            console.error("Access token has expired.");
+            if (token !== undefined) {
+                let accessToken = client.createToken(token);
+                console.log(accessToken);
     
-            try {
-                const refreshParams = {};
-                let newAccessToken = await accessToken.refresh(refreshParams);
-                req.session.accessToken = newAccessToken;
-                console.log("Access token refreshed.");
-                return new TokenResult(true);
+                if (accessToken.expired()) {
+                    log.error("Access token has expired, refreshing.");
+
+                    try {
+                        const refreshParams = {};
+                        let newAccessToken = accessToken.refresh(refreshParams);
+    
+                        persistAccessToken(newAccessToken.token);
+    
+                        req.session.user = newAccessToken.token.user;
+    
+                        req.session.save(function(err) {
+                            if (err) {
+                                log.error(err);
+                                return new TokenResult(false, err);
+                            }
+        
+                            log.info("Access token refreshed, session saved.");
+                        });
+    
+                        return new TokenResult(true);
+                    }
+                    catch (error) {
+                      log.error('Error refreshing access token: ', error.message);
+                      return new TokenResult(false, "Error refreshing access token");
+                    }
+                }
+                else {
+                    log.info("Access token is ok, not expired.");
+                }
             }
-            catch (error) {
-              console.error('Error refreshing access token: ', error.message);
-              return new TokenResult(false, "Error refreshing access token");
+            else {
+                return new TokenResult(false, "No token in db for user, init OAuth2 flow.");
             }
-        }
-        else {
-            console.log("Access token is ok, not expired.");
-            return new TokenResult(true);
-        }
+        }).catch((err) => {
+            log.error(err);
+            return new TokenResult(false, err);
+        })
     }
+
+    return new TokenResult(true);
 }
 
-async function providerRefreshToken(req) {
-    let accessToken = client.createToken(req.session.accessToken);
+// TODO: This is a copy of refresh in checkAccessToken, should be generalized!
+async function refreshAccessToken(canvas_user_id) {
+    await findAccessToken(canvas_user_id).then(async (result) => {
+        let accessToken = client.createToken(result);
 
-    try {
-        const refreshParams = {};
-        newAccessToken = await accessToken.refresh(refreshParams);
-        req.session.accessToken = newAccessToken;
-        console.log("Access token refreshed.");
-        return new TokenResult(true);
-    }
-    catch (error) {
-      console.error('Error refreshing access token: ', error.message);
-      return new TokenResult(false, "Error refreshing access token");
-    }
+        try {
+            const refreshParams = {};
+            newAccessToken = await accessToken.refresh(refreshParams);
+            await persistAccessToken(newAccessToken.token);
+
+            req.session.user = newAccessToken.token.user;
+
+            await req.session.save(function(err) {
+                if (err) {
+                    log.error(err);
+                    return new TokenResult(false, err);
+                }
+
+                log.info("Access token refreshed, session saved.");
+            });
+
+            return new TokenResult(true);
+        }
+        catch (error) {
+          log.error('Error refreshing access token: ', error.message);
+          return new TokenResult(false, "Error refreshing access token");
+        }
+    }).catch((error) => {
+        log.error(error);
+        return (error);
+    });
 }
 
 async function persistAccessToken(token) {
+    let domain = new URL(process.env.AUTH_HOST).hostname;
+    log.info("Persisting access token for user " + token.user.id + ", domain " + domain);
 
+    await db.query("INSERT INTO user_token (canvas_user_id, canvas_domain, data) VALUES ($1, $2, $3) ON CONFLICT (canvas_user_id, canvas_domain) DO UPDATE SET data = EXCLUDED.data", [
+        token.user.id,
+        domain,
+        token
+    ]).then((result) => {
+        log.info("Access token persisted to db, bound to user id " + accessToken.token.user.id + " for domain " + domain);
+    }).catch((error) => {
+        console.error(error);
+    });
 }
 
-async function getAccessToken(canvas_user_id, domain) {
+async function findAccessToken(canvas_user_id) {
+    let foundToken;
+    let domain = new URL(process.env.AUTH_HOST).hostname;
+    log.info("Locating access token for user " + canvas_user_id + ", domain " + domain);
 
+    try {
+        await db.query("SELECT data FROM user_token WHERE canvas_user_id=$1 AND canvas_domain=$2", [
+            canvas_user_id,
+            domain
+        ]).then((res) => {
+            if (res.rows.length) {
+                log.info(JSON.stringify(res.rows));
+                foundToken = res.rows[0].data;
+            }
+        });
+    }
+    catch (error) {
+        console.error(error);
+    }
+
+    return foundToken;
 }
 
 module.exports = {
-    createApplication,
-    checkToken,
-    providerRefreshToken
+    setupAuthEndpoints,
+    checkAccessToken,
+    refreshAccessToken,
+    persistAccessToken,
+    findAccessToken
 }
