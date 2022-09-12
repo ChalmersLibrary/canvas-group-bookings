@@ -10,8 +10,8 @@ const API_PATH = "/api/v1";
 const API_HOST = process.env.API_HOST ? process.env.API_HOST : process.env.AUTH_HOST;
 const API_GROUPS_ONLY_OWN_GROUPS = true;
 
-async function getCourseGroups(courseId, request) {
-    let thisApiPath = (process.env.API_HOST ? process.env.API_HOST : "https://" + request.session.lti.custom_canvas_api_domain) + API_PATH + "/courses/" + courseId + "/groups?per_page=" + API_PER_PAGE;
+async function getCourseGroups(courseId, req) {
+    let thisApiPath = API_HOST + API_PATH + "/courses/" + courseId + "/groups?per_page=" + API_PER_PAGE;
     let apiData = new Array();
     let returnedApiData = new Array();
     let errorCount = 0;
@@ -20,7 +20,7 @@ async function getCourseGroups(courseId, request) {
         thisApiPath = thisApiPath + "&only_own_groups=true";
     }
 
-    await oauth.findAccessToken(request.session.user.id).then(async (token) => {
+    await oauth.findAccessToken(req.session.user.id).then(async (token) => {
         while (errorCount < 4 && thisApiPath && token) {
             console.log("GET " + thisApiPath);
         
@@ -57,9 +57,9 @@ async function getCourseGroups(courseId, request) {
                 console.error(error);
             
                 if (error.response.status == 401 && error.response.headers['www-authenticate']) { // refresh token, then try again
-                    await oauth.refreshAccessToken(request).then((result) => {
+                    await oauth.refreshAccessToken(req.session.user.id).then((result) => {
                         if (result.success) {
-
+                            console.log("Refreshed access token.");
                         }
                     });
                 }
