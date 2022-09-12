@@ -177,7 +177,7 @@ async function persistAccessToken(token) {
         domain,
         token
     ]).then((result) => {
-        log.info("Access token persisted to db, bound to user id " + token.token.user.id + " for domain " + domain);
+        log.info("Access token persisted to db, bound to user id " + token.user.id + " for domain " + domain);
     }).catch((error) => {
         console.error(error);
     });
