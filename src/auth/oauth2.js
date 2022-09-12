@@ -83,11 +83,11 @@ async function checkAccessToken(req) {
         return new TokenResult(false, "No user object in session, init OAuth2 flow to get one");
     }
     else {
-        await findAccessToken(req.session.user.id).then((token) => {
+        await findAccessToken(req.session.user.id).then(async (token) => {
             log.info("Got access token: " + token);
 
             if (token !== undefined) {
-                let accessToken = client.createToken(token);
+                let accessToken = await client.createToken(token);
                 console.log(accessToken);
     
                 if (accessToken.expired()) {
@@ -95,12 +95,12 @@ async function checkAccessToken(req) {
 
                     try {
                         const refreshParams = {};
-                        let newAccessToken = accessToken.refresh(refreshParams);
-    
+                        let newAccessToken = await accessToken.refresh(refreshParams);
+                        console.log(newAccessToken);
                         persistAccessToken(newAccessToken.token);
     
                         req.session.user = newAccessToken.token.user;
-    
+
                         req.session.save(function(err) {
                             if (err) {
                                 log.error(err);
@@ -114,6 +114,7 @@ async function checkAccessToken(req) {
                     }
                     catch (error) {
                       log.error('Error refreshing access token: ', error.message);
+                      log.error(error);
                       return new TokenResult(false, "Error refreshing access token");
                     }
                 }
@@ -175,7 +176,7 @@ async function persistAccessToken(token) {
         domain,
         token
     ]).then((result) => {
-        log.info("Access token persisted to db, bound to user id " + accessToken.token.user.id + " for domain " + domain);
+        log.info("Access token persisted to db, bound to user id " + token.token.user.id + " for domain " + domain);
     }).catch((error) => {
         console.error(error);
     });
