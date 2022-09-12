@@ -1,6 +1,7 @@
 'use strict';
 
 const pkg = require('./package.json');
+const fs = require('fs');
 const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
@@ -20,6 +21,7 @@ const db = require('./src/db');
 const port = process.env.PORT || 3000;
 const cookieMaxAge = 3600000 * 72; // 72h
 const fileStoreOptions = { ttl: 3600 * 12, retries: 3 };
+let developmentLtiData;
 
 // PostgreSQL Session store
 
@@ -82,7 +84,16 @@ if (process.env.NODE_ENV === "production") {
     app.set('trust proxy', 1);
     sessionOptions.cookie.secure = 'true';
     sessionOptions.cookie.sameSite = 'none'; 
-    sessionOptions.cookie.httpOnly = '';
+}
+
+if (process.env.NODE_ENV === 'development') {
+    try {
+        const data = fs.readFileSync('./mock-lti.json', 'utf8');
+        developmentLtiData = data;
+    }
+    catch (err) {
+        console.error(err);
+    }
 }
 
 app.use(session(sessionOptions));
@@ -131,6 +142,10 @@ app.get('/', async (req, res) => {
         console.log(result);
 
         if (result.success === true) {
+            // Mock session with LTI object in development
+            if (process.env.NODE_ENV === 'development' && developmentLtiData) {
+                req.session.lti = JSON.parse(developmentLtiData);
+            }
             // Check that we have an LTI object in the session    
             if (req.session.lti) {
                 // Numerical course_id if running Public, if Anonymous we use context_id
