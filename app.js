@@ -74,7 +74,7 @@ app.use(cors());
 app.use(function (req, res, next) {
     res.setHeader(
       'Content-Security-Policy', 
-      "default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'; frame-src 'self'" + (process.env.CSP_FRAME_SRC_ALLOW ? " " + process.env.CSP_FRAME_SRC_ALLOW : "")
+      "default-src 'self'; script-src 'self'; style-src 'self' cdn.jsdelivr.net; font-src 'self'; img-src 'self'; frame-src 'self'" + (process.env.CSP_FRAME_SRC_ALLOW ? " " + process.env.CSP_FRAME_SRC_ALLOW : "")
     );
     
     next();
@@ -96,12 +96,19 @@ if (process.env.NODE_ENV === 'development') {
     }
 }
 
+// Session options
 app.use(session(sessionOptions));
 
+// set the view engine to ejs
+app.set('view engine', 'ejs');
+
+// Handle LTI Launch
 app.post('/lti', lti.handleLaunch('/'));
 
+// Setup OAuth2 endpoints and communication
 auth.setupAuthEndpoints(app, process.env.AUTH_REDIRECT_CALLBACK);
 
+// Test
 app.get('/test', async (req, res) => {
     await log.info("Testing endpoint requested.");
 
@@ -153,26 +160,29 @@ app.get('/', async (req, res) => {
     
                 // Load groups that the logged in user belongs to in the course context
                 await canvasApi.getCourseGroups(courseId, req).then((courseGroups) => {
-                    return res.send({
+                    return res.render('pages/index', {
                         status: 'up',
-                        id: req.session.id,
                         version: pkg.version,
                         session: req.session,
                         groups: courseGroups
-                    });    
+                    });
                 }).catch((error) => {
                     console.error(error);
-                    return res.error(error);
+
+                    return res.render('pages/error', {
+                        status: 'up',
+                        version: pkg.version,
+                        error: "CANVAS_API",
+                        message: error
+                    });
                 });    
             }
             else {
-                return res.send({
+                return res.render('pages/error', {
                     status: 'up',
                     version: pkg.version,
-                    groups: {
-                        error: true,
-                        message: "This app must be launched at endpoint /lti to get the LTI context from Canvas."
-                    }
+                    error: "NO_LTI_LAUNCH",
+                    message: "This app must be launched at endpoint /lti to get the LTI context from Canvas. Contact an administrator to set it up correctly."
                 });
             }
         }

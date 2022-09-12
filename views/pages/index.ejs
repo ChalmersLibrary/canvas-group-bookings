@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head'); %>
+</head>
+<body class="container">
+
+<header>
+  <%- include('../partials/header'); %>
+</header>
+
+<main>
+    <div class="p-5 mb-4 bg-light rounded-3">
+        <div class="container-fluid py-5">
+          <h1 class="display-5 fw-bold">Group Bookings</h1>
+          <p class="col-md-8 fs-4">This tool will help you and your group to reserve appointment slots where you get help and feedback from teachers and other students.</p>
+          <button class="btn btn-primary btn-lg" type="button">Show available slots</button>
+        </div>
+    </div>
+</main>
+
+<section>
+    <p>Groups you are currently member of:</p>
+    <ul>
+        <% groups.forEach(function(group) { %>
+            <li>
+                <strong><%= group.name %></strong>
+            </li>
+        <% }); %>
+    </ul>
+</section>
+
+<section>
+    <p>Session information:</p>
+    <code><%= JSON.stringify(session) %></code>
+</section>
+
+<footer>
+  <%- include('../partials/footer', { version: version }); %>
+</footer>
+
+</body>
+</html>
