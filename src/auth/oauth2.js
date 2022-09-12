@@ -38,6 +38,7 @@ function setupAuthEndpoints(app, callbackUrl) {
     });
     
     // Callback service parsing the authorization token and asking for the access token
+    // If denied, we get parameter "error" with "access_denied" and should present some useful information.
     app.get('/callback', async (req, res) => {
         const { code } = req.query;
         const options = {
