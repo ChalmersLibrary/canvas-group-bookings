@@ -62,9 +62,8 @@ function setupAuthEndpoints(app, callbackUrl) {
                         return res.status(500).json(err);
                     }
 
-                    log.info("Session saved from OAuth2 callback, redirecting.");
-                    
-                    return res.redirect("/");
+                    console.log(req.session);
+                    log.info("Session saved with user object from OAuth2 callback.");
                 });
             }).catch((error) => {
                 console.error(error);
@@ -75,6 +74,10 @@ function setupAuthEndpoints(app, callbackUrl) {
             log.error('Access Token Error: ', error.message);
             return res.status(500).json(error);
         }
+
+        log.info("Callback finished, redirecting to root app.");
+
+        return res.redirect("/");
     });
 };
 
@@ -179,7 +182,7 @@ async function persistAccessToken(token) {
     ]).then((result) => {
         log.info("Access token persisted to db, bound to user id " + token.user.id + " for domain " + domain);
     }).catch((error) => {
-        console.error(error);
+        console.error(error); // throw new Error(error)???
     });
 }
 

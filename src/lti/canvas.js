@@ -75,12 +75,12 @@ exports.handleLaunch = (page) => function(req, res) {
                         console.error(err);
                     }
 
-                    console.log("Session saved.");
+                    console.log(req.session);
+                    console.log("Session saved with LTI object.");
                 });
             }
             else {
                 console.error("The request is NOT valid.");
-                req.session.error = true; // ???
                 return res.status(500).json('LTI request is not valid.')
             }
         });
