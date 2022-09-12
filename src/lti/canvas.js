@@ -61,7 +61,7 @@ exports.handleLaunch = (page) => function(req, res) {
 
         console.log(provider);
 
-        provider.valid_request(req, async(err, isValid) => {
+        provider.valid_request(req, (err, isValid) => {
             if (err) {
                 console.error(err);
             }
@@ -69,14 +69,13 @@ exports.handleLaunch = (page) => function(req, res) {
                 console.log("Request is valid, LTI Data:" + JSON.stringify(provider.body));
 
                 req.session.lti = provider.body;
+
                 req.session.save(function(err) {
                     if (err) {
                         console.error(err);
                     }
 
-                    console.log("Session saved, redirecting.");
-                    
-                    return res.redirect("/");
+                    console.log("Session saved.");
                 });
             }
             else {
@@ -88,5 +87,7 @@ exports.handleLaunch = (page) => function(req, res) {
     });
 
     console.log("LTI Launch done.");
+
+    return res.redirect("/");
 }
 
