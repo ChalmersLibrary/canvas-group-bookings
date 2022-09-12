@@ -8,8 +8,8 @@
     "resource_link_id": "ad0254deceefd6d81a3f3b1afdff9aae786c724f",
     "resource_link_title": "Group Bookings",
     "roles": [
-      "Instructor",
-      "urn:lti:instrole:ims/lis/Administrator"
+      "Student",
+      "urn:lti:instrole:ims/lis/Student"
     ],
     "tool_consumer_info_product_family_code": "canvas",
     "tool_consumer_info_version": "cloud"
