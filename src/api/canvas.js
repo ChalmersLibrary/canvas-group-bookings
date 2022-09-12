@@ -1,5 +1,7 @@
 'use strict';
 
+require('dotenv').config();
+
 const LinkHeader = require('http-link-header');
 const NodeCache = require('node-cache');
 const axios = require('axios');
