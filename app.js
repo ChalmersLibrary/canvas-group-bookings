@@ -74,7 +74,7 @@ app.use(cors());
 app.use(function (req, res, next) {
     res.setHeader(
       'Content-Security-Policy', 
-      "default-src 'self'; script-src 'self'; style-src 'self' cdn.jsdelivr.net; font-src 'self'; img-src 'self'; frame-src 'self'" + (process.env.CSP_FRAME_SRC_ALLOW ? " " + process.env.CSP_FRAME_SRC_ALLOW : "")
+      "default-src 'self'; script-src 'self'; style-src 'self' cdn.jsdelivr.net; font-src 'self'; img-src 'self' data:; frame-src 'self'" + (process.env.CSP_FRAME_SRC_ALLOW ? " " + process.env.CSP_FRAME_SRC_ALLOW : "")
     );
     
     next();
@@ -206,6 +206,54 @@ app.get('/', async (req, res) => {
     }).catch((error) => {
         console.error(error);
         return res.error(error);
+    });
+});
+
+app.get('/slots', async (req, res) => { 
+    if (req.session.lti) {
+        // Populate user session with information based on LTI roles
+        if(req.session.user && req.session.lti.roles) {
+            req.session.lti.roles.forEach((role) => {
+                console.log("LTI role: " + role);
+                if (role === "Instructor" || role === "Administrator") {
+                    req.session.user.isAdministrator = true;
+                }
+                if (role === "Student" || role === "Learner") {
+                    req.session.user.isAdministrator = false;
+                }
+            });
+        }
+    }
+
+    return res.render('pages/slots', {
+        status: 'up',
+        version: pkg.version,
+        session: req.session,
+        groups: null
+    });
+});
+
+app.get('/reservations', async (req, res) => { 
+    if (req.session.lti) {
+        // Populate user session with information based on LTI roles
+        if(req.session.user && req.session.lti.roles) {
+            req.session.lti.roles.forEach((role) => {
+                console.log("LTI role: " + role);
+                if (role === "Instructor" || role === "Administrator") {
+                    req.session.user.isAdministrator = true;
+                }
+                if (role === "Student" || role === "Learner") {
+                    req.session.user.isAdministrator = false;
+                }
+            });
+        }
+    }
+
+    return res.render('pages/reservations', {
+        status: 'up',
+        version: pkg.version,
+        session: req.session,
+        groups: null
     });
 });
 
