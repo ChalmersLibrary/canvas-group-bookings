@@ -10,12 +10,21 @@
 </header>
 
 <main>
-    <div class="p-4 mb-4 bg-light">
-        <div class="container-fluid py-5">
-            <img alt="Group of people collaborating" class="float-end" src="/assets/img/people.png" />
-            <h1 class="display-3">Group Bookings</h1>
-            <p class="col-md-8 fs-4 lead">This tool will help you and your group to reserve appointment slots where you'll get help and feedback from teachers and other students.</p>
-            <a href="/slots" class="btn btn-primary btn-lg" type="button">Show available slots</a>
+    <div class="container-fluid py-2">
+        <h1 class="display-5">Administration</h1>
+    </div>
+
+    <div class="container-fluid py-2">
+        <div class="card">
+            <div class="card-header">
+                Things
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">Tillfällen</li>
+                <li class="list-group-item">Available times</li>
+                <li class="list-group-item">Teachers</li>
+                <li class="list-group-item">Lokaler</li>
+            </ul>
         </div>
     </div>
 </main>
@@ -24,7 +33,7 @@
     <div class="container-fluid py-2">
         <%- include('../partials/slots', { }); %>
     </div>
-
+    
     <p>Groups you are currently member of:</p>
     <ul>
         <% groups.forEach(function(group) { %>
@@ -38,11 +47,6 @@
 <section>
     <p>Session information:</p>
     <code><%= JSON.stringify(session) %></code>
-</section>
-
-<section>
-    <p>User information:</p>
-    <code><%= JSON.stringify(session.user) %></code>
 </section>
 
 <footer>

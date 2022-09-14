@@ -257,6 +257,43 @@ app.get('/reservations', async (req, res) => {
     });
 });
 
+app.get('/admin', async (req, res) => { 
+    if (req.session.lti) {
+        // Populate user session with information based on LTI roles
+        if(req.session.user && req.session.lti.roles) {
+            req.session.lti.roles.forEach((role) => {
+                console.log("LTI role: " + role);
+                if (role === "Instructor" || role === "Administrator") {
+                    req.session.user.isAdministrator = true;
+                }
+                if (role === "Student" || role === "Learner") {
+                    req.session.user.isAdministrator = false;
+                }
+            });
+        }
+    }
+
+    if (req.session.user.isAdministrator) {
+        console.log("Is admin, show admin.");
+        return res.render('pages/admin', {
+            status: 'up',
+            version: pkg.version,
+            session: req.session,
+            groups: null
+        });    
+    }
+    else {
+        console.log("Is NOT admin, show error.");
+        return res.render('pages/error', {
+            status: 'up',
+            version: pkg.version,
+            session: req.session,
+            error: "NO_PRIVILEGES",
+            message: "You must have administrator privileges to access this page."
+        }); 
+    }
+});
+
 app.listen(port, () => console.log(`Application listening on port ${port}.`));
 
 process.on('uncaughtException', (err) => {
