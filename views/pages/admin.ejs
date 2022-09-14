@@ -30,21 +30,6 @@
 </main>
 
 <section>
-    <div class="container-fluid py-2">
-        <%- include('../partials/slots', { }); %>
-    </div>
-    
-    <p>Groups you are currently member of:</p>
-    <ul>
-        <% groups.forEach(function(group) { %>
-            <li>
-                <strong><%= group.name %></strong>
-            </li>
-        <% }); %>
-    </ul>
-</section>
-
-<section>
     <p>Session information:</p>
     <code><%= JSON.stringify(session) %></code>
 </section>
