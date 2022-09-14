@@ -139,7 +139,10 @@ async function checkAccessToken(req) {
 }
 
 // TODO: This is a copy of refresh in checkAccessToken, should be generalized!
+// TODO: There is a problem with this code if refresh token is missing! Some error is found in payload from accessToken.refresh():
+//       "payload": { "error": "invalid_grant", "error_description": "refresh_token not found" }
 async function refreshAccessToken(canvas_user_id) {
+    console.log("refreshAccessToken() called.");
     await findAccessToken(canvas_user_id).then(async (result) => {
         let accessToken = client.createToken(result);
 
@@ -158,17 +161,18 @@ async function refreshAccessToken(canvas_user_id) {
 
                 log.info("Access token refreshed, session saved.");
             });
-
-            return new TokenResult(true);
         }
         catch (error) {
-          log.error('Error refreshing access token: ', error.message);
-          return new TokenResult(false, "Error refreshing access token");
+            if (error.payload && error.payload.error) {
+                log.error(error.payload.error + ", " + error.payload.error_description);
+            }
+            return new TokenResult(false, "Error refreshing access token in refreshAccessToken()");
         }
     }).catch((error) => {
-        log.error(error);
-        return (error);
+        return new TokenResult(false, "Error finding access token");
     });
+
+    return new TokenResult(true, "Success from refreshAccessToken()");
 }
 
 async function persistAccessToken(token) {

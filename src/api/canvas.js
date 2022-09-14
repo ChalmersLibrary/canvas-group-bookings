@@ -23,7 +23,7 @@ async function getCourseGroups(courseId, req) {
     }
 
     await oauth.findAccessToken(req.session.user.id).then(async (token) => {
-        while (errorCount < 4 && thisApiPath && token) {
+        while (errorCount < 2 && thisApiPath && token) {
             console.log("GET " + thisApiPath);
         
             try {
@@ -59,15 +59,19 @@ async function getCourseGroups(courseId, req) {
                 console.error(error);
             
                 if (error.response.status == 401 && error.response.headers['www-authenticate']) { // refresh token, then try again
+                    console.log("401, with www-authenticate header.");
+
                     await oauth.refreshAccessToken(req.session.user.id).then((result) => {
                         if (result.success) {
                             console.log("Refreshed access token.");
+                        }
+                        else {
+                            console.log(result);
                         }
                     });
                 }
                 else if (error.response.status == 401 && !error.response.headers['www-authenticate']) { // no access, redirect to auth
                     console.error("Not authorized in Canvas for use of this API endpoint.");
-                    console.error(JSON.stringify(error));
                     return(error);
                 }
                 else {
