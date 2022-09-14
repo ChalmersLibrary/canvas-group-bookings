@@ -10,7 +10,7 @@
       <li class="nav-item">
         <a class="nav-link" href="/reservations">Your reservations</a>
       </li>
-      <% if (session.user.isAdministrator) { %>
+      <% if (user.isAdministrator) { %>
         <li class="nav-item">
           <a class="nav-link" href="/admin">Admin</a>
         </li>

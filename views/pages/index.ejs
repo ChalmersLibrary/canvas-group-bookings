@@ -6,13 +6,13 @@
 <body class="container">
 
 <header>
-  <%- include('../partials/header'); %>
+  <%- include('../partials/header', { user: session.user }); %>
 </header>
 
 <main>
     <div class="p-5 mb-4 bg-light rounded-3">
         <div class="container-fluid py-5">
-            <img class="float-end" src="/assets/img/people.png">
+            <img class="float-end" src="/assets/img/people.png" />
             <h1 class="display-3">Group Bookings</h1>
             <p class="col-md-8 fs-4 lead">This tool will help you and your group to reserve appointment slots where you'll get help and feedback from teachers and other students.</p>
             <button class="btn btn-primary btn-lg" type="button">Show available slots</button>
