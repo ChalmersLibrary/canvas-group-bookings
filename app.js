@@ -155,6 +155,19 @@ app.get('/', async (req, res) => {
             }
             // Check that we have an LTI object in the session    
             if (req.session.lti) {
+                // Populate user session with information based on LTI roles
+                if(req.session.user && req.session.lti.roles) {
+                    req.session.lti.roles.forEach((role) => {
+                        console.log("LTI role: " + role);
+                        if (role === "Instructor" || role === "Administrator") {
+                            req.session.user.isAdministrator = true;
+                        }
+                        if (role === "Student" || role === "Learner") {
+                            req.session.user.isAdministrator = false;
+                        }
+                    });
+                }
+
                 // Numerical course_id if running Public, if Anonymous we use context_id
                 let courseId = req.session.lti.custom_canvas_course_id ? req.session.lti.custom_canvas_course_id : "lti_context_id:" + req.session.lti.context_id;
     
