@@ -263,10 +263,10 @@ app.get('/admin', async (req, res) => {
         if(req.session.user && req.session.lti.roles) {
             req.session.lti.roles.forEach((role) => {
                 console.log("LTI role: " + role);
-                if (role === "Instructor" || role === "Administrator") {
+                if (role === "Instructor" || role === "urn:lti:instrole:ims/lis/Administrator") {
                     req.session.user.isAdministrator = true;
                 }
-                if (role === "Student" || role === "Learner") {
+                if (role === "Learner" || role === "urn:lti:instrole:ims/lis/Student") {
                     req.session.user.isAdministrator = false;
                 }
             });
@@ -274,7 +274,6 @@ app.get('/admin', async (req, res) => {
     }
 
     if (req.session.user.isAdministrator) {
-        console.log("Is admin, show admin.");
         return res.render('pages/admin', {
             status: 'up',
             version: pkg.version,
@@ -283,7 +282,6 @@ app.get('/admin', async (req, res) => {
         });    
     }
     else {
-        console.log("Is NOT admin, show error.");
         return res.render('pages/error', {
             status: 'up',
             version: pkg.version,
