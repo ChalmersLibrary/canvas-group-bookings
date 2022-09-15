@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <%- include('../partials/head'); %>
+  <%- include('../../partials/head'); %>
 </head>
 <body class="container float-start">
 
 <header>
-  <%- include('../partials/header', { user: session.user }); %>
+  <%- include('../../partials/header', { user: session.user }); %>
 </header>
 
 <main>
@@ -27,7 +27,7 @@
 </main>
 
 <footer>
-  <%- include('../partials/footer', { version: version }); %>
+  <%- include('../../partials/footer', { version: version }); %>
 </footer>
 
 </body>

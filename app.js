@@ -249,7 +249,7 @@ app.get('/reservations', async (req, res) => {
         }
     }
 
-    return res.render('pages/reservations', {
+    return res.render('pages/reservations/reservations', {
         status: 'up',
         version: pkg.version,
         session: req.session,
@@ -274,7 +274,7 @@ app.get('/admin', async (req, res) => {
     }
 
     if (req.session.user.isAdministrator) {
-        return res.render('pages/admin', {
+        return res.render('pages/admin/admin', {
             status: 'up',
             version: pkg.version,
             session: req.session,
