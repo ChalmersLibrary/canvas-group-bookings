@@ -6,6 +6,7 @@ const LinkHeader = require('http-link-header');
 const NodeCache = require('node-cache');
 const axios = require('axios');
 const oauth = require('../auth/oauth2');
+const log = require('../logging')
 
 const API_PER_PAGE = 25;
 const API_PATH = "/api/v1";
@@ -24,7 +25,7 @@ async function getCourseGroups(courseId, req) {
 
     await oauth.findAccessToken(req.session.user.id).then(async (token) => {
         while (errorCount < 2 && thisApiPath && token) {
-            console.log("GET " + thisApiPath);
+            log.info("GET " + thisApiPath);
         
             try {
                 const response = await axios.get(thisApiPath, {
@@ -37,7 +38,7 @@ async function getCourseGroups(courseId, req) {
                 apiData.push(response.data);
     
                 if (response.headers["X-Request-Cost"]) {
-                    console.log("Request cost: " + response.headers["X-Request-Cost"]);
+                    log.info("Request cost: " + response.headers["X-Request-Cost"]);
                 }
     
                 if (response.headers["link"]) {
@@ -56,32 +57,32 @@ async function getCourseGroups(courseId, req) {
             }
             catch (error) {
                 errorCount++;
-                console.error(error);
+                log.error(error);
             
                 if (error.response.status == 401 && error.response.headers['www-authenticate']) { // refresh token, then try again
-                    console.log("401, with www-authenticate header.");
+                    log.info("401, with www-authenticate header.");
 
                     await oauth.refreshAccessToken(req.session.user.id).then((result) => {
                         if (result.success) {
-                            console.log("Refreshed access token.");
+                            log.info("Refreshed access token.");
                         }
                         else {
-                            console.log(result);
+                            log.info(result);
                         }
                     });
                 }
                 else if (error.response.status == 401 && !error.response.headers['www-authenticate']) { // no access, redirect to auth
-                    console.error("Not authorized in Canvas for use of this API endpoint.");
+                    log.error("Not authorized in Canvas for use of this API endpoint.");
                     return(error);
                 }
                 else {
-                    console.error(error);
+                    log.error(error);
                     return(error);
                 }
             }
         }    
     }).catch((error) => {
-        console.error(error);
+        log.error(error);
         return (error);
     });
 

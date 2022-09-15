@@ -92,7 +92,7 @@ if (process.env.NODE_ENV === 'development') {
         developmentLtiData = data;
     }
     catch (err) {
-        console.error(err);
+        log.error(err);
     }
 }
 
@@ -121,7 +121,7 @@ app.get('/test', async (req, res) => {
                 result: result.rows
             });
         }).catch((error) => {
-            console.error(error);
+            log.error(error);
             
             return res.send({
                 status: 'up',
@@ -142,11 +142,11 @@ app.get('/', async (req, res) => {
         req.session.views = 1;
     }
 
-    console.log(req.session);
-    console.log("Checking access token...");
+    log.info(req.session);
+    log.info("Checking access token...");
 
     await auth.checkAccessToken(req).then(async (result) => {
-        console.log(result);
+        log.info(result);
 
         if (result.success === true) {
             // Mock session with LTI object in development
@@ -158,7 +158,7 @@ app.get('/', async (req, res) => {
                 // Populate user session with information based on LTI roles
                 if(req.session.user && req.session.lti.roles) {
                     req.session.lti.roles.forEach((role) => {
-                        console.log("LTI role: " + role);
+                        log.info("LTI role: " + role);
                         if (role === "Instructor" || role === "Administrator") {
                             req.session.user.isAdministrator = true;
                         }
@@ -180,7 +180,7 @@ app.get('/', async (req, res) => {
                         groups: courseGroups
                     });
                 }).catch((error) => {
-                    console.error(error);
+                    log.error(error);
 
                     return res.render('pages/error', {
                         status: 'up',
@@ -200,11 +200,11 @@ app.get('/', async (req, res) => {
             }
         }
         else {
-            console.log("Redirect to auth flow...");
+            log.info("Redirect to auth flow...");
             return res.redirect("/auth");
         }    
     }).catch((error) => {
-        console.error(error);
+        log.error(error);
         return res.error(error);
     });
 });
@@ -214,7 +214,7 @@ app.get('/slots', async (req, res) => {
         // Populate user session with information based on LTI roles
         if(req.session.user && req.session.lti.roles) {
             req.session.lti.roles.forEach((role) => {
-                console.log("LTI role: " + role);
+                log.info("LTI role: " + role);
                 if (role === "Instructor" || role === "Administrator") {
                     req.session.user.isAdministrator = true;
                 }
@@ -238,7 +238,7 @@ app.get('/reservations', async (req, res) => {
         // Populate user session with information based on LTI roles
         if(req.session.user && req.session.lti.roles) {
             req.session.lti.roles.forEach((role) => {
-                console.log("LTI role: " + role);
+                log.info("LTI role: " + role);
                 if (role === "Instructor" || role === "Administrator") {
                     req.session.user.isAdministrator = true;
                 }
@@ -262,7 +262,7 @@ app.get('/admin', async (req, res) => {
         // Populate user session with information based on LTI roles
         if(req.session.user && req.session.lti.roles) {
             req.session.lti.roles.forEach((role) => {
-                console.log("LTI role: " + role);
+                log.info("LTI role: " + role);
                 if (role === "Instructor" || role === "urn:lti:instrole:ims/lis/Administrator") {
                     req.session.user.isAdministrator = true;
                 }
@@ -292,9 +292,9 @@ app.get('/admin', async (req, res) => {
     }
 });
 
-app.listen(port, () => console.log(`Application listening on port ${port}.`));
+app.listen(port, () => log.info(`Application listening on port ${port}.`));
 
 process.on('uncaughtException', (err) => {
-    console.error("There was an uncaught error", err);
+    log.error("There was an uncaught error", err);
     process.exit(1); //mandatory (as per the Node docs)
 });

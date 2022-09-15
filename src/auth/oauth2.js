@@ -178,6 +178,7 @@ async function refreshAccessToken(canvas_user_id) {
 async function persistAccessToken(token) {
     let domain = new URL(process.env.AUTH_HOST).hostname;
     log.info("Persisting access token for user " + token.user.id + ", domain " + domain);
+    log.info(token);
 
     await db.query("INSERT INTO user_token (canvas_user_id, canvas_domain, data) VALUES ($1, $2, $3) ON CONFLICT (canvas_user_id, canvas_domain) DO UPDATE SET data = EXCLUDED.data", [
         token.user.id,

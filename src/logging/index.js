@@ -4,7 +4,12 @@ const winston = require('winston');
 
 const logger = winston.createLogger({
     level: 'info',
-    format: winston.format.json(),
+    format: winston.format.combine(
+        winston.format.timestamp({
+            format: 'YYYY-MM-DD HH:mm:ss'
+        }),
+        winston.format.json(),
+    ),
     defaultMeta: { service: 'user-service' },
     transports: [
       //
@@ -18,18 +23,28 @@ const logger = winston.createLogger({
 
 if (process.env.NODE_ENV !== 'production') {
     logger.add(new winston.transports.Console({
-      format: winston.format.simple(),
+      format: winston.format.combine(
+        winston.format.colorize({ all: true }),
+        winston.format.simple()
+      )
     }));
+
+    winston.addColors({
+        info: 'bold blue', // fontStyle color
+        warn: 'italic yellow',
+        error: 'bold red',
+        debug: 'green',
+    });
 }
 
-async function info(msg) {
-    await logger.info(msg);
+async function info(msg, ...meta) {
+    await logger.log({ level: 'info', message: msg, ...meta });
 }
-async function error(msg) {
-    await logger.error(msg);
+async function error(msg, ...meta) {
+    await logger.error({ level: 'error', message: msg, ...meta });
 }
-async function debug(msg) {
-    await logger.debug(msg);
+async function debug(msg, ...meta) {
+    await logger.debug({ level: 'debug', message: msg, ...meta });
 }
 
 module.exports = {

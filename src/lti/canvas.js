@@ -1,5 +1,6 @@
 'use strict';
 
+const log = require('../logging')
 const lti = require('ims-lti');
 const session = require('express-session');
 const NodeCache = require('node-cache');
@@ -20,7 +21,7 @@ const getSecret = (consumerKey, callback) => {
                 "secret": key.split(':')[1]
             });
 
-            console.log("Added consumer key for '" + key.split(':')[0] + "'.");
+            log.info("Added consumer key for '" + key.split(':')[0] + "'.");
         }
     }
 
@@ -37,14 +38,14 @@ const getSecret = (consumerKey, callback) => {
 };
 
 exports.handleLaunch = (page) => function(req, res) {
-    console.log("LTI Launch start.");
+    log.info("LTI Launch start.");
 
     if (!req.body) {
-        console.error("No request body.");
+        log.error("No request body.");
         return res.status(400).json('No request body.')
     }
 
-    console.log("Request body: " + JSON.stringify(req.body));
+    log.info("Request body: " + JSON.stringify(req.body));
 
     const consumerKey = req.body.oauth_consumer_key;
 
@@ -54,39 +55,39 @@ exports.handleLaunch = (page) => function(req, res) {
 
     getSecret(consumerKey, (err, consumerSecret) => {
         if (err) {
-            console.error(err);
+            log.error(err);
         }
 
         const provider = new lti.Provider(consumerKey, consumerSecret); // Include nonceStore for custom store, default memory store
 
-        console.log(provider);
+        log.info(provider);
 
         provider.valid_request(req, (err, isValid) => {
             if (err) {
-                console.error(err);
+                log.error(err);
             }
             if (isValid) {
-                console.log("Request is valid, LTI Data:" + JSON.stringify(provider.body));
+                log.info("Request is valid, LTI Data:" + JSON.stringify(provider.body));
 
                 req.session.lti = provider.body;
 
                 req.session.save(function(err) {
                     if (err) {
-                        console.error(err);
+                        log.error(err);
                     }
 
-                    console.log(req.session);
-                    console.log("Session saved with LTI object.");
+                    log.info(req.session);
+                    log.info("Session saved with LTI object.");
                 });
             }
             else {
-                console.error("The request is NOT valid.");
+                log.error("The request is NOT valid.");
                 return res.status(500).json('LTI request is not valid.')
             }
         });
     });
 
-    console.log("LTI Launch done.");
+    log.info("LTI Launch done.");
 
     return res.redirect("/");
 }

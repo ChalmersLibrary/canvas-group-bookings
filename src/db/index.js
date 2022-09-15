@@ -1,29 +1,30 @@
 'use strict';
 
 const { Pool } = require('pg');
+const log = require('../logging')
 
 // Pool uses env variables: PGUSER, PGHOST, PGPASSWORD, PGDATABASE and PGPORT
 const pool = new Pool();
 
 pool.connect();
 
-// console.log(pool);
+// log.info(pool);
 
 pool.on('connect', client => {
-    console.log("Pool connected.");
+    log.info("Pool connected.");
 });
 pool.on('error', (error, client) => {
-    console.log("Pool error!");
-    console.log(error);
-    console.log(client);
+    log.info("Pool error!");
+    log.info(error);
+    log.info(client);
 });
 
 module.exports = {
     async query(text, params) {
-        const start = Date.now()
-        const res = await pool.query(text, params)
-        const duration = Date.now() - start
-        console.log('Executed query', { text, duration, rows: res.rowCount })
-        return res
+        const start = Date.now();
+        const res = await pool.query(text, params);
+        const duration = Date.now() - start;
+        log.info('Executed query', { text, duration, rows: res.rowCount });
+        return res;
       }
 }
