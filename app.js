@@ -1,7 +1,6 @@
 'use strict';
 
 const pkg = require('./package.json');
-const fs = require('fs');
 const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
@@ -14,6 +13,7 @@ const cors = require('cors');
 const auth = require('./src/auth/oauth2');
 const lti = require('./src/lti/canvas');
 const canvasApi = require('./src/api/canvas');
+const user = require('./src/user/user');
 
 // Uncomment to use PostgreSQL
 const db = require('./src/db');
@@ -21,7 +21,6 @@ const db = require('./src/db');
 const port = process.env.PORT || 3000;
 const cookieMaxAge = 3600000 * 72; // 72h
 const fileStoreOptions = { ttl: 3600 * 12, retries: 3 };
-let developmentLtiData;
 
 // PostgreSQL Session store
 
@@ -86,16 +85,6 @@ if (process.env.NODE_ENV === "production") {
     sessionOptions.cookie.sameSite = 'none'; 
 }
 
-if (process.env.NODE_ENV === 'development') {
-    try {
-        const data = fs.readFileSync('./mock-lti.json', 'utf8');
-        developmentLtiData = data;
-    }
-    catch (err) {
-        log.error(err);
-    }
-}
-
 // Session options
 app.use(session(sessionOptions));
 
@@ -143,31 +132,14 @@ app.get('/', async (req, res) => {
     }
 
     log.info(req.session);
-    log.info("Checking access token...");
 
     await auth.checkAccessToken(req).then(async (result) => {
-        log.info(result);
+        if (result !== undefined && result.success === true) {
+            await user.mockLtiSession(req);
+            await user.addUserFlagsForRoles(req);
 
-        if (result.success === true) {
-            // Mock session with LTI object in development
-            if (process.env.NODE_ENV === 'development' && developmentLtiData) {
-                req.session.lti = JSON.parse(developmentLtiData);
-            }
             // Check that we have an LTI object in the session    
             if (req.session.lti) {
-                // Populate user session with information based on LTI roles
-                if(req.session.user && req.session.lti.roles) {
-                    req.session.lti.roles.forEach((role) => {
-                        log.info("LTI role: " + role);
-                        if (role === "Instructor" || role === "Administrator") {
-                            req.session.user.isAdministrator = true;
-                        }
-                        if (role === "Student" || role === "Learner") {
-                            req.session.user.isAdministrator = false;
-                        }
-                    });
-                }
-
                 // Numerical course_id if running Public, if Anonymous we use context_id
                 let courseId = req.session.lti.custom_canvas_course_id ? req.session.lti.custom_canvas_course_id : "lti_context_id:" + req.session.lti.context_id;
     
@@ -200,7 +172,7 @@ app.get('/', async (req, res) => {
             }
         }
         else {
-            log.info("Redirect to auth flow...");
+            log.info("No access token returned, redirecting to auth flow...");
             return res.redirect("/auth");
         }    
     }).catch((error) => {
@@ -209,87 +181,74 @@ app.get('/', async (req, res) => {
     });
 });
 
-app.get('/slots', async (req, res) => { 
-    if (req.session.lti) {
-        // Populate user session with information based on LTI roles
-        if(req.session.user && req.session.lti.roles) {
-            req.session.lti.roles.forEach((role) => {
-                log.info("LTI role: " + role);
-                if (role === "Instructor" || role === "Administrator") {
-                    req.session.user.isAdministrator = true;
-                }
-                if (role === "Student" || role === "Learner") {
-                    req.session.user.isAdministrator = false;
-                }
+app.get('/slots', async (req, res) => {
+    await auth.checkAccessToken(req).then(async (result) => {
+        if (result !== undefined && result.success === true) {
+            await user.mockLtiSession(req);
+            await user.addUserFlagsForRoles(req);
+
+            return res.render('pages/slots', {
+                status: 'up',
+                version: pkg.version,
+                session: req.session,
+                groups: null
             });
         }
-    }
-
-    return res.render('pages/slots', {
-        status: 'up',
-        version: pkg.version,
-        session: req.session,
-        groups: null
+        else {
+            log.error("No access token returned, redirecting to auth flow...");
+            return res.redirect("/auth");
+        }
     });
 });
 
-app.get('/reservations', async (req, res) => { 
-    if (req.session.lti) {
-        // Populate user session with information based on LTI roles
-        if(req.session.user && req.session.lti.roles) {
-            req.session.lti.roles.forEach((role) => {
-                log.info("LTI role: " + role);
-                if (role === "Instructor" || role === "Administrator") {
-                    req.session.user.isAdministrator = true;
-                }
-                if (role === "Student" || role === "Learner") {
-                    req.session.user.isAdministrator = false;
-                }
+app.get('/reservations', async (req, res) => {
+    await auth.checkAccessToken(req).then(async (result) => {
+        if (result !== undefined && result.success === true) {
+            await user.mockLtiSession(req);
+            await user.addUserFlagsForRoles(req);
+
+            return res.render('pages/reservations/reservations', {
+                status: 'up',
+                version: pkg.version,
+                session: req.session,
             });
         }
-    }
-
-    return res.render('pages/reservations/reservations', {
-        status: 'up',
-        version: pkg.version,
-        session: req.session,
-        groups: null
+        else {
+            log.error("No access token returned, redirecting to auth flow...");
+            return res.redirect("/auth");
+        }
     });
 });
 
-app.get('/admin', async (req, res) => { 
-    if (req.session.lti) {
-        // Populate user session with information based on LTI roles
-        if(req.session.user && req.session.lti.roles) {
-            req.session.lti.roles.forEach((role) => {
-                log.info("LTI role: " + role);
-                if (role === "Instructor" || role === "urn:lti:instrole:ims/lis/Administrator") {
-                    req.session.user.isAdministrator = true;
-                }
-                if (role === "Learner" || role === "urn:lti:instrole:ims/lis/Student") {
-                    req.session.user.isAdministrator = false;
-                }
-            });
-        }
-    }
+app.get('/admin', async (req, res) => {
+    await auth.checkAccessToken(req).then(async (result) => {
+        if (result !== undefined && result.success === true) {
+            await user.mockLtiSession(req);
+            await user.addUserFlagsForRoles(req);
 
-    if (req.session.user.isAdministrator) {
-        return res.render('pages/admin/admin', {
-            status: 'up',
-            version: pkg.version,
-            session: req.session,
-            groups: null
-        });    
-    }
-    else {
-        return res.render('pages/error', {
-            status: 'up',
-            version: pkg.version,
-            session: req.session,
-            error: "NO_PRIVILEGES",
-            message: "You must have administrator privileges to access this page."
-        }); 
-    }
+            if (req.session.user && req.session.user.isAdministrator) {
+                return res.render('pages/admin/admin', {
+                    status: 'up',
+                    version: pkg.version,
+                    session: req.session,
+                    groups: null
+                });    
+            }
+            else {
+                return res.render('pages/error', {
+                    status: 'up',
+                    version: pkg.version,
+                    session: req.session,
+                    error: "NO_PRIVILEGES",
+                    message: "You must have administrator privileges to access this page."
+                }); 
+            }
+        }
+        else {
+            log.error("No access token returned, redirecting to auth flow...");
+            return res.redirect("/auth");
+        }
+    });
 });
 
 app.listen(port, () => log.info(`Application listening on port ${port}.`));
