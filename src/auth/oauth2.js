@@ -24,6 +24,12 @@ function TokenResult(success, message) {
     this.message = message;
 };
 
+class TokenException extends Error {
+    constructor(canvas_user_id) {
+      super(`Token for user id ${canvas_user_id} is wrong or missing.`);
+    }
+}
+
 function setupAuthEndpoints(app, callbackUrl) {
     // Authorization uri definition
     const authorizationUri = client.authorizeURL({
@@ -48,7 +54,7 @@ function setupAuthEndpoints(app, callbackUrl) {
     
         try {
             const accessToken = await client.getToken(options);
-            log.info('The resulting token: ' + accessToken.token);
+            log.info('The resulting token: ', accessToken.token);
 
             // Persist the access token to db
             await persistAccessToken(accessToken.token).then((result) => {
@@ -82,25 +88,27 @@ function setupAuthEndpoints(app, callbackUrl) {
 };
 
 async function checkAccessToken(req) {
+    let tokenResult = new TokenResult();
+
     if (!req.session.user) {
         log.error("No user object in session, redirecting to OAuth flow...");
-        return new TokenResult(false, "No user object in session, init OAuth2 flow to get one");
+        tokenResult.success = false;
+        tokenResult.message = "No user object in session.";
     }
     else {
         await findAccessToken(req.session.user.id).then(async (token) => {
-            log.info("Got access token: " + token);
-
             if (token !== undefined) {
                 let accessToken = await client.createToken(token);
-                console.log(accessToken);
+                await log.info("Token from findAccessToken: ", token);
+                await log.info("client.createToken: ", accessToken);
     
                 if (accessToken.expired()) {
-                    log.error("Access token has expired, refreshing.");
+                    log.error("Access token has expired, refreshing.", { service: 'oauth2'});
 
                     try {
-                        const refreshParams = {};
-                        let newAccessToken = await accessToken.refresh(refreshParams);
-                        console.log(newAccessToken);
+                        let newAccessToken = await accessToken.refresh();
+                        await log.debug("accessToken.refresh: ", newAccessToken);
+
                         persistAccessToken(newAccessToken.token);
     
                         req.session.user = newAccessToken.token.user;
@@ -108,47 +116,64 @@ async function checkAccessToken(req) {
                         req.session.save(function(err) {
                             if (err) {
                                 log.error(err);
-                                return new TokenResult(false, err);
+                                throw new TokenException(err);
                             }
         
                             log.info("Access token refreshed, session saved.");
                         });
     
-                        return new TokenResult(true);
+                        tokenResult.success = true;
+                        tokenResult.message = "Refreshed expired token.";
                     }
                     catch (error) {
-                      log.error('Error refreshing access token: ', error.message);
                       log.error(error);
-                      return new TokenResult(false, "Error refreshing access token");
+                      throw new TokenException(error);
                     }
                 }
                 else {
                     log.info("Access token is ok, not expired.");
+
+                    req.session.user = token.user;
+
+                    req.session.save(function(err) {
+                        if (err) {
+                            log.error(err);
+                            throw new TokenException(err);
+                        }
+                    });
+
+                    tokenResult.success = true;
+                    tokenResult.message = "Access token is ok, not expired.";
                 }
             }
             else {
-                return new TokenResult(false, "No token in db for user, init OAuth2 flow.");
+                tokenResult.success = false;
+                tokenResult.message = "No token found for user in db.";
             }
         }).catch((err) => {
             log.error(err);
-            return new TokenResult(false, err);
+            throw new TokenException(err);
         })
     }
 
-    return new TokenResult(true);
+    return tokenResult;
 }
 
 // TODO: This is a copy of refresh in checkAccessToken, should be generalized!
 // TODO: There is a problem with this code if refresh token is missing! Some error is found in payload from accessToken.refresh():
 //       "payload": { "error": "invalid_grant", "error_description": "refresh_token not found" }
 async function refreshAccessToken(canvas_user_id) {
-    console.log("refreshAccessToken() called.");
+    log.debug("refreshAccessToken() called.");
     await findAccessToken(canvas_user_id).then(async (result) => {
         let accessToken = client.createToken(result);
-
+        await log.debug("result from findAccessToken: ", result);
+        await log.debug("client.createToken: ", accessToken);
+        
         try {
             const refreshParams = {};
             newAccessToken = await accessToken.refresh(refreshParams);
+            await log.debug("accessToken.refresh: ", newAccessToken);
+
             await persistAccessToken(newAccessToken.token);
 
             req.session.user = newAccessToken.token.user;
