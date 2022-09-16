@@ -3,6 +3,7 @@
 require('dotenv').config();
 const db = require('../db');
 const log = require('../logging')
+const user = require('../user');
 const { AuthorizationCode } = require('simple-oauth2');
 
 const clientConfig = {
@@ -59,8 +60,9 @@ function setupAuthEndpoints(app, callbackUrl) {
             // Persist the access token to db
             await persistAccessToken(accessToken.token).then((result) => {
                 // Save the user object to session for faster access
-                req.session.user = accessToken.token.user;
-                
+                let userData = user.createSessionUserdataFromToken(req, accessToken.token);
+                log.info(userData);
+
                 // If we set it before redirect we must persist it with session.save()
                 req.session.save(function(err) {
                     if (err) {
@@ -109,9 +111,12 @@ async function checkAccessToken(req) {
                         let newAccessToken = await accessToken.refresh();
                         await log.debug("accessToken.refresh: ", newAccessToken);
 
-                        persistAccessToken(newAccessToken.token);
+                        await persistAccessToken(newAccessToken.token);
     
-                        req.session.user = newAccessToken.token.user;
+                        // Save the user object to session for faster access
+                        let userData = await user.createSessionUserdataFromToken(req, newAccessToken.token).then((result) => {
+                            console.log(result);
+                        });
 
                         req.session.save(function(err) {
                             if (err) {
@@ -133,7 +138,8 @@ async function checkAccessToken(req) {
                 else {
                     log.info("Access token is ok, not expired.");
 
-                    req.session.user = token.user;
+                    // Save the user object to session for faster access
+                    user.createSessionUserdataFromToken(req, token);
 
                     req.session.save(function(err) {
                         if (err) {
@@ -176,7 +182,9 @@ async function refreshAccessToken(canvas_user_id) {
 
             await persistAccessToken(newAccessToken.token);
 
-            req.session.user = newAccessToken.token.user;
+            // Save the user object to session for faster access
+            let userData = await user.createSessionUserdataFromToken(req, newAccessToken.token);
+            log.info(userData);
 
             await req.session.save(function(err) {
                 if (err) {

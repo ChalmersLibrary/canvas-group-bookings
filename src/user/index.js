@@ -23,6 +23,23 @@ async function mockLtiSession(req) {
     }
 }
 
+// Copy user data from a token into session
+async function createSessionUserdataFromToken(req, token) {
+    if (req.session) {
+        if (token !== undefined) {
+            req.session.user = { id: token.user.id, name: token.user.name, locale: token.user.effective_locale.substr(0,2) };
+            /* Object.assign(req.session.user.id, token.user.id);
+            Object.assign(req.session.user.name, token.user.name);
+            Object.assign(req.session.user.locale, token.user.effective_locale.substr(0,2)); */
+        }
+    }
+    else {
+        throw new Error("No session exists in request object!");
+    }
+
+    return req.session.user;
+}
+
 // Add flags in the session user object
 async function addUserFlagsForRoles(req) {
     if(req.session.user && req.session.lti) {
@@ -44,5 +61,6 @@ async function addUserFlagsForRoles(req) {
 
 module.exports = {
     mockLtiSession,
+    createSessionUserdataFromToken,
     addUserFlagsForRoles
 }

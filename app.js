@@ -13,7 +13,7 @@ const cors = require('cors');
 const auth = require('./src/auth/oauth2');
 const lti = require('./src/lti/canvas');
 const canvasApi = require('./src/api/canvas');
-const user = require('./src/user/user');
+const user = require('./src/user');
 
 // Uncomment to use PostgreSQL
 const db = require('./src/db');
