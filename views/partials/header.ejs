@@ -20,14 +20,18 @@
       </ul>
       <span class="navbar-text">
         Din grupp: 
-        <% if (user.groups.length > 1) { %>
+        <% if (user.groups.length && user.groups.length > 1) { %>
           <select name="a_group">
             <% user.groups.forEach((group) => { %>
               <option value="<%= group.id %>"><%= group.name %></option>            
             <% }); %>
           </select>
         <% } else { %>
-          <strong><%= user.groups[0].name %></strong>
+          <% if (!user.groups.length) { %>
+            <strong>Ej medlem i grupp</strong>
+          <% } else { %>
+            <strong><%= user.groups[0].name %></strong>  
+          <% } %>
         <% } %>
       </span>
     </div>
