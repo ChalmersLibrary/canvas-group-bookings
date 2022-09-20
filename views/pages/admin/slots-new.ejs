@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <%- include('../../partials/head'); %>
+    </head>
+    <body class="container-lg float-start">
+
+    <header>
+    <%- include('../../partials/header', { user: session.user }); %>
+    </header>
+
+    <main>
+        <div class="container py-2">
+            <h1 class="display-5">Administration</h1>
+        </div>
+
+        <div class="container py-2">
+            <div class="row">
+                <div class="col-3">
+                    <div class="card">
+                        <div class="card-header">
+                            Listor
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><a href="">Tillfällen</a></li>
+                            <li class="list-group-item"><strong>Tider</strong></li>
+                            <li class="list-group-item"><a href="">Handledare</a></li>
+                            <li class="list-group-item"><a href="">Lokaler</a></li>
+                            <li class="list-group-item"><a href="">Övrigt</a></li>
+                        </ul>
+                    </div>        
+                </div>
+                <div class="col-9">
+                    <h2>Tider</h2>
+                    <p>Redan existerande tider redigeras från den publika vyn. Här lägger du till nya tillgängliga tider.</p>
+
+                    <h3>Ny tid för tillfälle</h3>
+                    <form>
+                        <p>
+                            <label for="course_part">Tillfälle:</label>
+                            <select id="course_part" class="form-select" aria-label="Default select example">
+                                <option selected>...</option>
+                                <option value="1">Handledningstillfälle 1</option>
+                                <option value="2">Handledningstillfälle 2</option>
+                                <option value="3">Handledningstillfälle 3</option>
+                            </select>
+                        </p>
+                        <p>
+                            <label for="course_tutor" class="form-label">Handledare:</label>
+                            <select id="course_tutor" class="form-select" aria-label="Default select example">
+                                <option selected>...</option>
+                                <option value="1">Rolf Johansson</option>
+                                <option value="2">Carl Johan Carlsson</option>
+                                <option value="3">Fia Börjesson</option>
+                            </select>
+                        </p>
+                        <p>
+                            <label for="course_location" class="form-label">Lokal:</label>
+                            <select id="course_location" class="form-select" aria-label="Default select example">
+                                <option selected>...</option>
+                                <option value="1">Lokal 1</option>
+                                <option value="2">Lokal 2</option>
+                                <option value="3">Lokal 3</option>
+                            </select>
+                        </p>
+                        <p>
+                            <div class="row">
+                                <div class="col-3">
+                                    <label for="slot_date" class="form-label">Datum:</label>
+                                    <input type="date" class="form-control" id="slot_date">    
+                                </div>
+                                <div class="col-2">
+                                    <label for="slot_time_start" class="form-label">Starttid:</label>
+                                    <input type="time" class="form-control" id="slot_time_start">    
+                                </div>    
+                                <div class="col-2">
+                                    <label for="slot_time_end" class="form-label">Sluttid:</label>
+                                    <input type="time" class="form-control" id="slot_time_end">    
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col my-3">
+                                    <button class="btn btn-primary btn-md">Lägg till...</button>
+                                    <small>Lägg till fler tider med samma handledare och lokal.</small>
+                                </div>
+                            </div>
+                        </p>
+                        <h5>Ärvda detaljer</h5>
+                        <p>
+                            <strong>Tillfälle:</strong><br>
+                            Max 2 grupper på en tid
+                        </p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <%- include('../../partials/debug'); %>
+
+    <footer>
+    <%- include('../../partials/footer', { version: version }); %>
+    </footer>
+
+    </body>
+</html>
