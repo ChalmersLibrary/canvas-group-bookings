@@ -10,30 +10,34 @@
 </header>
 
 <main>
-    <div class="container-fluid py-2">
+    <div class="container py-2">
         <h1 class="display-5">Administration</h1>
     </div>
 
-    <div class="container-fluid py-2">
-        <div class="card">
-            <div class="card-header">
-                Listor
+    <div class="container py-2">
+        <div class="row">
+            <div class="col-3">
+                <div class="card">
+                    <div class="card-header">
+                        Listor
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><a href="">Tillfällen</a></li>
+                        <li class="list-group-item"><a href="/admin/slots-new">Tider</a></li>
+                        <li class="list-group-item"><a href="">Handledare</a></li>
+                        <li class="list-group-item"><a href="">Lokaler</a></li>
+                        <li class="list-group-item"><a href="">Övrigt</a></li>
+                    </ul>
+                </div>        
             </div>
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item">Tillfällen</li>
-                <li class="list-group-item">Tider</li>
-                <li class="list-group-item">Handledare</li>
-                <li class="list-group-item">Lokaler</li>
-                <li class="list-group-item">Övriga inställningar</li>
-            </ul>
+            <div class="col-9">
+                Huvudområde
+            </div>          
         </div>
     </div>
 </main>
 
-<section>
-    <p>Session information:</p>
-    <code><%= JSON.stringify(session) %></code>
-</section>
+<%- include('../../partials/debug'); %>
 
 <footer>
   <%- include('../../partials/footer', { version: version }); %>

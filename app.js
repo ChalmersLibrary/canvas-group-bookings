@@ -251,6 +251,36 @@ app.get('/admin', async (req, res) => {
     });
 });
 
+app.get('/admin/slots-new', async (req, res) => {
+    await auth.checkAccessToken(req).then(async (result) => {
+        if (result !== undefined && result.success === true) {
+            await user.mockLtiSession(req);
+            await user.addUserFlagsForRoles(req);
+
+            if (req.session.user && req.session.user.isAdministrator) {
+                return res.render('pages/admin/slots-new', {
+                    status: 'up',
+                    version: pkg.version,
+                    session: req.session
+                });    
+            }
+            else {
+                return res.render('pages/error', {
+                    status: 'up',
+                    version: pkg.version,
+                    session: req.session,
+                    error: "NO_PRIVILEGES",
+                    message: "You must have administrator privileges to access this page."
+                }); 
+            }
+        }
+        else {
+            log.error("No access token returned, redirecting to auth flow...");
+            return res.redirect("/auth");
+        }
+    });
+});
+
 app.listen(port, () => log.info(`Application listening on port ${port}.`));
 
 process.on('uncaughtException', (err) => {
