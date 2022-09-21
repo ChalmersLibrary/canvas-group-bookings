@@ -73,7 +73,7 @@ app.use(cors());
 app.use(function (req, res, next) {
     res.setHeader(
       'Content-Security-Policy', 
-      "default-src 'self'; script-src 'self'; style-src 'self' cdn.jsdelivr.net; font-src 'self'; img-src 'self' data:; frame-src 'self'" + (process.env.CSP_FRAME_SRC_ALLOW ? " " + process.env.CSP_FRAME_SRC_ALLOW : "")
+      "default-src 'self'; script-src 'self' cdn.jsdelivr.net; style-src 'self' cdn.jsdelivr.net; font-src 'self'; img-src 'self' data:; frame-src 'self'" + (process.env.CSP_FRAME_SRC_ALLOW ? " " + process.env.CSP_FRAME_SRC_ALLOW : "")
     );
     
     next();
@@ -90,6 +90,12 @@ app.use(session(sessionOptions));
 
 // set the view engine to ejs
 app.set('view engine', 'ejs');
+
+// Check database version
+db.checkDatabaseVersion();
+
+
+// This should go into router.js?
 
 // Handle LTI Launch
 app.post('/lti', lti.handleLaunch('/'));
@@ -144,12 +150,15 @@ app.get('/', async (req, res) => {
                 let courseId = req.session.lti.custom_canvas_course_id ? req.session.lti.custom_canvas_course_id : "lti_context_id:" + req.session.lti.context_id;
     
                 // Load groups that the logged in user belongs to in the course context
-                await canvasApi.getCourseGroups(courseId, req).then((courseGroups) => {
+                await canvasApi.getCourseGroups(courseId, req).then(async (courseGroups) => {
                     return res.render('pages/index', {
                         status: 'up',
                         version: pkg.version,
                         session: req.session,
-                        groups: courseGroups
+                        groups: courseGroups,
+                        user: req.session.user,
+                        courses: await db.getValidCourses(new Date().toLocaleDateString('sv-SE')),
+                        instructors: await db.getValidInstructors()
                     });
                 }).catch((error) => {
                     log.error(error);
@@ -261,7 +270,9 @@ app.get('/admin/slots-new', async (req, res) => {
                 return res.render('pages/admin/slots-new', {
                     status: 'up',
                     version: pkg.version,
-                    session: req.session
+                    session: req.session,
+                    courses: await db.getValidCourses(new Date().toLocaleDateString('sv-SE')),
+                    instructors: await db.getValidInstructors()
                 });    
             }
             else {
