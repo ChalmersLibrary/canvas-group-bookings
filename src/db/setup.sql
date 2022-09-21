@@ -79,5 +79,16 @@ CREATE TABLE IF NOT EXISTS "reservation"
     PRIMARY KEY ("id")
 );
 
+-- Mockup data
+INSERT INTO "course" ("name", "date_start", "date_end", "is_group", "is_individual", "max_groups", "max_individuals") VALUES ('Handledningstillfälle 1','2022-01-01','2023-12-31',true,false,1,0);
+INSERT INTO "course" ("name", "date_start", "date_end", "is_group", "is_individual", "max_groups", "max_individuals") VALUES ('Handledningstillfälle 2','2022-09-21','2023-12-31',true,false,2,0);
+INSERT INTO "course" ("name", "date_start", "date_end", "is_group", "is_individual", "max_groups", "max_individuals") VALUES ('Föreläsning 1','2022-09-21','2023-12-31',false,true,0,100);
+INSERT INTO "instructor" ("name") VALUES ('Carl Johan Carlsson');
+INSERT INTO "instructor" ("name") VALUES ('Fia Börjesson');
+INSERT INTO "instructor" ("name") VALUES ('Magnus Axelsson');
+INSERT INTO "location" ("name") VALUES ('Lokal A1');
+INSERT INTO "location" ("name") VALUES ('Lokal A2');
+INSERT INTO "location" ("name") VALUES ('Lokal A3');
+
 -- Version history
 INSERT INTO version (db_version) VALUES (1);
