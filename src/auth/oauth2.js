@@ -109,8 +109,8 @@ async function checkAccessToken(req) {
 
                     try {
                         let newAccessToken = await accessToken.refresh();
-                        await log.debug("accessToken.refresh: ", newAccessToken);
-
+                        newAccessToken.refresh_token = accessToken.refresh_token; // https://canvas.instructure.com/doc/api/file.oauth.html#using-refresh-tokens
+                        await log.info("accessToken.refresh: ", newAccessToken);
                         await persistAccessToken(newAccessToken.token);
     
                         // Save the user object to session for faster access
@@ -166,8 +166,6 @@ async function checkAccessToken(req) {
 }
 
 // TODO: This is a copy of refresh in checkAccessToken, should be generalized!
-// TODO: There is a problem with this code if refresh token is missing! Some error is found in payload from accessToken.refresh():
-//       "payload": { "error": "invalid_grant", "error_description": "refresh_token not found" }
 async function refreshAccessToken(canvas_user_id) {
     log.debug("refreshAccessToken() called.");
     await findAccessToken(canvas_user_id).then(async (result) => {
@@ -178,8 +176,8 @@ async function refreshAccessToken(canvas_user_id) {
         try {
             const refreshParams = {};
             newAccessToken = await accessToken.refresh(refreshParams);
-            await log.debug("accessToken.refresh: ", newAccessToken);
-
+            newAccessToken.refresh_token = accessToken.refresh_token; // https://canvas.instructure.com/doc/api/file.oauth.html#using-refresh-tokens
+            await log.info("accessToken.refresh: ", newAccessToken);
             await persistAccessToken(newAccessToken.token);
 
             // Save the user object to session for faster access
