@@ -73,35 +73,38 @@
 <% if (user.isAdministrator) { %>
     <div class="modal modal-lg fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="staticBackdropLabel">Lägg till bokningsbara tider</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Stäng"></button>
-                </div>
-                <div class="modal-body">
-                    <form>
+            <form class="needs-validation" id="newSlotForm" novalidate>
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">Lägg till bokningsbara tider</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Stäng"></button>
+                    </div>
+                    <div class="modal-body">
                         <p>
-                            <label for="course_part">Tillfälle:</label>
-                            <select id="course_part" class="form-select" aria-label="Default select example">
-                                <option selected disabled>Välj...</option>
+                            <label for="course_id">Tillfälle:</label>
+                            <select required id="course_id" class="form-select" aria-label="Default select example">
+                                <option value="" selected disabled>Välj...</option>
                                 <% courses.forEach((course) => { %>
                                     <option value="<%= course.id %>"><%= course.name %></option>                                
                                 <% }); %>
                             </select>
+                            <div class="invalid-feedback">
+                                Du måste välja ett tillfälle/kurs.
+                            </div>
                         </p>
                         <p>
-                            <label for="course_tutor" class="form-label">Handledare:</label>
-                            <select id="course_tutor" class="form-select" aria-label="Default select example">
-                                <option selected disabled>Välj...</option>
+                            <label for="instructor_id" class="form-label">Handledare:</label>
+                            <select required id="instructor_id" class="form-select" aria-label="Default select example">
+                                <option value="" selected disabled>Välj...</option>
                                 <% instructors.forEach((instructor) => { %>
                                     <option value="<%= instructor.id %>"><%= instructor.name %></option>                                
                                 <% }); %>
                             </select>
                         </p>
                         <p>
-                            <label for="course_location" class="form-label">Lokal:</label>
-                            <select id="course_location" class="form-select" aria-label="Default select example">
-                                <option selected disabled>Välj...</option>
+                            <label for="location_id" class="form-label">Lokal:</label>
+                            <select required id="location_id" class="form-select" aria-label="Default select example">
+                                <option value="" selected disabled>Välj...</option>
                                 <% locations.forEach((location) => { %>
                                     <option value="<%= location.id %>"><%= location.name %></option>                                
                                 <% }); %>
@@ -138,30 +141,23 @@
                                     <input type="time" class="form-control" id="slot_time_end_1">
                                 </div>
                             </div>
-                            <div class="row">
+                            <!--<div class="row">
                                 <div class="col my-3">
                                     <button type="button" id="slot_new_slot" class="btn btn-primary btn-md">Lägg till...</button>
                                     <small>Lägg till fler tider med samma handledare och lokal.</small>
                                 </div>
-                            </div>
+                            </div>-->
                         </p>
                         <p>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="group">
-                                <label class="form-check-label" for="inlineRadio1">Grupp</label>
-                              </div>
-                              <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="individual">
-                                <label class="form-check-label" for="inlineRadio2">Individ</label>
-                            </div>
+                            <pre id="console_log"></pre>
                         </p>
-                    </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
+                        <button type="submit" class="btn btn-primary" id="newSlotSaveButton">Spara</button>
+                    </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
-                    <button type="button" class="btn btn-primary">Spara</button>
-                </div>
-            </div>
+            </form>
         </div>
     </div>
 <% } %>
