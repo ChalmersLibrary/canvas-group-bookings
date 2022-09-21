@@ -158,7 +158,8 @@ app.get('/', async (req, res) => {
                         groups: courseGroups,
                         user: req.session.user,
                         courses: await db.getValidCourses(new Date().toLocaleDateString('sv-SE')),
-                        instructors: await db.getValidInstructors()
+                        instructors: await db.getValidInstructors(),
+                        locations: await db.getValidLocations()
                     });
                 }).catch((error) => {
                     log.error(error);

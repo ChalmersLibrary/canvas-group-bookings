@@ -7,3 +7,6 @@ nav {
 footer {
     padding-top: 28px;
 }
+div.slot_template {
+    display: none;
+}

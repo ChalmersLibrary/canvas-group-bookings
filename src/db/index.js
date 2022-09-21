@@ -103,5 +103,6 @@ module.exports = {
     query,
     getValidCourses,
     getValidInstructors,
+    getValidLocations,
     checkDatabaseVersion,
 }
