@@ -109,12 +109,15 @@ async function checkAccessToken(req) {
 
                     try {
                         let newAccessToken = await accessToken.refresh();
-                        newAccessToken.token.refresh_token = accessToken.token.refresh_token; // https://canvas.instructure.com/doc/api/file.oauth.html#using-refresh-tokens
                         await log.info("accessToken.refresh: ", newAccessToken);
-                        await persistAccessToken(newAccessToken.token);
+
+                        const newAccessTokenWithRefreshToken = JSON.parse(JSON.stringify(newAccessToken));
+                        newAccessTokenWithRefreshToken.refresh_token = accessToken.token.refresh_token; // https://canvas.instructure.com/doc/api/file.oauth.html#using-refresh-tokens
+
+                        await persistAccessToken(newAccessTokenWithRefreshToken);
     
                         // Save the user object to session for faster access
-                        let userData = await user.createSessionUserdataFromToken(req, newAccessToken.token).then((result) => {
+                        let userData = await user.createSessionUserdataFromToken(req, newAccessTokenWithRefreshToken).then((result) => {
                             console.log(result);
                         });
 
@@ -176,12 +179,14 @@ async function refreshAccessToken(canvas_user_id) {
         try {
             const refreshParams = {};
             newAccessToken = await accessToken.refresh(refreshParams);
-            newAccessToken.token.refresh_token = accessToken.token.refresh_token; // https://canvas.instructure.com/doc/api/file.oauth.html#using-refresh-tokens
-            await log.info("accessToken.refresh: ", newAccessToken);
-            await persistAccessToken(newAccessToken.token);
+
+            const newAccessTokenWithRefreshToken = JSON.parse(JSON.stringify(newAccessToken));
+            newAccessTokenWithRefreshToken.refresh_token = accessToken.token.refresh_token; // https://canvas.instructure.com/doc/api/file.oauth.html#using-refresh-tokens
+
+            await persistAccessToken(newAccessTokenWithRefreshToken);
 
             // Save the user object to session for faster access
-            let userData = await user.createSessionUserdataFromToken(req, newAccessToken.token);
+            let userData = await user.createSessionUserdataFromToken(req, newAccessTokenWithRefreshToken);
             log.info(userData);
 
             await req.session.save(function(err) {
