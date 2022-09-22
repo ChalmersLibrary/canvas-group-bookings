@@ -109,7 +109,7 @@ async function checkAccessToken(req) {
 
                     try {
                         let newAccessToken = await accessToken.refresh();
-                        newAccessToken.refresh_token = accessToken.refresh_token; // https://canvas.instructure.com/doc/api/file.oauth.html#using-refresh-tokens
+                        newAccessToken.token.refresh_token = accessToken.token.refresh_token; // https://canvas.instructure.com/doc/api/file.oauth.html#using-refresh-tokens
                         await log.info("accessToken.refresh: ", newAccessToken);
                         await persistAccessToken(newAccessToken.token);
     
@@ -176,7 +176,7 @@ async function refreshAccessToken(canvas_user_id) {
         try {
             const refreshParams = {};
             newAccessToken = await accessToken.refresh(refreshParams);
-            newAccessToken.refresh_token = accessToken.refresh_token; // https://canvas.instructure.com/doc/api/file.oauth.html#using-refresh-tokens
+            newAccessToken.token.refresh_token = accessToken.token.refresh_token; // https://canvas.instructure.com/doc/api/file.oauth.html#using-refresh-tokens
             await log.info("accessToken.refresh: ", newAccessToken);
             await persistAccessToken(newAccessToken.token);
 
