@@ -92,6 +92,11 @@ function setupAuthEndpoints(app, callbackUrl) {
 async function checkAccessToken(req) {
     let tokenResult = new TokenResult();
 
+    // TODO: The problem here is that if the session cookie disappears, and we have Anonymous LTI access,
+    //       we won't know the user id. The user id could still be in the db with an Access Token that has
+    //       a valid Refresh Token, but we can't reach it. Then the user will have to approve the OAuth2
+    //       access once more and gets another approved integration key in Canvas. Should we force Public LTI?
+
     if (!req.session.user) {
         log.error("No user object in session, redirecting to OAuth flow...");
         tokenResult.success = false;
