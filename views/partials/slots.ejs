@@ -34,8 +34,11 @@
         </div>
     </div>
 </div>
-<% if (!slots) { %>
-    <pre>Det finns för tillfället inga bokningsbara tider.</pre>
+<% if (!slots.length) { %>
+    <div class="alert alert-secondary my-3" role="alert">
+        <h4 class="alert-heading">Det finns inga tillgängliga tider</h4>
+        <p>Här kan man skriva något mer om när det släpps tider eller annan matnyttig information.</p>
+    </div>
 <% } else { %>
 <table class="table table-hover my-3">
     <thead>
