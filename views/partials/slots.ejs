@@ -22,8 +22,8 @@
             </div>
             <div class="col-3">
                 <select class="form-select form-select-sm" aria-label="Filtrera på tillgänglighet">
-                    <option selected value="1">Endast bokningsbara</option>
-                    <option selected value="2">Visa alla tider</option>
+                    <option selected value="1">Endast lediga tider</option>
+                    <option value="2">Visa alla tider</option>
                 </select>
             </div>
             <% if (user.isAdministrator) { %>
@@ -73,84 +73,76 @@
 <% if (user.isAdministrator) { %>
     <div class="modal modal-lg fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog">
-            <form class="needs-validation" id="newSlotForm" novalidate>
+            <form class="needs-validation" id="newSlotForm" novalidate method="post" action="/api/admin/slot">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="staticBackdropLabel">Lägg till bokningsbara tider</h5>
+                        <h5 class="modal-title" id="staticBackdropLabel">Lägg till ny serie bokningsbara tider</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Stäng"></button>
                     </div>
                     <div class="modal-body">
-                        <p>
-                            <label for="course_id">Tillfälle:</label>
-                            <select required id="course_id" class="form-select" aria-label="Default select example">
-                                <option value="" selected disabled>Välj...</option>
-                                <% courses.forEach((course) => { %>
-                                    <option value="<%= course.id %>"><%= course.name %></option>                                
-                                <% }); %>
-                            </select>
-                            <div class="invalid-feedback">
-                                Du måste välja ett tillfälle/kurs.
-                            </div>
-                        </p>
-                        <p>
-                            <label for="instructor_id" class="form-label">Handledare:</label>
-                            <select required id="instructor_id" class="form-select" aria-label="Default select example">
-                                <option value="" selected disabled>Välj...</option>
-                                <% instructors.forEach((instructor) => { %>
-                                    <option value="<%= instructor.id %>"><%= instructor.name %></option>                                
-                                <% }); %>
-                            </select>
-                        </p>
-                        <p>
-                            <label for="location_id" class="form-label">Lokal:</label>
-                            <select required id="location_id" class="form-select" aria-label="Default select example">
-                                <option value="" selected disabled>Välj...</option>
-                                <% locations.forEach((location) => { %>
-                                    <option value="<%= location.id %>"><%= location.name %></option>                                
-                                <% }); %>
-                            </select>
-                        </p>
-                        <p>
-                            <div class="slot_template" id="slot_template">
-                                <div class="row">
-                                    <div class="col-3">
-                                        <label for="slot_date_" class="form-label">Datum:</label>
-                                        <input type="date" class="form-control" id="slot_date_">
+                        <div class="row">
+                            <div class="col-sm-5">
+                                <p>
+                                    <label for="course_id" class="form-label">Tillfälle:</label>
+                                    <select required id="course_id" name="course_id" class="form-select" aria-label="Välj ett kurstillfälle">
+                                        <option value="" selected disabled>Välj...</option>
+                                        <% courses.forEach((course) => { %>
+                                            <option value="<%= course.id %>"><%= course.name %></option>                                
+                                        <% }); %>
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Du måste välja ett tillfälle/kurs.
                                     </div>
-                                    <div class="col-2">
-                                        <label for="slot_time_start_" class="form-label">Starttid:</label>
-                                        <input type="time" class="form-control" id="slot_time_start_">
-                                    </div>    
-                                    <div class="col-2">
-                                        <label for="slot_time_end_" class="form-label">Sluttid:</label>
-                                        <input type="time" class="form-control" id="slot_time_end_">
+                                </p>
+                                <p>
+                                    <label for="instructor_id" class="form-label">Handledare:</label>
+                                    <select required id="instructor_id" name="instructor_id" class="form-select" aria-label="Välj en handledare">
+                                        <option value="" selected disabled>Välj...</option>
+                                        <% instructors.forEach((instructor) => { %>
+                                            <option value="<%= instructor.id %>"><%= instructor.name %></option>                                
+                                        <% }); %>
+                                    </select>
+                                </p>
+                                <p>
+                                    <label for="location_id" class="form-label">Lokal:</label>
+                                    <select required id="location_id" name="location_id" class="form-select" aria-label="Välj en lokal">
+                                        <option value="" selected disabled>Välj...</option>
+                                        <% locations.forEach((location) => { %>
+                                            <option value="<%= location.id %>"><%= location.name %></option>                                
+                                        <% }); %>
+                                    </select>
+                                </p>
+                            </div>
+                            <div class="col-sm-7">
+                                <div id="slots">
+                                    <div class="row slot_template" id="slot_template">
+                                        <div class="col-sm-6">
+                                            <label for="slot_time_start_" class="form-label">Startar:</label>
+                                            <input type="datetime-local" class="form-control" id="slot_time_start_" name="slot_time_start_">
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <label for="slot_time_end_" class="form-label">Slutar:</label>
+                                            <input type="datetime-local" class="form-control" id="slot_time_end_" name="slot_time_end_">
+                                        </div>
                                     </div>
-                                </div>    
-                            </div>
-                            <div class="row" id="slot_1">
-                                <div class="col">
-                                    <label for="slot_date_1" class="form-label">Datum:</label>
-                                    <input type="date" class="form-control" id="slot_date_1">
+                                    <div class="row slot" id="slot_1">
+                                        <div class="col-sm-6">
+                                            <label for="slot_time_start_1" class="form-label">Startar:</label>
+                                            <input type="datetime-local" class="form-control" id="slot_time_start_1" name="slot_time_start">
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <label for="slot_time_end_1" class="form-label">Slutar:</label>
+                                            <input type="datetime-local" class="form-control" id="slot_time_end_1" name="slot_time_end">
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="col">
-                                    <label for="slot_time_start_1" class="form-label">Starttid:</label>
-                                    <input type="time" class="form-control" id="slot_time_start_1">
-                                </div>    
-                                <div class="col">
-                                    <label for="slot_time_end_1" class="form-label">Sluttid:</label>
-                                    <input type="time" class="form-control" id="slot_time_end_1">
+                                <div class="row" id="slot_adder">
+                                    <div class="col my-3">
+                                        <button type="button" id="slot_new_slot" class="btn btn-sm btn-dark float-end">Lägg till en tid till</button>
+                                    </div>
                                 </div>
-                            </div>
-                            <!--<div class="row">
-                                <div class="col my-3">
-                                    <button type="button" id="slot_new_slot" class="btn btn-primary btn-md">Lägg till...</button>
-                                    <small>Lägg till fler tider med samma handledare och lokal.</small>
-                                </div>
-                            </div>-->
-                        </p>
-                        <p>
-                            <pre id="console_log"></pre>
-                        </p>
+                        </div>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>

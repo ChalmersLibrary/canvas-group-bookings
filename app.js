@@ -14,8 +14,6 @@ const auth = require('./src/auth/oauth2');
 const lti = require('./src/lti/canvas');
 const canvasApi = require('./src/api/canvas');
 const user = require('./src/user');
-
-// Uncomment to use PostgreSQL
 const db = require('./src/db');
 
 const port = process.env.PORT || 3000;
@@ -23,7 +21,6 @@ const cookieMaxAge = 3600000 * 72; // 72h
 const fileStoreOptions = { ttl: 3600 * 12, retries: 3 };
 
 // PostgreSQL Session store
-
 const sessionOptions = { 
     store: new pgSessionStore({
         pool: db,
@@ -37,20 +34,6 @@ const sessionOptions = {
     rolling: true,
     cookie: { maxAge: cookieMaxAge  }
 };
-
-
-// Uncomment to use Session File Store
-/*
-const sessionOptions = { 
-    store: new fileStore(fileStoreOptions),
-    name: process.env.SESSION_NAME ? process.env.SESSION_NAME : "LTI_TEST_SID",
-    secret: process.env.SESSION_SECRET ? process.env.SESSION_SECRET : "keyboard cat dog mouse",
-    resave: false,
-    saveUninitialized: false,
-    rolling: true,
-    cookie: { maxAge: cookieMaxAge  }
-};
-*/
 
 const app = express();
 
@@ -68,6 +51,8 @@ app.use(helmet({
     frameguard: false
 }));
 app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Content Security Policy
 app.use(function (req, res, next) {
@@ -201,6 +186,7 @@ app.get('/slots', async (req, res) => {
                 status: 'up',
                 version: pkg.version,
                 session: req.session,
+                user: req.session.user,
                 groups: null
             });
         }
@@ -221,6 +207,7 @@ app.get('/reservations', async (req, res) => {
                 status: 'up',
                 version: pkg.version,
                 session: req.session,
+                user: req.session.user,
             });
         }
         else {
@@ -241,6 +228,7 @@ app.get('/admin', async (req, res) => {
                     status: 'up',
                     version: pkg.version,
                     session: req.session,
+                    user: req.session.user,
                     groups: null
                 });    
             }
@@ -261,20 +249,51 @@ app.get('/admin', async (req, res) => {
     });
 });
 
-app.get('/admin/slots-new', async (req, res) => {
+/* API Endpoints */
+
+app.post('/api/admin/slot', async (req, res) => {
     await auth.checkAccessToken(req).then(async (result) => {
         if (result !== undefined && result.success === true) {
             await user.mockLtiSession(req);
             await user.addUserFlagsForRoles(req);
 
             if (req.session.user && req.session.user.isAdministrator) {
-                return res.render('pages/admin/slots-new', {
+                console.log(req.body);
+                const { course_id, instructor_id, location_id } = req.body;
+
+                let slots = [];
+                let data = {
+                    course_id: course_id,
+                    instructor_id: instructor_id,
+                    location_id: location_id,
+                    slots: slots
+                };
+
+                for (const key in req.body) {
+                    console.log(`${key}: ${req.body[key]}`);
+
+                    if (key.startsWith("slot_time_start")) {
+                        const this_slot_no = key.charAt(key.length - 1);
+
+                        if (!isNaN(this_slot_no)) {
+                            slots.push({
+                                start: req.body[key],
+                                end: req.body['slot_time_end_' + this_slot_no]
+                            });    
+                        }
+                    }
+                }
+
+                await db.createSlots(data);
+
+                return res.redirect("/");
+                /*
+                return res.send({
                     status: 'up',
                     version: pkg.version,
                     session: req.session,
-                    courses: await db.getValidCourses(new Date().toLocaleDateString('sv-SE')),
-                    instructors: await db.getValidInstructors()
-                });    
+                    data: data
+                }); */
             }
             else {
                 return res.render('pages/error', {
