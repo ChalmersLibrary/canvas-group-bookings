@@ -1,3 +1,10 @@
+<% if (user.isAdministrator) { %>
+    <div class="row my-3">
+        <div class="col">
+            <button type="button" class="btn btn-md btn-secondary" data-bs-toggle="modal" data-bs-target="#newSlotSeries">Lägg till nya tider</button>
+        </div>    
+    </div>
+<% } %>
 <div class="card slots-filter">
     <div class="card-header">
         Filtrera
@@ -22,15 +29,10 @@
             </div>
             <div class="col-3">
                 <select class="form-select form-select-sm" aria-label="Filtrera på tillgänglighet">
-                    <option selected value="1">Endast lediga tider</option>
-                    <option value="2">Visa alla tider</option>
+                    <option value="1">Endast lediga tider</option>
+                    <option selected value="2">Visa alla tider</option>
                 </select>
             </div>
-            <% if (user.isAdministrator) { %>
-                <div class="col-3">
-                    <button type="button" class="btn btn-sm btn-primary float-end" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Lägg till nya tider</button>
-                </div>
-            <% } %>
         </div>
     </div>
 </div>
@@ -56,7 +58,17 @@
                 <td><%= slot.location_name %></td>
                 <td><%= slot.instructor_name %></td>
                 <td><%= slot.type %>, <%= slot.max %></td>
-                <td><button class="btn btn-primary btn-sm float-end">Boka</button></td>
+                <% if (user.isAdministrator) { %>
+                    <td>
+                        <button type="button" title="Redigera" data-bs-toggle="modal" data-bs-target="#editSlot" data-slot-id="<%= slot.id %>" class="btn btn-secondary btn-sm float-end"><i class="bi-pencil-fill"></i></button>
+                        <button type="button" title="Radera" data-slot-id="<%= slot.id %>" class="btn btn-secondary btn-sm float-end mx-2"><i class="bi-trash-fill"></i></button>
+                        <button disabled type="button" title="Boka tiden" class="btn btn-primary btn-sm float-end">Boka <i class="bi-bag-check-fill"></i></button>
+                    </td>
+                <% } else { %>
+                    <td>
+                        <button type="button" title="Boka tiden" class="btn btn-primary btn-sm float-end">Boka <i class="bi-bag-check-fill"></i></button>
+                    </td>
+                <% } %>
             </tr>
         <% }); %>
     </tbody>
@@ -64,12 +76,12 @@
 <% } %>
 
 <% if (user.isAdministrator) { %>
-    <div class="modal modal-lg fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal modal-lg fade" id="newSlotSeries" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="newSlotSeriesLabel" aria-hidden="true">
         <div class="modal-dialog">
             <form class="needs-validation" id="newSlotForm" novalidate method="post" action="/api/admin/slot">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="staticBackdropLabel">Lägg till ny serie bokningsbara tider</h5>
+                        <h5 class="modal-title" id="newSlotSeriesLabel">Lägg till ny serie bokningsbara tider</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Stäng"></button>
                     </div>
                     <div class="modal-body">
@@ -140,6 +152,27 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
                         <button type="submit" class="btn btn-primary" id="newSlotSaveButton">Spara</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="modal modal-lg fade" id="editSlot" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="editSlotLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form class="needs-validation" id="editSlotForm" novalidate method="post" action="/api/admin/slot">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editSlotLabel">Redigera bokningsbar tid</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Stäng"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col">TODO: implementera</div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
+                        <button type="submit" class="btn btn-primary" id="editSlotSaveButton">Uppdatera</button>
                     </div>
                 </div>
             </form>

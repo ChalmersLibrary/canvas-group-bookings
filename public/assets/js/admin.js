@@ -4,6 +4,11 @@ document.addEventListener("DOMContentLoaded", function(event) {
         /* event.preventDefault();
         event.stopPropagation(); */
     });
+    document.getElementById("editSlotForm").addEventListener("submit", function(event) {
+        console.log(event);
+        event.preventDefault();
+        event.stopPropagation();
+    });
     document.getElementById("slot_new_slot").addEventListener("click", function(event) {
         const slots_container = document.getElementById("slots");
         const slots_current = slots_container.querySelectorAll("div.slot");
