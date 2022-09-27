@@ -280,7 +280,7 @@ app.post('/api/admin/slot', async (req, res) => {
                             slots.push({
                                 start: req.body[key],
                                 end: req.body['slot_time_end_' + this_slot_no]
-                            });    
+                            });
                         }
                     }
                 }

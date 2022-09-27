@@ -35,29 +35,29 @@
     </div>
 </div>
 <% if (!slots) { %>
-    <pre>There are no slots</pre>
+    <pre>Det finns för tillfället inga bokningsbara tider.</pre>
 <% } else { %>
-    <table class="table table-hover my-3">
-        <thead>
-            <td>Tillfälle</td>
-            <td>Tid</td>
-            <td>Plats</td>
-            <td>Handledare</td>
-            <td>Tillgänglighet</td>
-        </thead>
-        <tbody class="table-group-divider">
-            <% slots.forEach((slot) => { %>
-                <tr>
-                    <td><%= slot.course_name %></td>
-                    <td><%- slot.time_human_readable %></td>
-                    <td><%= slot.location_name %></td>
-                    <td><%= slot.instructor_name %></td>
-                    <td><%= slot.type %>, <%= slot.max %></td>
-                    <td><button class="btn btn-primary btn-sm float-end">Boka</button></td>
-                </tr>
-            <% }); %>
-        </tbody>
-    </table>
+<table class="table table-hover my-3">
+    <thead>
+        <td>Tillfälle</td>
+        <td>Tid</td>
+        <td>Plats</td>
+        <td>Handledare</td>
+        <td>Tillgänglighet</td>
+    </thead>
+    <tbody class="table-group-divider">
+        <% slots.forEach((slot) => { %>
+            <tr>
+                <td><%= slot.course_name %></td>
+                <td><%- slot.time_human_readable %></td>
+                <td><%= slot.location_name %></td>
+                <td><%= slot.instructor_name %></td>
+                <td><%= slot.type %>, <%= slot.max %></td>
+                <td><button class="btn btn-primary btn-sm float-end">Boka</button></td>
+            </tr>
+        <% }); %>
+    </tbody>
+</table>
 <% } %>
 
 <% if (user.isAdministrator) { %>
@@ -118,11 +118,11 @@
                                     <div class="row slot" id="slot_1">
                                         <div class="col-sm-6">
                                             <label for="slot_time_start_1" class="form-label">Startar:</label>
-                                            <input type="datetime-local" class="form-control" id="slot_time_start_1" name="slot_time_start">
+                                            <input type="datetime-local" class="form-control" id="slot_time_start_1" name="slot_time_start_1">
                                         </div>
                                         <div class="col-sm-6">
                                             <label for="slot_time_end_1" class="form-label">Slutar:</label>
-                                            <input type="datetime-local" class="form-control" id="slot_time_end_1" name="slot_time_end">
+                                            <input type="datetime-local" class="form-control" id="slot_time_end_1" name="slot_time_end_1">
                                         </div>
                                     </div>
                                 </div>
