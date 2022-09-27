@@ -142,6 +142,7 @@ app.get('/', async (req, res) => {
                         session: req.session,
                         groups: courseGroups,
                         user: req.session.user,
+                        slots: await db.getAllSlots(new Date().toLocaleDateString('sv-SE')),
                         courses: await db.getValidCourses(new Date().toLocaleDateString('sv-SE')),
                         instructors: await db.getValidInstructors(),
                         locations: await db.getValidLocations()

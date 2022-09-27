@@ -28,6 +28,18 @@ async function query(text, params) {
     return res;
 }
 
+async function getAllSlots(date) {
+    let data;
+
+    await query("SELECT * FROM slots_all WHERE time_start >= $1", [ date ]).then((result) => {
+        data = result.rows;
+    }).catch((error) => {
+        log.error(error);
+    });
+    
+    return data;
+}
+
 async function getValidCourses(date) {
     let data;
 
@@ -120,6 +132,7 @@ async function setupDatabase() {
 
 module.exports = {
     query,
+    getAllSlots,
     getValidCourses,
     getValidInstructors,
     getValidLocations,

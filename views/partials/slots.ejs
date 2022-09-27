@@ -34,41 +34,31 @@
         </div>
     </div>
 </div>
-<table class="table table-hover my-3">
-    <thead>
-        <td>Tillfälle</td>
-        <td>Tid</td>
-        <td>Plats</td>
-        <td>Handledare</td>
-        <td>Tillgänglighet</td>
-    </thead>
-    <tbody class="table-group-divider">
-        <tr>
-            <td>Handledningstillfälle 1</td>
-            <td>Ons 11 januari kl 14:00&ndash;15:00</td>
-            <td>Lokalen 1</td>
-            <td>Handledaren 1</td>
-            <td>2/2 lediga platser</td>
-            <td><button class="btn btn-primary btn-sm float-end">Boka</button></td>
-        </tr>
-        <tr>
-            <td>Handledningstillfälle 1</td>
-            <td>Fre 13 januari kl 11:00&ndash;12:00</td>
-            <td>Lokalen 1</td>
-            <td>Handledaren 1</td>
-            <td>1/2 lediga platser</td>
-            <td><button class="btn btn-primary btn-sm float-end">Boka</button></td>
-        </tr>
-        <tr>
-            <td>Handledningstillfälle 1</td>
-            <td>Mån 16 januari kl 09:00&ndash;11:00</td>
-            <td>Lokalen 2</td>
-            <td>Handledaren 1</td>
-            <td>Fullbokad</td>
-            <td><button class="btn btn-primary btn-sm float-end disabled">Boka</button></td>
-        </tr>
-    </tbody>
-</table>
+<% if (!slots) { %>
+    <pre>There are no slots</pre>
+<% } else { %>
+    <table class="table table-hover my-3">
+        <thead>
+            <td>Tillfälle</td>
+            <td>Tid</td>
+            <td>Plats</td>
+            <td>Handledare</td>
+            <td>Tillgänglighet</td>
+        </thead>
+        <tbody class="table-group-divider">
+            <% slots.forEach((slot) => { %>
+                <tr>
+                    <td><%= slot.course_name %></td>
+                    <td><%- slot.time_human_readable %></td>
+                    <td><%= slot.location_name %></td>
+                    <td><%= slot.instructor_name %></td>
+                    <td><%= slot.type %>, <%= slot.max %></td>
+                    <td><button class="btn btn-primary btn-sm float-end">Boka</button></td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+<% } %>
 
 <% if (user.isAdministrator) { %>
     <div class="modal modal-lg fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
