@@ -25,6 +25,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 editSlotModal.querySelector('#e_location_id').value = data.location_id
                 editSlotModal.querySelector('#e_slot_time_start').value = data.time_start.slice(0, -8)
                 editSlotModal.querySelector('#e_slot_time_end').value = data.time_end.slice(0, -8)
+                editSlotModal.querySelector('#reservations').replaceChildren()
                 data.reservations.forEach(reservation => {
                     const r = editSlotModal.querySelector('#reservations').appendChild(document.createElement('div'))
                     r.innerText = reservation.created_at
