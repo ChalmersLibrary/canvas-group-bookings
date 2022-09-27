@@ -250,7 +250,50 @@ app.get('/admin', async (req, res) => {
     });
 });
 
-/* API Endpoints */
+/* API Endpoints, admin */
+
+/* Get one time slot */
+app.get('/api/admin/slot/:id', async (req, res) => {
+    await auth.checkAccessToken(req).then(async (result) => {
+        if (result !== undefined && result.success === true) {
+            await user.mockLtiSession(req);
+            await user.addUserFlagsForRoles(req);
+
+            if (req.session.user && req.session.user.isAdministrator) {
+                console.log(req.params.id);
+
+                try {
+                    const slot = await db.getSlot(req.params.id)
+                    const reservations = await db.getSlotReservations(req.params.id);
+                    slot.reservations = reservations;
+                    return res.send(slot);                        
+                }
+                catch (error) {
+                    console.error(error);
+                    return res.send({
+                        success: false,
+                        error: error
+                    });
+                }
+            }
+            else {
+                return res.render('pages/error', {
+                    status: 'up',
+                    version: pkg.version,
+                    session: req.session,
+                    error: "NO_PRIVILEGES",
+                    message: "You must have administrator privileges to access this page."
+                });
+            }
+        }
+        else {
+            log.error("No access token returned, redirecting to auth flow...");
+            return res.redirect("/auth");
+        }
+    });
+});
+
+/* Update a given timeslot */
 app.put('/api/admin/slot/:id', async (req, res) => {
     await auth.checkAccessToken(req).then(async (result) => {
         if (result !== undefined && result.success === true) {
@@ -265,14 +308,14 @@ app.put('/api/admin/slot/:id', async (req, res) => {
 
                 try {
                     await db.updateSlot(req.params.id, course_id, instructor_id, location_id, time_start, time_end);
-                    return res.redirect("/");                        
+                    return res.send({
+                        success: true,
+                        message: 'Slot was updated.'
+                    });
                 }
                 catch (error) {
-                    return res.render('pages/error', {
-                        status: 'up',
-                        version: pkg.version,
-                        session: req.session,
-                        error: "ERROR",
+                    return res.send({
+                        success: false,
                         message: error
                     });
                 }
@@ -293,6 +336,8 @@ app.put('/api/admin/slot/:id', async (req, res) => {
         }
     });
 });
+
+/* Delete a given timeslot */
 app.delete('/api/admin/slot/:id', async (req, res) => { 
     await auth.checkAccessToken(req).then(async (result) => {
         if (result !== undefined && result.success === true) {
@@ -333,6 +378,8 @@ app.delete('/api/admin/slot/:id', async (req, res) => {
         }
     });
 });
+
+/* Create a new (series of) timeslot(s) */
 app.post('/api/admin/slot', async (req, res) => {
     await auth.checkAccessToken(req).then(async (result) => {
         if (result !== undefined && result.success === true) {

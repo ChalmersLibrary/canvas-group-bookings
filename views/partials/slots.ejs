@@ -60,8 +60,8 @@
                 <td><%= slot.type %>, <%= slot.max %></td>
                 <% if (user.isAdministrator) { %>
                     <td>
-                        <button type="button" title="Redigera" data-bs-toggle="modal" data-bs-target="#editSlot" data-slot-id="<%= slot.id %>" class="btn btn-secondary btn-sm float-end"><i class="bi-pencil-fill"></i></button>
-                        <button type="button" title="Radera" data-slot-id="<%= slot.id %>" class="btn btn-secondary btn-sm float-end mx-2"><i class="bi-trash-fill"></i></button>
+                        <button type="button" title="Redigera" data-bs-toggle="modal" data-bs-target="#editSlot" data-bs-slot-id="<%= slot.id %>" class="btn btn-secondary btn-sm float-end"><i class="bi-pencil-fill"></i></button>
+                        <button type="button" title="Radera" data-bs-slot-id="<%= slot.id %>" class="btn btn-secondary btn-sm float-end mx-2"><i class="bi-trash-fill"></i></button>
                         <button disabled type="button" title="Boka tiden" class="btn btn-primary btn-sm float-end">Boka <i class="bi-bag-check-fill"></i></button>
                     </td>
                 <% } else { %>
@@ -160,6 +160,7 @@
     <div class="modal modal-lg fade" id="editSlot" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="editSlotLabel" aria-hidden="true">
         <div class="modal-dialog">
             <form class="needs-validation" id="editSlotForm" novalidate method="post" action="/api/admin/slot">
+                <input type="hidden" id="e_slot_id" name="slot_id" value="" />
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="editSlotLabel">Redigera bokningsbar tid</h5>
@@ -167,7 +168,58 @@
                     </div>
                     <div class="modal-body">
                         <div class="row">
-                            <div class="col">TODO: implementera</div>
+                            <div class="col-sm-5">
+                                <p>
+                                    <label for="e_course_id" class="form-label">Tillfälle:</label>
+                                    <select required id="e_course_id" name="course_id" class="form-select" aria-label="Välj ett kurstillfälle">
+                                        <option value="" disabled>Välj...</option>
+                                        <% courses.forEach((course) => { %>
+                                            <option value="<%= course.id %>"><%= course.name %></option>                                
+                                        <% }); %>
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Du måste välja ett tillfälle/kurs.
+                                    </div>
+                                </p>
+                                <p>
+                                    <label for="e_instructor_id" class="form-label">Handledare:</label>
+                                    <select required id="e_instructor_id" name="instructor_id" class="form-select" aria-label="Välj en handledare">
+                                        <option value="" disabled>Välj...</option>
+                                        <% instructors.forEach((instructor) => { %>
+                                            <option value="<%= instructor.id %>"><%= instructor.name %></option>                                
+                                        <% }); %>
+                                    </select>
+                                </p>
+                                <p>
+                                    <label for="e_location_id" class="form-label">Lokal:</label>
+                                    <select required id="e_location_id" name="location_id" class="form-select" aria-label="Välj en lokal">
+                                        <option value="" disabled>Välj...</option>
+                                        <% locations.forEach((location) => { %>
+                                            <option value="<%= location.id %>"><%= location.name %></option>                                
+                                        <% }); %>
+                                    </select>
+                                </p>
+                            </div>
+                            <div class="col-sm-7">
+                                <div id="slots">
+                                    <div class="row slot">
+                                        <div class="col-sm-6">
+                                            <p>
+                                                <label for="e_slot_time_start" class="form-label">Startar:</label>
+                                                <input type="datetime-local" class="form-control" id="e_slot_time_start" name="slot_time_start">    
+                                            </p>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <p>
+                                                <label for="e_slot_time_end" class="form-label">Slutar:</label>
+                                                <input type="datetime-local" class="form-control" id="e_slot_time_end" name="slot_time_end">    
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <label for="reservations">Bokningar:</label>
+                                <div id="reservations" class=""></div>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">

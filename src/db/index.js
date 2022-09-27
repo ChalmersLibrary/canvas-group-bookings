@@ -40,6 +40,30 @@ async function getAllSlots(date) {
     return data;
 }
 
+async function getSlot(id) {
+    let data;
+
+    await query("SELECT * FROM slot WHERE id = $1", [ id ]).then((result) => {
+        data = result.rows[0];
+    }).catch((error) => {
+        log.error(error);
+    });
+    
+    return data;
+}
+
+async function getSlotReservations(id) {
+    let data;
+
+    await query("SELECT * FROM reservation WHERE slot_id = $1", [ id ]).then((result) => {
+        data = result.rows;
+    }).catch((error) => {
+        log.error(error);
+    });
+    
+    return data;
+}
+
 async function getValidCourses(date) {
     let data;
 
@@ -156,6 +180,8 @@ async function setupDatabase() {
 module.exports = {
     query,
     getAllSlots,
+    getSlot,
+    getSlotReservations,
     getValidCourses,
     getValidInstructors,
     getValidLocations,

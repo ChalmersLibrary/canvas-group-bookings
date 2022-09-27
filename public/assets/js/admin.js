@@ -1,14 +1,64 @@
 document.addEventListener("DOMContentLoaded", function(event) {
     document.getElementById("newSlotForm").addEventListener("submit", function(event) {
         console.log(event);
+        console.log("Time to submit the form: newSlotForm");
+
         /* event.preventDefault();
         event.stopPropagation(); */
     });
+
+    const editSlotModal = document.getElementById('editSlot')
+
+    editSlotModal.addEventListener('show.bs.modal', event => {
+        // Button that triggered the modal
+        const button = event.relatedTarget
+        // Extract info from data-bs-* attributes
+        const slot_id = button.getAttribute('data-bs-slot-id')
+        // If necessary, you could initiate an AJAX request here
+        // and then do the updating in a callback.
+        fetch(`/api/admin/slot/${slot_id}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data)
+                editSlotModal.querySelector('#e_course_id').value = data.course_id
+                editSlotModal.querySelector('#e_instructor_id').value = data.instructor_id
+                editSlotModal.querySelector('#e_location_id').value = data.location_id
+                editSlotModal.querySelector('#e_slot_time_start').value = data.time_start.slice(0, -8)
+                editSlotModal.querySelector('#e_slot_time_end').value = data.time_end.slice(0, -8)
+                data.reservations.forEach(reservation => {
+                    const r = editSlotModal.querySelector('#reservations').appendChild(document.createElement('div'))
+                    r.innerText = reservation.created_at
+                    console.log(reservation)
+                })
+            })
+    });
+
     document.getElementById("editSlotForm").addEventListener("submit", function(event) {
         console.log(event);
+        console.log("Time to submit the form: editSlotForm");
+
+        const requestOptions = {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: {
+                course_id: editSlotModal.querySelector('#e_course_id').value,
+                instructor_id: editSlotModal.querySelector('#e_instructor_id').value,
+                location_id: editSlotModal.querySelector('#e_location_id').value,
+                time_start: editSlotModal.querySelector('#e_slot_time_start').value,
+                time_end: editSlotModal.querySelector('#e_slot_time_end').value
+            }
+        };
+
+        console.log(requestOptions);
+
+        /* fetch(`/api/admin/slot/${slot_id}`, requestOptions)
+            .then(response => response.json())
+            .catch(error => console.error(error)) */
+        
         event.preventDefault();
         event.stopPropagation();
     });
+
     document.getElementById("slot_new_slot").addEventListener("click", function(event) {
         const slots_container = document.getElementById("slots");
         const slots_current = slots_container.querySelectorAll("div.slot");
