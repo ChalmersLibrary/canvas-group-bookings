@@ -263,6 +263,7 @@ app.post('/api/admin/slot', async (req, res) => {
                 const { course_id, instructor_id, location_id } = req.body;
 
                 let slots = [];
+
                 let data = {
                     course_id: course_id,
                     instructor_id: instructor_id,
@@ -285,16 +286,19 @@ app.post('/api/admin/slot', async (req, res) => {
                     }
                 }
 
-                await db.createSlots(data);
-
-                return res.redirect("/");
-                /*
-                return res.send({
-                    status: 'up',
-                    version: pkg.version,
-                    session: req.session,
-                    data: data
-                }); */
+                try {
+                    await db.createSlots(data);
+                    return res.redirect("/");                        
+                }
+                catch (error) {
+                    return res.render('pages/error', {
+                        status: 'up',
+                        version: pkg.version,
+                        session: req.session,
+                        error: "ERROR",
+                        message: error
+                    }); 
+                }
             }
             else {
                 return res.render('pages/error', {

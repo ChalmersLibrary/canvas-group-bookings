@@ -81,7 +81,8 @@ async function getValidLocations() {
 async function createSlots(data) {
     const { course_id, instructor_id, location_id, slots } = data;
 
-    for (slot in slots) {
+    for (const slot of slots) {
+        console.log(slot);
         await query("INSERT INTO slot (course_id, instructor_id, location_id, time_start, time_end) VALUES ($1, $2, $3, $4, $5)", [
             course_id,
             instructor_id,
@@ -94,7 +95,6 @@ async function createSlots(data) {
             log.error(error);
         });
     }
-
 }
 
 async function checkDatabaseVersion() {
