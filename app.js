@@ -251,7 +251,88 @@ app.get('/admin', async (req, res) => {
 });
 
 /* API Endpoints */
+app.put('/api/admin/slot/:id', async (req, res) => {
+    await auth.checkAccessToken(req).then(async (result) => {
+        if (result !== undefined && result.success === true) {
+            await user.mockLtiSession(req);
+            await user.addUserFlagsForRoles(req);
 
+            if (req.session.user && req.session.user.isAdministrator) {
+                console.log(req.params.id);
+                console.log(req.body);
+
+                const { course_id, instructor_id, location_id, time_start, time_end } = req.body;
+
+                try {
+                    await db.updateSlot(req.params.id, course_id, instructor_id, location_id, time_start, time_end);
+                    return res.redirect("/");                        
+                }
+                catch (error) {
+                    return res.render('pages/error', {
+                        status: 'up',
+                        version: pkg.version,
+                        session: req.session,
+                        error: "ERROR",
+                        message: error
+                    });
+                }
+            }
+            else {
+                return res.render('pages/error', {
+                    status: 'up',
+                    version: pkg.version,
+                    session: req.session,
+                    error: "NO_PRIVILEGES",
+                    message: "You must have administrator privileges to access this page."
+                });
+            }
+        }
+        else {
+            log.error("No access token returned, redirecting to auth flow...");
+            return res.redirect("/auth");
+        }
+    });
+});
+app.delete('/api/admin/slot/:id', async (req, res) => { 
+    await auth.checkAccessToken(req).then(async (result) => {
+        if (result !== undefined && result.success === true) {
+            await user.mockLtiSession(req);
+            await user.addUserFlagsForRoles(req);
+
+            if (req.session.user && req.session.user.isAdministrator) {
+                console.log(req.params.id);
+                console.log(req.body);
+
+                try {
+                    await db.deleteSlot(req.params.id);
+                    return res.redirect("/");                        
+                }
+                catch (error) {
+                    return res.render('pages/error', {
+                        status: 'up',
+                        version: pkg.version,
+                        session: req.session,
+                        error: "ERROR",
+                        message: error
+                    });
+                }
+            }
+            else {
+                return res.render('pages/error', {
+                    status: 'up',
+                    version: pkg.version,
+                    session: req.session,
+                    error: "NO_PRIVILEGES",
+                    message: "You must have administrator privileges to access this page."
+                });
+            }
+        }
+        else {
+            log.error("No access token returned, redirecting to auth flow...");
+            return res.redirect("/auth");
+        }
+    });
+});
 app.post('/api/admin/slot', async (req, res) => {
     await auth.checkAccessToken(req).then(async (result) => {
         if (result !== undefined && result.success === true) {

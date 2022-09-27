@@ -97,6 +97,29 @@ async function createSlots(data) {
     }
 }
 
+async function updateSlot(id, course_id, instructor_id, location_id, time_start, time_end) {
+    await query("UPDATE slot SET course_id=$2, instructor_id=$3, location_id=$4, time_start=$5, time_end=$6, updated_at=now() WHERE id=$1", [
+        id,
+        course_id,
+        instructor_id,
+        location_id,
+        time_start,
+        time_end
+    ]).then((result) => {
+        log.info(result);
+    }).catch((error) => {
+        log.error(error);
+    });
+}
+
+async function deleteSlot(id) {
+    await query("UPDATE slot SET deleted_at=now() WHERE id=$1", [ id ]).then((result) => {
+        log.info(result);
+    }).catch((error) => {
+        log.error(error);
+    });
+}
+
 async function checkDatabaseVersion() {
     let run_setup = false;
 
@@ -137,5 +160,7 @@ module.exports = {
     getValidInstructors,
     getValidLocations,
     createSlots,
+    updateSlot,
+    deleteSlot,
     checkDatabaseVersion,
 }
