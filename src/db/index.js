@@ -133,6 +133,7 @@ async function updateSlot(id, course_id, instructor_id, location_id, time_start,
         log.info(result);
     }).catch((error) => {
         log.error(error);
+        throw new Error(error);
     });
 }
 

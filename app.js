@@ -308,6 +308,7 @@ app.put('/api/admin/slot/:id', async (req, res) => {
 
                 try {
                     await db.updateSlot(req.params.id, course_id, instructor_id, location_id, time_start, time_end);
+
                     return res.send({
                         success: true,
                         message: 'Slot was updated.'
@@ -316,7 +317,7 @@ app.put('/api/admin/slot/:id', async (req, res) => {
                 catch (error) {
                     return res.send({
                         success: false,
-                        message: error
+                        message: error.message
                     });
                 }
             }
