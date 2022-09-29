@@ -59,7 +59,13 @@
                 <td><%- slot.time_human_readable_sv %></td>
                 <td><%= slot.location_name %></td>
                 <td><%= slot.instructor_name %></td>
-                <td><%= slot.type %>, <%= slot.max %></td>
+                <td>
+                    <% if (slot.max == slot.reserved) { %>
+                        Fullbokad
+                    <% } else { %>
+                        Tillgänglig, <%= slot.max-slot.reserved %> av <%= slot.max %>
+                    <% } %>
+                </td>
                 <% if (user.isAdministrator) { %>
                     <td>
                         <button type="button" title="Redigera" data-bs-toggle="modal" data-bs-target="#editSlot" data-bs-slot-id="<%= slot.id %>" class="btn btn-secondary btn-sm float-end"><i class="bi-pencil-fill"></i></button>
