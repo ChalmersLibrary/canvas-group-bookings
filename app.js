@@ -403,13 +403,13 @@ app.post('/api/admin/slot', async (req, res) => {
                 for (const key in req.body) {
                     console.log(`${key}: ${req.body[key]}`);
 
-                    if (key.startsWith("slot_time_start")) {
+                    if (key.startsWith("slot_date")) {
                         const this_slot_no = key.charAt(key.length - 1);
 
                         if (!isNaN(this_slot_no)) {
                             slots.push({
-                                start: req.body[key],
-                                end: req.body['slot_time_end_' + this_slot_no]
+                                start: req.body[key] + "T" + req.body['slot_time_start_' + this_slot_no],
+                                end: req.body[key] + "T" + req.body['slot_time_end_' + this_slot_no]
                             });
                         }
                     }
