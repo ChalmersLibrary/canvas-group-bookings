@@ -85,7 +85,6 @@ async function getValidInstructors() {
         log.error(error);
     });
     
-    console.log(data);
     return data;
 }
 
@@ -98,7 +97,6 @@ async function getValidLocations() {
         log.error(error);
     });
     
-    console.log(data);
     return data;
 }
 
@@ -117,6 +115,7 @@ async function createSlots(data) {
             log.info(result);
         }).catch((error) => {
             log.error(error);
+            throw new Error(error);
         });
     }
 }
@@ -142,6 +141,7 @@ async function deleteSlot(id) {
         log.info(result);
     }).catch((error) => {
         log.error(error);
+        throw new Error(error);
     });
 }
 
