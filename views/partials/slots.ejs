@@ -12,7 +12,7 @@
     <div class="card-body">
         <div class="row">
             <div class="col-3">
-                <select class="form-select form-select-sm" aria-label="Filtrera på tillfällen">
+                <select id="slotFilterCourse" class="form-select form-select-sm" aria-label="Filtrera på tillfällen">
                     <option selected value="">Alla tillfällen</option>
                     <% courses.forEach((course) => { %>
                         <option value="<%= course.id %>"><%= course.name %></option>                                
@@ -20,7 +20,7 @@
                 </select>
             </div>
             <div class="col-3">
-                <select class="form-select form-select-sm" aria-label="Filtrera på handledare">
+                <select id="slotFilterInstructor" class="form-select form-select-sm" aria-label="Filtrera på handledare">
                     <option selected value="">Alla handledare</option>
                     <% instructors.forEach((instructor) => { %>
                         <option value="<%= instructor.id %>"><%= instructor.name %></option>                                
@@ -28,7 +28,7 @@
                 </select>
             </div>
             <div class="col-3">
-                <select class="form-select form-select-sm" aria-label="Filtrera på tillgänglighet">
+                <select id="slotFilterAvailability" class="form-select form-select-sm" aria-label="Filtrera på tillgänglighet">
                     <option value="1">Endast lediga tider</option>
                     <option selected value="2">Visa alla tider</option>
                 </select>
@@ -42,17 +42,19 @@
         <p>Här kan man skriva något mer om när det släpps tider eller annan matnyttig information.</p>
     </div>
 <% } else { %>
-<table class="table table-hover my-3">
+<table id="slots" class="table table-hover my-3">
     <thead>
-        <td>Tillfälle</td>
-        <td>Tid</td>
-        <td>Plats</td>
-        <td>Handledare</td>
-        <td>Tillgänglighet</td>
+        <tr>
+            <td>Tillfälle</td>
+            <td>Tid</td>
+            <td>Plats</td>
+            <td>Handledare</td>
+            <td>Tillgänglighet</td>    
+        </tr>
     </thead>
     <tbody class="table-group-divider">
         <% slots.forEach((slot) => { %>
-            <tr>
+            <tr class="" data-course_id="<%= slot.course_id %>">
                 <td><%= slot.course_name %></td>
                 <td><%- slot.time_human_readable_sv %></td>
                 <td><%= slot.location_name %></td>
