@@ -87,7 +87,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     });
 
     document.getElementById("slot_new_slot").addEventListener("click", function(event) {
-        const slots_container = document.getElementById("slots");
+        const slots_container = document.getElementById("slot_times");
         const slots_current = slots_container.querySelectorAll("div.slot");
         const template = document.getElementById("slot_template").cloneNode(true);
         const new_slot = slots_container.appendChild(template);
