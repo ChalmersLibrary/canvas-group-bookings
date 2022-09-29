@@ -40,10 +40,12 @@ async function getAllSlots(date) {
         log.error(error);
     });
     
-    data.forEach(slot => {
-        slot.time_human_readable_sv = new Date(slot.time_start).toLocaleDateString('sv-SE', dateOptions) + " kl " + new Date(slot.time_start).toLocaleTimeString('sv-SE', timeOptions) + "&ndash;" + new Date(slot.time_end).toLocaleTimeString('sv-SE', timeOptions);
-        returnedData.push(slot);
-    })
+    if (data !== undefined && data.length) {
+        data.forEach(slot => {
+            slot.time_human_readable_sv = new Date(slot.time_start).toLocaleDateString('sv-SE', dateOptions) + " kl " + new Date(slot.time_start).toLocaleTimeString('sv-SE', timeOptions) + "&ndash;" + new Date(slot.time_end).toLocaleTimeString('sv-SE', timeOptions);
+            returnedData.push(slot);
+        });
+    }
 
     return returnedData;
 }
