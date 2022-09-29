@@ -40,12 +40,13 @@ CREATE TABLE IF NOT EXISTS "instructor"
 (
     "id" serial,
     "name" varchar,
+    "canvas_user_id" integer,
     "created_at" timestamp NOT NULL DEFAULT now(),
-    "created_by" integer REFERENCES "instructor",
+    "created_by" integer,
     "updated_at" timestamp,
-    "updated_by" integer REFERENCES "instructor",
+    "updated_by" integer,
     "deleted_at" timestamp,
-    "deleted_by" integer REFERENCES "instructor",
+    "deleted_by" integer,
     PRIMARY KEY ("id")
 );
 
@@ -96,12 +97,13 @@ CREATE TABLE IF NOT EXISTS "reservation"
 INSERT INTO "course" ("name", "date_start", "date_end", "is_group", "is_individual", "max_groups", "max_individuals") VALUES ('Handledningstillfälle 1','2022-01-01','2023-12-31',true,false,1,0);
 INSERT INTO "course" ("name", "date_start", "date_end", "is_group", "is_individual", "max_groups", "max_individuals") VALUES ('Handledningstillfälle 2','2022-09-21','2023-12-31',true,false,2,0);
 INSERT INTO "course" ("name", "date_start", "date_end", "is_group", "is_individual", "max_groups", "max_individuals") VALUES ('Föreläsning 1','2022-09-21','2023-12-31',false,true,0,100);
-INSERT INTO "instructor" ("name") VALUES ('Carl Johan Carlsson');
-INSERT INTO "instructor" ("name") VALUES ('Fia Börjesson');
-INSERT INTO "instructor" ("name") VALUES ('Magnus Axelsson');
-INSERT INTO "location" ("name") VALUES ('Lokal A1');
-INSERT INTO "location" ("name") VALUES ('Lokal A2');
-INSERT INTO "location" ("name") VALUES ('Lokal A3');
+INSERT INTO "instructor" ("name", "canvas_user_id") VALUES ('Rolf Johansson', 1618);
+INSERT INTO "instructor" ("name", "canvas_user_id") VALUES ('Carl Johan Carlsson', 1060);
+INSERT INTO "instructor" ("name", "canvas_user_id") VALUES ('Fia Börjesson', 1058);
+INSERT INTO "instructor" ("name", "canvas_user_id") VALUES ('Magnus Axelsson', 8);
+INSERT INTO "location" ("name", "created_by") VALUES ('Lokal A1', 1);
+INSERT INTO "location" ("name", "created_by") VALUES ('Lokal A2', 1);
+INSERT INTO "location" ("name", "created_by") VALUES ('Lokal A3', 1);
 
 -- Version history
 INSERT INTO version (db_version) VALUES (1);
