@@ -1,4 +1,7 @@
-SELECT s.id,
+DROP VIEW "slots_all";
+
+CREATE VIEW "slots_all" AS
+ SELECT s.id,
     s.course_id,
     c.name AS course_name,
     s.instructor_id,
@@ -7,7 +10,6 @@ SELECT s.id,
     l.name AS location_name,
     s.time_start,
     s.time_end,
-    (((to_char(s.time_start, 'TMDy DD TMMonth'::text) || ' kl '::text) || to_char(s.time_start, 'HH24:MI'::text)) || '&ndash;'::text) || to_char(s.time_end, 'HH24:MI'::text) AS time_human_readable,
         CASE
             WHEN c.is_group THEN 'group'::text
             ELSE 'individual'::text
@@ -15,7 +17,10 @@ SELECT s.id,
         CASE
             WHEN c.is_group THEN c.max_groups
             ELSE c.max_individuals
-        END AS max
+        END AS max,
+    ( SELECT count(DISTINCT re.canvas_user_id) AS reserved
+           FROM reservation re
+          WHERE re.slot_id = s.id) AS reserved
    FROM slot s,
     course c,
     instructor i,
