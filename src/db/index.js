@@ -30,6 +30,9 @@ async function query(text, params) {
 
 async function getAllSlots(date) {
     let data;
+    let returnedData = [];
+    const dateOptions = { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric' };
+    const timeOptions = { hour: '2-digit', minute: '2-digit' };
 
     await query("SELECT * FROM slots_all WHERE time_start >= $1", [ date ]).then((result) => {
         data = result.rows;
@@ -37,7 +40,12 @@ async function getAllSlots(date) {
         log.error(error);
     });
     
-    return data;
+    data.forEach(slot => {
+        slot.time_human_readable_sv = new Date(slot.time_start).toLocaleDateString('sv-SE', dateOptions) + " kl " + new Date(slot.time_start).toLocaleTimeString('sv-SE', timeOptions) + "&ndash;" + new Date(slot.time_end).toLocaleTimeString('sv-SE', timeOptions);
+        returnedData.push(slot);
+    })
+
+    return returnedData;
 }
 
 async function getSlot(id) {
