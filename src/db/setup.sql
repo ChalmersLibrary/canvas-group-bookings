@@ -28,8 +28,11 @@ CREATE TABLE IF NOT EXISTS "course"
     "max_groups" integer,
     "max_individuals" integer,
     "created_at" timestamp NOT NULL DEFAULT now(),
+    "created_by" integer REFERENCES "instructor",
     "updated_at" timestamp,
+    "updated_by" integer REFERENCES "instructor",
     "deleted_at" timestamp,
+    "deleted_by" integer REFERENCES "instructor",
     PRIMARY KEY ("id")
 );
 
@@ -38,8 +41,11 @@ CREATE TABLE IF NOT EXISTS "instructor"
     "id" serial,
     "name" varchar,
     "created_at" timestamp NOT NULL DEFAULT now(),
+    "created_by" integer REFERENCES "instructor",
     "updated_at" timestamp,
+    "updated_by" integer REFERENCES "instructor",
     "deleted_at" timestamp,
+    "deleted_by" integer REFERENCES "instructor",
     PRIMARY KEY ("id")
 );
 
@@ -48,8 +54,11 @@ CREATE TABLE IF NOT EXISTS "location"
     "id" serial,
     "name" varchar,
     "created_at" timestamp NOT NULL DEFAULT now(),
+    "created_by" integer REFERENCES "instructor",
     "updated_at" timestamp,
+    "updated_by" integer REFERENCES "instructor",
     "deleted_at" timestamp,
+    "deleted_by" integer REFERENCES "instructor",
     PRIMARY KEY ("id")
 );
 
@@ -62,8 +71,11 @@ CREATE TABLE IF NOT EXISTS "slot"
     "time_start" timestamp(6) NOT NULL,
     "time_end" timestamp(6) NOT NULL,
     "created_at" timestamp NOT NULL DEFAULT now(),
+    "created_by" integer REFERENCES "instructor",
     "updated_at" timestamp,
+    "updated_by" integer REFERENCES "instructor",
     "deleted_at" timestamp,
+    "deleted_by" integer REFERENCES "instructor",
     PRIMARY KEY ("id")
 );
 
@@ -73,6 +85,7 @@ CREATE TABLE IF NOT EXISTS "reservation"
     "slot_id" integer REFERENCES "slot",
     "canvas_user_id" integer NOT NULL,
     "canvas_group_id" integer,
+    "canvas_course_id" integer NOT NULL,
     "created_at" timestamp NOT NULL DEFAULT now(),
     "updated_at" timestamp,
     "deleted_at" timestamp,
