@@ -4,8 +4,8 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "dev": "nodemon app.js",
-    "debug": "set DEBUG=* && nodemon app.js"
+    "dev": "nodemon --trace-warnings app.js",
+    "debug": "set DEBUG=* && nodemon --trace-warnings app.js"
   },
   "nodemonConfig": {
     "ignore": [
