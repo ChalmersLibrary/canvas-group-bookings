@@ -93,23 +93,46 @@ auth.setupAuthEndpoints(app, process.env.AUTH_REDIRECT_CALLBACK);
 app.get('/test', async (req, res) => {
     await log.info("Testing endpoint requested.");
 
-    req.session.test = true;
+    await auth.checkAccessToken(req).then(async (result) => {
+        if (result !== undefined && result.success === true) {
+            await user.mockLtiSession(req);
+            await user.addUserFlagsForRoles(req);
 
-    let result = await db.query("SELECT version()").then((result) => {
-            return res.send({
-                status: 'up',
-                session: req.session,
-                result: result.rows
-            });
-        }).catch((error) => {
-            log.error(error);
-            
-            return res.send({
-                status: 'up',
-                session: req.session,
-                result: error
-            });
+            // Check that we have an LTI object in the session    
+            if (req.session.lti) {
+                // Numerical course_id if running Public, if Anonymous we use context_id
+                let courseId = req.session.lti.custom_canvas_course_id ? req.session.lti.custom_canvas_course_id : "lti_context_id:" + req.session.lti.context_id;
+
+                req.session.test = true;
+                req.session.user.groups = await canvasApi.getCourseGroups(courseId, req.session.user.id);
+                req.session.user.groups_human_readable = new Array();
+                
+                for (const group of req.session.user.groups) {
+                    req.session.user.groups_human_readable.push(group.name);
+                }
+
+                let result = await db.query("SELECT version()")
+                .then((result) => {
+                        return res.send({
+                            status: 'up',
+                            session: req.session,
+                            result: result.rows
+                        });
+                    })
+                    .catch((error) => {
+                        log.error(error);
+                        
+                        return res.send({
+                            status: 'up',
+                            session: req.session,
+                            result: error
+                        });
+                });
+            }
+        }
     });
+
+    
 
     await log.info("Db query done.");
 });
@@ -135,20 +158,28 @@ app.get('/', async (req, res) => {
                 // Numerical course_id if running Public, if Anonymous we use context_id
                 let courseId = req.session.lti.custom_canvas_course_id ? req.session.lti.custom_canvas_course_id : "lti_context_id:" + req.session.lti.context_id;
     
-                // Load groups that the logged in user belongs to in the course context
-                await canvasApi.getCourseGroups(courseId, req).then(async (courseGroups) => {
+                try {
+                    // Add the groups from Canvas for this user
+                    req.session.user.groups = await canvasApi.getCourseGroups(courseId, req.session.user.id);
+                    req.session.user.groups_human_readable = new Array();
+                
+                    for (const group of req.session.user.groups) {
+                        req.session.user.groups_human_readable.push(group.name);
+                    }
+
                     return res.render('pages/index', {
                         status: 'up',
                         version: pkg.version,
                         session: req.session,
-                        groups: courseGroups,
+                        groups: req.session.user.groups,
                         user: req.session.user,
                         slots: await db.getAllSlots(new Date().toLocaleDateString('sv-SE')),
                         courses: await db.getValidCourses(new Date().toLocaleDateString('sv-SE')),
                         instructors: await db.getValidInstructors(),
                         locations: await db.getValidLocations()
                     });
-                }).catch((error) => {
+                }
+                catch(error) {
                     log.error(error);
 
                     return res.render('pages/error', {
@@ -157,7 +188,7 @@ app.get('/', async (req, res) => {
                         error: "CANVAS_API",
                         message: error
                     });
-                });    
+                }    
             }
             else {
                 return res.render('pages/error', {
@@ -178,39 +209,51 @@ app.get('/', async (req, res) => {
     });
 });
 
-app.get('/slots', async (req, res) => {
-    await auth.checkAccessToken(req).then(async (result) => {
-        if (result !== undefined && result.success === true) {
-            await user.mockLtiSession(req);
-            await user.addUserFlagsForRoles(req);
-
-            return res.render('pages/slots', {
-                status: 'up',
-                version: pkg.version,
-                session: req.session,
-                user: req.session.user,
-                groups: null
-            });
-        }
-        else {
-            log.error("No access token returned, redirecting to auth flow...");
-            return res.redirect("/auth");
-        }
-    });
-});
-
 app.get('/reservations', async (req, res) => {
     await auth.checkAccessToken(req).then(async (result) => {
         if (result !== undefined && result.success === true) {
             await user.mockLtiSession(req);
             await user.addUserFlagsForRoles(req);
 
-            return res.render('pages/reservations/reservations', {
-                status: 'up',
-                version: pkg.version,
-                session: req.session,
-                user: req.session.user,
-            });
+            if (req.session.lti) {
+                // Numerical course_id if running Public, if Anonymous we use context_id
+                let courseId = req.session.lti.custom_canvas_course_id ? req.session.lti.custom_canvas_course_id : "lti_context_id:" + req.session.lti.context_id;
+    
+                try {
+                    // Add the groups from Canvas for this user
+                    req.session.user.groups = await canvasApi.getCourseGroups(courseId, req.session.user.id);
+                    req.session.user.groups_human_readable = new Array();
+                
+                    for (const group of req.session.user.groups) {
+                        req.session.user.groups_human_readable.push(group.name);
+                    }
+
+                    return res.render('pages/reservations/reservations', {
+                        status: 'up',
+                        version: pkg.version,
+                        session: req.session,
+                        user: req.session.user,
+                    });
+                }
+                catch(error) {
+                    log.error(error);
+
+                    return res.render('pages/error', {
+                        status: 'up',
+                        version: pkg.version,
+                        error: "CANVAS_API",
+                        message: error
+                    });
+                }
+            }
+            else {
+                return res.render('pages/error', {
+                    status: 'up',
+                    version: pkg.version,
+                    error: "NO_LTI_LAUNCH",
+                    message: "This app must be launched at endpoint /lti to get the LTI context from Canvas. Contact an administrator to set it up correctly."
+                });
+            }
         }
         else {
             log.error("No access token returned, redirecting to auth flow...");
@@ -224,6 +267,15 @@ app.get('/admin', async (req, res) => {
         if (result !== undefined && result.success === true) {
             await user.mockLtiSession(req);
             await user.addUserFlagsForRoles(req);
+            
+            // Add the groups from Canvas for this user
+            let courseId = req.session.lti.custom_canvas_course_id ? req.session.lti.custom_canvas_course_id : "lti_context_id:" + req.session.lti.context_id;
+            req.session.user.groups = await canvasApi.getCourseGroups(courseId, req.session.user.id);
+            req.session.user.groups_human_readable = new Array();
+
+            for (const group of req.session.user.groups) {
+                req.session.user.groups_human_readable.push(group.name);
+            }
 
             if (req.session.user && req.session.user.isAdministrator) {
                 return res.render('pages/admin/admin', {
@@ -456,6 +508,6 @@ app.post('/api/admin/slot', async (req, res) => {
 app.listen(port, () => log.info(`Application listening on port ${port}.`));
 
 process.on('uncaughtException', (err) => {
-    log.error("There was an uncaught error", err);
+    console.error("There was an uncaught error", err);
     process.exit(1); //mandatory (as per the Node docs)
 });
