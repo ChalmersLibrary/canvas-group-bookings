@@ -9,7 +9,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="row">
-                        <div class="col-sm-5">
+                        <div class="col-sm-4">
                             <p>
                                 <label for="e_course_id" class="form-label">Tillfälle:</label>
                                 <select required id="e_course_id" name="course_id" class="form-select" aria-label="Välj ett kurstillfälle">
@@ -41,19 +41,25 @@
                                 </select>
                             </p>
                         </div>
-                        <div class="col-sm-7">
+                        <div class="col-sm-8">
                             <div id="slots">
                                 <div class="row slot">
                                     <div class="col-sm-6">
                                         <p>
-                                            <label for="e_slot_time_start" class="form-label">Startar:</label>
-                                            <input type="datetime-local" class="form-control" id="e_slot_time_start" name="slot_time_start">    
+                                            <label for="e_slot_date" class="form-label">Datum:</label>
+                                            <input type="date" class="form-control" id="e_slot_date" name="slot_date">
                                         </p>
                                     </div>
-                                    <div class="col-sm-6">
+                                    <div class="col-sm-3">
+                                        <p>
+                                            <label for="e_slot_time_start" class="form-label">Startar:</label>
+                                            <input type="time" class="form-control" id="e_slot_time_start" name="slot_time_start">    
+                                        </p>
+                                    </div>
+                                    <div class="col-sm-3">
                                         <p>
                                             <label for="e_slot_time_end" class="form-label">Slutar:</label>
-                                            <input type="datetime-local" class="form-control" id="e_slot_time_end" name="slot_time_end">    
+                                            <input type="time" class="form-control" id="e_slot_time_end" name="slot_time_end">    
                                         </p>
                                     </div>
                                 </div>

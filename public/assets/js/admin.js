@@ -27,8 +27,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
             editSlotModal.querySelector('#e_course_id').value = data.course_id
             editSlotModal.querySelector('#e_instructor_id').value = data.instructor_id
             editSlotModal.querySelector('#e_location_id').value = data.location_id
-            editSlotModal.querySelector('#e_slot_time_start').value = data.time_start.slice(0, -8)
-            editSlotModal.querySelector('#e_slot_time_end').value = data.time_end.slice(0, -8)
+            editSlotModal.querySelector('#e_slot_date').value = data.shortcut.start_date
+            editSlotModal.querySelector('#e_slot_time_start').value = data.shortcut.start_time
+            editSlotModal.querySelector('#e_slot_time_end').value = data.shortcut.end_time
             editSlotModal.querySelector('#reservations').replaceChildren()
             data.reservations.forEach(reservation => {
                 const r = editSlotModal.querySelector('#reservations').appendChild(document.createElement('div'))
@@ -55,8 +56,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 course_id: editSlotModal.querySelector('#e_course_id').value,
                 instructor_id: editSlotModal.querySelector('#e_instructor_id').value,
                 location_id: editSlotModal.querySelector('#e_location_id').value,
-                time_start: editSlotModal.querySelector('#e_slot_time_start').value,
-                time_end: editSlotModal.querySelector('#e_slot_time_end').value
+                time_start: editSlotModal.querySelector('#e_slot_date').value + "T" + editSlotModal.querySelector('#e_slot_time_start').value,
+                time_end: editSlotModal.querySelector('#e_slot_date').value + "T" + editSlotModal.querySelector('#e_slot_time_end').value
             })
         };
 

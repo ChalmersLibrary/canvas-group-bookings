@@ -15,6 +15,7 @@ const lti = require('./src/lti/canvas');
 const canvasApi = require('./src/api/canvas');
 const user = require('./src/user');
 const db = require('./src/db');
+const utils = require('./src/utilities');
 
 const port = process.env.PORT || 3000;
 const cookieMaxAge = 3600000 * 24 * 30 * 4; // 4 months
@@ -266,6 +267,12 @@ app.get('/api/admin/slot/:id', async (req, res) => {
                     const slot = await db.getSlot(req.params.id)
                     const reservations = await db.getSlotReservations(req.params.id);
                     slot.reservations = reservations;
+                    slot.shortcut = {
+                        start_date: utils.getDatePart(slot.time_start),
+                        end_date: utils.getDatePart(slot.time_end),
+                        start_time: utils.getTimePart(slot.time_start),
+                        end_time: utils.getTimePart(slot.time_end)
+                    }
                     return res.send(slot);                        
                 }
                 catch (error) {
