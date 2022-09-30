@@ -100,6 +100,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
             e.setAttribute("id", e.getAttribute("id") + (slots_current.length + 1));
             e.setAttribute("name", e.getAttribute("name") + (slots_current.length + 1));
         });
+        new_slot.querySelector("input.form-control[type='date']").setAttribute("value", slots_container.querySelector("#slot_date_" + (slots_current.length)).value);
         new_slot.classList.remove("slot_template");
         new_slot.classList.add("slot");
     });
