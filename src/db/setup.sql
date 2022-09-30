@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS "course"
     "is_individual" boolean,
     "max_groups" integer,
     "max_individuals" integer,
+    "default_slot_duration" integer,
     "created_at" timestamp NOT NULL DEFAULT now(),
     "created_by" integer REFERENCES "instructor",
     "updated_at" timestamp,
@@ -86,7 +87,7 @@ CREATE TABLE IF NOT EXISTS "reservation"
     "slot_id" integer REFERENCES "slot",
     "canvas_user_id" integer NOT NULL,
     "canvas_group_id" integer,
-    "canvas_course_id" integer NOT NULL,
+    "canvas_course_id" integer NOT NULL, -- is this really needed???
     "created_at" timestamp NOT NULL DEFAULT now(),
     "updated_at" timestamp,
     "deleted_at" timestamp,
