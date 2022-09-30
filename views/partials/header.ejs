@@ -19,19 +19,11 @@
         <% } %>
       </ul>
       <span class="navbar-text">
-        Din grupp: 
-        <% if (user.groups.length && user.groups.length > 1) { %>
-          <select name="a_group">
-            <% user.groups.forEach((group) => { %>
-              <option value="<%= group.id %>"><%= group.name %></option>            
-            <% }); %>
-          </select>
+        <%= user.name %>,
+        <% if (!user.groups.length) { %>
+          <strong>Ej medlem i grupp</strong>
         <% } else { %>
-          <% if (!user.groups.length) { %>
-            <strong>Ej medlem i grupp</strong>
-          <% } else { %>
-            <strong><%= user.groups[0].name %></strong>  
-          <% } %>
+          <strong><%= user.groups_human_readable.join(", ") %></strong>  
         <% } %>
       </span>
     </div>

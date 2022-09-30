@@ -5,7 +5,7 @@ require('dotenv').config();
 const LinkHeader = require('http-link-header');
 const NodeCache = require('node-cache');
 const axios = require('axios');
-const oauth = require('../auth/oauth2');
+const auth = require('../auth/oauth2');
 const log = require('../logging')
 
 const API_PER_PAGE = 25;
@@ -13,7 +13,7 @@ const API_PATH = "/api/v1";
 const API_HOST = process.env.API_HOST ? process.env.API_HOST : process.env.AUTH_HOST;
 const API_GROUPS_ONLY_OWN_GROUPS = true;
 
-async function getCourseGroups(courseId, req) {
+async function getCourseGroups(courseId, userId) {
     let thisApiPath = API_HOST + API_PATH + "/courses/" + courseId + "/groups?per_page=" + API_PER_PAGE;
     let apiData = new Array();
     let returnedApiData = new Array();
@@ -23,7 +23,7 @@ async function getCourseGroups(courseId, req) {
         thisApiPath = thisApiPath + "&only_own_groups=true";
     }
 
-    await oauth.findAccessToken(req.session.user.id).then(async (token) => {
+    await auth.findAccessToken(userId).then(async (token) => {
         while (errorCount < 2 && thisApiPath && token) {
             log.info("GET " + thisApiPath);
         
@@ -57,12 +57,12 @@ async function getCourseGroups(courseId, req) {
             }
             catch (error) {
                 errorCount++;
-                log.error(error);
+                // log.error(error);
             
                 if (error.response.status == 401 && error.response.headers['www-authenticate']) { // refresh token, then try again
                     log.info("401, with www-authenticate header.");
 
-                    await oauth.refreshAccessToken(req.session.user.id).then((result) => {
+                    await auth.refreshAccessToken(userId).then((result) => {
                         if (result.success) {
                             log.info("Refreshed access token.");
                         }
