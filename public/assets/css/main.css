@@ -1,3 +1,6 @@
+body {
+    font-family: LatoWeb, "Lato Extended", Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
 main img {
     max-width: 400px;
 }
