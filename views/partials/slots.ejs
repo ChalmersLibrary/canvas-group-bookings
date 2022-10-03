@@ -74,7 +74,11 @@
                     </td>
                 <% } else { %>
                     <td>
-                        <button type="button" title="Boka tiden" class="btn btn-primary btn-sm float-end">Boka <i class="bi-bag-check-fill"></i></button>
+                        <% if (slot.max == slot.reserved) { %>
+                            <button type="button" title="Tillfället är fullbokat" class="btn btn-primary btn-sm float-end" disabled>Boka <i class="bi-bag-check-fill"></i></button>
+                        <% } else { %>
+                            <button type="button" title="Boka tillfället" class="btn btn-primary btn-sm float-end" data-bs-toggle="modal" data-bs-target="#reserveSlot" data-bs-slot-id="<%= slot.id %>" >Boka <i class="bi-bag-check-fill"></i></button>
+                        <% } %>
                     </td>
                 <% } %>
             </tr>
@@ -87,4 +91,6 @@
     <%- include('slots_admin_modal_new'); %>
     <%- include('slots_admin_modal_edit'); %>
     <%- include('slots_admin_modal_delete'); %>
+<% } else { %>
+    <%- include('slots_public_new_reservation'); %>
 <% } %>

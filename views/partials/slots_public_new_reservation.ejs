@@ -1,0 +1,57 @@
+<div class="modal modal-md fade" id="reserveSlot" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="reserveSlotLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form class="needs-validation" id="reserveSlotForm" novalidate method="post" action="/api/reservation">
+            <input type="hidden" id="r_slot_id" name="slot_id" value="" />
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="reserveSlotLabel">Boka tillgänglig tid</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Stäng"></button>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        <strong>Tillfälle:</strong><br>
+                        <span id="r_course_name"></span>
+                    </p>
+                    <p>
+                        <strong>Handledare:</strong><br>
+                        <span id="r_instructor_name"></span>
+                    </p>
+                    <p>
+                        <strong>Lokal:</strong><br>
+                        <span id="r_location_name"></span>
+                    </p>
+                    <p>
+                        <strong>Datum och tid:</strong><br>
+                        <span id="r_slot_time"></span>
+                    </p>
+                    <p>
+                        <strong>Bokningar:</strong><br>
+                        <div id="reservations" data-default-text="Det finns inga bokningar på denna tid." class=""></div>
+                    </p>
+                    <div class="row d-none" id="reserveSlotWarning">
+                        <div class="col">
+                            <div class="alert alert-warning" role="alert">
+                                <strong>Det finns redan bokningar gjorda på denna tid!</strong>
+                                <span>
+                                    Här ska det framgå om det är ok eller inte och om det är flera grupper som kan boka,
+                                    vilket i så fall är mycket positivt. Annars är det negativt och de ska inte ens komma in hit.
+                                </span>
+                            </div>    
+                        </div>
+                    </div>
+                    <div class="row d-none" id="reserveSlotError">
+                        <div class="col">
+                            <div class="alert alert-danger" role="alert">
+                                <strong>Ett fel uppstod:</strong> <span></span>
+                            </div>    
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
+                    <button type="submit" class="btn btn-primary" id="reserveSlotSubmitButton">Boka tiden</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
