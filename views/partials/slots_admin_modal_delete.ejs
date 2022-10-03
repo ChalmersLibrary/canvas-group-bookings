@@ -1,0 +1,57 @@
+<div class="modal modal-md fade" id="deleteSlot" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteSlotLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form class="needs-validation" id="deleteSlotForm" novalidate method="post" action="/api/admin/slot">
+            <input type="hidden" id="d_slot_id" name="slot_id" value="" />
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteSlotLabel">Radera bokningsbar tid</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Stäng"></button>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        <strong>Tillfälle:</strong><br>
+                        <span id="d_course_name"></span>
+                    </p>
+                    <p>
+                        <strong>Handledare:</strong><br>
+                        <span id="d_instructor_name"></span>
+                    </p>
+                    <p>
+                        <strong>Lokal:</strong><br>
+                        <span id="d_location_name"></span>
+                    </p>
+                    <p>
+                        <strong>Datum och tid:</strong><br>
+                        <span id="d_slot_time"></span>
+                    </p>
+                    <p>
+                        <strong>Bokningar:</strong><br>
+                        <div id="reservations" data-default-text="Det finns inga bokningar på denna tid." class=""></div>
+                    </p>
+                    <div class="row d-none" id="deleteSlotWarning">
+                        <div class="col">
+                            <div class="alert alert-warning" role="alert">
+                                <strong>Det finns bokningar gjorda på denna tid!</strong>
+                                <span>
+                                    Systemet hanterar för närvarande inte detta automatiskt, därför måste du själv
+                                    kontakta de berörda personerna och meddela att tillfället har ställts in.
+                                </span>
+                            </div>    
+                        </div>
+                    </div>
+                    <div class="row d-none" id="deleteSlotError">
+                        <div class="col">
+                            <div class="alert alert-danger" role="alert">
+                                <strong>Ett fel uppstod:</strong> <span></span>
+                            </div>    
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
+                    <button type="submit" class="btn btn-primary" id="deleteSlotDeleteButton">Radera</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

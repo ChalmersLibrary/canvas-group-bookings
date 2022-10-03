@@ -412,16 +412,16 @@ app.delete('/api/admin/slot/:id', async (req, res) => {
 
                 try {
                     await db.deleteSlot(req.params.id);
-                    return res.redirect("/");                        
+
+                    return res.send({
+                        success: true,
+                        message: 'Slot was deleted.'
+                    });
                 }
                 catch (error) {
-                    return res.render('pages/error', {
-                        status: 'up',
-                        version: pkg.version,
-                        session: req.session,
-                        user: req.session.user,
-                        error: "ERROR",
-                        message: error
+                    return res.send({
+                        success: false,
+                        message: error.message
                     });
                 }
             }

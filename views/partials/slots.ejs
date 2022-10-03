@@ -69,7 +69,7 @@
                 <% if (user.isAdministrator) { %>
                     <td>
                         <button type="button" title="Redigera" data-bs-toggle="modal" data-bs-target="#editSlot" data-bs-slot-id="<%= slot.id %>" class="btn btn-secondary btn-sm float-end"><i class="bi-pencil-fill"></i></button>
-                        <button type="button" title="Radera" data-bs-slot-id="<%= slot.id %>" class="btn btn-secondary btn-sm float-end mx-2"><i class="bi-trash-fill"></i></button>
+                        <button type="button" title="Radera" data-bs-toggle="modal" data-bs-target="#deleteSlot" data-bs-slot-id="<%= slot.id %>" class="btn btn-secondary btn-sm float-end mx-2"><i class="bi-trash-fill"></i></button>
                         <button disabled type="button" title="Boka tiden" class="btn btn-primary btn-sm float-end">Boka <i class="bi-bag-check-fill"></i></button>
                     </td>
                 <% } else { %>
@@ -86,4 +86,5 @@
 <% if (user.isAdministrator) { %>
     <%- include('slots_admin_modal_new'); %>
     <%- include('slots_admin_modal_edit'); %>
+    <%- include('slots_admin_modal_delete'); %>
 <% } %>
