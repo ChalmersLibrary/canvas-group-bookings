@@ -19,11 +19,15 @@
         <% } %>
       </ul>
       <span class="navbar-text">
-        <%= user.name %>,
+        <%= user.name %>
         <% if (!user.groups) { %>
-          <strong>Ej medlem i grupp</strong>
+          <strong><small>(ingen grupp)</small></strong>
         <% } else { %>
-          <strong><%= user.groups_human_readable.join(", ") %></strong>  
+          <% if (user.isAdministrator) { %>
+            <strong><small>(administratör)</small></strong>
+          <% } else { %>
+            <strong><small>(<%= user.groups_human_readable.join(", ") %>)</small></strong>  
+          <% } %>
         <% } %>
       </span>
     </div>
