@@ -340,6 +340,7 @@ app.get('/api/admin/slot/:id', async (req, res) => {
                     status: 'up',
                     version: pkg.version,
                     session: req.session,
+                    user: req.session.user,
                     error: "NO_PRIVILEGES",
                     message: "You must have administrator privileges to access this page."
                 });
@@ -385,6 +386,7 @@ app.put('/api/admin/slot/:id', async (req, res) => {
                     status: 'up',
                     version: pkg.version,
                     session: req.session,
+                    user: req.session.user,
                     error: "NO_PRIVILEGES",
                     message: "You must have administrator privileges to access this page."
                 });
@@ -417,6 +419,7 @@ app.delete('/api/admin/slot/:id', async (req, res) => {
                         status: 'up',
                         version: pkg.version,
                         session: req.session,
+                        user: req.session.user,
                         error: "ERROR",
                         message: error
                     });
@@ -427,6 +430,7 @@ app.delete('/api/admin/slot/:id', async (req, res) => {
                     status: 'up',
                     version: pkg.version,
                     session: req.session,
+                    user: req.session.user,
                     error: "NO_PRIVILEGES",
                     message: "You must have administrator privileges to access this page."
                 });

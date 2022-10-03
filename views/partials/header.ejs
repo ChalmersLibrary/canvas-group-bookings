@@ -20,7 +20,7 @@
       </ul>
       <span class="navbar-text">
         <%= user.name %>,
-        <% if (!user.groups.length) { %>
+        <% if (!user.groups) { %>
           <strong>Ej medlem i grupp</strong>
         <% } else { %>
           <strong><%= user.groups_human_readable.join(", ") %></strong>  
