@@ -48,13 +48,11 @@ async function createSessionUserdataFromToken(req, token) {
 async function addUserFlagsForRoles(req) {
     if(req.session.user && req.session.lti) {
         if (req.session.lti.roles) {
+            req.session.user.isAdministrator = false;
             req.session.lti.roles.forEach((role) => {
                 log.debug("LTI role: " + role);
                 if (role === "Instructor" || role === "urn:lti:instrole:ims/lis/Administrator") {
                     req.session.user.isAdministrator = true;
-                }
-                if (role === "Learner" || role === "urn:lti:instrole:ims/lis/Student") {
-                    req.session.user.isAdministrator = false;
                 }
             });
         }
