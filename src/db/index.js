@@ -53,7 +53,7 @@ async function getAllSlots(date) {
 async function getSlot(id) {
     let data;
 
-    await query("SELECT * FROM slot WHERE id = $1", [ id ]).then((result) => {
+    await query("SELECT * FROM slots_all WHERE id = $1", [ id ]).then((result) => {
         data = result.rows[0];
     }).catch((error) => {
         log.error(error);

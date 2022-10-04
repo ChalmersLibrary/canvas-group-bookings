@@ -7,11 +7,11 @@ document.addEventListener("DOMContentLoaded", function(event) {
         event.stopPropagation(); */
     });
 
+    /* Edit Slot constants */
     const editSlotModal = document.getElementById('editSlot')
     const editSlotForm = document.getElementById("editSlotForm")
 
     /* The Edit Slot Modal is shown */
-
     editSlotModal.addEventListener('show.bs.modal', event => {
         // Button that triggered the modal
         const button = event.relatedTarget
@@ -44,7 +44,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
     });
 
     /* The Edit Slot Modal Form is submitted */
-
     editSlotForm.addEventListener("submit", function(event) {
         console.log(event);
         console.log("Time to submit the form: editSlotForm");
@@ -86,6 +85,96 @@ document.addEventListener("DOMContentLoaded", function(event) {
         event.preventDefault();
         event.stopPropagation();
     });
+
+    /* Delete slot constants */
+    const deleteSlotModal = document.getElementById('deleteSlot')
+    const deleteSlotForm = document.getElementById("deleteSlotForm")
+
+    /* The Delete Slot Modal is shown */
+    deleteSlotModal.addEventListener('show.bs.modal', event => {
+        // Button that triggered the modal
+        const button = event.relatedTarget
+        // Extract info from data-bs-* attributes
+        const slot_id = button.getAttribute('data-bs-slot-id')
+        // If necessary, you could initiate an AJAX request here
+        // and then do the updating in a callback.
+        fetch(`/api/admin/slot/${slot_id}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data)
+            deleteSlotModal.querySelector('#d_slot_id').value = data.id
+            deleteSlotModal.querySelector('#d_course_name').innerText = data.course_name
+            deleteSlotModal.querySelector('#d_instructor_name').innerText = data.instructor_name
+            deleteSlotModal.querySelector('#d_location_name').innerText = data.location_name
+            deleteSlotModal.querySelector('#d_slot_time').innerText = data.shortcut.start_date + " kl " + data.shortcut.start_time + "-" + data.shortcut.end_time
+            deleteSlotModal.querySelector('#reservations').replaceChildren()
+            if (data.reservations && data.reservations.length) {
+                data.reservations.forEach(reservation => {
+                    const r = deleteSlotModal.querySelector('#reservations').appendChild(document.createElement('div'))
+                    r.innerText = reservation.created_at
+                })    
+            }
+            else {
+                const r = deleteSlotModal.querySelector('#reservations').appendChild(document.createElement('div'))
+                r.innerText = deleteSlotModal.querySelector('#reservations').getAttribute("data-default-text")
+            }
+            if(data.reserved > 0) {
+                if (!deleteSlotModal.querySelector('#deleteSlotWarning').classList.contains("d-block")) {
+                    deleteSlotModal.querySelector('#deleteSlotWarning').classList.add("d-block")
+                    deleteSlotModal.querySelector('#deleteSlotWarning').classList.remove("d-none")    
+                }
+            }
+            else {
+                if (deleteSlotModal.querySelector('#deleteSlotWarning').classList.contains("d-block")) {
+                    deleteSlotModal.querySelector('#deleteSlotWarning').classList.remove("d-block")
+                    deleteSlotModal.querySelector('#deleteSlotWarning').classList.add("d-none")    
+                }
+            }
+        })
+        if(deleteSlotModal.querySelector('#deleteSlotError').classList.contains("d-block")) {
+            deleteSlotModal.querySelector('#deleteSlotError').classList.remove("d-block")
+            deleteSlotModal.querySelector('#deleteSlotError').classList.add("d-none")
+        }
+    });
+
+    /* The Delete Slot Modal Form is submitted */
+
+    deleteSlotForm.addEventListener("submit", function(event) {
+        console.log(event);
+        console.log("Time to submit the form: deleteSlotForm");
+
+        const requestOptions = {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' }
+        };
+
+        console.log(requestOptions);
+
+        const slot_id = deleteSlotModal.querySelector('#d_slot_id').value
+
+        fetch(`/api/admin/slot/${slot_id}`, requestOptions)
+        .then(response => {
+            return response.text();
+        })
+        .then(data => { 
+            console.log(data)
+            const responseBody = JSON.parse(data)
+            if (responseBody.success === false) {
+                console.error(JSON.parse(data).message)
+                deleteSlotModal.querySelector('#deleteSlotError .alert span').innerText = JSON.parse(data).message
+                deleteSlotModal.querySelector('#deleteSlotError').classList.remove("d-none")
+                deleteSlotModal.querySelector('#deleteSlotError').classList.add("d-block")
+            }
+            else {
+                window.location.assign("/")
+            }
+        });
+        
+        event.preventDefault();
+        event.stopPropagation();
+    });
+
+    /* The New Slot Form is shown */
 
     document.getElementById("slot_new_slot").addEventListener("click", function(event) {
         const slots_container = document.getElementById("slot_times");

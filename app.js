@@ -59,7 +59,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(function (req, res, next) {
     res.setHeader(
       'Content-Security-Policy', 
-      "default-src 'self'; script-src 'self' cdn.jsdelivr.net; style-src 'self' cdn.jsdelivr.net; font-src 'self' cdn.jsdelivr.net; img-src 'self' data:; frame-src 'self'" + (process.env.CSP_FRAME_SRC_ALLOW ? " " + process.env.CSP_FRAME_SRC_ALLOW : "")
+      "default-src 'self'; script-src 'self' cdn.jsdelivr.net; style-src 'self' cdn.jsdelivr.net fonts.googleapis.com; font-src 'self' cdn.jsdelivr.net fonts.gstatic.com; img-src 'self' data:; frame-src 'self'" + (process.env.CSP_FRAME_SRC_ALLOW ? " " + process.env.CSP_FRAME_SRC_ALLOW : "")
     );
     
     next();
@@ -340,6 +340,7 @@ app.get('/api/admin/slot/:id', async (req, res) => {
                     status: 'up',
                     version: pkg.version,
                     session: req.session,
+                    user: req.session.user,
                     error: "NO_PRIVILEGES",
                     message: "You must have administrator privileges to access this page."
                 });
@@ -385,6 +386,7 @@ app.put('/api/admin/slot/:id', async (req, res) => {
                     status: 'up',
                     version: pkg.version,
                     session: req.session,
+                    user: req.session.user,
                     error: "NO_PRIVILEGES",
                     message: "You must have administrator privileges to access this page."
                 });
@@ -410,15 +412,16 @@ app.delete('/api/admin/slot/:id', async (req, res) => {
 
                 try {
                     await db.deleteSlot(req.params.id);
-                    return res.redirect("/");                        
+
+                    return res.send({
+                        success: true,
+                        message: 'Slot was deleted.'
+                    });
                 }
                 catch (error) {
-                    return res.render('pages/error', {
-                        status: 'up',
-                        version: pkg.version,
-                        session: req.session,
-                        error: "ERROR",
-                        message: error
+                    return res.send({
+                        success: false,
+                        message: error.message
                     });
                 }
             }
@@ -427,6 +430,7 @@ app.delete('/api/admin/slot/:id', async (req, res) => {
                     status: 'up',
                     version: pkg.version,
                     session: req.session,
+                    user: req.session.user,
                     error: "NO_PRIVILEGES",
                     message: "You must have administrator privileges to access this page."
                 });
