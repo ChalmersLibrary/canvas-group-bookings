@@ -213,17 +213,42 @@ app.get('/reservations', async (req, res) => {
                 try {
                     // Add the groups from Canvas for this user
                     req.session.user.groups = await canvasApi.getCourseGroups(courseId, req.session.user.id);
+                    req.session.user.groups_ids = new Array();
                     req.session.user.groups_human_readable = new Array();
                 
                     for (const group of req.session.user.groups) {
                         req.session.user.groups_human_readable.push(group.name);
+                        req.session.user.groups_ids.push(group.id);
                     }
+
+                    const reservations = await db.getReservationsForUser(req.session.user.id, req.session.user.groups_ids);
+                    // let reservationsList = [];
+
+                    for (const reservation of reservations) {
+                        if (reservation.canvas_group_id !== null) {
+                            let group_details = await canvasApi.getGroupDetails(reservation.canvas_group_id);
+                            reservation.canvas_group_name = group_details.name;
+                        }
+                        if (reservation.canvas_user_id === req.session.user.id) {
+                            reservation.canvas_user_name = req.session.user.name;
+                        }
+                        else {
+                            reservation.canvas_user_name = await canvasApi.getUserDetails(req.session.user.id);
+                        }
+                    }
+
+                    /* return res.send({
+                        status: 'up',
+                        version: pkg.version,
+                        session: req.session,
+                        reservations: reservations
+                    }); */
 
                     return res.render('pages/reservations/reservations', {
                         status: 'up',
                         version: pkg.version,
                         session: req.session,
-                        user: req.session.user,
+                        reservations: reservations
                     });
                 }
                 catch(error) {
@@ -232,6 +257,8 @@ app.get('/reservations', async (req, res) => {
                     return res.render('pages/error', {
                         status: 'up',
                         version: pkg.version,
+                        session: req.session,
+                        user: req.session.user,
                         error: "CANVAS_API",
                         message: error
                     });

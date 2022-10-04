@@ -74,6 +74,34 @@ async function getSlotReservations(id) {
     return data;
 }
 
+async function getReservationsForUser(user_id, groups) {
+    let data;
+    let returnedData = [];
+    const dateOptions = { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric' };
+    const timeOptions = { hour: '2-digit', minute: '2-digit' };
+    
+    await query("SELECT * FROM reservations_view WHERE canvas_user_id = $1 OR canvas_group_id = ANY ($2)", [ 
+        user_id,
+        groups
+    ]).then((result) => {
+        data = result.rows;
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    });
+    
+    if (data !== undefined && data.length) {
+        data.forEach(reservation => {
+            reservation.created_at_human_readable_sv = new Date(reservation.created_at).toLocaleDateString('sv-SE', dateOptions);
+            reservation.time_human_readable_sv = new Date(reservation.time_start).toLocaleDateString('sv-SE', dateOptions) + " kl " + new Date(reservation.time_start).toLocaleTimeString('sv-SE', timeOptions) + "&ndash;" + new Date(reservation.time_end).toLocaleTimeString('sv-SE', timeOptions);
+            
+            returnedData.push(reservation);
+        });
+    }
+
+    return returnedData;
+}
+
 async function createSlotReservation(slot_id, user_id, group_id, message) {
     let data;
 
@@ -211,6 +239,7 @@ module.exports = {
     getAllSlots,
     getSlot,
     getSlotReservations,
+    getReservationsForUser,
     createSlotReservation,
     getValidCourses,
     getValidInstructors,

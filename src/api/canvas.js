@@ -13,6 +13,21 @@ const API_PATH = "/api/v1";
 const API_HOST = process.env.API_HOST ? process.env.API_HOST : process.env.AUTH_HOST;
 const API_GROUPS_ONLY_OWN_GROUPS = true;
 
+async function getUserDetails(user_id) {
+    return new Promise((resolve) => {
+        resolve({
+            name: "TESTING1"
+        });
+    })
+}
+
+async function getGroupDetails(group_id) {
+    return new Promise((resolve) => {
+        resolve({
+            name: "TESTING2"
+        });
+    })
+}
 async function getCourseGroups(courseId, userId) {
     let thisApiPath = API_HOST + API_PATH + "/courses/" + courseId + "/groups?per_page=" + API_PER_PAGE;
     let apiData = new Array();
@@ -111,5 +126,7 @@ async function getCourseGroups(courseId, userId) {
 };
 
 module.exports = {
+    getUserDetails,
+    getGroupDetails,
     getCourseGroups
 }
