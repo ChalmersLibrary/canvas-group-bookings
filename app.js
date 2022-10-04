@@ -160,6 +160,7 @@ app.get('/', async (req, res) => {
     
                 try {
                     // Add the groups from Canvas for this user
+                    // req.session.user.groups = [];
                     req.session.user.groups = await canvasApi.getCourseGroups(courseId, req.session.user.id);
                     req.session.user.groups_human_readable = new Array();
                 

@@ -34,6 +34,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         .then(data => {
             console.log(data)
             reserveSlotModal.querySelector('#r_slot_id').value = data.id
+            reserveSlotModal.querySelector('#r_type').value = data.type
             reserveSlotModal.querySelector('#r_message').value = ""
             reserveSlotModal.querySelector('#r_course_name').innerText = data.course_name
             reserveSlotModal.querySelector('#r_instructor_name').innerText = data.instructor_name
@@ -52,9 +53,14 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 reserveSlotModal.querySelector('#reserveSlotWarning').classList.add("d-block")
             }
         })
-        if(reserveSlotModal.querySelector('#reserveSlotError').classList.contains("d-block")) {
+        if (reserveSlotModal.querySelector('#reserveSlotError').classList.contains("d-block")) {
             reserveSlotModal.querySelector('#reserveSlotError').classList.remove("d-block")
             reserveSlotModal.querySelector('#reserveSlotError').classList.add("d-none")
+        }
+        if (!reserveSlotModal.querySelector('#r_group_id')) {
+            reserveSlotModal.querySelector('#reserveSlotSubmitButton').disabled = true
+            reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.remove("d-block")
+            reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.add("d-none")
         }
     });
 
@@ -75,7 +81,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    slot_id: reserveSlotModal.querySelector('#r_slot_id').value
+                    slot_id: reserveSlotModal.querySelector('#r_slot_id').value,
+                    group_id: reserveSlotModal.querySelector('#r_group_id').value,
+                    message: reserveSlotModal.querySelector('#r_message').value
                 })
             };
     

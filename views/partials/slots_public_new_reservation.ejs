@@ -2,6 +2,7 @@
     <div class="modal-dialog">
         <form class="needs-validation" id="reserveSlotForm" novalidate>
             <input type="hidden" id="r_slot_id" name="slot_id" value="" />
+            <input type="hidden" id="r_type" name="type" value="" />
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="reserveSlotLabel">Boka tillgänglig tid</h5>
@@ -40,16 +41,16 @@
                                 <div class="invalid-feedback">Please enter a message in the textarea.</div>
                             </p>
                             <p>
-                                <label for="r_group_id" class="form-label">Bokning för grupp:</label>
-                                <% if (session.user.groups && session.user.groups.length > 0) { %>
-                                    <select name="group" id="r_group_id" class="form-control">
-                                        <% session.user.groups.forEach(group => { %>
-                                            <option value="<%= group.id %>"><%= group.name %></option>
-                                        <% }) %>
-                                    </select>
-                                <% } else { %>
-                                    <span>Du är inte medlem i någon grupp än och kan därför inte boka denna tiden.</span>
-                                <% } %>
+                                <div class="r_group_block">
+                                    <% if (session.user.groups && session.user.groups.length > 0) { %>
+                                        <label for="r_group_id" class="form-label">Bokning för grupp:</label>
+                                        <select name="group_id" id="r_group_id" class="form-control">
+                                            <% session.user.groups.forEach(group => { %>
+                                                <option value="<%= group.id %>"><%= group.name %></option>
+                                            <% }) %>
+                                        </select>
+                                    <% } %>    
+                                </div>
                             </p>
                         </div>
                     </div>
@@ -64,7 +65,7 @@
                             </div>    
                         </div>
                     </div>
-                    <div class="row d-block" id="reserveSlotNotice">
+                    <div class="row d-block" id="reserveSlotGroupNotice">
                         <div class="col">
                             <div class="alert alert-primary" role="alert">
                                 <strong>Detta är en bokning för en hel grupp.</strong>
@@ -75,6 +76,19 @@
                             </div>    
                         </div>
                     </div>
+                    <% if (session.user.groups && !session.user.groups.length) { %>
+                        <div class="row d-block" id="reserveSlotUserNotInGroup">
+                            <div class="col">
+                                <div class="alert alert-danger" role="alert">
+                                    <strong>Du är inte medlem i någon grupp.</strong>
+                                    <span>
+                                        För att kunna boka den här tiden måste du vara medlem i en grupp. Kontakta en handledare
+                                        eller examinator för att kontrollera varför du inte är med i en grupp.
+                                    </span>
+                                </div>    
+                            </div>
+                        </div>
+                    <% } %>
                     <div class="row d-none" id="reserveSlotError">
                         <div class="col">
                             <div class="alert alert-danger" role="alert">
