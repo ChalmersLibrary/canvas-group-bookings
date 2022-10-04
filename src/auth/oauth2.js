@@ -58,13 +58,13 @@ function setupAuthEndpoints(app, callbackUrl) {
             log.info('The resulting token: ', accessToken.token);
 
             // Persist the access token to db
-            await persistAccessToken(accessToken.token).then((result) => {
+            await persistAccessToken(accessToken.token).then(async (result) => {
                 // Save the user object to session for faster access
-                let userData = user.createSessionUserdataFromToken(req, accessToken.token);
+                let userData = await user.createSessionUserdataFromToken(req, accessToken.token);
                 log.info(userData);
 
                 // If we set it before redirect we must persist it with session.save()
-                req.session.save(function(err) {
+                await req.session.save(function(err) {
                     if (err) {
                         log.error(err);
                         return res.status(500).json(err);
