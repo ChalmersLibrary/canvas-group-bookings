@@ -74,6 +74,24 @@ async function getSlotReservations(id) {
     return data;
 }
 
+async function createSlotReservation(slot_id, user_id, group_id, message) {
+    let data;
+
+    await query("INSERT INTO reservation (slot_id, canvas_user_id, canvas_group_id, message, created_by) VALUES ($1, $2, $3, $4, $2) RETURNING id", [ 
+        slot_id,
+        user_id,
+        group_id,
+        message
+    ]).then((result) => {
+        data = result.rows[0];
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    });
+    
+    return data;
+}
+
 async function getValidCourses(date) {
     let data;
 
@@ -193,6 +211,7 @@ module.exports = {
     getAllSlots,
     getSlot,
     getSlotReservations,
+    createSlotReservation,
     getValidCourses,
     getValidInstructors,
     getValidLocations,

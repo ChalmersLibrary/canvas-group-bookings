@@ -87,10 +87,13 @@ CREATE TABLE IF NOT EXISTS "reservation"
     "slot_id" integer REFERENCES "slot",
     "canvas_user_id" integer NOT NULL,
     "canvas_group_id" integer,
-    "canvas_course_id" integer NOT NULL, -- is this really needed???
+    "message" text,
     "created_at" timestamp NOT NULL DEFAULT now(),
+    "created_by" integer,
     "updated_at" timestamp,
+    "updated_by" integer,
     "deleted_at" timestamp,
+    "deleted_by" integer,
     PRIMARY KEY ("id")
 );
 

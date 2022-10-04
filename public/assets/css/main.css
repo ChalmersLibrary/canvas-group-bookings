@@ -10,6 +10,9 @@ nav {
 footer {
     padding-top: 28px;
 }
+label {
+    font-weight: bolder;
+}
 div.slot_template {
     display: none;
 }

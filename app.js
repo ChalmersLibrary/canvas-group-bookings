@@ -303,9 +303,109 @@ app.get('/admin', async (req, res) => {
     });
 });
 
-/* API Endpoints, admin */
+/* ===================== */
+/* API Endpoints, public */
+/* ===================== */
 
-/* Get one time slot */
+/* Get one slot */
+app.get('/api/slot/:id', async (req, res) => {
+    await auth.checkAccessToken(req).then(async (result) => {
+        if (result !== undefined && result.success === true) {
+            await user.mockLtiSession(req);
+            await user.addUserFlagsForRoles(req);
+
+            if (req.session.user) {
+                console.log(req.params.id);
+
+                try {
+                    const slot = await db.getSlot(req.params.id)
+                    const reservations = await db.getSlotReservations(req.params.id);
+                    slot.reservations = reservations;
+                    slot.shortcut = {
+                        start_date: utils.getDatePart(slot.time_start),
+                        end_date: utils.getDatePart(slot.time_end),
+                        start_time: utils.getTimePart(slot.time_start),
+                        end_time: utils.getTimePart(slot.time_end)
+                    }
+                    return res.send(slot);                        
+                }
+                catch (error) {
+                    console.error(error);
+                    return res.send({
+                        success: false,
+                        error: error
+                    });
+                }
+            }
+            else {
+                return res.render('pages/error', {
+                    status: 'up',
+                    version: pkg.version,
+                    session: req.session,
+                    user: req.session.user,
+                    error: "NO_API_KEY",
+                    message: "You must confirm that this application can access the Canvas API as you."
+                });
+            }
+        }
+        else {
+            log.error("No access token returned, redirecting to auth flow...");
+            return res.redirect("/auth");
+        }
+    });
+});
+
+/* Reserve one slot */
+app.post('/api/reservation', async (req, res) => {
+    await auth.checkAccessToken(req).then(async (result) => {
+        if (result !== undefined && result.success === true) {
+            await user.mockLtiSession(req);
+            await user.addUserFlagsForRoles(req);
+
+            if (req.session.user) {
+                const { slot_id, group_id, message } = req.body;
+
+                console.log(req.body)
+
+                try {
+                    const reservation = await db.createSlotReservation(slot_id, req.session.user.id, group_id, message);
+                    return res.send({
+                        success: true,
+                        message: "Slot was reserved.",
+                        reservation_id: reservation.id
+                    });
+                }
+                catch (error) {
+                    console.error(error);
+                    return res.send({
+                        success: false,
+                        message: error.message
+                    });
+                }
+            }
+            else {
+                return res.render('pages/error', {
+                    status: 'up',
+                    version: pkg.version,
+                    session: req.session,
+                    user: req.session.user,
+                    error: "NO_API_KEY",
+                    message: "You must confirm that this application can access the Canvas API as you."
+                });
+            }
+        }
+        else {
+            log.error("No access token returned, redirecting to auth flow...");
+            return res.redirect("/auth");
+        }
+    });
+});
+
+/* ==================== */
+/* API Endpoints, admin */
+/* ==================== */
+
+/* Get one slot */
 app.get('/api/admin/slot/:id', async (req, res) => {
     await auth.checkAccessToken(req).then(async (result) => {
         if (result !== undefined && result.success === true) {
