@@ -138,16 +138,6 @@ app.get('/test', async (req, res) => {
 });
 
 app.get('/', async (req, res) => {
-    // Just for fun to see that something is happening
-    if (req.session.views) {
-        req.session.views++;
-    }
-    else {
-        req.session.views = 1;
-    }
-
-    log.info(req.session);
-
     await auth.checkAccessToken(req).then(async (result) => {
         if (result !== undefined && result.success === true) {
             await user.mockLtiSession(req);
