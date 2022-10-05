@@ -222,7 +222,6 @@ app.get('/reservations', async (req, res) => {
                     }
 
                     const reservations = await db.getReservationsForUser(req.session.user.id, req.session.user.groups_ids);
-                    // let reservationsList = [];
 
                     for (const reservation of reservations) {
                         if (reservation.canvas_group_id !== null) {
@@ -233,7 +232,8 @@ app.get('/reservations', async (req, res) => {
                             reservation.canvas_user_name = req.session.user.name;
                         }
                         else {
-                            reservation.canvas_user_name = await canvasApi.getUserDetails(req.session.user.id);
+                            let user_details = await canvasApi.getUserDetails(reservation.canvas_user_id);
+                            reservation.canvas_user_name = user_details.name;
                         }
 
                         if (reservation.id == req.query.reservationId && req.query.reservationDone == "true") {
