@@ -225,14 +225,14 @@ app.get('/reservations', async (req, res) => {
 
                     for (const reservation of reservations) {
                         if (reservation.canvas_group_id !== null) {
-                            let group_details = await canvasApi.getGroupDetails(reservation.canvas_group_id);
+                            let group_details = await canvasApi.getGroupDetails(courseId, req.session.user.id, reservation.canvas_group_id);
                             reservation.canvas_group_name = group_details.name;
                         }
                         if (reservation.canvas_user_id === req.session.user.id) {
                             reservation.canvas_user_name = req.session.user.name;
                         }
                         else {
-                            let user_details = await canvasApi.getUserDetails(reservation.canvas_user_id);
+                            let user_details = await canvasApi.getUserDetails(courseId, req.session.user.id, reservation.canvas_user_id);
                             reservation.canvas_user_name = user_details.name;
                         }
 
