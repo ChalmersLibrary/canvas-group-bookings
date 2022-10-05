@@ -235,6 +235,10 @@ app.get('/reservations', async (req, res) => {
                         else {
                             reservation.canvas_user_name = await canvasApi.getUserDetails(req.session.user.id);
                         }
+
+                        if (reservation.id == req.query.reservationId && req.query.reservationDone == "true") {
+                            reservation.just_created = true;
+                        }
                     }
 
                     /* return res.send({

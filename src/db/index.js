@@ -80,7 +80,7 @@ async function getReservationsForUser(user_id, groups) {
     const dateOptions = { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric' };
     const timeOptions = { hour: '2-digit', minute: '2-digit' };
     
-    await query("SELECT * FROM reservations_view WHERE canvas_user_id = $1 OR canvas_group_id = ANY ($2)", [ 
+    await query("SELECT * FROM reservations_view WHERE canvas_user_id = $1 OR canvas_group_id = ANY ($2) ORDER BY time_start ASC", [ 
         user_id,
         groups
     ]).then((result) => {

@@ -3,7 +3,7 @@
 <head>
   <%- include('../../partials/head'); %>
 </head>
-<body class="container float-start">
+<body class="container-fluid float-start">
 
 <header>
   <%- include('../../partials/header', { user: session.user }); %>
@@ -11,24 +11,45 @@
 
 <main>
     <div class="container-fluid py-2">
-        <h1 class="display-5">Your reservations</h1>
+        <h1>Dina bokningar</h1>
+        <p>Här ser du bokningar som du har gjort för dig själv, eller för en grupp. Även bokningar som andra i en grupp du är med i har gjort visas.</p>
     </div>
 
     <div class="container-fluid py-2">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Handledningstillfälle 1</h5>
-                <h6 class="card-subtitle mb-2 text-muted">2023-01-10 kl 11:00&ndash;12:00, Lokalen 1</h6>
-                <p class="card-text">Booked by <strong>Anton Antonsson</strong> for your group <strong>TEKX04-22-01</strong>.</p>
-                <a href="#" class="btn btn-primary btn-sm">Do something</a>
+        <% reservations.forEach(reservation => { %>
+          <div class="card <% if (reservation.just_created) { %>border-success <% } %>my-2" data-reservation-id="<%= reservation.id %>">
+            <div class="card-header">
+              <% if (reservation.canvas_group_id) { %>
+                Gruppbokning
+              <% } else { %>
+                Individuell bokning
+              <% } %>
             </div>
-        </div>
+            <div class="card-body">
+                <h5 class="card-title"><%= reservation.course_name %></h5>
+                <h6 class="card-subtitle mb-2 text-muted"><%- reservation.time_human_readable_sv %>, <%= reservation.location_name %>, <%= reservation.instructor_name %></h6>
+                <p class="card-text">
+                  Bokad av <strong><%= reservation.canvas_user_name %></strong> 
+                  <% if (reservation.canvas_group_id) { %>
+                    för gruppen <strong><%= reservation.canvas_group_name %></strong>
+                  <% } %>
+                </p>
+                <div>
+                  <button type="button" title="Avboka detta tillfälle" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#deleteReservation" data-bs-reservation-id="<%= reservation.id %>">Avboka</button>
+                </div>
+            </div>
+          </div>
+        <% }) %>
     </div>
 </main>
 
 <footer>
   <%- include('../../partials/footer', { version: version }); %>
 </footer>
+
+<% if (!session.user.isAdministrator) { %>
+  <%- include('../../partials/reservations_public_modal_delete'); %>
+<% } %>
 
 </body>
 </html>

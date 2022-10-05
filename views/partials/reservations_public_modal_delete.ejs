@@ -1,0 +1,52 @@
+<div class="modal modal-md fade" id="deleteReservation" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteReservationLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form class="needs-validation" id="deleteReservationForm" novalidate>
+            <input type="hidden" id="d_reservation_id" name="reservation_id" value="" />
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteReservationLabel">Avboka bokad tid</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Stäng"></button>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        <strong>Tillfälle:</strong><br>
+                        <span id="d_course_name"></span>
+                    </p>
+                    <p>
+                        <strong>Handledare:</strong><br>
+                        <span id="d_instructor_name"></span>
+                    </p>
+                    <p>
+                        <strong>Lokal:</strong><br>
+                        <span id="d_location_name"></span>
+                    </p>
+                    <p>
+                        <strong>Datum och tid:</strong><br>
+                        <span id="d_slot_time"></span>
+                    </p>
+                    <div class="row d-none" id="deleteReservationWarning">
+                        <div class="col">
+                            <div class="alert alert-warning" role="alert">
+                                <strong>Detta är en bokning för en hel grupp.</strong>
+                                <span>
+                                    När du avbokar, avbokas hela gruppen från tillfället.
+                                </span>
+                            </div>    
+                        </div>
+                    </div>
+                    <div class="row d-none" id="deleteReservationError">
+                        <div class="col">
+                            <div class="alert alert-danger" role="alert">
+                                <strong>Ett fel uppstod:</strong> <span></span>
+                            </div>    
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
+                    <button type="submit" class="btn btn-primary" id="deleteReservationDeleteButton">Avboka</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
