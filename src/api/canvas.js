@@ -14,9 +14,11 @@ const API_PATH = "/api/v1";
 const API_HOST = process.env.API_HOST ? process.env.API_HOST : process.env.AUTH_HOST;
 const API_GROUPS_ONLY_OWN_GROUPS = true;
 
+/* TODO: Move all cache code to separate file! */
+
 /* Cache API calls that don't change often to speed up requests */
-const CACHE_TTL = (parseInt(process.env.canvasApiCacheSecondsTTL) > 0 ? parseInt(process.env.canvasApiCacheSecondsTTL) : 180);
-const CACHE_CHECK_EXPIRE = 200;
+const CACHE_TTL = (parseInt(process.env.canvasApiCacheSecondsTTL) > 0 ? parseInt(process.env.canvasApiCacheSecondsTTL) : (60 * 60)); // 1h
+const CACHE_CHECK_EXPIRE = 600; // 10m
 const userDetailsCache = new NodeCache({ errorOnMissing:true, stdTTL: CACHE_TTL, checkperiod: CACHE_CHECK_EXPIRE });
 const groupDetailsCache = new NodeCache({ errorOnMissing:true, stdTTL: CACHE_TTL, checkperiod: CACHE_CHECK_EXPIRE });
 
