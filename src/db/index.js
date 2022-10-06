@@ -34,7 +34,7 @@ async function getAllSlots(date) {
     const dateOptions = { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric' };
     const timeOptions = { hour: '2-digit', minute: '2-digit' };
 
-    await query("SELECT * FROM slots_all WHERE time_start >= $1", [ date ]).then((result) => {
+    await query("SELECT * FROM slots_view WHERE time_start >= $1", [ date ]).then((result) => {
         data = result.rows;
     }).catch((error) => {
         log.error(error);
@@ -53,7 +53,7 @@ async function getAllSlots(date) {
 async function getSlot(id) {
     let data;
 
-    await query("SELECT * FROM slots_all WHERE id = $1", [ id ]).then((result) => {
+    await query("SELECT * FROM slots_view WHERE id = $1", [ id ]).then((result) => {
         data = result.rows[0];
     }).catch((error) => {
         log.error(error);

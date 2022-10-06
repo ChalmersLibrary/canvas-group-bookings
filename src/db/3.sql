@@ -15,7 +15,7 @@ CREATE VIEW "reservations_view" AS
     c.is_individual,
     c.max_groups,
     c.max_individuals,
-    (SELECT count(DISTINCT canvas_user_id) FROM reservation WHERE slot_id=r.slot_id) AS res_now,
+    (SELECT count(DISTINCT canvas_user_id) FROM reservation WHERE slot_id=r.slot_id AND deleted_at IS NULL) AS res_now,
     c.name AS course_name,
     l.name AS location_name,
     i.name AS instructor_name

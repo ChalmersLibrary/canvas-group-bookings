@@ -1,7 +1,6 @@
 DROP VIEW "slots_all";
 
-CREATE VIEW "slots_all" AS
- SELECT s.id,
+SELECT s.id,
     s.course_id,
     c.name AS course_name,
     s.instructor_id,
@@ -20,12 +19,13 @@ CREATE VIEW "slots_all" AS
         END AS max,
     ( SELECT count(DISTINCT re.canvas_user_id) AS reserved
            FROM reservation re
-          WHERE re.slot_id = s.id) AS reserved
+          WHERE re.slot_id = s.id
+          AND re.deleted_at IS NULL) AS res_now
    FROM slot s,
     course c,
     instructor i,
     location l
-  WHERE s.course_id = c.id AND s.instructor_id = i.id AND s.location_id = l.id
+  WHERE s.course_id = c.id AND s.instructor_id = i.id AND s.location_id = l.id AND s.deleted_at IS NULL
   ORDER BY s.time_start;
 
 -- Version history
