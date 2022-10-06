@@ -60,10 +60,10 @@
                 <td><%= slot.location_name %></td>
                 <td><%= slot.instructor_name %></td>
                 <td>
-                    <% if (slot.max == slot.reserved) { %>
+                    <% if (slot.max == slot.res_now) { %>
                         Fullbokad
                     <% } else { %>
-                        Tillgänglig, <%= slot.max-slot.reserved %> av <%= slot.max %>
+                        Tillgänglig, <%= slot.max-slot.res_now %> av <%= slot.max %>
                     <% } %>
                 </td>
                 <% if (user.isAdministrator) { %>
@@ -75,9 +75,9 @@
                 <% } else { %>
                     <td>
                         <% if (slot.max == slot.reserved) { %>
-                            <button type="button" title="Tillfället är fullbokat" class="btn btn-primary btn-sm float-end" disabled>Boka <i class="bi-bag-check-fill"></i></button>
+                            <button type="button" title="Tillfället är fullbokat" class="btn btn-primary btn-sm float-end" disabled>Boka</button>
                         <% } else { %>
-                            <button type="button" title="Boka tillfället" class="btn btn-primary btn-sm float-end" data-bs-toggle="modal" data-bs-target="#reserveSlot" data-bs-slot-id="<%= slot.id %>" >Boka <i class="bi-bag-check-fill"></i></button>
+                            <button type="button" title="Boka tillfället" class="btn btn-primary btn-sm float-end" data-bs-toggle="modal" data-bs-target="#reserveSlot" data-bs-slot-id="<%= slot.id %>" >Boka</button>
                         <% } %>
                     </td>
                 <% } %>
