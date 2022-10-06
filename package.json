@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "dev": "nodemon --trace-warnings app.js",
-    "debug": "set DEBUG=* && nodemon --trace-warnings app.js"
+    "debug": "set DEBUG=* && nodemon --trace-warnings app.js",
+    "build": "git rev-parse HEAD > views/partials/git_latest_commit_hash.ejs"
   },
   "nodemonConfig": {
     "ignore": [
