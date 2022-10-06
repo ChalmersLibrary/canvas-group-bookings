@@ -1,6 +1,9 @@
 # Sessions
 sessions/
 
+# Latest commit hash, special
+views/partials/git_latest_commit_hash.ejs
+
 # Logs
 logs
 *.log
