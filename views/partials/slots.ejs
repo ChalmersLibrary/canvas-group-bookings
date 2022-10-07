@@ -1,4 +1,4 @@
-<% if (user.isAdministrator) { %>
+<% if (session.user.isAdministrator) { %>
     <div class="row my-3">
         <div class="col">
             <button type="button" class="btn btn-md btn-secondary" data-bs-toggle="modal" data-bs-target="#newSlotSeries">Lägg till nya tider</button>
@@ -61,23 +61,32 @@
                 <td><%= slot.instructor_name %></td>
                 <td>
                     <% if (slot.max == slot.res_now) { %>
-                        Fullbokad
+                        Fullbokad, <%= slot.max %>
+                        <% if (slot.type == "group") { %>
+                            <% if (slot.max > 1) { %>
+                                grupper
+                            <% } else { %>
+                                grupp
+                            <% } %>
+                        <% } else { %>
+                            personer
+                        <% } %>
                     <% } else { %>
                         Tillgänglig, <%= slot.max-slot.res_now %> av <%= slot.max %>
                     <% } %>
                 </td>
-                <% if (user.isAdministrator) { %>
+                <% if (session.user.isAdministrator) { %>
                     <td>
                         <button type="button" title="Redigera" data-bs-toggle="modal" data-bs-target="#editSlot" data-bs-slot-id="<%= slot.id %>" class="btn btn-secondary btn-sm float-end"><i class="bi-pencil-fill"></i></button>
                         <button type="button" title="Radera" data-bs-toggle="modal" data-bs-target="#deleteSlot" data-bs-slot-id="<%= slot.id %>" class="btn btn-secondary btn-sm float-end mx-2"><i class="bi-trash-fill"></i></button>
-                        <button disabled type="button" title="Boka tiden" class="btn btn-primary btn-sm float-end">Boka</button>
+                        <button disabled type="button" title="Administratörer kan inte boka" class="btn btn-primary btn-sm float-end">Boka</button>
                     </td>
                 <% } else { %>
                     <td>
-                        <% if (slot.max == slot.reserved) { %>
-                            <button type="button" title="Tillfället är fullbokat" class="btn btn-primary btn-sm float-end" disabled>Boka</button>
-                        <% } else { %>
+                        <% if (slot.reservable_for_this_user) { %>
                             <button type="button" title="Boka tillfället" class="btn btn-primary btn-sm float-end" data-bs-toggle="modal" data-bs-target="#reserveSlot" data-bs-slot-id="<%= slot.id %>" >Boka</button>
+                        <% } else { %>
+                            <button type="button" title="Tillfället är inte bokningsbart" class="btn btn-primary btn-sm float-end" disabled>Boka</button>
                         <% } %>
                     </td>
                 <% } %>
@@ -87,7 +96,7 @@
 </table>
 <% } %>
 
-<% if (user.isAdministrator) { %>
+<% if (session.user.isAdministrator) { %>
     <%- include('slots_admin_modal_new'); %>
     <%- include('slots_admin_modal_edit'); %>
     <%- include('slots_admin_modal_delete'); %>

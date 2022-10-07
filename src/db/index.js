@@ -28,18 +28,21 @@ async function query(text, params) {
     return res;
 }
 
+/* Returns all slots from a specific date */
 async function getAllSlots(date) {
     let data;
     let returnedData = [];
     const dateOptions = { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric' };
     const timeOptions = { hour: '2-digit', minute: '2-digit' };
 
-    await query("SELECT * FROM slots_view WHERE time_start >= $1", [ date ]).then((result) => {
+    /* TODO: Fix this query in the view! */
+    await query("SELECT * FROM slots_view s WHERE s.time_start >= $1", [ date ]).then((result) => {
         data = result.rows;
     }).catch((error) => {
         log.error(error);
     });
     
+    /* TODO: think about if these additions/conversions should be done outside, and this should be just clean db code? */
     if (data !== undefined && data.length) {
         data.forEach(slot => {
             slot.time_human_readable_sv = new Date(slot.time_start).toLocaleDateString('sv-SE', dateOptions) + " kl " + new Date(slot.time_start).toLocaleTimeString('sv-SE', timeOptions) + "&ndash;" + new Date(slot.time_end).toLocaleTimeString('sv-SE', timeOptions);

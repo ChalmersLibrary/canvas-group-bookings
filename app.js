@@ -158,13 +158,50 @@ app.get('/', async (req, res) => {
                         req.session.user.groups_human_readable.push(group.name);
                     }
 
+                    const availableSlots = await db.getAllSlots(new Date().toLocaleDateString('sv-SE'));
+
+                    /* Calculate if this slot is bookable, based on existing reservations */
+                    /* TODO: should include parameter that is not present yet, max bookings for user/group per course */
+                    for (const slot of availableSlots) {
+                        slot.reservable_for_this_user = true;
+
+                        if (slot.res_now > 0) {
+                            if (slot.type == "group") {
+                                for (const id of slot.res_group_ids) {
+                                    for (const group of req.session.user.groups) {
+                                        if (group.id === id) {
+                                            slot.reservable_for_this_user = false;
+                                        }                                    
+                                    }
+                                }
+                            }
+                            else {
+                                for (const id of slot.res_user_ids) {
+                                    if (req.session.user.id === id) {
+                                        slot.reservable_for_this_user = false;
+                                    }                                    
+                                }
+                            }
+                        }
+                    }
+
+                    /* return res.send({
+                        status: 'up',
+                        version: pkg.version,
+                        session: req.session,
+                        groups: req.session.user.groups,
+                        slots: availableSlots,
+                        courses: await db.getValidCourses(new Date().toLocaleDateString('sv-SE')),
+                        instructors: await db.getValidInstructors(),
+                        locations: await db.getValidLocations()
+                    }); */
+
                     return res.render('pages/index', {
                         status: 'up',
                         version: pkg.version,
                         session: req.session,
                         groups: req.session.user.groups,
-                        user: req.session.user,
-                        slots: await db.getAllSlots(new Date().toLocaleDateString('sv-SE')),
+                        slots: availableSlots,
                         courses: await db.getValidCourses(new Date().toLocaleDateString('sv-SE')),
                         instructors: await db.getValidInstructors(),
                         locations: await db.getValidLocations()
