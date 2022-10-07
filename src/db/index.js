@@ -35,7 +35,6 @@ async function getAllSlots(date) {
     const dateOptions = { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric' };
     const timeOptions = { hour: '2-digit', minute: '2-digit' };
 
-    /* TODO: Fix this query in the view! */
     await query("SELECT * FROM slots_view s WHERE s.time_start >= $1", [ date ]).then((result) => {
         data = result.rows;
     }).catch((error) => {
