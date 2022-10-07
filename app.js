@@ -422,10 +422,11 @@ app.post('/api/reservation', async (req, res) => {
             await user.addUserFlagsForRoles(req);
 
             if (req.session.user) {
-                const { slot_id, group_id, message } = req.body;
+                const { slot_id, group_id, user_id, message } = req.body;
 
                 console.log(req.body)
 
+                /* Note: user_id is always taken from req.session.user object! */
                 try {
                     const reservation = await db.createSlotReservation(slot_id, req.session.user.id, group_id, message);
                     return res.send({
