@@ -107,6 +107,12 @@ async function getReservationsForUser(user_id, groups) {
 async function createSlotReservation(slot_id, user_id, group_id, message) {
     let data;
 
+    const slot = await getSlot(slot_id);
+
+    if (slot.type == "individual") {
+        group_id = null;
+    }
+
     await query("INSERT INTO reservation (slot_id, canvas_user_id, canvas_group_id, message, created_by) VALUES ($1, $2, $3, $4, $2) RETURNING id", [ 
         slot_id,
         user_id,

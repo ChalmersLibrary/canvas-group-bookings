@@ -42,27 +42,38 @@ document.addEventListener("DOMContentLoaded", function(event) {
             reserveSlotModal.querySelector('#r_instructor_name').innerText = data.instructor_name
             reserveSlotModal.querySelector('#r_location_name').innerText = data.location_name
             reserveSlotModal.querySelector('#r_slot_time').innerText = data.shortcut.start_date + " kl " + data.shortcut.start_time + "--" + data.shortcut.end_time
-            reserveSlotModal.querySelector('#reservations').replaceChildren()
-            if (data.reservations && data.reservations.length > 0) {
-                data.reservations.forEach(reservation => {
-                    const r = reserveSlotModal.querySelector('#reservations').appendChild(document.createElement('div'))
-                    r.innerText = reservation.created_at
-                    reserveSlotModal.querySelector('#reservationsCurrent').classList.remove("d-none")
-                    reserveSlotModal.querySelector('#reservationsCurrent').classList.add("d-block")
-                    console.log(reservation)
-                })
-                reserveSlotModal.querySelector('#reserveSlotWarning').classList.remove("d-none")
-                reserveSlotModal.querySelector('#reserveSlotWarning').classList.add("d-block")
+            if (data.type === "individual") {
+                if (reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.contains("d-block")) {
+                    reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.remove("d-block")
+                    reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.add("d-none")
+                }
+                reserveSlotModal.querySelector('#reserveSlotIndividualBlock').classList.remove("d-none")
+                reserveSlotModal.querySelector('#reserveSlotIndividualBlock').classList.add("d-block")
+                reserveSlotModal.querySelector('#reserveSlotGroupBlock').classList.remove("d-block")
+                reserveSlotModal.querySelector('#reserveSlotGroupBlock').classList.add("d-none")
+            }
+            else {
+                if (reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.contains("d-none")) {
+                    reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.remove("d-none")
+                    reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.add("d-block")
+                }
+                reserveSlotModal.querySelector('#reservations').replaceChildren()
+                if (data.reservations && data.reservations.length > 0) {
+                    data.reservations.forEach(reservation => {
+                        const r = reserveSlotModal.querySelector('#reservations').appendChild(document.createElement('div'))
+                        r.innerText = reservation.created_at
+                        reserveSlotModal.querySelector('#reservationsCurrent').classList.remove("d-none")
+                        reserveSlotModal.querySelector('#reservationsCurrent').classList.add("d-block")
+                        console.log(reservation)
+                    })
+                    reserveSlotModal.querySelector('#reserveSlotWarning').classList.remove("d-none")
+                    reserveSlotModal.querySelector('#reserveSlotWarning').classList.add("d-block")
+                }
             }
         })
         if (reserveSlotModal.querySelector('#reserveSlotError').classList.contains("d-block")) {
             reserveSlotModal.querySelector('#reserveSlotError').classList.remove("d-block")
             reserveSlotModal.querySelector('#reserveSlotError').classList.add("d-none")
-        }
-        if (!reserveSlotModal.querySelector('#r_group_id')) {
-            reserveSlotModal.querySelector('#reserveSlotSubmitButton').disabled = true
-            reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.remove("d-block")
-            reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.add("d-none")
         }
     });
 
@@ -85,6 +96,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 body: JSON.stringify({
                     slot_id: reserveSlotModal.querySelector('#r_slot_id').value,
                     group_id: reserveSlotModal.querySelector('#r_group_id').value,
+                    user_id: reserveSlotModal.querySelector('#r_user_id').value,
                     message: reserveSlotModal.querySelector('#r_message').value
                 })
             };
