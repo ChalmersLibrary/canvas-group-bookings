@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", function(event) {
     const slotFilterCourse = document.getElementById('slotFilterCourse');
+    const slotFilterAvailable = document.getElementById('slotFilterAvailability');
     const slots = document.querySelectorAll('#slots tbody tr');
 
     if (slotFilterCourse) {
@@ -17,6 +18,25 @@ document.addEventListener("DOMContentLoaded", function(event) {
                     }
                     else {
                         slot.classList.remove('d-none');
+                    }
+                }
+            });
+        });    
+    }
+    if (slotFilterAvailable) {
+        slotFilterAvailable.addEventListener('change', function () {
+            let value = slotFilterAvailable.value;
+            
+            [...slots].forEach((slot) => {
+                if (value === '2') {
+                    slot.classList.remove('d-none');
+                }
+                else {
+                    if (slot.dataset.available == 'true') {
+                        slot.classList.remove('d-none');
+                    }
+                    else {
+                        slot.classList.add('d-none');
                     }
                 }
             });
