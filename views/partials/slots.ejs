@@ -49,31 +49,36 @@
             <td>Tid</td>
             <td>Plats</td>
             <td>Handledare</td>
-            <td>Tillgänglighet</td>    
+            <td>Tillgänglighet</td>
+            <td>Information</td>
         </tr>
     </thead>
     <tbody class="table-group-divider">
         <% slots.forEach((slot) => { %>
-            <tr class="" data-course_id="<%= slot.course_id %>">
+            <tr class="" data-course_id="<%= slot.course_id %>" data-available="<%= slot.reservable_for_this_user %>">
                 <td><%= slot.course_name %></td>
                 <td><%- slot.time_human_readable_sv %></td>
                 <td><%= slot.location_name %></td>
                 <td><%= slot.instructor_name %></td>
                 <td>
-                    <% if (slot.max == slot.res_now) { %>
-                        Fullbokad, <%= slot.max %>
-                        <% if (slot.type == "group") { %>
-                            <% if (slot.max > 1) { %>
-                                grupper
-                            <% } else { %>
-                                grupp
-                            <% } %>
+                    <% if (slot.res_max == slot.res_now) { %>
+                        Fullbokad, 
+                    <% } else { %>
+                        Tillgänglig, <%= slot.res_max-slot.res_now %> av 
+                    <% } %>
+                    <%= slot.res_max %>
+                    <% if (slot.type == "group") { %>
+                        <% if (slot.res_max > 1) { %>
+                            grupper
                         <% } else { %>
-                            personer
+                            grupp
                         <% } %>
                     <% } else { %>
-                        Tillgänglig, <%= slot.max-slot.res_now %> av <%= slot.max %>
+                        personer
                     <% } %>
+                </td>
+                <td>
+                    <%= slot.reservable_notice %>
                 </td>
                 <% if (session.user.isAdministrator) { %>
                     <td>

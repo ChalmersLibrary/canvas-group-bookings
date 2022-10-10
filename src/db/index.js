@@ -104,13 +104,21 @@ async function getReservationsForUser(user_id, groups) {
     return returnedData;
 }
 
+/* Makes a reservation for a slot time, either individual or group */
 async function createSlotReservation(slot_id, user_id, group_id, message) {
     let data;
 
+    // Load data about the slot being reserved
     const slot = await getSlot(slot_id);
 
+    // Always set group_id to null if individual
     if (slot.type == "individual") {
         group_id = null;
+    }
+
+    // Check if number of reservations are max (should already be checked)
+    if (slot.res_max == slot.res_now) {
+        throw new Error("Max antal platser är uppnått, kan inte boka.");
     }
 
     await query("INSERT INTO reservation (slot_id, canvas_user_id, canvas_group_id, message, created_by) VALUES ($1, $2, $3, $4, $2) RETURNING id", [ 
@@ -135,6 +143,19 @@ async function getValidCourses(date) {
         data = result.rows;
     }).catch((error) => {
         log.error(error);
+    });
+    
+    return data;
+}
+
+async function getCourse(id) {
+    let data;
+
+    await query("SELECT * FROM course WHERE id = $1", [ id ]).then((result) => {
+        data = result.rows[0];
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
     });
     
     return data;

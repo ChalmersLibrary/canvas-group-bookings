@@ -161,25 +161,52 @@ app.get('/', async (req, res) => {
                     const availableSlots = await db.getAllSlots(new Date().toLocaleDateString('sv-SE'));
 
                     /* Calculate if this slot is bookable, based on existing reservations */
-                    /* TODO: should include parameter that is not present yet, max bookings for user/group per course */
                     for (const slot of availableSlots) {
                         slot.reservable_for_this_user = true;
 
-                        if (slot.res_now > 0) {
+                        if (slot.res_now == slot.res_max) {
+                            slot.reservable_for_this_user = false;
+                            slot.reservable_notice = "Tiden är fullbokad.";
+                        }
+                        else {
                             if (slot.type == "group") {
-                                for (const id of slot.res_group_ids) {
-                                    for (const group of req.session.user.groups) {
-                                        if (group.id === id) {
-                                            slot.reservable_for_this_user = false;
-                                        }                                    
+                                if (slot.res_group_ids) {
+                                    for (const id of slot.res_group_ids) {
+                                        for (const group of req.session.user.groups) {
+                                            if (group.id === id) {
+                                                slot.reservable_for_this_user = false;
+                                                slot.reservable_notice = "Du/din grupp är bokad.";
+                                            }
+                                        }
+                                    }
+                                }
+                                if (slot.res_course_group_ids) {
+                                    for (const id of slot.res_course_group_ids) {
+                                        for (const group of req.session.user.groups) {
+                                            if (group.id === id) {
+                                                slot.reservable_for_this_user = false;
+                                                slot.reservable_notice = "Du/din grupp är redan bokad på momentet.";
+                                            }
+                                        }
                                     }
                                 }
                             }
                             else {
-                                for (const id of slot.res_user_ids) {
-                                    if (req.session.user.id === id) {
-                                        slot.reservable_for_this_user = false;
-                                    }                                    
+                                if (slot.res_user_ids) {
+                                    for (const id of slot.res_user_ids) {
+                                        if (req.session.user.id === id) {
+                                            slot.reservable_for_this_user = false;
+                                            slot.reservable_notice = "Du är bokad på detta tillfälle.";
+                                        }
+                                    }
+                                }
+                                if (slot.res_course_user_ids) {
+                                    for (const id of slot.res_course_user_ids) {
+                                        if (req.session.user.id === id) {
+                                            slot.reservable_for_this_user = false;
+                                            slot.reservable_notice = "Du är redan bokad på momentet.";
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -423,24 +450,82 @@ app.post('/api/reservation', async (req, res) => {
 
             if (req.session.user) {
                 const { slot_id, group_id, user_id, message } = req.body;
-
                 console.log(req.body)
 
-                /* Note: user_id is always taken from req.session.user object! */
-                try {
-                    const reservation = await db.createSlotReservation(slot_id, req.session.user.id, group_id, message);
-                    return res.send({
-                        success: true,
-                        message: "Slot was reserved.",
-                        reservation_id: reservation.id
-                    });
-                }
-                catch (error) {
-                    console.error(error);
-                    return res.send({
-                        success: false,
-                        message: error.message
-                    });
+                if (req.session.lti) {
+                    // Numerical course_id if running Public, if Anonymous we use context_id
+                    let courseId = req.session.lti.custom_canvas_course_id ? req.session.lti.custom_canvas_course_id : "lti_context_id:" + req.session.lti.context_id;                        
+
+                    /* Note: user_id is always taken from req.session.user object! */
+                    try {
+                        // Add the groups from Canvas for this user
+                        // req.session.user.groups = [];
+                        req.session.user.groups = await canvasApi.getCourseGroups(courseId, req.session.user.id);
+                        req.session.user.groups_human_readable = new Array();
+                    
+                        for (const group of req.session.user.groups) {
+                            req.session.user.groups_human_readable.push(group.name);
+                        }
+
+                        const slot = await db.getSlot(slot_id);
+
+                        if (slot.res_now == slot.res_max) {
+                            throw new Error("Max antal bokningar totalt på tillfället har uppnåtts, kan inte boka tiden.");
+                        }
+                        else {
+                            if (slot.type == "group") {
+                                if (slot.res_group_ids) {
+                                    for (const id of slot.res_group_ids) {
+                                        for (const group of req.session.user.groups) {
+                                            if (group.id === id) {
+                                                throw new Error("Din grupp är redan bokad på tillfället.");
+                                            }
+                                        }
+                                    }
+                                }
+                                if (slot.res_course_group_ids) {
+                                    for (const id of slot.res_course_group_ids) {
+                                        for (const group of req.session.user.groups) {
+                                            if (group.id === id) {
+                                                throw new Error("Max antal bokningar på samma typ av tillfälle har uppnåtts, kan inte boka fler tider.");
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            else {
+                                if (slot.res_user_ids) {
+                                    for (const id of slot.res_user_ids) {
+                                        if (req.session.user.id === id) {
+                                            throw new Error("Du är redan bokad på tillfället.");
+                                        }
+                                    }
+                                }
+                                if (slot.res_course_user_ids) {
+                                    for (const id of slot.res_course_user_ids) {
+                                        if (req.session.user.id === id) {
+                                            throw new Error("Max antal bokningar på samma typ av tillfälle har uppnåtts, kan inte boka fler tider.");
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        const reservation = await db.createSlotReservation(slot_id, req.session.user.id, group_id, message);
+
+                        return res.send({
+                            success: true,
+                            message: "Tiden har bokats.",
+                            reservation_id: reservation.id
+                        });
+                    }
+                    catch (error) {
+                        console.error(error);
+                        return res.send({
+                            success: false,
+                            message: error.message
+                        });
+                    }
                 }
             }
             else {
