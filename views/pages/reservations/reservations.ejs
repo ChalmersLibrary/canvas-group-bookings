@@ -16,6 +16,18 @@
     </div>
 
     <div class="container-fluid py-2">
+      <% if (reservationDeleted) { %>
+        <div class="alert alert-success" role="alert">
+          <strong>Tillfället "<%= reservationTitle %>" har avbokats.</strong>
+          Du kommer även att få bekräftelse via e-post om detta, om bokningen gäller en hel grupp även alla i gruppen.
+        </div>
+      <% } %>
+      <% if (reservationDone) { %>
+        <div class="alert alert-success" role="alert">
+          <strong>Tillfället har bokats.</strong>
+          Du kommer även att få bekräftelse via e-post om detta, om bokningen gäller en hel grupp även alla i gruppen.
+        </div>
+      <% } %>
         <% reservations.forEach(reservation => { %>
           <div class="card <% if (reservation.just_created) { %>border-success <% } %>my-2" data-reservation-id="<%= reservation.id %>">
             <div class="card-header">

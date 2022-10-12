@@ -109,6 +109,50 @@ async function getReservationsForUser(canvas_course_id, user_id, groups) {
     return returnedData;
 }
 
+/* Get one reservation, calling user must be reserver or in correct group */
+async function getReservation(user_id, groups, reservation_id) {
+    let data;
+    let returnedData = [];
+    const dateOptions = { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric' };
+    const timeOptions = { hour: '2-digit', minute: '2-digit' };
+    
+    await query("SELECT * FROM reservations_view WHERE id=$3 AND (canvas_user_id=$1 OR canvas_group_id=ANY($2)) ORDER BY time_start ASC", [ 
+        user_id,
+        groups,
+        reservation_id
+    ]).then((result) => {
+        data = result.rows;
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    });
+    
+    if (data !== undefined && data.length) {
+        data.forEach(reservation => {
+            reservation.created_at_human_readable_sv = new Date(reservation.created_at).toLocaleDateString('sv-SE', dateOptions);
+            reservation.time_human_readable_sv = new Date(reservation.time_start).toLocaleDateString('sv-SE', dateOptions) + " kl " + new Date(reservation.time_start).toLocaleTimeString('sv-SE', timeOptions) + "&ndash;" + new Date(reservation.time_end).toLocaleTimeString('sv-SE', timeOptions);
+            
+            returnedData.push(reservation);
+        });
+    }
+
+    return returnedData[0];
+}
+
+/* Delete one reservation, calling user must be reserver or in correct group */
+async function deleteReservation(user_id, groups, reservation_id) {
+    await query("UPDATE reservation SET deleted_at=now(), deleted_by=$1 WHERE id=$3 AND (canvas_user_id=$1 OR canvas_group_id=ANY($2))", [ 
+        user_id,
+        groups,
+        reservation_id
+    ]).then((result) => {
+        console.log(result);
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    });
+}
+
 /* Makes a reservation for a slot time, either individual or group */
 async function createSlotReservation(slot_id, user_id, group_id, message) {
     let data;
@@ -276,7 +320,9 @@ module.exports = {
     getSlot,
     getSlotReservations,
     getReservationsForUser,
+    getReservation,
     createSlotReservation,
+    deleteReservation,
     getValidCourses,
     getValidInstructors,
     getValidLocations,

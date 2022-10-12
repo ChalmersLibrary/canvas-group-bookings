@@ -316,7 +316,10 @@ app.get('/reservations', async (req, res) => {
                         status: 'up',
                         version: pkg.version,
                         session: req.session,
-                        reservations: reservations
+                        reservations: reservations,
+                        reservationDeleted: req.query.reservationDeleted && req.query.reservationDeleted == "true",
+                        reservationDone: req.query.reservationDone && req.query.reservationDone == "true",
+                        reservationTitle: req.query.reservationTitle ? req.query.reservationTitle : null
                     });
                 }
                 catch(error) {
@@ -545,6 +548,118 @@ app.post('/api/reservation', async (req, res) => {
         }
     });
 });
+
+/* Get one reservation */
+app.get('/api/reservation/:id', async (req, res) => {
+    await auth.checkAccessToken(req).then(async (result) => {
+        if (result !== undefined && result.success === true) {
+            await user.mockLtiSession(req);
+            await user.addUserFlagsForRoles(req);
+
+            if (req.session.user && req.session.lti) {
+                console.log(req.params.id);
+
+                // Numerical course_id if running Public, if Anonymous we use context_id
+                let courseId = req.session.lti.custom_canvas_course_id ? req.session.lti.custom_canvas_course_id : "lti_context_id:" + req.session.lti.context_id;                        
+
+                /* Note: user_id is always taken from req.session.user object! */
+                try {
+                    // Add the groups from Canvas for this user
+                    req.session.user.groups = await canvasApi.getCourseGroups(courseId, req.session.user.id);
+                    req.session.user.groups_ids = new Array();
+                    req.session.user.groups_human_readable = new Array();
+                
+                    for (const group of req.session.user.groups) {
+                        req.session.user.groups_human_readable.push(group.name);
+                        req.session.user.groups_ids.push(group.id);
+                    }
+
+                    const reservation = await db.getReservation(req.session.user.id, req.session.user.groups_ids, req.params.id);
+
+                    return res.send(reservation);                        
+                }
+                catch (error) {
+                    console.error(error);
+                    return res.send({
+                        success: false,
+                        error: error
+                    });
+                }
+            }
+            else {
+                return res.render('pages/error', {
+                    status: 'up',
+                    version: pkg.version,
+                    session: req.session,
+                    user: req.session.user,
+                    error: "NO_API_KEY",
+                    message: "You must confirm that this application can access the Canvas API as you."
+                });
+            }
+        }
+        else {
+            log.error("No access token returned, redirecting to auth flow...");
+            return res.redirect("/auth");
+        }
+    });
+});
+
+/* Delete a reservation */
+app.delete('/api/reservation/:id', async (req, res) => { 
+    await auth.checkAccessToken(req).then(async (result) => {
+        if (result !== undefined && result.success === true) {
+            await user.mockLtiSession(req);
+            await user.addUserFlagsForRoles(req);
+
+            if (req.session.user && req.session.lti) {
+                console.log(req.params.id);
+                console.log(req.body);
+
+                // Numerical course_id if running Public, if Anonymous we use context_id
+                let courseId = req.session.lti.custom_canvas_course_id ? req.session.lti.custom_canvas_course_id : "lti_context_id:" + req.session.lti.context_id;                        
+
+                /* Note: user_id is always taken from req.session.user object! */
+                try {
+                    // Add the groups from Canvas for this user
+                    req.session.user.groups = await canvasApi.getCourseGroups(courseId, req.session.user.id);
+                    req.session.user.groups_ids = new Array();
+                    req.session.user.groups_human_readable = new Array();
+                
+                    for (const group of req.session.user.groups) {
+                        req.session.user.groups_human_readable.push(group.name);
+                        req.session.user.groups_ids.push(group.id);
+                    }
+
+                    await db.deleteReservation(req.session.user.id, req.session.user.groups_ids, req.params.id);
+
+                    return res.send({
+                        success: true,
+                        message: 'Reservation was deleted.',
+                        reservation_id: req.params.id
+                    });
+                }
+                catch (error) {
+                    console.error(error);
+                    return res.send({
+                        success: false,
+                        error: error
+                    });
+                }
+            }
+            else {
+                return res.send({
+                    success: false,
+                    error: "No user or LTI object in session."
+                });
+            }
+        }
+        else {
+            log.error("No access token returned, redirecting to auth flow...");
+            return res.redirect("/auth");
+        }
+    });
+});
+
 
 /* ==================== */
 /* API Endpoints, admin */
