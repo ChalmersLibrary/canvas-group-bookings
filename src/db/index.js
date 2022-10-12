@@ -68,10 +68,24 @@ async function getSlot(id) {
     return data;
 }
 
+/* Get reservations for a slot, full view */
 async function getSlotReservations(id) {
     let data;
 
     await query("SELECT * FROM reservation WHERE slot_id = $1", [ id ]).then((result) => {
+        data = result.rows;
+    }).catch((error) => {
+        log.error(error);
+    });
+    
+    return data;
+}
+
+/* Get reservations for a slot, simple view (for end user) */
+async function getSimpleSlotReservations(id) {
+    let data;
+
+    await query("SELECT canvas_group_id, is_group, is_individual, max_groups, max_individuals, res_now FROM reservations_view WHERE slot_id = $1", [ id ]).then((result) => {
         data = result.rows;
     }).catch((error) => {
         log.error(error);
@@ -319,6 +333,7 @@ module.exports = {
     getAllSlots,
     getSlot,
     getSlotReservations,
+    getSimpleSlotReservations,
     getReservationsForUser,
     getReservation,
     createSlotReservation,

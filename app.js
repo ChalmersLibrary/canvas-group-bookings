@@ -403,19 +403,29 @@ app.get('/api/slot/:id', async (req, res) => {
             await user.mockLtiSession(req);
             await user.addUserFlagsForRoles(req);
 
-            if (req.session.user) {
+            if (req.session.user && req.session.lti) {
                 console.log(req.params.id);
+
+                let courseId = req.session.lti.custom_canvas_course_id ? req.session.lti.custom_canvas_course_id : "lti_context_id:" + req.session.lti.context_id;
 
                 try {
                     const slot = await db.getSlot(req.params.id)
-                    const reservations = await db.getSlotReservations(req.params.id);
-                    slot.reservations = reservations;
+                    slot.reservations = await db.getSimpleSlotReservations(req.params.id);
+
                     slot.shortcut = {
                         start_date: utils.getDatePart(slot.time_start),
                         end_date: utils.getDatePart(slot.time_end),
                         start_time: utils.getTimePart(slot.time_start),
                         end_time: utils.getTimePart(slot.time_end)
                     }
+
+                    for (const r of slot.reservations) {
+                        if (r.canvas_group_id) {
+                            // const group = await canvasApi.getGroupDetails(courseId, req.session.user.id, r.canvas_group_id);
+                            r.canvas_group_name = "Placeholder, Canvas API";
+                        }
+                    }
+
                     return res.send(slot);                        
                 }
                 catch (error) {

@@ -149,6 +149,13 @@ async function getUserDetails(courseId, userId, user_id) {
 }
 
 /* Details (with members) for a given group (global id, not bound to course) */
+/**
+ * @description Details (with members) for a given group (global id, not bound to course)
+ * @param {number} courseId
+ * @param {number} userid
+ * @param {number} user_id
+ * @returns {json}
+ */
 async function getGroupDetails(courseId, userId, group_id) {
     try {
         const cachedData = groupDetailsCache.get(group_id);
