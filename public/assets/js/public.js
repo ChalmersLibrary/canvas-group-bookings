@@ -82,7 +82,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
                     if (data.reservations && data.reservations.length > 0) {
                         data.reservations.forEach(reservation => {
                             const r = reserveSlotModal.querySelector('#reservations').appendChild(document.createElement('div'))
-                            r.innerText = reservation.created_at
+                            r.innerText = reservation.canvas_group_name
                             reserveSlotModal.querySelector('#reservationsCurrent').classList.remove("d-none")
                             reserveSlotModal.querySelector('#reservationsCurrent').classList.add("d-block")
                             console.log(reservation)
