@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS "course"
     "is_individual" boolean,
     "max_groups" integer,
     "max_individuals" integer,
-    "max_per_user" integer NOT NULL DEFAULT 1,
+    "max_per_type" integer NOT NULL DEFAULT 1,
     "default_slot_duration" integer,
     "message_to_instructor" boolean NOT NULL default false,
     "mail_cc_instructor" boolean NOT NULL DEFAULT true,
