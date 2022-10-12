@@ -158,7 +158,7 @@ app.get('/', async (req, res) => {
                         req.session.user.groups_human_readable.push(group.name);
                     }
 
-                    const availableSlots = await db.getAllSlots(new Date().toLocaleDateString('sv-SE'));
+                    const availableSlots = await db.getAllSlots(courseId, new Date().toLocaleDateString('sv-SE'));
 
                     /* Calculate if this slot is bookable, based on existing reservations */
                     for (const slot of availableSlots) {
@@ -229,9 +229,9 @@ app.get('/', async (req, res) => {
                         session: req.session,
                         groups: req.session.user.groups,
                         slots: availableSlots,
-                        courses: await db.getValidCourses(new Date().toLocaleDateString('sv-SE')),
-                        instructors: await db.getValidInstructors(),
-                        locations: await db.getValidLocations()
+                        courses: await db.getValidCourses(courseId, new Date().toLocaleDateString('sv-SE')),
+                        instructors: await db.getValidInstructors(courseId),
+                        locations: await db.getValidLocations(courseId)
                     });
                 }
                 catch(error) {
@@ -285,7 +285,7 @@ app.get('/reservations', async (req, res) => {
                         req.session.user.groups_ids.push(group.id);
                     }
 
-                    const reservations = await db.getReservationsForUser(req.session.user.id, req.session.user.groups_ids);
+                    const reservations = await db.getReservationsForUser(courseId, req.session.user.id, req.session.user.groups_ids);
 
                     for (const reservation of reservations) {
                         if (reservation.canvas_group_id !== null) {

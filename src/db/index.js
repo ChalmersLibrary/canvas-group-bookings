@@ -29,16 +29,20 @@ async function query(text, params) {
 }
 
 /* Returns all slots from a specific date */
-async function getAllSlots(date) {
+async function getAllSlots(canvas_course_id, date) {
     let data;
     let returnedData = [];
     const dateOptions = { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric' };
     const timeOptions = { hour: '2-digit', minute: '2-digit' };
 
-    await query("SELECT * FROM slots_view s WHERE s.time_start >= $1", [ date ]).then((result) => {
+    await query("SELECT * FROM slots_view s WHERE s.canvas_course_id = $1 AND s.time_start >= $2", [
+        canvas_course_id,
+        date
+    ]).then((result) => {
         data = result.rows;
     }).catch((error) => {
         log.error(error);
+        throw new Error(error);
     });
     
     /* TODO: think about if these additions/conversions should be done outside, and this should be just clean db code? */
@@ -76,13 +80,14 @@ async function getSlotReservations(id) {
     return data;
 }
 
-async function getReservationsForUser(user_id, groups) {
+async function getReservationsForUser(canvas_course_id, user_id, groups) {
     let data;
     let returnedData = [];
     const dateOptions = { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric' };
     const timeOptions = { hour: '2-digit', minute: '2-digit' };
     
-    await query("SELECT * FROM reservations_view WHERE canvas_user_id = $1 OR canvas_group_id = ANY ($2) ORDER BY time_start ASC", [ 
+    await query("SELECT * FROM reservations_view WHERE canvas_course_id = $1 AND (canvas_user_id = $2 OR canvas_group_id = ANY ($3)) ORDER BY time_start ASC", [ 
+        canvas_course_id,
         user_id,
         groups
     ]).then((result) => {
@@ -136,7 +141,7 @@ async function createSlotReservation(slot_id, user_id, group_id, message) {
     return data;
 }
 
-async function getValidCourses(date) {
+async function getValidCourses(canvas_course_id, date) {
     let data;
 
     await query("SELECT id, name FROM course WHERE date_start <= $1 AND date_end >= $1", [ date ]).then((result) => {
@@ -161,25 +166,27 @@ async function getCourse(id) {
     return data;
 }
 
-async function getValidInstructors() {
+async function getValidInstructors(canvas_course_id) {
     let data;
 
-    await query("SELECT id, name FROM instructor").then((result) => {
+    await query("SELECT id, name FROM instructor WHERE canvas_course_id=$1", [ canvas_course_id ]).then((result) => {
         data = result.rows;
     }).catch((error) => {
         log.error(error);
+        throw new Error(error);
     });
     
     return data;
 }
 
-async function getValidLocations() {
+async function getValidLocations(canvas_course_id) {
     let data;
 
-    await query("SELECT id, name FROM location").then((result) => {
+    await query("SELECT id, name FROM location WHERE canvas_course_id=$1", [ canvas_course_id ]).then((result) => {
         data = result.rows;
     }).catch((error) => {
         log.error(error);
+        throw new Error(error);
     });
     
     return data;
