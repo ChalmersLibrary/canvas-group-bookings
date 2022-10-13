@@ -297,10 +297,13 @@ async function deleteSlot(id) {
 
 async function checkDatabaseVersion() {
     let run_setup = false;
+    let check_new_version = true;
+    let current_version = 0;
+    let latest_applied_version = 0;
 
     await query("SELECT db_version FROM version ORDER BY applied_at DESC LIMIT 1").then((result) => {
         if (result.rows.length > 0) {
-            log.info("Ok, latest db_version is " + result.rows[0].db_version);
+            current_version = result.rows[0].db_version;
         }
         else {
             log.error("No versions in the version table, running initial setup...");
@@ -312,7 +315,47 @@ async function checkDatabaseVersion() {
     });
 
     if (run_setup) {
-        await setupDatabase();        
+        await setupDatabase();
+        latest_applied_version = 1;
+    }
+
+    while (check_new_version) {
+        await query("SELECT db_version FROM version ORDER BY applied_at DESC LIMIT 1").then(async (result) => {
+            if (result.rows.length > 0) {
+                current_version = result.rows[0].db_version;
+                console.log("Current db_version is " + current_version);
+
+                if (current_version < latest_applied_version) {
+                    console.error("Db version mismatch!");
+                    check_new_version = false;
+                }
+                else {
+                    let file = "src/db/setup_" + (current_version + 1) + ".sql";
+    
+                    if (fs.existsSync(file)) {
+                        let sql = fs.readFileSync(file).toString();
+            
+                        await query(sql).then((result) => {
+                            console.log(result);
+                            console.log("Database updated from " + file);
+                            latest_applied_version = (current_version + 1);
+                        }).catch((error) => {
+                            log.error(error);
+                        });
+                    }
+                    else {
+                        check_new_version = false;
+                    }    
+                }
+            }
+            else {
+                log.error("No versions in the version table!");
+                check_new_version = false;
+            }
+        }).catch((error) => {
+            log.error(error);
+            check_new_version = false;
+        });    
     }
 }
 
@@ -326,6 +369,10 @@ async function setupDatabase() {
     }).catch((error) => {
         log.error(error);
     });
+}
+
+async function applyVersion(version) {
+    
 }
 
 module.exports = {
