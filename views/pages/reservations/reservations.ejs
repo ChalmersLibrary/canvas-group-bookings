@@ -47,7 +47,13 @@
                   <% } %>
                 </p>
                 <% if (reservation.message) { %>
-                  <p><%= reservation.message %></p>
+                  <p class="card-text"><strong>Obligatoriska frågor:</strong> <%= reservation.message %></p>
+                <% } %>
+                <% if (reservation.other_reservations && reservation.max_groups == reservation.res_now) { %>
+                  <p class="card-text"><strong>Notera:</strong> det finns andra grupper bokade på tillfället, som nu är fullsatt (<%= reservation.max_groups %> grupper).</p>
+                <% } %>
+                <% if (reservation.max_groups > reservation.res_now) { %>
+                  <p class="card-text"><strong>Notera:</strong> det finns plats för fler grupper (totalt <%= reservation.max_groups %> grupper), men tiden är inte fullbokad än.</p>
                 <% } %>
                 <div>
                   <button type="button" title="Avboka detta tillfälle" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#deleteReservation" data-bs-reservation-id="<%= reservation.id %>">Avboka</button>

@@ -300,6 +300,17 @@ app.get('/reservations', async (req, res) => {
                             reservation.canvas_user_name = user_details.name;
                         }
 
+                        if (reservation.is_group == true && reservation.max_groups > 1) {
+                            reservation.other_reservations = [];
+                            let other_reservations = await db.getSimpleSlotReservations(reservation.slot_id);
+
+                            for (const r of other_reservations) {
+                                if (r.canvas_group_id != reservation.canvas_group_id) {
+                                    reservation.other_reservations.push(r);
+                                }
+                            }
+                        }
+
                         if (reservation.id == req.query.reservationId && req.query.reservationDone == "true") {
                             reservation.just_created = true;
                         }
