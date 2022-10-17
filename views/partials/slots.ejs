@@ -11,7 +11,7 @@
     </div>
     <div class="card-body">
         <div class="row">
-            <div class="col-3">
+            <div class="col-md-3">
                 <select id="slotFilterCourse" class="form-select form-select-sm" aria-label="Filtrera på tillfällen">
                     <option selected value="">Alla tillfällen</option>
                     <% courses.forEach((course) => { %>
@@ -19,7 +19,7 @@
                     <% }); %>
                 </select>
             </div>
-            <div class="col-3">
+            <div class="col-md-3">
                 <select id="slotFilterInstructor" class="form-select form-select-sm" aria-label="Filtrera på handledare">
                     <option selected value="">Alla handledare</option>
                     <% instructors.forEach((instructor) => { %>
@@ -27,7 +27,7 @@
                     <% }); %>
                 </select>
             </div>
-            <div class="col-3">
+            <div class="col-md-3">
                 <select id="slotFilterAvailability" class="form-select form-select-sm" aria-label="Filtrera på tillgänglighet">
                     <option value="1">Endast lediga tider</option>
                     <option selected value="2">Visa alla tider</option>
@@ -45,22 +45,53 @@
 <table id="slots" class="table table-hover my-3">
     <thead>
         <tr>
-            <td>Tillfälle</td>
-            <td>Tid</td>
-            <td>Plats</td>
-            <td>Handledare</td>
-            <td>Tillgänglighet</td>
-            <td>Information</td>
+            <td class="d-md-table-cell d-md-none">Tillfälle</td>
+            <td class="d-none d-md-table-cell">Tillfälle</td>
+            <td class="d-none d-md-table-cell">Tid</td>
+            <td class="d-none d-md-table-cell">Plats</td>
+            <td class="d-none d-md-table-cell">Handledare</td>
+            <td class="d-none d-md-table-cell">Tillgänglighet</td>
+            <td class="d-none d-md-table-cell">Information</td>
         </tr>
     </thead>
     <tbody class="table-group-divider">
         <% slots.forEach((slot) => { %>
             <tr class="" data-course_id="<%= slot.course_id %>" data-available="<%= slot.reservable_for_this_user %>">
-                <td><%= slot.course_name %></td>
-                <td><%- slot.time_human_readable_sv %></td>
-                <td><%= slot.location_name %></td>
-                <td><%= slot.instructor_name %></td>
-                <td>
+                <td class="d-md-table-cell d-md-none">
+                    <%= slot.course_name %><br>
+                    <strong class="text-capitalize"><%- slot.time_human_readable_sv %></strong><br>
+                    <%= slot.location_name %>, <%= slot.instructor_name %>
+                    <div>
+                        <% if (slot.res_max == slot.res_now) { %>
+                            Fullbokad, 
+                        <% } else { %>
+                            Tillgänglig, <%= slot.res_max-slot.res_now %> av 
+                        <% } %>
+                        <%= slot.res_max %>
+                        <% if (slot.type == "group") { %>
+                            <% if (slot.res_max > 1) { %>
+                                grupper
+                            <% } else { %>
+                                grupp
+                            <% } %>
+                        <% } else { %>
+                            personer
+                        <% } %>
+                    </div>
+                    <p>
+                        <% if (slot.reservable_for_this_user) { %>
+                            <button type="button" title="Boka tillfället" class="btn btn-primary btn-sm float-end" data-bs-toggle="modal" data-bs-target="#reserveSlot" data-bs-slot-id="<%= slot.id %>" >Boka</button>
+                        <% } else { %>
+                            <button type="button" title="Tillfället är inte bokningsbart" class="btn btn-primary btn-sm float-end" disabled>Boka</button>
+                        <% } %>
+                        <span class="float-start text-small text-muted"><%= slot.reservable_notice %>&nbsp;</span>
+                    </p>
+                </td>
+                <td class="d-none d-md-table-cell"><%= slot.course_name %></td>
+                <td class="d-none d-md-table-cell"><%- slot.time_human_readable_sv %></td>
+                <td class="d-none d-md-table-cell"><%= slot.location_name %></td>
+                <td class="d-none d-md-table-cell"><%= slot.instructor_name %></td>
+                <td class="d-none d-md-table-cell">
                     <% if (slot.res_max == slot.res_now) { %>
                         Fullbokad, 
                     <% } else { %>
@@ -77,17 +108,17 @@
                         personer
                     <% } %>
                 </td>
-                <td>
+                <td class="d-none d-md-table-cell">
                     <%= slot.reservable_notice %>
                 </td>
                 <% if (session.user.isAdministrator) { %>
-                    <td>
+                    <td class="d-none d-md-table-cell">
                         <button type="button" title="Redigera" data-bs-toggle="modal" data-bs-target="#editSlot" data-bs-slot-id="<%= slot.id %>" class="btn btn-secondary btn-sm float-end"><i class="bi-pencil-fill"></i></button>
                         <button type="button" title="Radera" data-bs-toggle="modal" data-bs-target="#deleteSlot" data-bs-slot-id="<%= slot.id %>" class="btn btn-secondary btn-sm float-end mx-2"><i class="bi-trash-fill"></i></button>
                         <button disabled type="button" title="Administratörer kan inte boka" class="btn btn-primary btn-sm float-end">Boka</button>
                     </td>
                 <% } else { %>
-                    <td>
+                    <td class="d-none d-md-table-cell">
                         <% if (slot.reservable_for_this_user) { %>
                             <button type="button" title="Boka tillfället" class="btn btn-primary btn-sm float-end" data-bs-toggle="modal" data-bs-target="#reserveSlot" data-bs-slot-id="<%= slot.id %>" >Boka</button>
                         <% } else { %>
