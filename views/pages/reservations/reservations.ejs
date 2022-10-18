@@ -39,7 +39,10 @@
             </div>
             <div class="card-body">
                 <h5 class="card-title"><%= reservation.course_name %></h5>
-                <h6 class="card-subtitle mb-2 text-muted"><%= reservation.location_name %> med <%= reservation.instructor_name %>, <%- reservation.time_human_readable_sv %></h6>
+                <h6 class="card-subtitle mb-2 text-muted"><%- reservation.time_human_readable_sv %></h6>
+                <p class="card-text">
+                  <%= reservation.location_name %>, <%= reservation.instructor_name %>
+                </p>
                 <p class="card-text">
                   Bokad av <strong><%= reservation.canvas_user_name %></strong> 
                   <% if (reservation.canvas_group_id) { %>
