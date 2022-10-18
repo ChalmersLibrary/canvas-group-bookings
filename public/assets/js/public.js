@@ -63,6 +63,13 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 reserveSlotModal.querySelector('#r_instructor_name').innerText = data.instructor_name
                 reserveSlotModal.querySelector('#r_location_name').innerText = data.location_name
                 reserveSlotModal.querySelector('#r_slot_time').innerText = data.shortcut.start_date + " kl " + data.shortcut.start_time + "--" + data.shortcut.end_time
+                if (data.course_message_required == false) {
+                    reserveSlotModal.querySelector("#r_message").removeAttribute("required")
+                }
+                if (data.course_description !== '') {
+                    reserveSlotModal.querySelector('#r_course_description').innerText = data.course_description
+                    reserveSlotModal.querySelector('#r_course_description').classList.remove("d-none")
+                }
                 if (data.type === "individual") {
                     if (reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.contains("d-block")) {
                         reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.remove("d-block")

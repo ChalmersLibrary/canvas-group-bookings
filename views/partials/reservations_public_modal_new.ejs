@@ -10,11 +10,11 @@
                 </div>
                 <div class="modal-body">
                     <div class="row">
-                        <div class="col-md-5">
+                        <div class="col-lg-5">
                             <p>
-                                <label>Tillfälle:</label><br>
-                                <span id="r_course_name"></span>
+                                <strong id="r_course_name"></strong>
                             </p>
+                            <p class="d-none" id="r_course_description"></p>
                             <p>
                                 <label>Datum och tid:</label><br>
                                 <span id="r_slot_time"></span>
@@ -34,9 +34,9 @@
                                 </p>
                             </div>
                         </div>
-                        <div class="col-md-7">
+                        <div class="col-lg-7">
                             <p>
-                                <label for="r_message" class="form-label">Obligatoriska frågor till handledare inför mötet:</label>
+                                <label for="r_message" class="form-label">Frågor eller meddelande till handledaren:</label>
                                 <textarea required id="r_message" name="message" class="form-control" rows="4"></textarea>
                                 <div class="invalid-feedback">Please enter a message in the textarea.</div>
                             </p>
