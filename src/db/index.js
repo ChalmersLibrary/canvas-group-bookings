@@ -72,7 +72,7 @@ async function getSlot(id) {
 async function getSlotReservations(id) {
     let data;
 
-    await query("SELECT * FROM reservation WHERE slot_id = $1", [ id ]).then((result) => {
+    await query("SELECT * FROM reservations_view WHERE slot_id=$1", [ id ]).then((result) => {
         data = result.rows;
     }).catch((error) => {
         log.error(error);
@@ -85,7 +85,7 @@ async function getSlotReservations(id) {
 async function getSimpleSlotReservations(id) {
     let data;
 
-    await query("SELECT canvas_group_id, is_group, is_individual, max_groups, max_individuals, res_now FROM reservations_view WHERE slot_id = $1", [ id ]).then((result) => {
+    await query("SELECT canvas_group_id, canvas_group_name, is_group, is_individual, max_groups, max_individuals, res_now FROM reservations_view WHERE slot_id = $1", [ id ]).then((result) => {
         data = result.rows;
     }).catch((error) => {
         log.error(error);
@@ -168,7 +168,7 @@ async function deleteReservation(user_id, groups, reservation_id) {
 }
 
 /* Makes a reservation for a slot time, either individual or group */
-async function createSlotReservation(slot_id, user_id, group_id, message) {
+async function createSlotReservation(slot_id, user_id, group_id, group_name, message) {
     let data;
 
     // Load data about the slot being reserved
@@ -184,10 +184,11 @@ async function createSlotReservation(slot_id, user_id, group_id, message) {
         throw new Error("Max antal platser är uppnått, kan inte boka.");
     }
 
-    await query("INSERT INTO reservation (slot_id, canvas_user_id, canvas_group_id, message, created_by) VALUES ($1, $2, $3, $4, $2) RETURNING id", [ 
+    await query("INSERT INTO reservation (slot_id, canvas_user_id, canvas_group_id, canvas_group_name, message, created_by) VALUES ($1, $2, $3, $4, $5, $2) RETURNING id", [ 
         slot_id,
         user_id,
         group_id,
+        group_name,
         message
     ]).then((result) => {
         data = result.rows[0];
@@ -295,6 +296,24 @@ async function deleteSlot(id) {
     });
 }
 
+async function updateGroupsCanvasCache(course_id, group_id, user_id, group_name, user_name, user_email) {
+    await query("INSERT INTO canvas_cache_group_members (canvas_course_id,canvas_group_id,canvas_user_id,canvas_group_name,canvas_user_name,canvas_user_email) " + 
+    "VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT ON CONSTRAINT canvas_cache_group_members_pkey DO " +
+    "UPDATE SET canvas_group_name=EXCLUDED.canvas_group_name, canvas_user_name=EXCLUDED.canvas_user_name, canvas_user_email=EXCLUDED.canvas_user_email, updated_at=now();", [
+        course_id,
+        group_id, 
+        user_id,
+        group_name,
+        user_name,
+        user_email
+    ]).then((result) => {
+        log.info(result);
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    });
+}
+
 async function checkDatabaseVersion() {
     let run_setup = false;
     let check_new_version = true;
@@ -391,5 +410,6 @@ module.exports = {
     createSlots,
     updateSlot,
     deleteSlot,
+    updateGroupsCanvasCache,
     checkDatabaseVersion,
 }

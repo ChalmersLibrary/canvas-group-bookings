@@ -79,12 +79,12 @@
                         <% } %>
                     </div>
                     <p>
+                        <span class="float-start text-small text-muted"><%= slot.reservable_notice %>&nbsp;</span>
                         <% if (slot.reservable_for_this_user) { %>
                             <button type="button" title="Boka tillfället" class="btn btn-primary btn-sm float-end" data-bs-toggle="modal" data-bs-target="#reserveSlot" data-bs-slot-id="<%= slot.id %>" >Boka</button>
                         <% } else { %>
                             <button type="button" title="Tillfället är inte bokningsbart" class="btn btn-primary btn-sm float-end" disabled>Boka</button>
                         <% } %>
-                        <span class="float-start text-small text-muted"><%= slot.reservable_notice %>&nbsp;</span>
                     </p>
                 </td>
                 <td class="d-none d-md-table-cell"><%= slot.course_name %></td>
