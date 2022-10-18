@@ -288,17 +288,17 @@ app.get('/reservations', async (req, res) => {
                     // Populate with information from Canvas API about reserving user and group.
                     // NOTE: The only user and group information available is the ones that the calling user belongs to!
                     // The API does not allow for fetching info about other groups, even if the user is in the same course.
+                    // TODO: This information should therefore be in the db, both canvas_user_name and canvas_group_name (done). 
                     for (const reservation of reservations) {
-                        if (reservation.canvas_group_id !== null) {
+                        /* if (reservation.canvas_group_id !== null) {
                             let group_details = await canvasApi.getGroupDetails(courseId, req.session.user.id, reservation.canvas_group_id);
                             reservation.canvas_group_name = group_details.name;
-                        }
+                        } */
                         if (reservation.canvas_user_id === req.session.user.id) {
                             reservation.canvas_user_name = req.session.user.name;
                         }
                         else {
-                            let user_details = await canvasApi.getUserDetails(courseId, req.session.user.id, reservation.canvas_user_id);
-                            reservation.canvas_user_name = user_details.name;
+                            reservation.canvas_user_name = "TBA/db";
                         }
 
                         // Get other reservations if this is a group and there are other groups reserved.
