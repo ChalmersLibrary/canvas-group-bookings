@@ -19,38 +19,44 @@
       <% if (reservationDeleted) { %>
         <div class="alert alert-success" role="alert">
           <strong>Tillfället "<%= reservationTitle %>" har avbokats.</strong>
-          Du kommer även att få bekräftelse via e-post om detta, om bokningen gäller en hel grupp även alla i gruppen.
+          Du kommer även att få bekräftelse via e-post om detta.
         </div>
       <% } %>
       <% if (reservationDone) { %>
         <div class="alert alert-success" role="alert">
           <strong>Tillfället har bokats.</strong>
-          Du kommer även att få bekräftelse via e-post om detta, om bokningen gäller en hel grupp även alla i gruppen.
+          Du kommer även att få bekräftelse via e-post om detta.
         </div>
       <% } %>
         <% reservations.forEach(reservation => { %>
           <div class="card <% if (reservation.just_created) { %>border-success <% } %>my-2" data-reservation-id="<%= reservation.id %>">
             <div class="card-header">
               <% if (reservation.canvas_group_id) { %>
-                Gruppbokning
+                Gruppbokning: <%= reservation.canvas_group_name %>
               <% } else { %>
-                Individuell bokning
+                Individuell bokning: <%= reservation.canvas_user_name %>
               <% } %>
             </div>
             <div class="card-body">
-                <h5 class="card-title"><%= reservation.course_name %></h5>
-                <h6 class="card-subtitle mb-2 text-muted"><%- reservation.time_human_readable_sv %></h6>
+              <h5 class="card-title"><%= reservation.course_name %></h5>
+              <h6 class="card-subtitle mb-2 text-muted"><%- reservation.time_human_readable_sv %></h6>
+              <p class="card-text">
+                Plats: <%= reservation.location_name %>, handledare: <%= reservation.instructor_name %>
+              </p>
+              <div class="" id="reservationDetails<%= reservation.id %>">
                 <p class="card-text">
-                  <%= reservation.location_name %>, <%= reservation.instructor_name %>
-                </p>
-                <p class="card-text">
-                  Bokad av <strong><%= reservation.canvas_user_name %></strong> 
+                  Bokad av:<br><strong><%= reservation.canvas_user_name %></strong> 
                   <% if (reservation.canvas_group_id) { %>
                     för gruppen <strong><%= reservation.canvas_group_name %></strong>
                   <% } %>
                 </p>
+                <% if (reservation.other_reservations) { %>
+                  <p>Andra bokningar: <br>
+                    <%= reservation.other_reservations.map(r => r.canvas_group_name).join(", ") %>
+                  </p>
+                <% } %>
                 <% if (reservation.message) { %>
-                  <p class="card-text"><strong>Obligatoriska frågor:</strong> <%= reservation.message %></p>
+                  <p class="card-text"><strong>Meddelande/frågor till handledare:</strong><br><%= reservation.message %></p>
                 <% } %>
                 <% if (reservation.other_reservations && reservation.max_groups == reservation.res_now) { %>
                   <p class="card-text"><strong>Notera:</strong> det finns andra grupper bokade på tillfället, som nu är fullsatt (<%= reservation.max_groups %> grupper).</p>
@@ -58,9 +64,22 @@
                 <% if (reservation.max_groups > reservation.res_now) { %>
                   <p class="card-text"><strong>Notera:</strong> det finns plats för fler grupper (totalt <%= reservation.max_groups %> grupper), men tiden är inte fullbokad än.</p>
                 <% } %>
-                <div>
+                <p class="card-text">
+                  Avbokningspolicy:<br>
+                  <%= reservation.cancellation_policy_hours %> timmar innan start.
+                  <% if (!reservation.is_cancelable) { %>
+                    Du kan inte avboka detta tillfälle.
+                  <% } %>
+                </p>
+              </div>
+              <div class="float-end">
+                <!-- <button type="button" title="Visa mer information om bokningen" class="btn btn-secondary btn-sm" data-bs-toggle="collapse" data-bs-target="#reservationDetails<%= reservation.id %>" aria-expanded="false" aria-controls="reservationDetails<%= reservation.id %>">Mer information</button> -->
+                <% if (reservation.is_cancelable) { %>
                   <button type="button" title="Avboka detta tillfälle" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#deleteReservation" data-bs-reservation-id="<%= reservation.id %>">Avboka</button>
-                </div>
+                <% } else { %>
+                  <button type="button" title="Avboka detta tillfälle" class="btn btn-primary btn-sm" disabled>Avboka</button>
+                <% } %>
+              </div>
             </div>
           </div>
         <% }) %>

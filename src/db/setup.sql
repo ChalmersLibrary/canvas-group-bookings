@@ -48,6 +48,7 @@ CREATE TABLE IF NOT EXISTS "instructor"
 (
     "id" serial,
     "name" varchar,
+    "email" varchar,
     "canvas_user_id" integer,
     "canvas_course_id" integer,
     "created_at" timestamp NOT NULL DEFAULT now(),
@@ -97,6 +98,7 @@ CREATE TABLE IF NOT EXISTS "reservation"
     "id" serial,
     "slot_id" integer REFERENCES "slot",
     "canvas_user_id" integer NOT NULL,
+    "canvas_user_name" varchar,
     "canvas_group_id" integer,
     "canvas_group_name" varchar,
     "message" text,
@@ -118,6 +120,7 @@ CREATE VIEW "reservations_view" AS
  SELECT r.id,
     r.slot_id,
     r.canvas_user_id,
+    r.canvas_user_name,
     r.canvas_group_id,
     r.canvas_group_name,
     r.created_at,

@@ -662,6 +662,13 @@ app.delete('/api/reservation/:id', async (req, res) => {
                         req.session.user.groups_ids.push(group.id);
                     }
 
+                    // Load reservation first to get attributes like is_cancelable, etc
+                    const reservation = await db.getReservation(req.session.user.id, req.session.user.groups_ids, req.params.id);
+
+                    if (reservation.is_cancelable == false) {
+                        throw new Error("Tiden för avbokning har passerats, kan ej avboka.");
+                    }
+
                     await db.deleteReservation(req.session.user.id, req.session.user.groups_ids, req.params.id);
 
                     return res.send({
@@ -674,14 +681,14 @@ app.delete('/api/reservation/:id', async (req, res) => {
                     console.error(error);
                     return res.send({
                         success: false,
-                        error: error
+                        message: error.message
                     });
                 }
             }
             else {
                 return res.send({
                     success: false,
-                    error: "No user or LTI object in session."
+                    message: "No user or LTI object in session."
                 });
             }
         }

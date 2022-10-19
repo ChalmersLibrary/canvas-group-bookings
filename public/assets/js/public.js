@@ -172,6 +172,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 deleteReservationModal.querySelector("#deleteReservationWarning").classList.remove("d-block")
                 deleteReservationModal.querySelector("#deleteReservationWarning").classList.add("d-none")
             }
+            if (deleteReservationModal.querySelector('#deleteReservationError').classList.contains("d-block")) {
+                deleteReservationModal.querySelector('#deleteReservationError').classList.remove("d-block")
+                deleteReservationModal.querySelector('#deleteReservationError').classList.add("d-none")
+            }
 
             fetch(`/api/reservation/${reservation_id}`)
             .then(response => response.json())
@@ -183,11 +187,22 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 deleteReservationModal.querySelector('#d_location_name').innerText = data.location_name
                 deleteReservationModal.querySelector('#d_slot_time').innerText = data.time_human_readable_sv
 
-                if (data.is_group) {
-                    if (deleteReservationModal.querySelector("#deleteReservationWarning").classList.contains("d-none")) {
-                        deleteReservationModal.querySelector("#deleteReservationWarning").classList.remove("d-none")
-                        deleteReservationModal.querySelector("#deleteReservationWarning").classList.add("d-block")
+                deleteReservationModal.querySelector("#deleteReservationDeleteButton").disabled = false;
+
+                if (!data.is_cancelable) {
+                    if (deleteReservationModal.querySelector("#deleteReservationNotCancelable").classList.contains("d-none")) {
+                        deleteReservationModal.querySelector("#deleteReservationNotCancelable").classList.remove("d-none")
+                        deleteReservationModal.querySelector("#deleteReservationNotCancelable").classList.add("d-block")
                     }
+                    deleteReservationModal.querySelector("#deleteReservationDeleteButton").disabled = true;
+                }
+                else {
+                    if (data.is_group) {
+                        if (deleteReservationModal.querySelector("#deleteReservationWarning").classList.contains("d-none")) {
+                            deleteReservationModal.querySelector("#deleteReservationWarning").classList.remove("d-none")
+                            deleteReservationModal.querySelector("#deleteReservationWarning").classList.add("d-block")
+                        }
+                    }    
                 }
             })
         });    
