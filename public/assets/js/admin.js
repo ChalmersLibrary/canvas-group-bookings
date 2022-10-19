@@ -33,8 +33,12 @@ document.addEventListener("DOMContentLoaded", function(event) {
             editSlotModal.querySelector('#reservations').replaceChildren()
             data.reservations.forEach(reservation => {
                 const r = editSlotModal.querySelector('#reservations').appendChild(document.createElement('div'))
-                r.innerText = reservation.created_at
-                console.log(reservation)
+                if (reservation.is_group) {
+                    r.innerText = reservation.canvas_group_name + " (" + reservation.canvas_user_name + ")";
+                }
+                else {
+                    r.innerText = reservation.canvas_user_name
+                }
             })
         })
         if(editSlotModal.querySelector('#editSlotError').classList.contains("d-block")) {
