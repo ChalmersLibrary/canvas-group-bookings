@@ -13,3 +13,34 @@ if (process.env.NODE_ENV == "development") {
     const MAIL_FORCE_TO = process.env.MAIL_FORCE_TO ? process.env.MAIL_FORCE_TO : "undeliverable@not-a-valid-domain";
 }
 
+async function sendConfirmationMailToUser(name, email, cc_instructor_email, cc_instructor_name, subject, body) {
+    if (process.env.MAIL_ONLY_LOG) {
+        console.log("Debug mode, only logging mails.");
+
+        if (process.env.NODE_ENV == "development") {
+            email = process.env.MAIL_FORCE_TO ? process.env.MAIL_FORCE_TO : email;
+    
+            if (cc_instructor_email) {
+                cc_instructor_email = process.env.MAIL_FORCE_TO ? process.env.MAIL_FORCE_TO : "";
+            }
+        }
+        if (email !== "") {
+            console.log("To: " + email + " (" + name + ")");
+            if (cc_instructor_email) {
+                console.log("Cc: " + cc_instructor_email + " (" + cc_instructor_name + ")");
+            }
+            console.log("Subject: " + subject + "\n");
+            console.log(body);
+        }
+        else {
+            throw new Error("E-postadress för mottagare saknas.");
+        }
+    }
+    else {
+        console.log("No debug here, sending real emails to real people!");
+    }
+}
+
+module.exports = {
+    sendConfirmationMailToUser
+}

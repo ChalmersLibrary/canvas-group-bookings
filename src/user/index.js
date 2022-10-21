@@ -61,8 +61,18 @@ async function addUserFlagsForRoles(req) {
     }
 }
 
+// Get primary email from LTI object
+function getPrimaryEmail(req) {
+    if (req.session.user && req.session.lti) {
+        if (req.session.lti.lis_person_contact_email_primary) {
+            return req.session.lti.lis_person_contact_email_primary;
+        }
+    }
+}
+
 module.exports = {
     mockLtiSession,
     createSessionUserdataFromToken,
-    addUserFlagsForRoles
+    addUserFlagsForRoles,
+    getPrimaryEmail
 }

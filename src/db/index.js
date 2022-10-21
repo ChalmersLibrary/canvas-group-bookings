@@ -238,6 +238,19 @@ async function getValidInstructors(canvas_course_id) {
     return data;
 }
 
+async function getInstructor(id) {
+    let data;
+
+    await query("SELECT * FROM instructor WHERE id = $1", [ id ]).then((result) => {
+        data = result.rows[0];
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    });
+    
+    return data;
+}
+
 async function getValidLocations(canvas_course_id) {
     let data;
 
@@ -407,6 +420,8 @@ module.exports = {
     getValidCourses,
     getValidInstructors,
     getValidLocations,
+    getCourse,
+    getInstructor,
     createSlots,
     updateSlot,
     deleteSlot,

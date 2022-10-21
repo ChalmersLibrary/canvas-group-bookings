@@ -16,6 +16,7 @@ const canvasApi = require('./src/api/canvas');
 const user = require('./src/user');
 const db = require('./src/db');
 const utils = require('./src/utilities');
+const email = require('./src/mail');
 
 const port = process.env.PORT || 3000;
 const cookieMaxAge = 3600000 * 24 * 30 * 4; // 4 months
@@ -540,6 +541,7 @@ app.post('/api/reservation', async (req, res) => {
 
                         let group_name;
 
+                        // In the form we get the group id, get the name from user's groups
                         for (const group of req.session.user.groups) {
                             if (group.id == group_id) {
                                 group_name = group.name;
@@ -547,6 +549,16 @@ app.post('/api/reservation', async (req, res) => {
                         }
 
                         const reservation = await db.createSlotReservation(slot_id, req.session.user.id, group_id, group_name, message);
+
+                        if (process.env.EMAIL_SEND_EMAIL && process.env.EMAIL_SEND_EMAIL !== false) {
+                            const course = await db.getCourse(slot.course_id);
+                            const instructor = await db.getInstructor(slot.instructor_id);
+                            const mail_subject = "Bekräftad bokning: " + group_name + ", " + course.name;
+    
+                            await email.sendConfirmationMailToUser(req.session.user.name, user.getPrimaryEmail(req), course.mail_cc_instructor ? instructor.email : "", course.mail_cc_instructor ? instructor.name : "", mail_subject, course.mail_one_reservation_body);
+
+                            // AND update reservation with timestamp for sent email...
+                        }
 
                         return res.send({
                             success: true,
