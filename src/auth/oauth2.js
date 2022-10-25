@@ -25,12 +25,6 @@ function TokenResult(success, message) {
     this.message = message;
 };
 
-class TokenException extends Error {
-    constructor(canvas_user_id) {
-      super(`Token for user id ${canvas_user_id} is wrong or missing.`);
-    }
-}
-
 function setupAuthEndpoints(app, callbackUrl) {
     // Authorization uri definition
     const authorizationUri = client.authorizeURL({
@@ -129,7 +123,7 @@ async function checkAccessToken(req) {
                         req.session.save(function(err) {
                             if (err) {
                                 log.error(err);
-                                throw new TokenException(err);
+                                throw new Error("Saving session.", { cause: err });
                             }
         
                             log.info("Access token refreshed, session saved.");
@@ -139,8 +133,17 @@ async function checkAccessToken(req) {
                         tokenResult.message = "Refreshed expired token.";
                     }
                     catch (error) {
-                      log.error(error);
-                      throw new TokenException(error);
+                        if (error.data.payload) {
+                            log.error(error.data.payload);
+
+                            if (error.data.payload.error == 'invalid_grant') {
+                                throw new Error("invalid_grant");
+                            }
+                        }
+                        else {
+                            log.error(error);
+                            throw new Error(error);
+                        }
                     }
                 }
                 else {
@@ -152,7 +155,7 @@ async function checkAccessToken(req) {
                     req.session.save(function(err) {
                         if (err) {
                             log.error(err);
-                            throw new TokenException(err);
+                            throw new Error("Saving session after user object.", { cause: err });
                         }
                     });
 
@@ -166,7 +169,7 @@ async function checkAccessToken(req) {
             }
         }).catch((err) => {
             log.error(err);
-            throw new TokenException(err);
+            throw new Error(err);
         })
     }
 
@@ -175,15 +178,14 @@ async function checkAccessToken(req) {
 
 // TODO: This is a copy of refresh in checkAccessToken, should be generalized!
 async function refreshAccessToken(canvas_user_id) {
-    log.debug("refreshAccessToken() called.");
+    let thisResult = new TokenResult(true, "Token is refreshed.");
+
     await findAccessToken(canvas_user_id).then(async (result) => {
         let accessToken = client.createToken(result);
-        await log.debug("result from findAccessToken: ", result);
-        await log.debug("client.createToken: ", accessToken);
-        
+
         try {
             const refreshParams = {};
-            newAccessToken = await accessToken.refresh(refreshParams);
+            const newAccessToken = await accessToken.refresh(refreshParams);
 
             const newAccessTokenWithRefreshToken = JSON.parse(JSON.stringify(newAccessToken));
             newAccessTokenWithRefreshToken.refresh_token = accessToken.token.refresh_token; // https://canvas.instructure.com/doc/api/file.oauth.html#using-refresh-tokens
@@ -191,29 +193,47 @@ async function refreshAccessToken(canvas_user_id) {
             await persistAccessToken(newAccessTokenWithRefreshToken);
 
             // Save the user object to session for faster access
-            let userData = await user.createSessionUserdataFromToken(req, newAccessTokenWithRefreshToken);
-            log.info(userData);
+            // let userData = await user.createSessionUserdataFromToken(req, newAccessTokenWithRefreshToken);
+            // log.info(userData);
 
-            await req.session.save(function(err) {
+            /* await req.session.save(function(err) {
                 if (err) {
                     log.error(err);
-                    return new TokenResult(false, err);
+
+                    thisResult.success = false;
+                    thisResult.message = err;
                 }
 
                 log.info("Access token refreshed, session saved.");
-            });
+            }); */
         }
         catch (error) {
-            if (error.payload && error.payload.error) {
-                log.error(error.payload.error + ", " + error.payload.error_description);
+            log.error(error);
+
+            let message = "Error refreshing access token in refreshAccessToken()";
+
+            if (error.data && error.data.payload && error.data.payload.error) {
+                message = message + ": " + error.data.payload.error + ", " + error.data.payload.error_description;
             }
-            return new TokenResult(false, "Error refreshing access token in refreshAccessToken()");
+
+            thisResult.success = false;
+            thisResult.message = message;
         }
     }).catch((error) => {
-        return new TokenResult(false, "Error finding access token");
+        thisResult.success = false;
+        thisResult.message = error;
     });
 
-    return new TokenResult(true, "Success from refreshAccessToken()");
+    if (thisResult.success) {
+        return new Promise(resolve => {
+            resolve(thisResult);
+        });
+    }
+    else {
+        return new Promise(reject => {
+            reject(thisResult);
+        });
+    }    
 }
 
 async function persistAccessToken(token) {

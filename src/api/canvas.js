@@ -5,6 +5,7 @@ require('dotenv').config();
 const LinkHeader = require('http-link-header');
 const NodeCache = require('node-cache');
 const axios = require('axios');
+const FormData = require('form-data');
 const auth = require('../auth/oauth2');
 const log = require('../logging')
 
@@ -13,6 +14,7 @@ const API_PER_PAGE = 25;
 const API_PATH = "/api/v1";
 const API_HOST = process.env.API_HOST ? process.env.API_HOST : process.env.AUTH_HOST;
 const API_GROUPS_ONLY_OWN_GROUPS = true;
+const API_MAX_ERROR_COUNT = 1;
 
 /* TODO: Move all cache code to separate file! */
 
@@ -63,7 +65,7 @@ async function addCacheWrite(cacheName) {
 }
 
 /**
- * @description Post a message in Conversations (Inbox) for specific group(s)
+ * Post a message in Conversations (Inbox) for specific group(s)
  * @param {number} recipients List of recipients according to API
  * @param {string} subject Message subject
  * @param {string} body Message body
@@ -76,19 +78,29 @@ async function createConversation(recipients, subject, body, userId) {
         let errorCount = 0;
 
         await auth.findAccessToken(userId).then(async (token) => {
-            while (errorCount < 2 && thisApiPath && token) {
+            while (errorCount < API_MAX_ERROR_COUNT && thisApiPath && token) {
                 log.info("POST " + thisApiPath);
 
                 try {
-                    const response = await axios.post(thisApiPath, {
+                    let bodyFormData = new FormData();
+
+                    for (const r of recipients) {
+                        bodyFormData.append('recipients[]', r);
+                    }
+
+                    bodyFormData.append('group_conversation', 'true');
+                    bodyFormData.append('subject', subject);
+                    bodyFormData.append('body', body);
+
+                    const response = await axios({
+                        method: "post",
+                        url: thisApiPath,
                         headers: {
                             "User-Agent": "Chalmers/Azure/Request",
-                            "Authorization": token.token_type + " " + token.access_token
+                            "Authorization": token.token_type + " " + token.access_token,
+                            ...bodyFormData.getHeaders()
                         },
-                        "recipients[]": recipients.join(","),
-                        "group_conversation": true,
-                        "subject": subject,
-                        "body": body
+                        data: bodyFormData
                     });
         
                     apiData = response.data;
@@ -108,12 +120,17 @@ async function createConversation(recipients, subject, body, userId) {
                         log.info("401, with www-authenticate header.");
 
                         await auth.refreshAccessToken(userId).then((result) => {
+                            log.info(result);
+
                             if (result.success) {
-                                log.info("Refreshed access token.");
+                                log.info("Refreshed access token in 401, with www-authenticate header.");
                             }
                             else {
                                 log.info(result);
                             }
+                        })
+                        .catch(error => {
+                            log.error(error);
                         });
                     }
                     else if (error.response.status == 401 && !error.response.headers['www-authenticate']) { // no access, redirect to auth
@@ -163,7 +180,7 @@ async function getUserDetails(courseId, userId, user_id) {
             let errorCount = 0;
 
             await auth.findAccessToken(userId).then(async (token) => {
-                while (errorCount < 2 && thisApiPath && token) {
+                while (errorCount < API_MAX_ERROR_COUNT && thisApiPath && token) {
                     log.info("GET " + thisApiPath);
                 
                     try {
@@ -256,7 +273,7 @@ async function getGroupDetails(courseId, userId, group_id) {
             let errorCount = 0;
         
             await auth.findAccessToken(userId).then(async (token) => {
-                while (errorCount < 2 && thisApiPath && token) {
+                while (errorCount < API_MAX_ERROR_COUNT && thisApiPath && token) {
                     log.info("GET " + thisApiPath);
                 
                     try {
@@ -332,7 +349,7 @@ async function getGroupMembers(userId, group_id) {
     let errorCount = 0;
 
     await auth.findAccessToken(userId).then(async (token) => {
-        while (errorCount < 2 && thisApiPath && token) {
+        while (errorCount < API_MAX_ERROR_COUNT && thisApiPath && token) {
             log.info("GET " + thisApiPath);
         
             try {
@@ -406,7 +423,7 @@ async function getGroupMembers(userId, group_id) {
     });
 }
 
-async function getCourseGroups(courseId, userId) {
+async function getCourseGroups(courseId, userId, req) {
     let thisApiPath = API_HOST + API_PATH + "/courses/" + courseId + "/groups?per_page=" + API_PER_PAGE;
     let apiData = new Array();
     let returnedApiData = new Array();
@@ -417,7 +434,7 @@ async function getCourseGroups(courseId, userId) {
     }
 
     await auth.findAccessToken(userId).then(async (token) => {
-        while (errorCount < 2 && thisApiPath && token) {
+        while (errorCount < API_MAX_ERROR_COUNT && thisApiPath && token) {
             log.info("GET " + thisApiPath);
         
             try {
@@ -450,18 +467,22 @@ async function getCourseGroups(courseId, userId) {
             }
             catch (error) {
                 errorCount++;
-                // log.error(error);
+                //log.error(error);
             
                 if (error.response.status == 401 && error.response.headers['www-authenticate']) { // refresh token, then try again
                     log.info("401, with www-authenticate header.");
 
-                    await auth.refreshAccessToken(userId).then((result) => {
+                    await auth.refreshAccessToken(userId, req).then((result) => {
+                        log.info(result);
                         if (result.success) {
-                            log.info("Refreshed access token.");
+                            log.info("Refreshed access token in 401, with www-authenticate header.");
                         }
                         else {
-                            log.info(result);
+                            log.error(result);
                         }
+                    })
+                    .catch(error => {
+                        log.error(error);
                     });
                 }
                 else if (error.response.status == 401 && !error.response.headers['www-authenticate']) { // no access, redirect to auth
