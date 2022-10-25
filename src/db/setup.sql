@@ -30,7 +30,8 @@ CREATE TABLE IF NOT EXISTS "course"
     "max_groups" integer,
     "max_individuals" integer,
     "max_per_type" integer NOT NULL DEFAULT 1,
-    "default_slot_duration" integer,
+    "default_slot_duration_minutes" integer,
+    "cancellation_policy_hours" integer,
     "message_to_instructor" boolean NOT NULL default false,
     "mail_cc_instructor" boolean NOT NULL DEFAULT true,
     "mail_one_reservation_body" text,
@@ -135,6 +136,12 @@ CREATE VIEW "reservations_view" AS
     c.max_individuals,
     (SELECT count(canvas_user_id) FROM reservation WHERE slot_id=r.slot_id AND deleted_at IS NULL) AS res_now,
     c.name AS course_name,
+    c.description AS course_description,
+    c.cancellation_policy_hours AS cancellation_policy_hours,
+        CASE 
+            WHEN now() at time zone 'Europe/Stockholm' <= s.time_start - (c.cancellation_policy_hours * interval '1 hour') THEN true 
+            ELSE false 
+        END AS is_cancelable,
     c.canvas_course_id,
     l.name AS location_name,
     i.name AS instructor_name
