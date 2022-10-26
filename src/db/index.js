@@ -168,7 +168,7 @@ async function deleteReservation(user_id, groups, reservation_id) {
 }
 
 /* Makes a reservation for a slot time, either individual or group */
-async function createSlotReservation(slot_id, user_id, group_id, group_name, message) {
+async function createSlotReservation(slot_id, user_id, user_name, group_id, group_name, message) {
     let data;
 
     // Load data about the slot being reserved
@@ -184,9 +184,10 @@ async function createSlotReservation(slot_id, user_id, group_id, group_name, mes
         throw new Error("Max antal platser är uppnått, kan inte boka.");
     }
 
-    await query("INSERT INTO reservation (slot_id, canvas_user_id, canvas_group_id, canvas_group_name, message, created_by) VALUES ($1, $2, $3, $4, $5, $2) RETURNING id", [ 
+    await query("INSERT INTO reservation (slot_id, canvas_user_id, canvas_user_name, canvas_group_id, canvas_group_name, message, created_by) VALUES ($1, $2, $3, $4, $5, $6, $2) RETURNING id", [ 
         slot_id,
         user_id,
+        user_name,
         group_id,
         group_name,
         message

@@ -385,13 +385,15 @@ app.post('/api/reservation', async (req, res, next) => {
         let group_name;
 
         // In the form we get the group id, get the name from user's groups
-        for (const group of req.session.user.groups) {
-            if (group.id == group_id) {
-                group_name = group.name;
-            }
+        if (slot.type == "group") {
+            for (const group of req.session.user.groups) {
+                if (group.id == group_id) {
+                    group_name = group.name;
+                }
+            }    
         }
 
-        const reservation = await db.createSlotReservation(slot_id, req.session.user.id, group_id, group_name, message);
+        const reservation = await db.createSlotReservation(slot_id, req.session.user.id, req.session.user.name, group_id, group_name, message);
 
         if (process.env.EMAIL_SEND_EMAIL && process.env.EMAIL_SEND_EMAIL !== false) {
             const course = await db.getCourse(slot.course_id);
