@@ -241,7 +241,7 @@ async function persistAccessToken(token) {
     log.info("Persisting access token for user " + token.user.id + ", domain " + domain);
     log.info(token);
 
-    await db.query("INSERT INTO user_token (canvas_user_id, canvas_domain, data) VALUES ($1, $2, $3) ON CONFLICT (canvas_user_id, canvas_domain) DO UPDATE SET data = EXCLUDED.data", [
+    await db.query("INSERT INTO user_token (canvas_user_id, canvas_domain, data, updated_at) VALUES ($1, $2, $3, now()) ON CONFLICT (canvas_user_id, canvas_domain) DO UPDATE SET data = EXCLUDED.data, updated_at = now()", [
         token.user.id,
         domain,
         token
