@@ -390,12 +390,12 @@ app.post('/api/reservation', async (req, res, next) => {
                 if (group.id == group_id) {
                     group_name = group.name;
                 }
-            }    
+            }
         }
 
         const reservation = await db.createSlotReservation(slot_id, req.session.user.id, req.session.user.name, group_id, group_name, message);
 
-        if (process.env.EMAIL_SEND_EMAIL && process.env.EMAIL_SEND_EMAIL !== false) {
+        if (process.env.EMAIL_SEND_EMAILS && process.env.EMAIL_SEND_EMAILS !== false) {
             const course = await db.getCourse(slot.course_id);
             const instructor = await db.getInstructor(slot.instructor_id);
             const mail_subject = "Bekräftad bokning: " + group_name + ", " + course.name;
