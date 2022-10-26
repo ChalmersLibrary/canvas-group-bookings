@@ -105,7 +105,7 @@ app.get('/test', async (req, res) => {
                 let courseId = req.session.lti.custom_canvas_course_id ? req.session.lti.custom_canvas_course_id : "lti_context_id:" + req.session.lti.context_id;
 
                 req.session.test = true;
-                req.session.user.groups = await canvasApi.getCourseGroups(courseId, req.session.user.id, req);
+                req.session.user.groups = await canvasApi.getCourseGroups(courseId, req.session.user.id);
                 req.session.user.groups_human_readable = new Array();
                 
                 for (const group of req.session.user.groups) {
@@ -161,7 +161,7 @@ app.get('/', async (req, res) => {
                 try {
                     // Add the groups from Canvas for this user
                     // req.session.user.groups = [];
-                    req.session.user.groups = await canvasApi.getCourseGroups(courseId, req.session.user.id, req);
+                    req.session.user.groups = await canvasApi.getCourseGroups(courseId, req.session.user.id);
                     req.session.user.groups_human_readable = new Array();
                 
                     for (const group of req.session.user.groups) {
@@ -290,7 +290,7 @@ app.get('/reservations', async (req, res) => {
     
                 try {
                     // Add the groups from Canvas for this user
-                    req.session.user.groups = await canvasApi.getCourseGroups(courseId, req.session.user.id, req);
+                    req.session.user.groups = await canvasApi.getCourseGroups(courseId, req.session.user.id);
                     req.session.user.groups_ids = new Array();
                     req.session.user.groups_human_readable = new Array();
                 
@@ -399,7 +399,7 @@ app.get('/admin', async (req, res) => {
             
             // Add the groups from Canvas for this user
             let courseId = req.session.lti.custom_canvas_course_id ? req.session.lti.custom_canvas_course_id : "lti_context_id:" + req.session.lti.context_id;
-            req.session.user.groups = await canvasApi.getCourseGroups(courseId, req.session.user.id, req);
+            req.session.user.groups = await canvasApi.getCourseGroups(courseId, req.session.user.id);
             req.session.user.groups_human_readable = new Array();
 
             for (const group of req.session.user.groups) {
@@ -513,7 +513,7 @@ app.post('/api/reservation', async (req, res) => {
                     try {
                         // Add the groups from Canvas for this user
                         // req.session.user.groups = [];
-                        req.session.user.groups = await canvasApi.getCourseGroups(courseId, req.session.user.id, req);
+                        req.session.user.groups = await canvasApi.getCourseGroups(courseId, req.session.user.id);
                         req.session.user.groups_human_readable = new Array();
                     
                         for (const group of req.session.user.groups) {
@@ -634,7 +634,7 @@ app.get('/api/reservation/:id', async (req, res) => {
                 /* Note: user_id is always taken from req.session.user object! */
                 try {
                     // Add the groups from Canvas for this user
-                    req.session.user.groups = await canvasApi.getCourseGroups(courseId, req.session.user.id, req);
+                    req.session.user.groups = await canvasApi.getCourseGroups(courseId, req.session.user.id);
                     req.session.user.groups_ids = new Array();
                     req.session.user.groups_human_readable = new Array();
                 
@@ -690,7 +690,7 @@ app.delete('/api/reservation/:id', async (req, res) => {
                 /* Note: user_id is always taken from req.session.user object! */
                 try {
                     // Add the groups from Canvas for this user
-                    req.session.user.groups = await canvasApi.getCourseGroups(courseId, req.session.user.id, req);
+                    req.session.user.groups = await canvasApi.getCourseGroups(courseId, req.session.user.id);
                     req.session.user.groups_ids = new Array();
                     req.session.user.groups_human_readable = new Array();
                 

@@ -423,7 +423,14 @@ async function getGroupMembers(userId, group_id) {
     });
 }
 
-async function getCourseGroups(courseId, userId, req) {
+/**
+ * Get information about groups in a given course the user belongs to
+ * 
+ * @param {courseId} Numerical id of course
+ * @param {userId} Numerical id of user
+ * @returns JSON data from Canvas API
+ */
+async function getCourseGroups(courseId, userId) {
     let thisApiPath = API_HOST + API_PATH + "/courses/" + courseId + "/groups?per_page=" + API_PER_PAGE;
     let apiData = new Array();
     let returnedApiData = new Array();
@@ -472,7 +479,7 @@ async function getCourseGroups(courseId, userId, req) {
                 if (error.response.status == 401 && error.response.headers['www-authenticate']) { // refresh token, then try again
                     log.info("401, with www-authenticate header.");
 
-                    await auth.refreshAccessToken(userId, req).then((result) => {
+                    await auth.refreshAccessToken(userId).then((result) => {
                         log.info(result);
                         if (result.success) {
                             log.info("Refreshed access token in 401, with www-authenticate header.");
