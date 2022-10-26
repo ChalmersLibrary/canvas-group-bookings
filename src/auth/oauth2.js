@@ -191,21 +191,6 @@ async function refreshAccessToken(canvas_user_id) {
             newAccessTokenWithRefreshToken.refresh_token = accessToken.token.refresh_token; // https://canvas.instructure.com/doc/api/file.oauth.html#using-refresh-tokens
 
             await persistAccessToken(newAccessTokenWithRefreshToken);
-
-            // Save the user object to session for faster access
-            // let userData = await user.createSessionUserdataFromToken(req, newAccessTokenWithRefreshToken);
-            // log.info(userData);
-
-            /* await req.session.save(function(err) {
-                if (err) {
-                    log.error(err);
-
-                    thisResult.success = false;
-                    thisResult.message = err;
-                }
-
-                log.info("Access token refreshed, session saved.");
-            }); */
         }
         catch (error) {
             log.error(error);
