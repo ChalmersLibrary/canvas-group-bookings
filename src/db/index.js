@@ -201,10 +201,28 @@ async function createSlotReservation(slot_id, user_id, user_name, group_id, grou
     return data;
 }
 
-async function getValidCourses(canvas_course_id, date) {
+async function updateReservationMailSentUser(reservation_id) {
+    await query("UPDATE reservation SET mail_sent_user=now() WHERE id=$1", [ reservation_id ]).then((result) => {
+        log.info(result);
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    }); 
+}
+
+async function updateReservationMessageSentGroup(reservation_id) {
+    await query("UPDATE reservation SET mail_sent_group=now() WHERE id=$1", [ reservation_id ]).then((result) => {
+        log.info(result);
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    }); 
+}
+
+async function getValidCourses(canvas_course_id) {
     let data;
 
-    await query("SELECT id, name FROM course WHERE date_start <= $1 AND date_end >= $1", [ date ]).then((result) => {
+    await query("SELECT * FROM course WHERE canvas_course_id=$1", [ canvas_course_id ]).then((result) => {
         data = result.rows;
     }).catch((error) => {
         log.error(error);

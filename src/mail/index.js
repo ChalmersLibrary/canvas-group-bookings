@@ -13,7 +13,13 @@ if (process.env.NODE_ENV == "development") {
     const MAIL_FORCE_TO = process.env.MAIL_FORCE_TO ? process.env.MAIL_FORCE_TO : "undeliverable@not-a-valid-domain";
 }
 
-async function sendConfirmationMailToUser(name, email, cc_instructor_email, cc_instructor_name, subject, body) {
+/**
+ * Send a confirmation mail to the user, with optional cc to instructor.
+ * 
+ * @param {name} Full name of recipient
+ * @param {email} Email address for recipient
+ */
+async function sendConfirmationMail(name, email, cc_instructor_email, cc_instructor_name, subject, body) {
     if (process.env.MAIL_ONLY_LOG) {
         console.log("Debug mode, only logging mails.");
 
@@ -42,5 +48,5 @@ async function sendConfirmationMailToUser(name, email, cc_instructor_email, cc_i
 }
 
 module.exports = {
-    sendConfirmationMailToUser
+    sendConfirmationMail
 }

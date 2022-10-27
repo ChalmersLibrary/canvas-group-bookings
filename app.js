@@ -144,7 +144,10 @@ app.get('/test', async (req, res) => {
     // One group
     // let conversation_result = await canvasApi.createConversation(new Array("group_128953"), "Test conversation from nodejs", "This is a test conversation for two groups, created programmatically from Canvas API.", req.session.user.id);
     
-    let conversation_result = {};
+    // One user
+    let conversation_result = await canvasApi.createConversation(new Array("1508"), "Test conversation from nodejs", "This is a test conversation for two groups, created programmatically from Canvas API.", req.session.user.id);
+
+    // let conversation_result = {};
 
     let result = await db.query("SELECT version()")
     .then((result) => {
@@ -240,7 +243,7 @@ app.get('/', async (req, res, next) => {
         session: req.session,
         groups: req.session.user.groups,
         slots: availableSlots,
-        courses: await db.getValidCourses(res.locals.courseId, new Date().toLocaleDateString('sv-SE')),
+        courses: await db.getValidCourses(res.locals.courseId),
         instructors: await db.getValidInstructors(res.locals.courseId),
         locations: await db.getValidLocations(res.locals.courseId)
     });
@@ -396,13 +399,31 @@ app.post('/api/reservation', async (req, res, next) => {
         const reservation = await db.createSlotReservation(slot_id, req.session.user.id, req.session.user.name, group_id, group_name, message);
 
         if (process.env.EMAIL_SEND_EMAILS && process.env.EMAIL_SEND_EMAILS !== false) {
-            const course = await db.getCourse(slot.course_id);
-            const instructor = await db.getInstructor(slot.instructor_id);
-            const mail_subject = "Bekräftad bokning: " + group_name + ", " + course.name;
+            try {
+                const course = await db.getCourse(slot.course_id);
+                const instructor = await db.getInstructor(slot.instructor_id);
+                const subject = "Bekräftad bokning: " + group_name + ", " + course.name;
+                const body = course.mail_one_reservation_body;
 
-            await email.sendConfirmationMailToUser(req.session.user.name, user.getPrimaryEmail(req), course.mail_cc_instructor ? instructor.email : "", course.mail_cc_instructor ? instructor.name : "", mail_subject, course.mail_one_reservation_body);
+                /* await email.sendConfirmationMail(req.session.user.name, req.session.user.email, course.mail_cc_instructor ? instructor.email : "", course.mail_cc_instructor ? instructor.name : "", subject, body);
+                await db.updateReservationMailSentUser(); */
 
-            // AND update reservation with timestamp for sent email...
+                if (slot.type == "group") {
+                    // if this group is the closer of max groups for this slot, send to both (all) groups,
+                    // else send to the group reserving
+                    // let conversation_result = await canvasApi.createConversation(new Array("group_128953"), "Test conversation from nodejs", "This is a test conversation for two groups, created programmatically from Canvas API.", req.session.user.id);
+                    // await db.updateReservationMessageSentGroup();    
+                    log.info("Sending confirmation message to group is not implemented yet (Canvas Conversations API).");
+                }
+                else {
+                    // let conversation_result = await canvasApi.createConversation(new Array("<userid>"), "Test conversation from nodejs", "This is a test conversation for two groups, created programmatically from Canvas API.", req.session.user.id);
+                    // await db.updateReservationMailSentUser();
+                    log.info("Sending confirmation message to the user is not implemented yet (Canvas Conversations API).");
+                }
+            }
+            catch (error) {
+                log.error("When sending confirmation message: " + error);
+            }
         }
 
         return res.send({

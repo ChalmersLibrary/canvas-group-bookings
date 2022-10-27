@@ -27,14 +27,7 @@ async function mockLtiSession(req) {
 async function createSessionUserdataFromToken(req, token) {
     if (req.session) {
         if (token !== undefined) {
-            req.session.user = { id: token.user.id, name: token.user.name, locale: token.user.effective_locale.substr(0,2) };
-            /* req.session.user.groups =  [
-                { id: 1234, name: "TEKX-22-1" },
-                { id: 1235, name: "TEKX-22-2" },
-            ];
-            Object.assign(req.session.user.id, token.user.id);
-            Object.assign(req.session.user.name, token.user.name);
-            Object.assign(req.session.user.locale, token.user.effective_locale.substr(0,2)); */
+            req.session.user = { id: token.user.id, name: token.user.name, email: req.session.lti.lis_person_contact_email_primary, locale: token.user.effective_locale.substr(0,2) };
         }
     }
     else {
