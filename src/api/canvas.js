@@ -65,88 +65,77 @@ async function addCacheWrite(cacheName) {
 }
 
 /**
- * Post a message in Conversations (Inbox) for specific group(s)
+ * Post a message in Conversations (Inbox) for specific group(s) or user.
+ * The posting account is supposed to have an API token created manually by an administrator in Canvas,
+ * we use "Canvas Conversation Robot": login and create an access token, then use this in CONVERSATION_ROBOT_API_TOKEN.
+ *
  * @param {number} recipients List of recipients according to API
  * @param {string} subject Message subject
  * @param {string} body Message body
- * @param {number} userid Calling user id
+ * @param {object} token Valid API token with token_type and access_token properties
  */
-async function createConversation(recipients, subject, body, userId) {
+async function createConversation(recipients, subject, body, token) {
     try {
         let thisApiPath = API_HOST + API_PATH + "/conversations";
         let apiData;
         let errorCount = 0;
 
-        await auth.findAccessToken(userId).then(async (token) => {
-            while (errorCount < API_MAX_ERROR_COUNT && thisApiPath && token) {
-                log.info("POST " + thisApiPath);
+        while (errorCount < API_MAX_ERROR_COUNT && thisApiPath && token) {
+            log.info("POST " + thisApiPath);
 
-                try {
-                    let bodyFormData = new FormData();
+            try {
+                let bodyFormData = new FormData();
 
+                if (typeof(recipients) == "string" || typeof(recipients) == "number") {
+                    bodyFormData.append('recipients[]', recipients);
+                    bodyFormData.append('group_conversation', 'false');
+                }
+                else {
                     for (const r of recipients) {
                         bodyFormData.append('recipients[]', r);
                     }
 
                     bodyFormData.append('group_conversation', 'true');
-                    bodyFormData.append('subject', subject);
-                    bodyFormData.append('body', body);
-
-                    const response = await axios({
-                        method: "post",
-                        url: thisApiPath,
-                        headers: {
-                            "User-Agent": "Chalmers/Azure/Request",
-                            "Authorization": token.token_type + " " + token.access_token,
-                            ...bodyFormData.getHeaders()
-                        },
-                        data: bodyFormData
-                    });
-        
-                    apiData = response.data;
-        
-                    if (response.headers["X-Request-Cost"]) {
-                        log.info("Request cost: " + response.headers["X-Request-Cost"]);
-                    }
-        
-                    thisApiPath = false;
                 }
-                catch (error) {
-                    errorCount++;
-                
-                    console.error(error);
 
-                    if (error.response.status == 401 && error.response.headers['www-authenticate']) { // refresh token, then try again
-                        log.info("401, with www-authenticate header.");
+                bodyFormData.append('subject', subject);
+                bodyFormData.append('body', body);
 
-                        await auth.refreshAccessToken(userId).then((result) => {
-                            log.info(result);
-
-                            if (result.success) {
-                                log.info("Refreshed access token in 401, with www-authenticate header.");
-                            }
-                            else {
-                                log.info(result);
-                            }
-                        })
-                        .catch(error => {
-                            log.error(error);
-                        });
-                    }
-                    else if (error.response.status == 401 && !error.response.headers['www-authenticate']) { // no access, redirect to auth
-                        log.error("Not authorized in Canvas for use of this API endpoint.");
-                        return(error);
-                    }
-                    else {
-                        log.error(error);
-                        return(error);
-                    }
+                const response = await axios({
+                    method: "post",
+                    url: thisApiPath,
+                    headers: {
+                        "User-Agent": "Chalmers/CanvasConversationRobot",
+                        "Authorization": token.token_type + " " + token.access_token,
+                        ...bodyFormData.getHeaders()
+                    },
+                    data: bodyFormData
+                });
+    
+                apiData = response.data;
+    
+                if (response.headers["X-Request-Cost"]) {
+                    log.info("Request cost: " + response.headers["X-Request-Cost"]);
                 }
-            }    
-        }).catch((error) => {
-            log.error(error);
-            return (error);
-        });
+    
+                thisApiPath = false;
+            }
+            catch (error) {
+                errorCount++;
+
+                log.error(error);
+
+                if (error.response.status == 401 && error.response.headers['www-authenticate']) { // refresh token, then try again
+                    log.error("401, with www-authenticate header.");
+                    log.error("Can't refresh this token, must be done manually for integration account.");
+                }
+                else if (error.response.status == 401 && !error.response.headers['www-authenticate']) { // no access, redirect to auth
+                    log.error("Integration account not authorized in Canvas for use of this API endpoint.");
+                }
+
+                throw new Error(error);
+            }
+        }    
 
         return new Promise((resolve) => {
             resolve(apiData);

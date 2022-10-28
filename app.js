@@ -145,8 +145,11 @@ app.get('/test', async (req, res) => {
     // let conversation_result = await canvasApi.createConversation(new Array("group_128953"), "Test conversation from nodejs", "This is a test conversation for two groups, created programmatically from Canvas API.", req.session.user.id);
     
     // One user
-    console.log(typeof(req.session.user.id));
-    let conversation_result = await canvasApi.createConversation(req.session.user.id, "Test conversation from nodejs", "This is a test conversation for the same user that is logged in to Canvas (ie, you). It's created programmatically from Canvas API.", req.session.user.id);
+    let conversation_result = await canvasApi.createConversation(
+        req.session.user.id, 
+        "Test conversation from nodejs", 
+        "This is a test conversation for the same user that is logged in to Canvas (ie, you). It's created programmatically from Canvas API.\n\nAll the best,\nChalmers Canvas Conversation Robot", 
+        { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
 
     // let conversation_result = {};
 
