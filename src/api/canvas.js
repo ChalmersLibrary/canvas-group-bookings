@@ -3,11 +3,11 @@
 require('dotenv').config();
 
 const LinkHeader = require('http-link-header');
-const NodeCache = require('node-cache');
 const axios = require('axios');
 const FormData = require('form-data');
 const auth = require('../auth/oauth2');
-const log = require('../logging')
+const log = require('../logging');
+const cache = require('../cache');
 
 /* Canvas API */
 const API_PER_PAGE = 25;
@@ -16,56 +16,144 @@ const API_HOST = process.env.API_HOST ? process.env.API_HOST : process.env.AUTH_
 const API_GROUPS_ONLY_OWN_GROUPS = true;
 const API_MAX_ERROR_COUNT = 1;
 
-/* TODO: Move all cache code to separate file! */
+/**
+ * Get information about groups in a given course the user belongs to
+ * 
+ * @param {courseId} Numerical id of course
+ * @param {userId} Numerical id of user
+ * @returns JSON data from Canvas API
+ */
+ async function getCourseGroups(courseId, userId) {
+    const cacheKey = `${courseId}:${userId}`;
 
-/* Cache API calls that don't change often to speed up requests */
-const CACHE_TTL = (parseInt(process.env.canvasApiCacheSecondsTTL) > 0 ? parseInt(process.env.canvasApiCacheSecondsTTL) : (60 * 60)); // 1h
-const CACHE_CHECK_EXPIRE = 600; // 10m
-const userDetailsCache = new NodeCache({ errorOnMissing:true, stdTTL: CACHE_TTL, checkperiod: CACHE_CHECK_EXPIRE });
-const groupDetailsCache = new NodeCache({ errorOnMissing:true, stdTTL: CACHE_TTL, checkperiod: CACHE_CHECK_EXPIRE });
+    try {
+        const cachedData = await cache.getCache('courseGroupsCache', cacheKey);
 
-/* Setup caches with read/write stats */
-const caches = [
-    {
-        name: "groupDetailsCache",
-        writes: 0,
-        reads: 0,
-        bucket: groupDetailsCache
-    },
-    {
-        name: "userDetailsCache",
-        writes: 0,
-        reads: 0,
-        bucket: userDetailsCache
+        if (cachedData !== undefined) {
+            log.info("[Cache] Using found NodeCache entry for key " + cacheKey);
+            log.info("[Cache] Statistics: " + JSON.stringify(await cache.getCacheStats('courseGroupsCache')));
+        
+            await cache.addCacheRead('courseGroupsCache');
+    
+            return new Promise((resolve) => {
+                resolve(cachedData);
+            });    
+        }
+        else {
+            let thisApiPath = API_HOST + API_PATH + "/courses/" + courseId + "/groups?per_page=" + API_PER_PAGE;
+            let apiData = new Array();
+            let returnedApiData = new Array();
+            let errorCount = 0;
+
+            if (API_GROUPS_ONLY_OWN_GROUPS) {
+                thisApiPath = thisApiPath + "&only_own_groups=true";
+            }
+
+            await auth.findAccessToken(userId).then(async (token) => {
+                while (errorCount < API_MAX_ERROR_COUNT && thisApiPath && token) {
+                    log.info("GET " + thisApiPath);
+                
+                    try {
+                        const response = await axios.get(thisApiPath, {
+                            headers: {
+                                "User-Agent": "Chalmers/Azure/Request",
+                                "Authorization": token.token_type + " " + token.access_token
+                            }
+                        });
+            
+                        apiData.push(response.data);
+            
+                        if (response.headers["X-Request-Cost"]) {
+                            log.info("Request cost: " + response.headers["X-Request-Cost"]);
+                        }
+            
+                        if (response.headers["link"]) {
+                            let link = LinkHeader.parse(response.headers["link"]);
+                    
+                            if (link.has("rel", "next")) {
+                                thisApiPath = link.get("rel", "next")[0].uri;
+                            }
+                            else {
+                                thisApiPath = false;
+                            }
+                        }
+                        else {
+                            thisApiPath = false;
+                        }
+                    }
+                    catch (error) {
+                        errorCount++;
+                    
+                        if (error.response.status == 401 && error.response.headers['www-authenticate']) { // refresh token, then try again
+                            log.info("401, with www-authenticate header.");
+
+                            await auth.refreshAccessToken(userId).then((result) => {
+                                log.info(result);
+                                if (result.success) {
+                                    log.info("Refreshed access token in 401, with www-authenticate header.");
+                                }
+                                else {
+                                    log.error(result);
+                                }
+                            })
+                            .catch(error => {
+                                log.error(error);
+                            });
+                        }
+                        else if (error.response.status == 401 && !error.response.headers['www-authenticate']) { // no access, redirect to auth
+                            log.error("Not authorized in Canvas for use of this API endpoint.");
+                            return(error);
+                        }
+                        else {
+                            log.error(error);
+                            return(error);
+                        }
+                    }
+                }    
+            }).catch((error) => {
+                log.error(error);
+                return (error);
+            });
+
+
+            // Compile new object from all pages.
+            apiData.forEach((page) => {
+                page.forEach((record) => {
+                    if (API_GROUPS_ONLY_OWN_GROUPS) {
+                        returnedApiData.push(record);
+                    }
+                    else {
+                        returnedApiData.push({
+                            id: record.id, 
+                            name: record.name, 
+                            group_category_id: record.group_category_id, 
+                            created_at: record.created_at, 
+                            members_count: record.members_count
+                        });
+                    }
+                });
+            });
+
+            /* Save to cache */
+            await cache.setCache('courseGroupsCache', cacheKey, apiData);
+            await cache.addCacheWrite('courseGroupsCache');
+
+            return new Promise((resolve) => {
+                resolve(returnedApiData);
+            })
+        }
     }
-];
+    catch (error) {
+        console.log(error);
 
-/* Log when caches expire */
-groupDetailsCache.on('expired', function(key) {
-    log.info("[Cache] Expired NodeCache entry for groupDetailsCache key '" + key + "'.");
-});
-userDetailsCache.on('expired', function(key) {
-    log.info("[Cache] Expired NodeCache entry for userDetailsCachekey '" + key + "'.");
-});
-
-/* Cache statistics */
-async function addCacheRead(cacheName) {
-    caches.filter(cache => {
-        if (cache.name == cacheName) {
-            cache.reads++;
-        }
-    })
-}
-async function addCacheWrite(cacheName) {
-    caches.filter(cache => {
-        if (cache.name == cacheName) {
-            cache.writes++;
-        }
-    })
-}
+        return new Promise((reject) => {
+            reject(error);
+        });
+    }
+};
 
 /**
- * Post a message in Conversations (Inbox) for specific group(s)
+ * Post a message in Conversations (Inbox) for specific recipient(s) (*** OLD ONE ***)
  * @param {number} recipients List of recipients according to API
  * @param {string} subject Message subject
  * @param {string} body Message body
@@ -162,11 +250,11 @@ async function createConversation(recipients, subject, body, userId) {
 /* Get details for a specified user in course */
 async function getUserDetails(courseId, userId, user_id) {
     try {
-        const cachedData = userDetailsCache.get(user_id);
+        const cachedData = cache.userDetailsCache.get(user_id);
 
         if (cachedData !== undefined) {
             log.info("[Cache] Using found NodeCache entry for userId " + user_id);
-            log.info("[Cache] Statistics: " + JSON.stringify(userDetailsCache.getStats()));
+            log.info("[Cache] Statistics: " + JSON.stringify(cache.userDetailsCache.getStats()));
         
             await addCacheRead('userDetailsCache');
     
@@ -423,117 +511,8 @@ async function getGroupMembers(userId, group_id) {
     });
 }
 
-/**
- * Get information about groups in a given course the user belongs to
- * 
- * @param {courseId} Numerical id of course
- * @param {userId} Numerical id of user
- * @returns JSON data from Canvas API
- */
-async function getCourseGroups(courseId, userId) {
-    let thisApiPath = API_HOST + API_PATH + "/courses/" + courseId + "/groups?per_page=" + API_PER_PAGE;
-    let apiData = new Array();
-    let returnedApiData = new Array();
-    let errorCount = 0;
-
-    if (API_GROUPS_ONLY_OWN_GROUPS) {
-        thisApiPath = thisApiPath + "&only_own_groups=true";
-    }
-
-    await auth.findAccessToken(userId).then(async (token) => {
-        while (errorCount < API_MAX_ERROR_COUNT && thisApiPath && token) {
-            log.info("GET " + thisApiPath);
-        
-            try {
-                const response = await axios.get(thisApiPath, {
-                    headers: {
-                        "User-Agent": "Chalmers/Azure/Request",
-                        "Authorization": token.token_type + " " + token.access_token
-                    }
-                });
-    
-                apiData.push(response.data);
-    
-                if (response.headers["X-Request-Cost"]) {
-                    log.info("Request cost: " + response.headers["X-Request-Cost"]);
-                }
-    
-                if (response.headers["link"]) {
-                    let link = LinkHeader.parse(response.headers["link"]);
-            
-                    if (link.has("rel", "next")) {
-                        thisApiPath = link.get("rel", "next")[0].uri;
-                    }
-                    else {
-                        thisApiPath = false;
-                    }
-                }
-                else {
-                    thisApiPath = false;
-                }
-            }
-            catch (error) {
-                errorCount++;
-                //log.error(error);
-            
-                if (error.response.status == 401 && error.response.headers['www-authenticate']) { // refresh token, then try again
-                    log.info("401, with www-authenticate header.");
-
-                    await auth.refreshAccessToken(userId).then((result) => {
-                        log.info(result);
-                        if (result.success) {
-                            log.info("Refreshed access token in 401, with www-authenticate header.");
-                        }
-                        else {
-                            log.error(result);
-                        }
-                    })
-                    .catch(error => {
-                        log.error(error);
-                    });
-                }
-                else if (error.response.status == 401 && !error.response.headers['www-authenticate']) { // no access, redirect to auth
-                    log.error("Not authorized in Canvas for use of this API endpoint.");
-                    return(error);
-                }
-                else {
-                    log.error(error);
-                    return(error);
-                }
-            }
-        }    
-    }).catch((error) => {
-        log.error(error);
-        return (error);
-    });
-
-
-    // Compile new object from all pages.
-    apiData.forEach((page) => {
-        page.forEach((record) => {
-            if (API_GROUPS_ONLY_OWN_GROUPS) {
-                returnedApiData.push(record);
-            }
-            else {
-                returnedApiData.push({
-                    id: record.id, 
-                    name: record.name, 
-                    group_category_id: record.group_category_id, 
-                    created_at: record.created_at, 
-                    members_count: record.members_count
-                });
-            }
-        });
-    });
-
-    return new Promise((resolve) => {
-        resolve(returnedApiData);
-    })
-};
 
 module.exports = {
-    getUserDetails,
-    getGroupDetails,
+    createConversation,
     getCourseGroups,
-    createConversation
 }

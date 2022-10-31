@@ -16,7 +16,7 @@ const canvasApi = require('./src/api/canvas');
 const user = require('./src/user');
 const db = require('./src/db');
 const utils = require('./src/utilities');
-const email = require('./src/mail');
+const cache = require('./src/cache');
 
 const port = process.env.PORT || 3000;
 const cookieMaxAge = 3600000 * 24 * 30 * 4; // 4 months
