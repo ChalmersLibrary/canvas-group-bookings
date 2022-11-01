@@ -5,7 +5,8 @@ Tillfälle: {{reservation_course_name}}
 Tid: {{reservation_slot_time}}
 Plats: {{location_name}}
 
-Om ni behöver avboka kan vem som helst i gruppen göra det i Bokningsverktyget under länken "Dina bokningar". Notera att ni måste avboka {{reservation_cancellation_policy_hours}}h innan starttid. Om ni har andra frågor, kontakta handledaren {{instructor_name}} på {{instructor_email}}.
+Om ni behöver avboka kan vem som helst i gruppen göra det i Bokningsverktyget under länken "Dina bokningar". Notera att ni måste avboka {{cancellation_policy_hours}}h innan starttid.
+Om ni har andra frågor, kontakta handledaren {{instructor_name}} på {{instructor_email}}.
 
 Väl mött!
 
