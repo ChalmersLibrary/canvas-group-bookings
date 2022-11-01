@@ -432,23 +432,34 @@ app.post('/api/reservation', async (req, res, next) => {
                 }
                 else {
                     const subject = "Bekräftad bokning: " + course.name;
-                    let body = utils.getTemplate("reservation_individual_done");
+                    const subject_cc = "Bekräftad bokning: " + course.name + ", " + req.session.user.name;
+                    const template_type = "reservation_individual_done";
+                    let body = utils.getTemplate(template_type);
 
                     if (body === 'undefined') {
                         body = course.mail_one_reservation_body;
                     }
 
-                    body = body.replace("{{reservation_course_name}}", course.name);
-                    body = body.replace("{{reservation_slot_time}}", slot.time_start);
-                    body = body.replace("{{location_name}}", slot.location_name);
-                    body = body.replace("{{instructor_name}}", instructor.name);
-                    body = body.replace("{{instructor_email}}", instructor.email);
+                    if (body !== 'undefined' && body != '') {
+                        body = body.replace("{{reservation_course_name}}", course.name);
+                        body = body.replace("{{canvas_user_name}}", req.session.user.name);
+                        body = body.replace("{{reservation_slot_time}}", slot.time_start);
+                        body = body.replace("{{location_name}}", slot.location_name);
+                        body = body.replace("{{instructor_name}}", instructor.name);
+                        body = body.replace("{{instructor_email}}", instructor.email);
+        
+                        let conversation_result_user = await canvasApi.createConversation(req.session.user.id, subject, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
+                        log.info("Sent confirmation message to the user (Canvas Conversations API).");
 
-                    const recipients = [ req.session.user.id, instructor.canvas_user_id ];
+                        if (course.mail_cc_instructor) {
+                            let conversation_result_cc = await canvasApi.createConversation(instructor.canvas_user_id, subject_cc, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
+                            log.info("Sent a copy of confirmation message to the instructor (Canvas Conversations API).");
+                        }
+                    }
+                    else {
+                        log.error("Could not find message body neither in general template file '" + template_type + "' or in db for courseId " + slot.course_id);
+                    }
 
-                    let conversation_result = await canvasApi.createConversation(recipients, subject, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
-                    
-                    log.info("Sent confirmation message to the user and instructor (Canvas Conversations API).");
                 }
             }
             catch (error) {
