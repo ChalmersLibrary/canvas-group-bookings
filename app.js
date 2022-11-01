@@ -442,6 +442,7 @@ app.post('/api/reservation', async (req, res, next) => {
 
                     if (body !== 'undefined' && body != '') {
                         body = body.replace("{{reservation_course_name}}", course.name);
+                        body = body.replace("{{reservation_cancellation_policy_hours}}", course.reservation_cancellation_policy_hours);
                         body = body.replace("{{canvas_user_name}}", req.session.user.name);
                         body = body.replace("{{reservation_slot_time}}", slot.time_start);
                         body = body.replace("{{location_name}}", slot.location_name);
