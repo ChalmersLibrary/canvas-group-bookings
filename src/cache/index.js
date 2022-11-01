@@ -28,6 +28,11 @@ courseGroupsCache.on('expired', function(key) {
     log.info("[Cache] Expired NodeCache entry for courseGroupsCache key '" + key + "'.");
 });
 
+/* Debug log when cache is set */
+courseGroupsCache.on('set', function(key, value) {
+    log.info("[Cache] Set entry for courseGroupsCache key '" + key + "': " + typeof(value) === 'Object' ? JSON.stringify(value) : value);
+});
+
 /* Cache statistics */
 async function addCacheRead(cacheName) {
     caches.filter(cache => {
@@ -58,7 +63,6 @@ async function getCacheStats(cacheName) {
 
 /* Set a cached value */
 async function setCache(cacheName, key, value) {
-    log.info("[Cache] Setting cache key " + key + " in " + cacheName);
     caches.filter(cache => {
         if (cache.name == cacheName) {
             cache.bucket.set(key, value);
@@ -69,8 +73,6 @@ async function setCache(cacheName, key, value) {
 /* Get a cached value */
 async function getCache(cacheName, key) {
     let cacheValue;
-
-    log.info("[Cache] Getting cache key " + key + " from " + cacheName);
 
     caches.filter(cache => {
         if (cache.name == cacheName) {
