@@ -247,7 +247,7 @@ async function getCourse(id) {
 async function getValidInstructors(canvas_course_id) {
     let data;
 
-    await query("SELECT id, name FROM instructor WHERE canvas_course_id=$1", [ canvas_course_id ]).then((result) => {
+    await query("SELECT DISTINCT i.id, i.name FROM instructor i, canvas_course_instructor_mapping c WHERE i.id=c.instructor_id AND c.canvas_course_id=$1", [ canvas_course_id ]).then((result) => {
         data = result.rows;
     }).catch((error) => {
         log.error(error);
@@ -273,7 +273,7 @@ async function getInstructor(id) {
 async function getValidLocations(canvas_course_id) {
     let data;
 
-    await query("SELECT id, name FROM location WHERE canvas_course_id=$1", [ canvas_course_id ]).then((result) => {
+    await query("SELECT DISTINCT l.id, l.name FROM location l, canvas_course_location_mapping c WHERE l.id=c.location_id AND c.canvas_course_id=$1", [ canvas_course_id ]).then((result) => {
         data = result.rows;
     }).catch((error) => {
         log.error(error);
