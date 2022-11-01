@@ -1,0 +1,11 @@
+Du har avbokats från ett tidigare bokat tillfälle.
+
+Tillfälle: {{reservation_course_name}}
+Tid: {{reservation_slot_time}}
+
+Om du har frågor, kontakta handledaren {{instructor_name}} på {{instructor_email}} eller direkt här i konversationen i Canvas.
+
+Vänlig hälsning,
+Canvas Conversation Robot
+
+PS. Detta är ett automatiskt meddelande som skickas till dig och handledaren i Canvas Inbox, när du gör en avbokning i Bokningsverktyget i Canvas. Du väljer själv hur du vill notifieras om detta i Canvas, under Account / Notifications. DS.

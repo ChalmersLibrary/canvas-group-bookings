@@ -1,5 +1,7 @@
 'use strict'
 
+const fs = require('fs');
+
 function getDatePart(date) {
     const dateOptions = { year: 'numeric', month: 'numeric', day: 'numeric' };
     console.log("Incoming: " + date);
@@ -11,7 +13,19 @@ function getTimePart(date) {
     return new Date(date).toLocaleTimeString('sv-SE', timeOptions);
 }
 
+function getTemplate(type) {
+    let content;
+    let file = "templates/" + type + ".txt";
+
+    if (fs.existsSync(file)) {
+        content = fs.readFileSync(file).toString();
+    }
+
+    return content;
+}
+
 module.exports = {
     getDatePart,
-    getTimePart
+    getTimePart,
+    getTemplate
 }

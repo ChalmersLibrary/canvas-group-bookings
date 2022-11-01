@@ -412,8 +412,12 @@ app.post('/api/reservation', async (req, res, next) => {
 
                 if (slot.type == "group") {
                     const subject = "Bekräftad bokning: " + group_name + ", " + course.name;
-                    const body = course.mail_one_reservation_body;
-
+                    let body = utilities.getTemplate("reservation_group_done");
+                    
+                    if (body === 'undefined') {
+                        body = course.mail_one_reservation_body;
+                    }
+                    
                     /*  if this group is the closer of max groups for this slot, send to both (all) groups,
                         else send to the group reserving
                         let conversation_result = await canvasApi.createConversation(
@@ -423,15 +427,28 @@ app.post('/api/reservation', async (req, res, next) => {
                             { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
                         await db.updateReservationMessageSentGroup(); 
                     */
+
                     log.info("Sending confirmation message to group is not implemented yet (Canvas Conversations API).");
                 }
                 else {
                     const subject = "Bekräftad bokning: " + course.name;
-                    const body = course.mail_one_reservation_body;
+                    let body = utils.getTemplate("reservation_individual_done");
 
-                    // let conversation_result = await canvasApi.createConversation(new Array("<userid>"), "Test conversation from nodejs", "This is a test conversation for two groups, created programmatically from Canvas API.", req.session.user.id);
-                    // await db.updateReservationMailSentUser();
-                    log.info("Sending confirmation message to the user is not implemented yet (Canvas Conversations API).");
+                    if (body === 'undefined') {
+                        body = course.mail_one_reservation_body;
+                    }
+
+                    body = body.replace("{{reservation_course_name}}", course.name);
+                    body = body.replace("{{reservation_slot_time}}", slot.time_start);
+                    body = body.replace("{{location_name}}", slot.location_name);
+                    body = body.replace("{{instructor_name}}", instructor.name);
+                    body = body.replace("{{instructor_email}}", instructor.email);
+
+                    const recipients = [ req.session.user.id, instructor.canvas_user_id ];
+
+                    let conversation_result = await canvasApi.createConversation(recipients, subject, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
+                    
+                    log.info("Sent confirmation message to the user and instructor (Canvas Conversations API).");
                 }
             }
             catch (error) {

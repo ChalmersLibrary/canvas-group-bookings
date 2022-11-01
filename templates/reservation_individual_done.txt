@@ -1,0 +1,14 @@
+Nu är du bokad!
+
+Tillfälle: {{reservation_course_name}}
+Tid: {{reservation_slot_time}}
+Plats: {{location_name}}
+
+Om du har frågor, kontakta handledaren {{instructor_name}} på {{instructor_email}} eller direkt här i konversationen i Canvas.
+
+Väl mött!
+
+Vänlig hälsning,
+Canvas Conversation Robot
+
+PS. Detta är ett automatiskt meddelande som skickas till dig och handledaren i Canvas Inbox, när du gör en bokning i Bokningsverktyget i Canvas. Du väljer själv hur du vill notifieras om detta i Canvas, under Account / Notifications. DS.
