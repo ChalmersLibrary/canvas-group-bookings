@@ -1,0 +1,90 @@
+'use strict';
+
+require('dotenv').config();
+
+const log = require('../logging');
+const NodeCache = require('node-cache');
+
+/* Cache API calls that don't change often to speed up requests */
+const CACHE_TTL_CANVAS = (parseInt(process.env.cacheCanvasApiSecondsTTL) > 0 ? parseInt(process.env.cacheCanvasApiSecondsTTL) : (60 * 60)); // 1h
+const CACHE_TTL_DB = (parseInt(process.env.cacheDbSecondsTTL) > 0 ? parseInt(process.env.cacheDbSecondsTTL) : (60 * 5)); // 5m
+const CACHE_CHECK_EXPIRE = 600; // 10m
+
+/* Actual caches */
+const courseGroupsCache = new NodeCache({ errorOnMissing:true, stdTTL: CACHE_TTL_CANVAS, checkperiod: CACHE_CHECK_EXPIRE });
+
+/* Setup caches with read/write stats */
+let caches = [
+    {
+        name: "courseGroupsCache",
+        writes: 0,
+        reads: 0,
+        bucket: courseGroupsCache
+    }
+];
+
+/* Log when caches expire */
+courseGroupsCache.on('expired', function(key) {
+    log.info("[Cache] Expired NodeCache entry for courseGroupsCache key '" + key + "'.");
+});
+
+/* Cache statistics */
+async function addCacheRead(cacheName) {
+    caches.filter(cache => {
+        if (cache.name == cacheName) {
+            cache.reads++;
+        }
+    });
+}
+async function addCacheWrite(cacheName) {
+    caches.filter(cache => {
+        if (cache.name == cacheName) {
+            cache.writes++;
+        }
+    });
+}
+
+async function getCacheStats(cacheName) {
+    let cacheStats;
+
+    caches.filter(cache => {
+        if (cache.name == cacheName) {
+            cacheStats = cache.bucket.getStats();
+        }
+    });
+
+    return cacheStats;
+}
+
+/* Set a cached value */
+async function setCache(cacheName, key, value) {
+    log.info("[Cache] Setting cache key " + key + " in " + cacheName);
+    caches.filter(cache => {
+        if (cache.name == cacheName) {
+            cache.bucket.set(key, value);
+        }
+    });
+}
+
+/* Get a cached value */
+async function getCache(cacheName, key) {
+    let cacheValue;
+
+    log.info("[Cache] Getting cache key " + key + " from " + cacheName);
+
+    caches.filter(cache => {
+        if (cache.name == cacheName) {
+            cacheValue = cache.bucket.get(key);
+        }
+    });
+
+    return cacheValue;
+}
+
+module.exports = {
+    addCacheRead,
+    addCacheWrite,
+    setCache,
+    getCache,
+    getCacheStats
+}

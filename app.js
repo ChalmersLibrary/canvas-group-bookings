@@ -16,7 +16,7 @@ const canvasApi = require('./src/api/canvas');
 const user = require('./src/user');
 const db = require('./src/db');
 const utils = require('./src/utilities');
-const email = require('./src/mail');
+const cache = require('./src/cache');
 
 const port = process.env.PORT || 3000;
 const cookieMaxAge = 3600000 * 24 * 30 * 4; // 4 months
@@ -146,7 +146,7 @@ app.get('/test', async (req, res) => {
     
     // One or two or three user
     let conversation_result = await canvasApi.createConversation(
-        req.session.user.id,
+        [ req.session.user.id, 973 ],
         "Another test conversation", 
         "This is a test conversation.\nIt's created programmatically in Canvas API using nodejs.\n\nAll the best,\nChalmers Canvas Conversation Robot", 
         { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
@@ -402,24 +402,33 @@ app.post('/api/reservation', async (req, res, next) => {
 
         const reservation = await db.createSlotReservation(slot_id, req.session.user.id, req.session.user.name, group_id, group_name, message);
 
-        if (process.env.EMAIL_SEND_EMAILS && process.env.EMAIL_SEND_EMAILS !== false) {
+        if (process.env.CONVERSATION_ROBOT_API_TOKEN && process.env.CONVERSATION_ROBOT_SEND_MESSAGES) {
             try {
                 const course = await db.getCourse(slot.course_id);
                 const instructor = await db.getInstructor(slot.instructor_id);
-                const subject = "Bekräftad bokning: " + group_name + ", " + course.name;
-                const body = course.mail_one_reservation_body;
 
                 /* await email.sendConfirmationMail(req.session.user.name, req.session.user.email, course.mail_cc_instructor ? instructor.email : "", course.mail_cc_instructor ? instructor.name : "", subject, body);
                 await db.updateReservationMailSentUser(); */
 
                 if (slot.type == "group") {
-                    // if this group is the closer of max groups for this slot, send to both (all) groups,
-                    // else send to the group reserving
-                    // let conversation_result = await canvasApi.createConversation(new Array("group_128953"), "Test conversation from nodejs", "This is a test conversation for two groups, created programmatically from Canvas API.", req.session.user.id);
-                    // await db.updateReservationMessageSentGroup();    
+                    const subject = "Bekräftad bokning: " + group_name + ", " + course.name;
+                    const body = course.mail_one_reservation_body;
+
+                    /*  if this group is the closer of max groups for this slot, send to both (all) groups,
+                        else send to the group reserving
+                        let conversation_result = await canvasApi.createConversation(
+                            [ req.session.user.id, 973 ],
+                            "Another test conversation", 
+                            "This is a test conversation.\nIt's created programmatically in Canvas API using nodejs.\n\nAll the best,\nChalmers Canvas Conversation Robot", 
+                            { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
+                        await db.updateReservationMessageSentGroup(); 
+                    */
                     log.info("Sending confirmation message to group is not implemented yet (Canvas Conversations API).");
                 }
                 else {
+                    const subject = "Bekräftad bokning: " + course.name;
+                    const body = course.mail_one_reservation_body;
+
                     // let conversation_result = await canvasApi.createConversation(new Array("<userid>"), "Test conversation from nodejs", "This is a test conversation for two groups, created programmatically from Canvas API.", req.session.user.id);
                     // await db.updateReservationMailSentUser();
                     log.info("Sending confirmation message to the user is not implemented yet (Canvas Conversations API).");
