@@ -31,6 +31,7 @@ const API_MAX_ERROR_COUNT = 1;
 
         if (cachedData !== undefined) {
             log.info("[Cache] Using found NodeCache entry for key " + cacheKey);
+            log.info("[Cache] Cache value: " + typeof(cachedData) === 'Object' ? JSON.stringify(cachedData) : cachedData);
             log.info("[Cache] Statistics: " + JSON.stringify(await cache.getCacheStats('courseGroupsCache')));
         
             await cache.addCacheRead('courseGroupsCache');
@@ -135,7 +136,7 @@ const API_MAX_ERROR_COUNT = 1;
             });
 
             /* Save to cache */
-            await cache.setCache('courseGroupsCache', cacheKey, apiData);
+            await cache.setCache('courseGroupsCache', cacheKey, returnedApiData);
             await cache.addCacheWrite('courseGroupsCache');
 
             return new Promise((resolve) => {
