@@ -6,8 +6,8 @@ const log = require('../logging');
 const NodeCache = require('node-cache');
 
 /* Cache API calls that don't change often to speed up requests */
-const CACHE_TTL_CANVAS = (parseInt(process.env.cacheCanvasApiSecondsTTL) > 0 ? parseInt(process.env.cacheCanvasApiSecondsTTL) : (60 * 60)); // 1h
-const CACHE_TTL_DB = (parseInt(process.env.cacheDbSecondsTTL) > 0 ? parseInt(process.env.cacheDbSecondsTTL) : (60 * 5)); // 5m
+const CACHE_TTL_CANVAS = (parseInt(process.env.CACHE_CANVAS_API_SECONDS_TTL) > 0 ? parseInt(process.env.CACHE_CANVAS_API_SECONDS_TTL) : (60 * 60)); // 1h
+const CACHE_TTL_DB = (parseInt(process.env.CACHE_DB_SECONDS_TTL) > 0 ? parseInt(process.env.CACHE_DB_SECONDS_TTL) : (60 * 5)); // 5m
 const CACHE_CHECK_EXPIRE = 600; // 10m
 
 /* Actual caches */
