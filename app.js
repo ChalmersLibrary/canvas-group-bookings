@@ -450,11 +450,11 @@ app.post('/api/reservation', async (req, res, next) => {
                         body = body.replace("{{instructor_email}}", instructor.email);
         
                         let conversation_result_user = await canvasApi.createConversation(req.session.user.id, subject, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
-                        log.info("Sent confirmation message to the user (Canvas Conversations API).");
+                        log.info("Sent confirmation message to the user (Canvas Conversations API) with subject '" + subject + "'.");
 
                         if (course.mail_cc_instructor) {
                             let conversation_result_cc = await canvasApi.createConversation(instructor.canvas_user_id, subject_cc, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
-                            log.info("Sent a copy of confirmation message to the instructor (Canvas Conversations API).");
+                            log.info("Sent a copy of confirmation message to the instructor (Canvas Conversations API) with subject '" + subject_cc + "'.");
                         }
                     }
                     else {
