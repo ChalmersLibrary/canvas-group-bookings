@@ -80,10 +80,15 @@
                     </div>
                     <p>
                         <span class="float-start text-small text-muted"><%= slot.reservable_notice %>&nbsp;</span>
-                        <% if (slot.reservable_for_this_user) { %>
-                            <button type="button" title="Boka tillfället" class="btn btn-primary btn-sm float-end" data-bs-toggle="modal" data-bs-target="#reserveSlot" data-bs-slot-id="<%= slot.id %>" >Boka</button>
+                        <% if (session.user.isAdministrator) { %>
+                            <button type="button" title="Redigera" data-bs-toggle="modal" data-bs-target="#editSlot" data-bs-slot-id="<%= slot.id %>" class="btn btn-secondary btn-sm float-end"><i class="bi-pencil-fill"></i></button>
+                            <button type="button" title="Radera" data-bs-toggle="modal" data-bs-target="#deleteSlot" data-bs-slot-id="<%= slot.id %>" class="btn btn-secondary btn-sm float-end mx-2"><i class="bi-trash-fill"></i></button>
                         <% } else { %>
-                            <button type="button" title="Tillfället är inte bokningsbart" class="btn btn-primary btn-sm float-end" disabled>Boka</button>
+                            <% if (slot.reservable_for_this_user) { %>
+                                <button type="button" title="Boka tillfället" class="btn btn-primary btn-sm float-end" data-bs-toggle="modal" data-bs-target="#reserveSlot" data-bs-slot-id="<%= slot.id %>" >Boka</button>
+                            <% } else { %>
+                                <button type="button" title="Tillfället är inte bokningsbart" class="btn btn-primary btn-sm float-end" disabled>Boka</button>
+                            <% } %>
                         <% } %>
                     </p>
                 </td>
@@ -115,7 +120,6 @@
                     <td class="d-none d-md-table-cell">
                         <button type="button" title="Redigera" data-bs-toggle="modal" data-bs-target="#editSlot" data-bs-slot-id="<%= slot.id %>" class="btn btn-secondary btn-sm float-end"><i class="bi-pencil-fill"></i></button>
                         <button type="button" title="Radera" data-bs-toggle="modal" data-bs-target="#deleteSlot" data-bs-slot-id="<%= slot.id %>" class="btn btn-secondary btn-sm float-end mx-2"><i class="bi-trash-fill"></i></button>
-                        <button disabled type="button" title="Administratörer kan inte boka" class="btn btn-primary btn-sm float-end">Boka</button>
                     </td>
                 <% } else { %>
                     <td class="d-none d-md-table-cell">
