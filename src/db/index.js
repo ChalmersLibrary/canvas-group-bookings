@@ -328,6 +328,26 @@ async function deleteSlot(id) {
     });
 }
 
+async function addCanvasConversationLog(slot_id, reservation_id, canvas_course_id, canvas_recipients, message_subject, message_body) {
+    let data;
+
+    await query("INSERT INTO canvas_conversation_log (slot_id, reservation_id, canvas_course_id, canvas_recipients, message_subject, message_body) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id", [ 
+        slot_id, 
+        reservation_id, 
+        canvas_course_id, 
+        canvas_recipients, 
+        message_subject, 
+        message_body
+    ]).then((result) => {
+        data = result.rows[0];
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    });
+    
+    return data;
+}
+
 async function checkDatabaseVersion() {
     let run_setup = false;
     let check_new_version = true;
@@ -426,5 +446,6 @@ module.exports = {
     createSlots,
     updateSlot,
     deleteSlot,
+    addCanvasConversationLog,
     checkDatabaseVersion,
 }

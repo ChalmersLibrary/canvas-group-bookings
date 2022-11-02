@@ -198,8 +198,6 @@ async function createConversation(recipients, subject, body, token) {
                 bodyFormData.append('subject', subject);
                 bodyFormData.append('body', body);
 
-                console.log(bodyFormData);
-
                 const response = await axios({
                     method: "post",
                     url: thisApiPath,

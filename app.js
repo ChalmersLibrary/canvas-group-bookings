@@ -428,11 +428,15 @@ app.post('/api/reservation', async (req, res, next) => {
                         body = utils.replaceMessageMagics(body, course.name, message, course.cancellation_policy_hours, req.session.user.name, slot.time_start, slot.location_name, instructor.name, instructor.email, group_name);
         
                         let conversation_result_group = await canvasApi.createConversation(recipient, subject, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
-                        log.info("Sent confirmation message (group) to: '" + recipient + "' (Canvas Conversations API) with subject '" + subject + "'.");
+                        let log_id = await db.addCanvasConversationLog(slot_id, reservation.id, slot.canvas_course_id, recipient, subject, body);
+
+                        log.info("Sent confirmation message to the group, id " + log_id.id);
 
                         if (course.message_cc_instructor) {
                             let conversation_result_cc = await canvasApi.createConversation(instructor.canvas_user_id, subject_cc, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
-                            log.info("Sent a copy of confirmation message (group) to: '" + recipient + "' to the instructor (Canvas Conversations API) with subject '" + subject_cc + "'.");
+                            let log_id_cc = await db.addCanvasConversationLog(slot_id, reservation.id, slot.canvas_course_id, instructor.canvas_user_id, subject_cc, body);
+
+                            log.info("Sent a copy of confirmation message to the instructor, id " + log_id_cc.id);
                         }
 
                         // Get the updated slot with all reservations
@@ -456,13 +460,14 @@ app.post('/api/reservation', async (req, res, next) => {
 
                                 const subject_all = "Fullbokat tillfälle: " + course.name;
 
-                                let conversation_result_group = await canvasApi.createConversation(recipients, subject_all, body_all, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
-                                log.info("Sent connection message (group) to: " + recipients.join(", ") + " (Canvas Conversations API) with subject '" + subject + "'.");        
+                                let conversation_result_all = await canvasApi.createConversation(recipients, subject_all, body_all, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
+                                let log_id_all = await db.addCanvasConversationLog(slot_id, null, slot.canvas_course_id, recipients, subject_all, body_all);
+
+                                log.info("Sent connection message to: " + recipients.join(", ") + ", id " + log_id_all.id);        
                             }
                             else {
                                 log.error("Flag 'message_all_when_full' is true, but could not find message body neither in template file 'reservation_group_full' or in db for courseId " + slot.course_id);
-                            }
-                            
+                            }  
                         }
                     }
                     else {
@@ -484,11 +489,15 @@ app.post('/api/reservation', async (req, res, next) => {
                         body = utils.replaceMessageMagics(body, course.name, message, course.cancellation_policy_hours, req.session.user.name, slot.time_start, slot.location_name, instructor.name, instructor.email);
 
                         let conversation_result_user = await canvasApi.createConversation(req.session.user.id, subject, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
-                        log.info("Sent confirmation message to the user (Canvas Conversations API) with subject '" + subject + "'.");
+                        let log_id = await db.addCanvasConversationLog(slot_id, reservation.id, slot.canvas_course_id, req.session.user.id, subject, body);
+                        
+                        log.info("Sent confirmation message to the user, id " + log_id.id);
 
                         if (course.message_cc_instructor) {
                             let conversation_result_cc = await canvasApi.createConversation(instructor.canvas_user_id, subject_cc, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
-                            log.info("Sent a copy of confirmation message to the instructor (Canvas Conversations API) with subject '" + subject_cc + "'.");
+                            let log_id_cc = await db.addCanvasConversationLog(slot_id, reservation.id, slot.canvas_course_id, instructor.canvas_user_id, subject_cc, body);
+                            
+                            log.info("Sent a copy of confirmation message to the instructor, id " + log_id_cc.id);
                         }
                     }
                     else {
