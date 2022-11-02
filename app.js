@@ -452,7 +452,7 @@ app.post('/api/reservation', async (req, res, next) => {
                             }
 
                             if (body_all !== 'undefined' && body_all != '') {
-                                body_all = utils.replaceMessageMagics(body_all, course.name, message, course.cancellation_policy_hours, req.session.user.name, slot.time_human_readable_sv, slot.location_name, instructor.name, instructor.email, group_name, slot.res_group_names.join(", "));
+                                body_all = utils.replaceMessageMagics(body_all, course.name, message, course.cancellation_policy_hours, req.session.user.name, slot_now.time_human_readable_sv, slot_now.location_name, instructor.name, instructor.email, group_name, slot_now.res_group_names.join(", "));
 
                                 for (const id of slot_now.res_group_ids) {
                                     recipients.push("group_" + id);
@@ -461,13 +461,13 @@ app.post('/api/reservation', async (req, res, next) => {
                                 const subject_all = "Fullbokat tillfälle: " + course.name;
 
                                 let conversation_result_all = await canvasApi.createConversation(recipients, subject_all, body_all, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
-                                let log_id_all = await db.addCanvasConversationLog(slot_id, null, slot.canvas_course_id, recipients, subject_all, body_all);
+                                let log_id_all = await db.addCanvasConversationLog(slot_id, null, slot_now.canvas_course_id, recipients, subject_all, body_all);
 
                                 log.info("Sent connection message to: " + recipients.join(", ") + ", id " + log_id_all.id);        
                             }
                             else {
-                                log.error("Flag 'message_all_when_full' is true, but could not find message body neither in template file 'reservation_group_full' or in db for courseId " + slot.course_id);
-                            }  
+                                log.error("Flag 'message_all_when_full' is true, but could not find message body neither in template file 'reservation_group_full' or in db for courseId " + slot_now.course_id);
+                            }
                         }
                     }
                     else {
