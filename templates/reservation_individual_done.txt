@@ -12,6 +12,6 @@ Om du har andra frågor, kontakta handledaren {{instructor_name}} på {{instruct
 Väl mött!
 
 Vänlig hälsning,
-Canvas Conversation Robot
+Canvas Robot
 
 PS. Detta är ett automatiskt meddelande som skickas till dig i Canvas Inbox, när du gör en bokning i Bokningsverktyget i Canvas. Du väljer själv hur du vill notifieras om detta i Canvas, under Account / Notifications. DS.
