@@ -365,7 +365,7 @@ app.post('/api/reservation', async (req, res, next) => {
                         }
                     }
                 }
-                else if (slot.res_course_group_ids) {
+                if (slot.res_course_group_ids) {
                     for (const id of slot.res_course_group_ids) {
                         for (const group of req.session.user.groups) {
                             if (group.id === id) {
@@ -383,7 +383,7 @@ app.post('/api/reservation', async (req, res, next) => {
                         }
                     }
                 }
-                else if (slot.res_course_user_ids) {
+                if (slot.res_course_user_ids) {
                     for (const id of slot.res_course_user_ids) {
                         if (req.session.user.id === id) {
                             throw new Error("Max antal bokningar på samma typ av tillfälle har uppnåtts, kan inte boka fler tider.");
