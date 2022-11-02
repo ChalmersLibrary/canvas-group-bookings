@@ -328,24 +328,6 @@ async function deleteSlot(id) {
     });
 }
 
-async function updateGroupsCanvasCache(course_id, group_id, user_id, group_name, user_name, user_email) {
-    await query("INSERT INTO canvas_cache_group_members (canvas_course_id,canvas_group_id,canvas_user_id,canvas_group_name,canvas_user_name,canvas_user_email) " + 
-    "VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT ON CONSTRAINT canvas_cache_group_members_pkey DO " +
-    "UPDATE SET canvas_group_name=EXCLUDED.canvas_group_name, canvas_user_name=EXCLUDED.canvas_user_name, canvas_user_email=EXCLUDED.canvas_user_email, updated_at=now();", [
-        course_id,
-        group_id, 
-        user_id,
-        group_name,
-        user_name,
-        user_email
-    ]).then((result) => {
-        log.info(result);
-    }).catch((error) => {
-        log.error(error);
-        throw new Error(error);
-    });
-}
-
 async function checkDatabaseVersion() {
     let run_setup = false;
     let check_new_version = true;
@@ -444,6 +426,5 @@ module.exports = {
     createSlots,
     updateSlot,
     deleteSlot,
-    updateGroupsCanvasCache,
     checkDatabaseVersion,
 }
