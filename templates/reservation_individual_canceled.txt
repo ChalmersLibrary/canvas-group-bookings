@@ -1,4 +1,4 @@
-Du har avbokats från ett tidigare bokat tillfälle.
+Du har nu avbokats från ett tidigare bokat tillfälle.
 
 Tillfälle: {{reservation_course_name}}
 Tid: {{reservation_slot_time}}
