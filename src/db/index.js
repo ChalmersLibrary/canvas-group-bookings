@@ -58,14 +58,25 @@ async function getAllSlots(canvas_course_id, date) {
 
 async function getSlot(id) {
     let data;
+    let returnedData = [];
+    const dateOptions = { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric' };
+    const timeOptions = { hour: '2-digit', minute: '2-digit' };
 
     await query("SELECT * FROM slots_view WHERE id = $1", [ id ]).then((result) => {
-        data = result.rows[0];
+        data = result.rows;
     }).catch((error) => {
         log.error(error);
     });
-    
-    return data;
+
+    /* TODO: think about if these additions/conversions should be done outside, and this should be just clean db code? */
+    if (data !== undefined && data.length) {
+        data.forEach(slot => {
+            slot.time_human_readable_sv = new Date(slot.time_start).toLocaleDateString('sv-SE', dateOptions) + " kl " + new Date(slot.time_start).toLocaleTimeString('sv-SE', timeOptions) + "&ndash;" + new Date(slot.time_end).toLocaleTimeString('sv-SE', timeOptions);
+            returnedData.push(slot);
+        });
+    }
+
+    return returnedData[0];
 }
 
 /* Get reservations for a slot, full view */
