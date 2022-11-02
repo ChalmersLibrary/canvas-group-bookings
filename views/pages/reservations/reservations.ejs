@@ -50,7 +50,7 @@
                     för gruppen <strong><%= reservation.canvas_group_name %></strong>
                   <% } %>
                 </p>
-                <% if (reservation.other_reservations.length) { %>
+                <% if (reservation.other_reservations && reservation.other_reservations.length) { %>
                   <p>Andra bokningar: <br>
                     <%= reservation.other_reservations.map(r => r.canvas_group_name).join(", ") %>
                   </p>
