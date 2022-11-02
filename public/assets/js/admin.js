@@ -31,17 +31,33 @@ document.addEventListener("DOMContentLoaded", function(event) {
             editSlotModal.querySelector('#e_slot_time_start').value = data.shortcut.start_time
             editSlotModal.querySelector('#e_slot_time_end').value = data.shortcut.end_time
             editSlotModal.querySelector('#reservations').replaceChildren()
-            data.reservations.forEach(reservation => {
+            if (data.reservations && data.reservations.length) {
+                data.reservations.forEach(reservation => {
+                    const r = editSlotModal.querySelector('#reservations').appendChild(document.createElement('div'))
+                    if (reservation.is_group) {
+                        r.innerText = reservation.canvas_group_name + " (" + reservation.canvas_user_name + ")";
+                    }
+                    else {
+                        r.innerText = reservation.canvas_user_name
+                    }
+                })
+
+                if (editSlotModal.querySelector('#editSlotWarning').classList.contains("d-none")) {
+                    editSlotModal.querySelector('#editSlotWarning').classList.remove("d-none")
+                    editSlotModal.querySelector('#editSlotWarning').classList.add("d-block")
+                }
+            }
+            else {
                 const r = editSlotModal.querySelector('#reservations').appendChild(document.createElement('div'))
-                if (reservation.is_group) {
-                    r.innerText = reservation.canvas_group_name + " (" + reservation.canvas_user_name + ")";
+                r.innerText = "Inga bokningar"
+
+                if (editSlotModal.querySelector('#editSlotWarning').classList.contains("d-block")) {
+                    editSlotModal.querySelector('#editSlotWarning').classList.remove("d-block")
+                    editSlotModal.querySelector('#editSlotWarning').classList.add("d-none")
                 }
-                else {
-                    r.innerText = reservation.canvas_user_name
-                }
-            })
+            }
         })
-        if(editSlotModal.querySelector('#editSlotError').classList.contains("d-block")) {
+        if (editSlotModal.querySelector('#editSlotError').classList.contains("d-block")) {
             editSlotModal.querySelector('#editSlotError').classList.remove("d-block")
             editSlotModal.querySelector('#editSlotError').classList.add("d-none")
         }
