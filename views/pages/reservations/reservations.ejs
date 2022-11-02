@@ -19,13 +19,13 @@
       <% if (reservationDeleted) { %>
         <div class="alert alert-success" role="alert">
           <strong>Tillfället "<%= reservationTitle %>" har avbokats.</strong>
-          Du kommer även att få bekräftelse via e-post om detta.
+          Du kommer även att få bekräftelse via Canvas Inbox om detta.
         </div>
       <% } %>
       <% if (reservationDone) { %>
         <div class="alert alert-success" role="alert">
           <strong>Tillfället har bokats.</strong>
-          Du kommer även att få bekräftelse via e-post om detta.
+          Du kommer även att få bekräftelse via Canvas Inbox om detta.
         </div>
       <% } %>
         <% reservations.forEach(reservation => { %>
@@ -50,7 +50,7 @@
                     för gruppen <strong><%= reservation.canvas_group_name %></strong>
                   <% } %>
                 </p>
-                <% if (reservation.other_reservations) { %>
+                <% if (reservation.other_reservations.length) { %>
                   <p>Andra bokningar: <br>
                     <%= reservation.other_reservations.map(r => r.canvas_group_name).join(", ") %>
                   </p>
@@ -62,7 +62,7 @@
                   <p class="card-text"><strong>Notera:</strong> det finns andra grupper bokade på tillfället, som nu är fullsatt (<%= reservation.max_groups %> grupper).</p>
                 <% } %>
                 <% if (reservation.max_groups > reservation.res_now) { %>
-                  <p class="card-text"><strong>Notera:</strong> det finns plats för fler grupper (totalt <%= reservation.max_groups %> grupper), men tiden är inte fullbokad än.</p>
+                  <p class="card-text"><strong>Notera:</strong> det finns plats för fler grupper (totalt <%= reservation.max_groups %> grupper).</p>
                 <% } %>
                 <p class="card-text">
                   Avbokningspolicy:<br>
@@ -72,7 +72,7 @@
                   <% } %>
                 </p>
               </div>
-              <div class="float-end">
+              <div class="float-start my-2">
                 <!-- <button type="button" title="Visa mer information om bokningen" class="btn btn-secondary btn-sm" data-bs-toggle="collapse" data-bs-target="#reservationDetails<%= reservation.id %>" aria-expanded="false" aria-controls="reservationDetails<%= reservation.id %>">Mer information</button> -->
                 <% if (reservation.is_cancelable) { %>
                   <button type="button" title="Avboka detta tillfälle" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#deleteReservation" data-bs-reservation-id="<%= reservation.id %>">Avboka</button>

@@ -94,8 +94,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
                             reserveSlotModal.querySelector('#reservationsCurrent').classList.add("d-block")
                             console.log(reservation)
                         })
-                        reserveSlotModal.querySelector('#reserveSlotWarning').classList.remove("d-none")
-                        reserveSlotModal.querySelector('#reserveSlotWarning').classList.add("d-block")
+                        /* Connection message should be added when slot is full, different text in reserveSlotGroupNotice! */
+                        /* reserveSlotModal.querySelector('#reserveSlotWarning').classList.remove("d-none")
+                        reserveSlotModal.querySelector('#reserveSlotWarning').classList.add("d-block") */
                     }
                 }
             })
