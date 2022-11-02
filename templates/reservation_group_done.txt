@@ -4,13 +4,15 @@ Grupp: {{reservation_group_name}}
 Tillfälle: {{reservation_course_name}}
 Tid: {{reservation_slot_time}}
 Plats: {{location_name}}
+Meddelande: {{reservation_message}}
 
 Om ni behöver avboka kan vem som helst i gruppen göra det i Bokningsverktyget under länken "Dina bokningar". Notera att ni måste avboka {{cancellation_policy_hours}}h innan starttid.
+
 Om ni har andra frågor, kontakta handledaren {{instructor_name}} på {{instructor_email}}.
 
 Väl mött!
 
 Vänlig hälsning,
-Canvas Conversation Robot
+Canvas Robot
 
 PS. Detta är ett automatiskt meddelande som skickas till hela gruppen i Canvas Inbox, när någon gör en bokning för gruppen i Bokningsverktyget i Canvas. Du väljer själv hur du vill notifieras om detta i Canvas, under Account / Notifications. DS.

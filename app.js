@@ -340,7 +340,11 @@ app.get('/api/slot/:id', async (req, res, next) => {
     }
 });
 
-/* Reserve one slot */
+/**
+ * Reserve one slot.
+ * Includes logic that checks some things like max reservations, max of same type (course), already reserved.
+ * Sends messages to individuals, groups and cc to instructors with Conversations API and Conversations Robot.
+ */
 app.post('/api/reservation', async (req, res, next) => {
     const { slot_id, group_id, user_id, message } = req.body;
     
@@ -402,57 +406,87 @@ app.post('/api/reservation', async (req, res, next) => {
 
         const reservation = await db.createSlotReservation(slot_id, req.session.user.id, req.session.user.name, group_id, group_name, message);
 
+        // Send confirmation messages with Canvas Conversation Robot to Inbox
         if (process.env.CONVERSATION_ROBOT_API_TOKEN && process.env.CONVERSATION_ROBOT_SEND_MESSAGES) {
             try {
                 const course = await db.getCourse(slot.course_id);
                 const instructor = await db.getInstructor(slot.instructor_id);
 
-                /* await email.sendConfirmationMail(req.session.user.name, req.session.user.email, course.mail_cc_instructor ? instructor.email : "", course.mail_cc_instructor ? instructor.name : "", subject, body);
-                await db.updateReservationMailSentUser(); */
-
                 if (slot.type == "group") {
                     const subject = "Bekräftad bokning: " + group_name + ", " + course.name;
-                    let body = utilities.getTemplate("reservation_group_done");
-                    
-                    if (body === 'undefined') {
-                        body = course.mail_one_reservation_body;
-                    }
-                    
-                    /*  if this group is the closer of max groups for this slot, send to both (all) groups,
-                        else send to the group reserving
-                        let conversation_result = await canvasApi.createConversation(
-                            [ req.session.user.id, 973 ],
-                            "Another test conversation", 
-                            "This is a test conversation.\nIt's created programmatically in Canvas API using nodejs.\n\nAll the best,\nChalmers Canvas Conversation Robot", 
-                            { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
-                        await db.updateReservationMessageSentGroup(); 
-                    */
+                    const subject_cc = "(Kopia) Bekräftad bokning: " + group_name + ", " + course.name + " (" + req.session.user.name + ")";
+                    const recipient = "group_" + group_id;
+                    const template_type = "reservation_group_done";
 
-                    log.info("Sending confirmation message to group is not implemented yet (Canvas Conversations API).");
-                }
-                else {
-                    const subject = "Bekräftad bokning: " + course.name;
-                    const subject_cc = "Bekräftad bokning: " + course.name + ", " + req.session.user.name;
-                    const template_type = "reservation_individual_done";
                     let body = utils.getTemplate(template_type);
 
                     if (body === 'undefined') {
-                        body = course.mail_one_reservation_body;
+                        body = course.message_confirmation_body;
                     }
 
                     if (body !== 'undefined' && body != '') {
-                        body = body.replace("{{reservation_course_name}}", course.name);
-                        body = body.replace("{{cancellation_policy_hours}}", course.cancellation_policy_hours);
-                        body = body.replace("{{canvas_user_name}}", req.session.user.name);
-                        body = body.replace("{{reservation_slot_time}}", slot.time_start);
-                        body = body.replace("{{location_name}}", slot.location_name);
-                        body = body.replace("{{instructor_name}}", instructor.name);
-                        body = body.replace("{{instructor_email}}", instructor.email);
+                        body = utils.replaceMessageMagics(body, course.name, message, course.cancellation_policy_hours, req.session.user.name, slot.time_start, slot.location_name, instructor.name, instructor.email, group_name);
         
+                        let conversation_result_group = await canvasApi.createConversation(recipient, subject, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
+                        log.info("Sent confirmation message (group) to: '" + recipient + "' (Canvas Conversations API) with subject '" + subject + "'.");
+
+                        if (course.message_cc_instructor) {
+                            let conversation_result_cc = await canvasApi.createConversation(instructor.canvas_user_id, subject_cc, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
+                            log.info("Sent a copy of confirmation message (group) to: '" + recipient + "' to the instructor (Canvas Conversations API) with subject '" + subject_cc + "'.");
+                        }
+
+                        // Get the updated slot with all reservations
+                        const slot_now = await db.getSlot(slot_id);
+
+                        // Slot is full and there should be a message to all groups reserved
+                        if (course.message_all_when_full && slot_now.res_now == slot_now.res_max) {
+                            let recipients = new Array();
+                            let body_all = utils.getTemplate("reservation_group_full");
+
+                            if (body_all === 'undefined') {
+                                body_all = course.message_full_body;
+                            }
+
+                            if (body_all !== 'undefined' && body_all != '') {
+                                body_all = utils.replaceMessageMagics(body_all, course.name, message, course.cancellation_policy_hours, req.session.user.name, slot.time_start, slot.location_name, instructor.name, instructor.email, group_name, slot.res_group_names.join(", "));
+
+                                for (const id of slot_now.res_group_ids) {
+                                    recipients.push("group_" + id);
+                                }
+
+                                const subject_all = "Fullbokat tillfälle: " + course.name;
+
+                                let conversation_result_group = await canvasApi.createConversation(recipients, subject_all, body_all, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
+                                log.info("Sent connection message (group) to: " + recipients.join(", ") + " (Canvas Conversations API) with subject '" + subject + "'.");        
+                            }
+                            else {
+                                log.error("Flag 'message_all_when_full' is true, but could not find message body neither in template file 'reservation_group_full' or in db for courseId " + slot.course_id);
+                            }
+                            
+                        }
+                    }
+                    else {
+                        log.error("Could not find message body neither in general template file '" + template_type + "' or in db for courseId " + slot.course_id);
+                    }
+                }
+                else {
+                    const subject = "Bekräftad bokning: " + course.name;
+                    const subject_cc = "(Kopia) Bekräftad bokning: " + course.name + ", " + req.session.user.name;
+                    const template_type = "reservation_individual_done";
+
+                    let body = utils.getTemplate(template_type);
+
+                    if (body === 'undefined') {
+                        body = course.message_confirmation_body;
+                    }
+
+                    if (body !== 'undefined' && body != '') {
+                        body = utils.replaceMessageMagics(body, course.name, message, course.cancellation_policy_hours, req.session.user.name, slot.time_start, slot.location_name, instructor.name, instructor.email);
+
                         let conversation_result_user = await canvasApi.createConversation(req.session.user.id, subject, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
                         log.info("Sent confirmation message to the user (Canvas Conversations API) with subject '" + subject + "'.");
 
-                        if (course.mail_cc_instructor) {
+                        if (course.message_cc_instructor) {
                             let conversation_result_cc = await canvasApi.createConversation(instructor.canvas_user_id, subject_cc, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
                             log.info("Sent a copy of confirmation message to the instructor (Canvas Conversations API) with subject '" + subject_cc + "'.");
                         }
@@ -460,7 +494,6 @@ app.post('/api/reservation', async (req, res, next) => {
                     else {
                         log.error("Could not find message body neither in general template file '" + template_type + "' or in db for courseId " + slot.course_id);
                     }
-
                 }
             }
             catch (error) {

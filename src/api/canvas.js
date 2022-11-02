@@ -178,7 +178,14 @@ async function createConversation(recipients, subject, body, token) {
 
                 if (typeof(recipients) == "string" || typeof(recipients) == "number") {
                     bodyFormData.append('recipients[]', recipients);
-                    bodyFormData.append('group_conversation', 'false');
+
+                    if (typeof(recipients) == "string" && recipients.includes("group_")) {
+                        bodyFormData.append('group_conversation', 'true');
+                    }
+                    else {
+                        bodyFormData.append('group_conversation', 'false');
+                        bodyFormData.append('force_new', 'true');
+                    }
                 }
                 else {
                     for (const r of recipients) {
@@ -190,6 +197,8 @@ async function createConversation(recipients, subject, body, token) {
 
                 bodyFormData.append('subject', subject);
                 bodyFormData.append('body', body);
+
+                console.log(bodyFormData);
 
                 const response = await axios({
                     method: "post",

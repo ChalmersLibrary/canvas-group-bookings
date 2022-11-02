@@ -1,0 +1,17 @@
+Följande tillfälle är nu fullbokat med det antal grupper som behövs:
+
+Tillfälle: {{reservation_course_name}}
+Grupper: {{slot_group_names}}
+Tid: {{reservation_slot_time}}
+Plats: {{location_name}}
+
+Ta kontakt genom Canvas Inbox eller på annat sätt och förbered er genom att byta texter med varandra. Dessa texter ska ni läsa innan ni kommer.
+
+Om ni har andra frågor, kontakta handledaren {{instructor_name}} på {{instructor_email}}.
+
+Väl mött!
+
+Vänlig hälsning,
+Canvas Robot
+
+PS. Detta är ett automatiskt meddelande som skickas i Canvas Inbox, när någon gör en bokning i Bokningsverktyget i Canvas. Du väljer själv hur du vill notifieras om detta i Canvas, under Account / Notifications. DS.

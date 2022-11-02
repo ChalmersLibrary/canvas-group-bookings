@@ -20,11 +20,9 @@ CREATE TABLE IF NOT EXISTS "user_token"
 CREATE TABLE IF NOT EXISTS "course" 
 (
     "id" serial,
+    "canvas_course_id" integer NOT NULL,
     "name" varchar,
     "description" text,
-    "date_start" timestamp(4),
-    "date_end" timestamp(4),
-    "canvas_course_id" integer NOT NULL,
     "is_group" boolean,
     "is_individual" boolean,
     "max_groups" integer,
@@ -32,10 +30,12 @@ CREATE TABLE IF NOT EXISTS "course"
     "max_per_type" integer NOT NULL DEFAULT 1,
     "default_slot_duration_minutes" integer,
     "cancellation_policy_hours" integer,
-    "message_to_instructor" boolean NOT NULL default false,
-    "mail_cc_instructor" boolean NOT NULL DEFAULT true,
-    "mail_one_reservation_body" text,
-    "mail_full_reservation_body" text,
+    "message_is_mandatory" boolean NOT NULL default false,
+    "message_all_when_full" boolean NOT NULL default false,
+    "message_cc_instructor" boolean NOT NULL DEFAULT true,
+    "message_confirmation_body" text,
+    "message_full_body" text,
+    "message_cancelled_body" text,
     "created_at" timestamp NOT NULL DEFAULT now(),
     "created_by" integer,
     "updated_at" timestamp,
@@ -159,7 +159,7 @@ CREATE VIEW "slots_view" AS SELECT s.id,
     c.name AS course_name,
     c.description AS course_description,
     c.max_per_type AS course_max_per_type,
-    c.message_to_instructor AS course_message_required,
+    c.message_is_mandatory AS course_message_required,
     s.instructor_id,
     i.name AS instructor_name,
     s.location_id,
@@ -181,6 +181,9 @@ CREATE VIEW "slots_view" AS SELECT s.id,
     ( SELECT array_agg(r.canvas_group_id) AS array_agg
            FROM reservations_view r
           WHERE r.slot_id = s.id) AS res_group_ids,
+    ( SELECT array_agg(r.canvas_group_name) AS array_agg
+           FROM reservations_view r
+          WHERE r.slot_id = s.id) AS res_group_names,
     ( SELECT array_agg(r.canvas_user_id) AS array_agg
            FROM reservations_view r
           WHERE r.slot_id = s.id) AS res_user_ids,
