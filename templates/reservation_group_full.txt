@@ -1,7 +1,7 @@
-Följande tillfälle är nu fullbokat med det antal grupper som behövs:
+Följande tillfälle är nu fullbokat med det antal grupper som behövs för att det ska bli av:
 
-Tillfälle: {{reservation_course_name}}
 Grupper: {{slot_group_names}}
+Tillfälle: {{reservation_course_name}}
 Tid: {{reservation_slot_time}}
 Plats: {{location_name}}
 
@@ -14,4 +14,4 @@ Väl mött!
 Vänlig hälsning,
 Canvas Robot
 
-PS. Detta är ett automatiskt meddelande som skickas i Canvas Inbox, när någon gör en bokning i Bokningsverktyget i Canvas. Du väljer själv hur du vill notifieras om detta i Canvas, under Account / Notifications. DS.
+PS. Detta är ett automatiskt meddelande som skickas i Canvas Inbox, när någon använder Bokningsverktyget i Canvas. Du väljer själv hur du vill notifieras om detta i Canvas, under Account / Notifications. DS.
