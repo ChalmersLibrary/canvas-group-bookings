@@ -1,5 +1,6 @@
 'use strict'
 
+require('dotenv').config();
 const fs = require('fs');
 
 function getDatePart(date) {
@@ -35,7 +36,8 @@ function replaceMessageMagics(body, course_name, reservation_message, cancellati
     body = body.replace("{{location_name}}", location_name);
     body = body.replace("{{instructor_name}}", instructor_name);
     body = body.replace("{{instructor_email}}", instructor_email);
-
+    body = body.replace("{{CONVERSATION_ROBOT_NAME}}", process.env.CONVERSATION_ROBOT_NAME ? process.env.CONVERSATION_ROBOT_NAME : "Canvas Conversation Robot");
+    
     return body;
 }
 

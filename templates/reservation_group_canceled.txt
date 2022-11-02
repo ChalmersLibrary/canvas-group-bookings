@@ -7,6 +7,6 @@ Tid: {{reservation_slot_time}}
 Om ni har frågor, kontakta handledaren {{instructor_name}} på {{instructor_email}} eller via Canvas Inbox.
 
 Vänlig hälsning,
-Canvas Robot
+{{CONVERSATION_ROBOT_NAME}}
 
 PS. Detta är ett automatiskt meddelande som skickas till hela gruppen i Canvas Inbox, när någon gör en avbokning för gruppen i Bokningsverktyget i Canvas. Du väljer själv hur du vill notifieras om detta i Canvas, under Account / Notifications. DS.

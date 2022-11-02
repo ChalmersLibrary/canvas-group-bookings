@@ -6,6 +6,6 @@ Tid: {{reservation_slot_time}}
 Om du har frågor, kontakta handledaren {{instructor_name}} på {{instructor_email}} eller via Canvas Inbox.
 
 Vänlig hälsning,
-Canvas Robot
+{{CONVERSATION_ROBOT_NAME}}
 
 PS. Detta är ett automatiskt meddelande som skickas till dig i Canvas Inbox, när du gör en avbokning i Bokningsverktyget i Canvas. Du väljer själv hur du vill notifieras om detta i Canvas, under Account / Notifications. DS.
