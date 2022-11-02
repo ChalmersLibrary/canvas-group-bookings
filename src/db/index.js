@@ -48,7 +48,7 @@ async function getAllSlots(canvas_course_id, date) {
     /* TODO: think about if these additions/conversions should be done outside, and this should be just clean db code? */
     if (data !== undefined && data.length) {
         data.forEach(slot => {
-            slot.time_human_readable_sv = new Date(slot.time_start).toLocaleDateString('sv-SE', dateOptions) + " kl " + new Date(slot.time_start).toLocaleTimeString('sv-SE', timeOptions) + "&ndash;" + new Date(slot.time_end).toLocaleTimeString('sv-SE', timeOptions);
+            slot.time_human_readable_sv = new Date(slot.time_start).toLocaleDateString('sv-SE', dateOptions) + " kl " + new Date(slot.time_start).toLocaleTimeString('sv-SE', timeOptions) + "–" + new Date(slot.time_end).toLocaleTimeString('sv-SE', timeOptions);
             returnedData.push(slot);
         });
     }
@@ -71,7 +71,7 @@ async function getSlot(id) {
     /* TODO: think about if these additions/conversions should be done outside, and this should be just clean db code? */
     if (data !== undefined && data.length) {
         data.forEach(slot => {
-            slot.time_human_readable_sv = new Date(slot.time_start).toLocaleDateString('sv-SE', dateOptions) + " kl " + new Date(slot.time_start).toLocaleTimeString('sv-SE', timeOptions) + "&ndash;" + new Date(slot.time_end).toLocaleTimeString('sv-SE', timeOptions);
+            slot.time_human_readable_sv = new Date(slot.time_start).toLocaleDateString('sv-SE', dateOptions) + " kl " + new Date(slot.time_start).toLocaleTimeString('sv-SE', timeOptions) + "–" + new Date(slot.time_end).toLocaleTimeString('sv-SE', timeOptions);
             returnedData.push(slot);
         });
     }
@@ -125,7 +125,7 @@ async function getReservationsForUser(canvas_course_id, user_id, groups) {
     if (data !== undefined && data.length) {
         data.forEach(reservation => {
             reservation.created_at_human_readable_sv = new Date(reservation.created_at).toLocaleDateString('sv-SE', dateOptions);
-            reservation.time_human_readable_sv = new Date(reservation.time_start).toLocaleDateString('sv-SE', dateOptions) + " kl " + new Date(reservation.time_start).toLocaleTimeString('sv-SE', timeOptions) + "&ndash;" + new Date(reservation.time_end).toLocaleTimeString('sv-SE', timeOptions);
+            reservation.time_human_readable_sv = new Date(reservation.time_start).toLocaleDateString('sv-SE', dateOptions) + " kl " + new Date(reservation.time_start).toLocaleTimeString('sv-SE', timeOptions) + "–" + new Date(reservation.time_end).toLocaleTimeString('sv-SE', timeOptions);
             
             returnedData.push(reservation);
         });
@@ -155,7 +155,7 @@ async function getReservation(user_id, groups, reservation_id) {
     if (data !== undefined && data.length) {
         data.forEach(reservation => {
             reservation.created_at_human_readable_sv = new Date(reservation.created_at).toLocaleDateString('sv-SE', dateOptions);
-            reservation.time_human_readable_sv = new Date(reservation.time_start).toLocaleDateString('sv-SE', dateOptions) + " kl " + new Date(reservation.time_start).toLocaleTimeString('sv-SE', timeOptions) + "&ndash;" + new Date(reservation.time_end).toLocaleTimeString('sv-SE', timeOptions);
+            reservation.time_human_readable_sv = new Date(reservation.time_start).toLocaleDateString('sv-SE', dateOptions) + " kl " + new Date(reservation.time_start).toLocaleTimeString('sv-SE', timeOptions) + "–" + new Date(reservation.time_end).toLocaleTimeString('sv-SE', timeOptions);
             
             returnedData.push(reservation);
         });
