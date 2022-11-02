@@ -199,7 +199,7 @@ app.get('/', async (req, res, next) => {
                     }
                 }
             }
-            else if (slot.res_course_group_ids) {
+            if (slot.res_course_group_ids && slot.reservable_for_this_user) {
                 for (const id of slot.res_course_group_ids) {
                     for (const group of req.session.user.groups) {
                         if (group.id === id) {
@@ -219,7 +219,7 @@ app.get('/', async (req, res, next) => {
                     }
                 }
             }
-            else if (slot.res_course_user_ids) {
+            if (slot.res_course_user_ids && slot.reservable_for_this_user) {
                 for (const id of slot.res_course_user_ids) {
                     if (req.session.user.id === id) {
                         slot.reservable_for_this_user = false;
