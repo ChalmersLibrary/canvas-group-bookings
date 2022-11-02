@@ -158,6 +158,7 @@ const API_MAX_ERROR_COUNT = 1;
  * The posting account is supposed to have an API token created manually by an administrator in Canvas,
  * we use "Canvas Conversation Robot": login and create an access token, then use this in CONVERSATION_ROBOT_API_TOKEN.
  * Note that the user account for this robot has to be added in the course as Administrator, or added as account level admins.
+ * Also note, if added in course, the user account must accept the invitation in order to send messages to groups.
  *
  * @param {number} recipients List of recipients according to API
  * @param {string} subject Message subject
