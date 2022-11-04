@@ -212,6 +212,22 @@ async function createSlotReservation(slot_id, user_id, user_name, group_id, grou
     return data;
 }
 
+async function getNumberOfReservations(user_id, groups) {
+    let data;
+    
+    await query("SELECT count(*) FROM reservations_view WHERE (canvas_user_id=$1 OR canvas_group_id=ANY($2))", [ 
+        user_id,
+        groups
+    ]).then((result) => {
+        data = result.rows;
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    });
+
+    return data[0];
+}
+
 async function updateReservationMailSentUser(reservation_id) {
     await query("UPDATE reservation SET mail_sent_user=now() WHERE id=$1", [ reservation_id ]).then((result) => {
         log.info(result);
@@ -449,6 +465,7 @@ module.exports = {
     getReservation,
     createSlotReservation,
     deleteReservation,
+    getNumberOfReservations,
     getValidCourses,
     getValidInstructors,
     getValidLocations,
