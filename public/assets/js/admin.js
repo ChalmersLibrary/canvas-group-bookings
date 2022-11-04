@@ -35,10 +35,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 data.reservations.forEach(reservation => {
                     const r = editSlotModal.querySelector('#reservations').appendChild(document.createElement('div'))
                     if (reservation.is_group) {
-                        r.innerText = reservation.canvas_group_name + " (" + reservation.canvas_user_name + ")";
+                        r.innerText = reservation.canvas_group_name + " (" + reservation.canvas_user_name + "), " + reservation.created_at.substring(0, 10);
                     }
                     else {
-                        r.innerText = reservation.canvas_user_name
+                        r.innerText = reservation.canvas_user_name + ", " + reservation.created_at.substring(0, 10)
                     }
                 })
 
@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
             }
             else {
                 const r = editSlotModal.querySelector('#reservations').appendChild(document.createElement('div'))
-                r.innerText = "Inga bokningar"
+                r.innerText = editSlotModal.querySelector('#reservations').getAttribute("data-default-text")
 
                 if (editSlotModal.querySelector('#editSlotWarning').classList.contains("d-block")) {
                     editSlotModal.querySelector('#editSlotWarning').classList.remove("d-block")
@@ -131,23 +131,26 @@ document.addEventListener("DOMContentLoaded", function(event) {
             if (data.reservations && data.reservations.length) {
                 data.reservations.forEach(reservation => {
                     const r = deleteSlotModal.querySelector('#reservations').appendChild(document.createElement('div'))
-                    r.innerText = reservation.created_at
-                })    
+                    if (reservation.is_group) {
+                        r.innerText = reservation.canvas_group_name + " (" + reservation.canvas_user_name + "), " + reservation.created_at.substring(0, 10);
+                    }
+                    else {
+                        r.innerText = reservation.canvas_user_name + ", " + reservation.created_at.substring(0, 10)
+                    }
+                })
+
+                if (deleteSlotModal.querySelector('#deleteSlotWarning').classList.contains("d-none")) {
+                    deleteSlotModal.querySelector('#deleteSlotWarning').classList.remove("d-none")
+                    deleteSlotModal.querySelector('#deleteSlotWarning').classList.add("d-block")
+                }
             }
             else {
                 const r = deleteSlotModal.querySelector('#reservations').appendChild(document.createElement('div'))
                 r.innerText = deleteSlotModal.querySelector('#reservations').getAttribute("data-default-text")
-            }
-            if(data.reserved > 0) {
-                if (!deleteSlotModal.querySelector('#deleteSlotWarning').classList.contains("d-block")) {
-                    deleteSlotModal.querySelector('#deleteSlotWarning').classList.add("d-block")
-                    deleteSlotModal.querySelector('#deleteSlotWarning').classList.remove("d-none")    
-                }
-            }
-            else {
+
                 if (deleteSlotModal.querySelector('#deleteSlotWarning').classList.contains("d-block")) {
                     deleteSlotModal.querySelector('#deleteSlotWarning').classList.remove("d-block")
-                    deleteSlotModal.querySelector('#deleteSlotWarning').classList.add("d-none")    
+                    deleteSlotModal.querySelector('#deleteSlotWarning').classList.add("d-none")
                 }
             }
         })
