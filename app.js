@@ -293,6 +293,7 @@ app.get('/reservations', async (req, res, next) => {
         reservations: reservations,
         reservationDeleted: req.query.reservationDeleted && req.query.reservationDeleted == "true",
         reservationDone: req.query.reservationDone && req.query.reservationDone == "true",
+        reservationGroup: req.query.reservationGroup && req.query.reservationGroup == "true",
         reservationTitle: req.query.reservationTitle ? req.query.reservationTitle : null
     });
 });
