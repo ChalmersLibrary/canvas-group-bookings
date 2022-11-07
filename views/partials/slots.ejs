@@ -42,16 +42,14 @@
         <p>Här kan man skriva något mer om när det släpps tider eller annan matnyttig information.</p>
     </div>
 <% } else { %>
-<table id="slots" class="table table-hover my-3">
+<table id="slots" class="table table-sm table-hover my-3">
     <thead>
         <tr>
             <td class="d-md-table-cell d-md-none">Tillfälle</td>
-            <td class="d-none d-md-table-cell">Tillfälle</td>
-            <td class="d-none d-md-table-cell">Tid</td>
-            <td class="d-none d-md-table-cell">Plats</td>
-            <td class="d-none d-md-table-cell">Handledare</td>
+            <td class="d-none d-md-table-cell">Tillfälle och tid</td>
+            <td class="d-none d-md-table-cell">Handledare och plats</td>
             <td class="d-none d-md-table-cell">Tillgänglighet</td>
-            <td class="d-none d-md-table-cell">Information</td>
+            <td class="d-none d-md-table-cell"></td>
         </tr>
     </thead>
     <tbody class="table-group-divider">
@@ -92,10 +90,8 @@
                         <% } %>
                     </p>
                 </td>
-                <td class="d-none d-md-table-cell"><%= slot.course_name %></td>
-                <td class="d-none d-md-table-cell"><%- slot.time_human_readable_sv %></td>
-                <td class="d-none d-md-table-cell"><%= slot.location_name %></td>
-                <td class="d-none d-md-table-cell"><%= slot.instructor_name %></td>
+                <td class="d-none d-md-table-cell"><div><%= slot.course_name %></div><div><%- slot.time_human_readable_sv %></div></td>
+                <td class="d-none d-md-table-cell"><%= slot.instructor_name %><br><%= slot.location_name %></td>
                 <td class="d-none d-md-table-cell">
                     <% if (slot.res_max == slot.res_now) { %>
                         Fullbokad, 
@@ -112,9 +108,7 @@
                     <% } else { %>
                         personer
                     <% } %>
-                </td>
-                <td class="d-none d-md-table-cell">
-                    <%= slot.reservable_notice %>
+                    <div class="text-small text-muted"><%= slot.reservable_notice %></div>
                 </td>
                 <% if (session.user.isAdministrator) { %>
                     <td class="d-none d-md-table-cell">
