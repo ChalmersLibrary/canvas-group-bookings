@@ -408,7 +408,7 @@ app.post('/api/reservation', async (req, res, next) => {
         const reservation = await db.createSlotReservation(slot_id, req.session.user.id, req.session.user.name, group_id, group_name, message);
 
         // Send confirmation messages with Canvas Conversation Robot to Inbox
-        if (process.env.CONVERSATION_ROBOT_API_TOKEN && process.env.CONVERSATION_ROBOT_SEND_MESSAGES) {
+        if (process.env.CONVERSATION_ROBOT_API_TOKEN && process.env.CONVERSATION_ROBOT_SEND_MESSAGES !== false) {
             try {
                 const course = await db.getCourse(slot.course_id);
                 const instructor = await db.getInstructor(slot.instructor_id);
