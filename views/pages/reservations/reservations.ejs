@@ -49,7 +49,12 @@
               <h5 class="card-title"><%= reservation.course_name %></h5>
               <h6 class="card-subtitle mb-2 text-muted"><%- reservation.time_human_readable_sv %></h6>
               <p class="card-text">
-                Plats: <%= reservation.location_name %>, handledare: <%= reservation.instructor_name %>
+                Handledare: <%= reservation.instructor_name %>, plats: <%= reservation.location_name %>
+                <% if (reservation.location_cmap_id) { %>
+                  <a href="https://maps.chalmers.se/#<%= reservation.location_cmap_id %>" target="_blank"><i class="bi bi-geo-alt-fill" data-toggle="tooltip" data-placement="bottom" title="Visa platsen i Chalmers Maps"></i></a>
+                <% } else if (reservation.location_description) { %>
+                  <i class="bi bi-geo-alt-fill" data-toggle="tooltip" data-placement="bottom" title="<%= reservation.location_description %>"></i>
+                <% } %>
               </p>
               <div class="" id="reservationDetails<%= reservation.id %>">
                 <p class="card-text">
@@ -80,12 +85,12 @@
                   <% } %>
                 </p>
               </div>
-              <div class="float-start my-2">
+              <div class="button-bar my-2">
                 <!-- <button type="button" title="Visa mer information om bokningen" class="btn btn-secondary btn-sm" data-bs-toggle="collapse" data-bs-target="#reservationDetails<%= reservation.id %>" aria-expanded="false" aria-controls="reservationDetails<%= reservation.id %>">Mer information</button> -->
                 <% if (reservation.is_cancelable) { %>
-                  <button type="button" title="Avboka detta tillfälle" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#deleteReservation" data-bs-reservation-id="<%= reservation.id %>">Avboka</button>
+                  <button type="button" title="Avboka detta tillfälle" class="btn btn-primary btn-md" data-bs-toggle="modal" data-bs-target="#deleteReservation" data-bs-reservation-id="<%= reservation.id %>">Avboka</button>
                 <% } else { %>
-                  <button type="button" title="Avboka detta tillfälle" class="btn btn-primary btn-sm" disabled>Avboka</button>
+                  <button type="button" title="Avboka detta tillfälle" class="btn btn-secondary btn-md" disabled>Avboka</button>
                 <% } %>
               </div>
             </div>

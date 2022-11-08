@@ -144,6 +144,9 @@ CREATE VIEW "reservations_view" AS
         END AS is_cancelable,
     c.canvas_course_id,
     l.name AS location_name,
+    l.description AS location_description,
+    l.campus_maps_id AS location_cmap_id,
+    l.external_url AS location_url,
     i.name AS instructor_name
    FROM reservation r,
     slot s,
@@ -164,6 +167,8 @@ CREATE VIEW "slots_view" AS SELECT s.id,
     i.name AS instructor_name,
     s.location_id,
     l.name AS location_name,
+    l.description AS location_description,
+    l.campus_maps_id AS location_cmap_id,
     s.time_start,
     s.time_end,
         CASE
@@ -204,22 +209,29 @@ CREATE VIEW "slots_view" AS SELECT s.id,
   WHERE s.course_id = c.id AND s.instructor_id = i.id AND s.location_id = l.id AND s.deleted_at IS NULL
   ORDER BY s.time_start;
 
--- Mockup some data, bound to Canvas course id 1508
-INSERT INTO "course" ("name", "date_start", "date_end", "canvas_course_id", "is_group", "is_individual", "max_groups", "max_individuals") VALUES ('Handledningstillfälle 1','2022-01-01','2023-12-31',1508,true,false,2,0);
-INSERT INTO "course" ("name", "date_start", "date_end", "canvas_course_id", "is_group", "is_individual", "max_groups", "max_individuals") VALUES ('Handledningstillfälle 2','2022-09-21','2023-12-31',1508,true,false,1,0);
-INSERT INTO "course" ("name", "date_start", "date_end", "canvas_course_id", "is_group", "is_individual", "max_groups", "max_individuals") VALUES ('Föreläsning 1','2022-09-21','2023-12-31',1508,false,true,0,100);
-INSERT INTO "instructor" ("name", "canvas_course_id", "canvas_user_id") VALUES ('Rolf Johansson', 1508, 1618);
-INSERT INTO "instructor" ("name", "canvas_course_id", "canvas_user_id") VALUES ('Carl Johan Carlsson', 1508, 1060);
-INSERT INTO "instructor" ("name", "canvas_course_id", "canvas_user_id") VALUES ('Fia Börjesson', 1508, 1058);
-INSERT INTO "instructor" ("name", "canvas_course_id", "canvas_user_id") VALUES ('Magnus Axelsson', 1508, 8);
-INSERT INTO "instructor" ("name", "canvas_course_id", "canvas_user_id") VALUES ('Karin Ljungklint', 1508, 938);
-INSERT INTO "location" ("name", "canvas_course_id", "created_by") VALUES ('Lokal A1', 1508, 1);
-INSERT INTO "location" ("name", "canvas_course_id", "created_by") VALUES ('Lokal A2', 1508, 1);
-INSERT INTO "location" ("name", "canvas_course_id", "created_by") VALUES ('Lokal A3', 1508, 1);
-INSERT INTO "location" ("name", "canvas_course_id", "created_by", "description") VALUES ('Language Lab/Språklabb', 1508, 1, 'För att komma till Fackspråk - språklabb går ni in på biblioteket och fortsätter förbi lånedisken fram till spiraltrappan. Vid trappan ska ni en våning ner. På våningen under ska ni till höger efter trappan och ta er till studentköket och lunchrummet. När ni kommit till lunchrummet ser ni Fackspråks lokaler samt lässtudion snett till vänster.');
-INSERT INTO "location" ("name", "canvas_course_id", "created_by", "external_url") VALUES ('ZOOM Calle', 1508, 1, 'https://chalmers.zoom.us/j/64438289001');
-INSERT INTO "location" ("name", "canvas_course_id", "created_by", "external_url") VALUES ('ZOOM Fia', 1508, 1, 'https://chalmers.zoom.us/j/69630313118');
-INSERT INTO "location" ("name", "canvas_course_id", "created_by", "description") VALUES ('CAMPUS - Seminarierum 1', 1508, 1, 'För att enklast komma till Seminarierum 1: gå in genom bibliotekets nya glasentré (närmast Kemigården) och gå upp för stora trappan rakt fram. Seminarierum 1 ligger sedan till vänster.');
+-- Mockup some data, bound to Canvas course id 1508 (this will not work since all tables are not in this, should be a separate file...)
+INSERT INTO "course" ("name", "canvas_course_id", "is_group", "is_individual", "max_groups", "max_individuals") VALUES ('Handledningstillfälle 1', 1508, true, false, 2, 0);
+INSERT INTO "course" ("name", "canvas_course_id", "is_group", "is_individual", "max_groups", "max_individuals") VALUES ('Handledningstillfälle 2', 1508, true, false, 1, 0);
+INSERT INTO "course" ("name", "canvas_course_id", "is_group", "is_individual", "max_groups", "max_individuals") VALUES ('Föreläsning 1', 1508, false, true, 0, 100);
+INSERT INTO "instructor" ("name", "canvas_course_id", "canvas_user_id") VALUES ('Rolf Johansson', 1618);
+INSERT INTO "instructor" ("name", "canvas_course_id", "canvas_user_id") VALUES ('Carl Johan Carlsson', 1060);
+INSERT INTO "instructor" ("name", "canvas_course_id", "canvas_user_id") VALUES ('Fia Börjesson', 1058);
+INSERT INTO "instructor" ("name", "canvas_course_id", "canvas_user_id") VALUES ('Magnus Axelsson', 8);
+INSERT INTO "instructor" ("name", "canvas_course_id", "canvas_user_id") VALUES ('Karin Ljungklint', 938);
+INSERT INTO "canvas_course_instructor_mapping" ("canvas_course_id", "instructor_id") VALUES (1508, 1);
+INSERT INTO "canvas_course_instructor_mapping" ("canvas_course_id", "instructor_id") VALUES (1508, 2);
+INSERT INTO "canvas_course_instructor_mapping" ("canvas_course_id", "instructor_id") VALUES (1508, 3);
+INSERT INTO "canvas_course_instructor_mapping" ("canvas_course_id", "instructor_id") VALUES (1508, 4);
+INSERT INTO "canvas_course_instructor_mapping" ("canvas_course_id", "instructor_id") VALUES (1508, 5);
+INSERT INTO "location" ("name", "canvas_course_id", "created_by") VALUES ('Lokal A1', 1);
+INSERT INTO "location" ("name", "canvas_course_id", "created_by") VALUES ('Lokal A2', 1);
+INSERT INTO "location" ("name", "canvas_course_id", "created_by") VALUES ('Lokal A3', 1);
+INSERT INTO "location" ("name", "canvas_course_id", "created_by", "description") VALUES ('Language Lab/Språklabb', 1, 'För att komma till Fackspråk - språklabb går ni in på biblioteket och fortsätter förbi lånedisken fram till spiraltrappan. Vid trappan ska ni en våning ner. På våningen under ska ni till höger efter trappan och ta er till studentköket och lunchrummet. När ni kommit till lunchrummet ser ni Fackspråks lokaler samt lässtudion snett till vänster.');
+INSERT INTO "location" ("name", "canvas_course_id", "created_by", "external_url") VALUES ('ZOOM Calle', 1, 'https://chalmers.zoom.us/j/64438289001');
+INSERT INTO "location" ("name", "canvas_course_id", "created_by", "external_url") VALUES ('ZOOM Fia', 1, 'https://chalmers.zoom.us/j/69630313118');
+INSERT INTO "location" ("name", "canvas_course_id", "created_by", "description") VALUES ('CAMPUS - Seminarierum 1', 1, 'För att enklast komma till Seminarierum 1: gå in genom bibliotekets nya glasentré (närmast Kemigården) och gå upp för stora trappan rakt fram. Seminarierum 1 ligger sedan till vänster.');
+INSERT INTO "canvas_course_location_mapping" ("canvas_course_id", "location_id") VALUES (1508, 1);
+-- ... and some more ...
 
 -- Version history
 INSERT INTO version (db_version) VALUES (1);
