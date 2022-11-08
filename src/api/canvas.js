@@ -2,6 +2,7 @@
 
 require('dotenv').config();
 
+const crypto = require('crypto');
 const LinkHeader = require('http-link-header');
 const axios = require('axios');
 const FormData = require('form-data');
@@ -23,8 +24,9 @@ const API_MAX_ERROR_COUNT = 1;
  * @param {userId} Numerical id of user
  * @returns JSON data from Canvas API
  */
- async function getCourseGroups(courseId, userId) {
-    const cacheKey = `${courseId}:${userId}`;
+ async function getCourseGroups(courseId, groupCategoryFilter, token) {
+    let md5key = crypto.createHash('md5').update(token.access_token).digest("hex");
+    const cacheKey = `${courseId}:${md5key}`;
 
     try {
         const cachedData = await cache.getCache('courseGroupsCache', cacheKey);
@@ -50,78 +52,79 @@ const API_MAX_ERROR_COUNT = 1;
                 thisApiPath = thisApiPath + "&only_own_groups=true";
             }
 
-            await auth.findAccessToken(userId).then(async (token) => {
-                while (errorCount < API_MAX_ERROR_COUNT && thisApiPath && token) {
-                    log.info("GET " + thisApiPath);
-                
-                    try {
-                        const response = await axios.get(thisApiPath, {
-                            headers: {
-                                "User-Agent": "Chalmers/Azure/Request",
-                                "Authorization": token.token_type + " " + token.access_token
-                            }
-                        });
+            while (errorCount < API_MAX_ERROR_COUNT && thisApiPath && token) {
+                log.info("GET " + thisApiPath);
             
-                        apiData.push(response.data);
-            
-                        if (response.headers["X-Request-Cost"]) {
-                            log.info("Request cost: " + response.headers["X-Request-Cost"]);
+                try {
+                    const response = await axios.get(thisApiPath, {
+                        headers: {
+                            "User-Agent": "Chalmers/Azure/Request",
+                            "Authorization": token.token_type + " " + token.access_token
                         }
-            
-                        if (response.headers["link"]) {
-                            let link = LinkHeader.parse(response.headers["link"]);
-                    
-                            if (link.has("rel", "next")) {
-                                thisApiPath = link.get("rel", "next")[0].uri;
-                            }
-                            else {
-                                thisApiPath = false;
-                            }
+                    });
+        
+                    apiData.push(response.data);
+
+                    if (response.headers["X-Request-Cost"]) {
+                        log.info("Request cost: " + response.headers["X-Request-Cost"]);
+                    }
+        
+                    if (response.headers["link"]) {
+                        let link = LinkHeader.parse(response.headers["link"]);
+                
+                        if (link.has("rel", "next")) {
+                            thisApiPath = link.get("rel", "next")[0].uri;
                         }
                         else {
                             thisApiPath = false;
                         }
                     }
-                    catch (error) {
-                        errorCount++;
-                    
-                        if (error.response.status == 401 && error.response.headers['www-authenticate']) { // refresh token, then try again
-                            log.info("401, with www-authenticate header.");
-
-                            await auth.refreshAccessToken(userId).then((result) => {
-                                log.info(result);
-                                if (result.success) {
-                                    log.info("Refreshed access token in 401, with www-authenticate header.");
-                                }
-                                else {
-                                    log.error(result);
-                                }
-                            })
-                            .catch(error => {
-                                log.error(error);
-                            });
-                        }
-                        else if (error.response.status == 401 && !error.response.headers['www-authenticate']) { // no access, redirect to auth
-                            log.error("Not authorized in Canvas for use of this API endpoint.");
-                            return(error);
-                        }
-                        else {
-                            log.error(error);
-                            return(error);
-                        }
+                    else {
+                        thisApiPath = false;
                     }
-                }    
-            }).catch((error) => {
-                log.error(error);
-                return (error);
-            });
+                }
+                catch (error) {
+                    errorCount++;
+                
+                    if (error.response.status == 401 && error.response.headers['www-authenticate']) { // refresh token, then try again
+                        log.info("401, with www-authenticate header.");
 
+                        await auth.refreshAccessToken(userId).then((result) => {
+                            log.info(result);
+                            if (result.success) {
+                                log.info("Refreshed access token in 401, with www-authenticate header.");
+                            }
+                            else {
+                                log.error(result);
+                            }
+                        })
+                        .catch(error => {
+                            log.error(error);
+                        });
+                    }
+                    else if (error.response.status == 401 && !error.response.headers['www-authenticate']) { // no access, redirect to auth
+                        log.error("Not authorized in Canvas for use of this API endpoint.");
+                        return(error);
+                    }
+                    else {
+                        log.error(error);
+                        return(error);
+                    }
+                }
+            }
 
             // Compile new object from all pages.
             apiData.forEach((page) => {
                 page.forEach((record) => {
                     if (API_GROUPS_ONLY_OWN_GROUPS) {
-                        returnedApiData.push(record);
+                        if (groupCategoryFilter && groupCategoryFilter.length) {
+                            if (groupCategoryFilter.includes(record.group_category_id)) {
+                                returnedApiData.push(record);
+                            }
+                        }
+                        else {
+                            returnedApiData.push(record);
+                        }
                     }
                     else {
                         returnedApiData.push({

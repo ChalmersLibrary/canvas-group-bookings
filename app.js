@@ -101,7 +101,9 @@ app.use(['/', '/test', '/reservations', '/admin', '/api/*'], async function (req
                 res.locals.courseId = req.session.lti.custom_canvas_course_id ? req.session.lti.custom_canvas_course_id : "lti_context_id:" + req.session.lti.context_id;
 
                 // Add the groups from Canvas for this user
-                req.session.user.groups = await canvasApi.getCourseGroups(res.locals.courseId, req.session.user.id);
+                let canvasGroupCategoryFilter = await db.getCourseGroupCategoryFilter(res.locals.courseId);
+                log.info(canvasGroupCategoryFilter);
+                req.session.user.groups = await canvasApi.getCourseGroups(res.locals.courseId, canvasGroupCategoryFilter, { token_type: result.token_type, access_token: result.access_token });
                 req.session.user.groups_ids = new Array();
                 req.session.user.groups_human_readable = new Array();
             

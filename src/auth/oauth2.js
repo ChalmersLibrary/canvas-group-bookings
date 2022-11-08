@@ -20,9 +20,11 @@ const clientConfig = {
 
 const client = new AuthorizationCode(clientConfig);
 
-function TokenResult(success, message) {
+function TokenResult(success, message, access_token, token_type) {
     this.success = success;
     this.message = message;
+    this.access_token = access_token;
+    this.token_type = token_type;
 };
 
 function setupAuthEndpoints(app, callbackUrl) {
@@ -131,6 +133,8 @@ async function checkAccessToken(req) {
     
                         tokenResult.success = true;
                         tokenResult.message = "Refreshed expired token.";
+                        tokenResult.access_token = newAccessTokenWithRefreshToken.access_token;
+                        tokenResult.access_token = newAccessTokenWithRefreshToken.token_type;
                     }
                     catch (error) {
                         if (error.data.payload) {
@@ -161,6 +165,8 @@ async function checkAccessToken(req) {
 
                     tokenResult.success = true;
                     tokenResult.message = "Access token is ok, not expired.";
+                    tokenResult.access_token = token.access_token;
+                    tokenResult.token_type = token.token_type;
                 }
             }
             else {

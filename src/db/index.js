@@ -29,6 +29,31 @@ async function query(text, params) {
     return res;
 }
 
+/**
+ * Returns an array of Canvas Group Category Ids that are force-filtered for a specific Canvas Course Id
+ */
+async function getCourseGroupCategoryFilter(canvas_course_id) {
+    let data;
+    let returnedData = [];
+
+    await query("SELECT DISTINCT canvas_group_category_id FROM canvas_course_group_category_mapping c WHERE c.canvas_course_id=$1", [
+        canvas_course_id
+    ]).then((result) => {
+        data = result.rows;
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    });
+
+    if (data !== undefined && data.length) {
+        data.forEach(mapping => {
+            returnedData.push(mapping.canvas_group_category_id);
+        });
+    }
+
+    return returnedData;
+}
+
 /* Returns all slots from a specific date */
 async function getAllSlots(canvas_course_id, date) {
     let data;
@@ -458,6 +483,7 @@ async function applyVersion(version) {
 
 module.exports = {
     query,
+    getCourseGroupCategoryFilter,
     getAllSlots,
     getSlot,
     getSlotReservations,
