@@ -51,9 +51,12 @@
               <p class="card-text">
                 Handledare: <%= reservation.instructor_name %>, plats: <%= reservation.location_name %>
                 <% if (reservation.location_cmap_id) { %>
-                  <a href="https://maps.chalmers.se/#<%= reservation.location_cmap_id %>" target="_blank"><i class="bi bi-geo-alt-fill" data-toggle="tooltip" data-placement="bottom" title="Visa platsen i Chalmers Maps"></i></a>
+                  <a href="https://maps.chalmers.se/#<%= reservation.location_cmap_id %>" target="_blank"><i class="bi bi-geo-alt-fill" data-toggle="tooltip" data-placement="bottom" title="Hitta till lokalen med Chalmers Maps"></i></a>
                 <% } else if (reservation.location_description) { %>
-                  <i class="bi bi-geo-alt-fill" data-toggle="tooltip" data-placement="bottom" title="<%= reservation.location_description %>"></i>
+                  <i class="bi bi-info-circle-fill" data-toggle="tooltip" data-placement="bottom" title="<%= reservation.location_description %>"></i>
+                <% } %>
+                <% if (reservation.location_url) { %>
+                  <a href="<%= reservation.location_url %>" target="_blank"><%= reservation.location_url %></a>
                 <% } %>
               </p>
               <div class="" id="reservationDetails<%= reservation.id %>">
