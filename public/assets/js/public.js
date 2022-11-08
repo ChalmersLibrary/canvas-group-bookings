@@ -90,7 +90,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
                             const r = reserveSlotModal.querySelector('#reservations').appendChild(document.createElement('div'))
                             r.innerText = reservation.canvas_group_name
                         })
-                        if (data.res_now == (data.res_max - 1)) { // && data.course_message_all_when_full
+                        if (data.res_now == (data.res_max - 1) && data.course_message_all_when_full) {
                             if (reserveSlotModal.querySelector('#reserveSlotGroupConnectNotice').classList.contains("d-none")) {
                                 reserveSlotModal.querySelector('#reserveSlotGroupConnectNotice').classList.remove("d-none")
                                 reserveSlotModal.querySelector('#reserveSlotGroupConnectNotice').classList.add("d-block")
