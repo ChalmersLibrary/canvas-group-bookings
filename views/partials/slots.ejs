@@ -111,12 +111,12 @@
                     <div class="text-small text-muted"><%= slot.reservable_notice %></div>
                 </td>
                 <% if (session.user.isAdministrator) { %>
-                    <td class="d-none d-md-table-cell">
+                    <td class="d-none d-md-table-cell align-bottom">
                         <button type="button" title="Redigera" data-bs-toggle="modal" data-bs-target="#editSlot" data-bs-slot-id="<%= slot.id %>" class="btn btn-secondary btn-sm float-end"><i class="bi-pencil-fill"></i></button>
                         <button type="button" title="Radera" data-bs-toggle="modal" data-bs-target="#deleteSlot" data-bs-slot-id="<%= slot.id %>" class="btn btn-secondary btn-sm float-end mx-2"><i class="bi-trash-fill"></i></button>
                     </td>
                 <% } else { %>
-                    <td class="d-none d-md-table-cell">
+                    <td class="d-none d-md-table-cell align-bottom">
                         <% if (slot.reservable_for_this_user) { %>
                             <button type="button" title="Boka tillfället" class="btn btn-primary btn-sm float-end" data-bs-toggle="modal" data-bs-target="#reserveSlot" data-bs-slot-id="<%= slot.id %>" >Boka</button>
                         <% } else { %>
