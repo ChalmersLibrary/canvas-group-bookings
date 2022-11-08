@@ -293,6 +293,7 @@ app.get('/reservations', async (req, res, next) => {
         reservations: reservations,
         reservationDeleted: req.query.reservationDeleted && req.query.reservationDeleted == "true",
         reservationDone: req.query.reservationDone && req.query.reservationDone == "true",
+        reservationGroup: req.query.reservationGroup && req.query.reservationGroup == "true",
         reservationTitle: req.query.reservationTitle ? req.query.reservationTitle : null
     });
 });
@@ -570,6 +571,28 @@ app.delete('/api/reservation/:id', async (req, res) => {
     }
 });
 
+/**
+ * Get some statistics used in web view
+ */
+app.get('/api/statistics', async (req, res, next) => {
+    try {
+        const counter_res = await db.getNumberOfReservations(req.session.user.id, res.locals.groups_ids);
+
+        return res.send({
+            counters: {
+                reservations: counter_res
+            }
+        });
+    }
+    catch (error) {
+        log.error(error);
+
+        return res.send({
+            success: false,
+            error: error
+        });
+    }
+});
 
 /* ==================== */
 /* API Endpoints, admin */

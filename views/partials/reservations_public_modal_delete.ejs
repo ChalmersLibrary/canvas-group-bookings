@@ -2,6 +2,7 @@
     <div class="modal-dialog">
         <form class="needs-validation" id="deleteReservationForm" novalidate>
             <input type="hidden" id="d_reservation_id" name="reservation_id" value="" />
+            <input type="hidden" id="d_reservation_type" name="reservation_type" value="" />
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="deleteReservationLabel">Avboka bokad tid</h5>
@@ -54,7 +55,10 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
-                    <button type="submit" class="btn btn-primary" id="deleteReservationDeleteButton">Avboka</button>
+                    <button type="submit" class="btn btn-primary" id="deleteReservationSubmitButton">
+                        Avboka
+                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                    </button>
                 </div>
             </div>
         </form>

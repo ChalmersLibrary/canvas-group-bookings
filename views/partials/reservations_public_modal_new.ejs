@@ -27,11 +27,9 @@
                                 <label>Handledare:</label><br>
                                 <span id="r_instructor_name"></span>
                             </p>
-                            <div class="row d-none" id="reservationsCurrent">
-                                <p>
-                                    <label>Andra som bokat:</label><br>
-                                    <div id="reservations" data-default-text="Det finns inga bokningar på denna tid." class=""></div>
-                                </p>
+                            <div class="row d-none" id="reservationsContainer">
+                                <strong>Andra som bokat:</strong>
+                                <div id="reservations" data-default-text="Det finns inga bokningar på denna tid." class="reservations"></div>
                             </div>
                         </div>
                         <div class="col-lg-7">
@@ -78,8 +76,18 @@
                             <div class="alert alert-primary" role="alert">
                                 <strong>Detta är en bokning för en hel grupp.</strong>
                                 <span>
-                                    När du bokar tiden kommer du och alla medlemmar i din grupp att få ett meddelande i Canvas Inbox.
-                                    En kopia skickas även till handledaren.
+                                    När du bokar kommer du och alla medlemmar i din grupp att få en bekräftelse i Canvas Inbox.
+                                </span>
+                            </div>    
+                        </div>
+                    </div>
+                    <div class="row d-none" id="reserveSlotGroupConnectNotice">
+                        <div class="col">
+                            <div class="alert alert-primary" role="alert">
+                                <strong>Detta tillfälle är tillsammans med en annan grupp.</strong>
+                                <span>
+                                    När du bokar kommer du och alla medlemmar i din grupp att få en bekräftelse i Canvas Inbox.
+                                    Båda grupperna kommer även få instruktioner för hur ni tillsammans ska förbereda er inför tillfället.
                                 </span>
                             </div>    
                         </div>
@@ -107,7 +115,10 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
-                    <button type="submit" class="btn btn-primary" id="reserveSlotSubmitButton">Boka tiden</button>
+                    <button type="submit" class="btn btn-primary" id="reserveSlotSubmitButton">
+                        Boka tiden
+                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                    </button>
                 </div>
             </div>
         </form>

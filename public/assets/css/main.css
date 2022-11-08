@@ -16,3 +16,6 @@ label {
 div.slot_template {
     display: none;
 }
+div.reservations {
+    margin-bottom: 1em;
+}

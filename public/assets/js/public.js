@@ -55,14 +55,13 @@ document.addEventListener("DOMContentLoaded", function(event) {
             fetch(`/api/slot/${slot_id}`)
             .then(response => response.json())
             .then(data => {
-                console.log(data)
                 reserveSlotModal.querySelector('#r_slot_id').value = data.id
                 reserveSlotModal.querySelector('#r_type').value = data.type
                 reserveSlotModal.querySelector('#r_message').value = ""
                 reserveSlotModal.querySelector('#r_course_name').innerText = data.course_name
                 reserveSlotModal.querySelector('#r_instructor_name').innerText = data.instructor_name
                 reserveSlotModal.querySelector('#r_location_name').innerText = data.location_name
-                reserveSlotModal.querySelector('#r_slot_time').innerText = data.shortcut.start_date + " kl " + data.shortcut.start_time + "--" + data.shortcut.end_time
+                reserveSlotModal.querySelector('#r_slot_time').innerText = data.time_human_readable_sv
                 if (data.course_message_required == false) {
                     reserveSlotModal.querySelector("#r_message").removeAttribute("required")
                 }
@@ -71,6 +70,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
                     reserveSlotModal.querySelector('#r_course_description').classList.remove("d-none")
                 }
                 if (data.type === "individual") {
+                    if (reserveSlotModal.querySelector('#reserveSlotGroupConnectNotice').classList.contains("d-block")) {
+                        reserveSlotModal.querySelector('#reserveSlotGroupConnectNotice').classList.remove("d-block")
+                        reserveSlotModal.querySelector('#reserveSlotGroupConnectNotice').classList.add("d-none")
+                    }
                     if (reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.contains("d-block")) {
                         reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.remove("d-block")
                         reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.add("d-none")
@@ -81,22 +84,50 @@ document.addEventListener("DOMContentLoaded", function(event) {
                     reserveSlotModal.querySelector('#reserveSlotGroupBlock').classList.add("d-none")
                 }
                 else {
-                    if (reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.contains("d-none")) {
-                        reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.remove("d-none")
-                        reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.add("d-block")
-                    }
                     reserveSlotModal.querySelector('#reservations').replaceChildren()
                     if (data.reservations && data.reservations.length > 0) {
                         data.reservations.forEach(reservation => {
                             const r = reserveSlotModal.querySelector('#reservations').appendChild(document.createElement('div'))
                             r.innerText = reservation.canvas_group_name
-                            reserveSlotModal.querySelector('#reservationsCurrent').classList.remove("d-none")
-                            reserveSlotModal.querySelector('#reservationsCurrent').classList.add("d-block")
-                            console.log(reservation)
                         })
-                        /* Connection message should be added when slot is full, different text in reserveSlotGroupNotice! */
-                        /* reserveSlotModal.querySelector('#reserveSlotWarning').classList.remove("d-none")
-                        reserveSlotModal.querySelector('#reserveSlotWarning').classList.add("d-block") */
+                        if (data.res_now == (data.res_max - 1)) { // && data.course_message_all_when_full
+                            if (reserveSlotModal.querySelector('#reserveSlotGroupConnectNotice').classList.contains("d-none")) {
+                                reserveSlotModal.querySelector('#reserveSlotGroupConnectNotice').classList.remove("d-none")
+                                reserveSlotModal.querySelector('#reserveSlotGroupConnectNotice').classList.add("d-block")
+                            }
+                            if (reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.contains("d-block")) {
+                                reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.remove("d-block")
+                                reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.add("d-none")
+                            }
+                        }
+                        else {
+                            if (reserveSlotModal.querySelector('#reserveSlotGroupConnectNotice').classList.contains("d-block")) {
+                                reserveSlotModal.querySelector('#reserveSlotGroupConnectNotice').classList.remove("d-block")
+                                reserveSlotModal.querySelector('#reserveSlotGroupConnectNotice').classList.add("d-none")
+                            }
+                            if (reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.contains("d-none")) {
+                                reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.remove("d-none")
+                                reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.add("d-block")
+                            }
+                        }
+                        if (reserveSlotModal.querySelector('#reservationsContainer').classList.contains("d-none")) {
+                            reserveSlotModal.querySelector('#reservationsContainer').classList.remove("d-none")
+                            reserveSlotModal.querySelector('#reservationsContainer').classList.add("d-block")
+                        }
+                    }
+                    else {
+                        if (reserveSlotModal.querySelector('#reserveSlotGroupConnectNotice').classList.contains("d-block")) {
+                            reserveSlotModal.querySelector('#reserveSlotGroupConnectNotice').classList.remove("d-block")
+                            reserveSlotModal.querySelector('#reserveSlotGroupConnectNotice').classList.add("d-none")
+                        }
+                        if (reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.contains("d-none")) {
+                            reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.remove("d-none")
+                            reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.add("d-block")
+                        }
+                        if (reserveSlotModal.querySelector('#reservationsContainer').classList.contains("d-block")) {
+                            reserveSlotModal.querySelector('#reservationsContainer').classList.remove("d-block")
+                            reserveSlotModal.querySelector('#reservationsContainer').classList.add("d-none")
+                        }
                     }
                 }
             })
@@ -111,9 +142,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
     /* The Reserve Slot Modal Form is submitted */
     if (reserveSlotForm) {
         reserveSlotForm.addEventListener("submit", function(event) {
-            console.log(event);
-            console.log("Time to submit the form: reserveSlotForm");
-    
             if (!reserveSlotForm.checkValidity()) {
                 event.preventDefault()
                 event.stopPropagation()
@@ -132,26 +160,40 @@ document.addEventListener("DOMContentLoaded", function(event) {
                         message: reserveSlotModal.querySelector('#r_message').value
                     })
                 };
-        
-                console.log(requestOptions);
-        
+
+                const submitButton = reserveSlotModal.querySelector('#reserveSlotSubmitButton')
+                const submitSpinner = submitButton.querySelector('span.spinner-border')
+
+                submitButton.disabled = true
+                submitSpinner.classList.remove("d-none")
+                submitSpinner.classList.add("d-inline-block")
+
                 fetch(`/api/reservation`, requestOptions)
                 .then(response => {
                     return response.text();
                 })
                 .then(data => { 
-                    console.log(data)
                     const responseBody = JSON.parse(data)
                     if (responseBody.success === false) {
-                        console.error(responseBody.message)
                         reserveSlotModal.querySelector('#reserveSlotError .alert span').innerText = JSON.parse(data).message
                         reserveSlotModal.querySelector('#reserveSlotError').classList.remove("d-none")
                         reserveSlotModal.querySelector('#reserveSlotError').classList.add("d-block")
+                        submitButton.disabled = false
                     }
                     else {
-                        window.location.assign("/reservations?reservationDone=true&reservationId=" + responseBody.reservation_id)
+                        window.location.assign("/reservations?reservationDone=true" + (reserveSlotModal.querySelector('#r_type').value == 'group' ? "&reservationGroup=true" : "") + "&reservationId=" + responseBody.reservation_id)
                     }
-                });
+                    submitSpinner.classList.remove("d-inline-block")        
+                    submitSpinner.classList.add("d-none")
+                })
+                .catch(error => {
+                    reserveSlotModal.querySelector('#reserveSlotError .alert span').innerText = error
+                    reserveSlotModal.querySelector('#reserveSlotError').classList.remove("d-none")
+                    reserveSlotModal.querySelector('#reserveSlotError').classList.add("d-block")
+                    submitButton.disabled = false
+                    submitSpinner.classList.remove("d-inline-block")        
+                    submitSpinner.classList.add("d-none")
+                })
             }
     
             event.preventDefault();
@@ -168,6 +210,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         deleteReservationModal.addEventListener('show.bs.modal', event => {
             const button = event.relatedTarget
             const reservation_id = button.getAttribute('data-bs-reservation-id')
+            const submitButton = deleteReservationModal.querySelector("#deleteReservationSubmitButton")
 
             if (deleteReservationModal.querySelector("#deleteReservationWarning").classList.contains("d-block")) {
                 deleteReservationModal.querySelector("#deleteReservationWarning").classList.remove("d-block")
@@ -181,21 +224,21 @@ document.addEventListener("DOMContentLoaded", function(event) {
             fetch(`/api/reservation/${reservation_id}`)
             .then(response => response.json())
             .then(data => {
-                console.log(data)
                 deleteReservationModal.querySelector('#d_reservation_id').value = data.id
+                deleteReservationModal.querySelector('#d_reservation_type').value = data.is_group ? "group" : "individual"
                 deleteReservationModal.querySelector('#d_course_name').innerText = data.course_name
                 deleteReservationModal.querySelector('#d_instructor_name').innerText = data.instructor_name
                 deleteReservationModal.querySelector('#d_location_name').innerText = data.location_name
                 deleteReservationModal.querySelector('#d_slot_time').innerText = data.time_human_readable_sv
 
-                deleteReservationModal.querySelector("#deleteReservationDeleteButton").disabled = false;
+                submitButton.disabled = false;
 
                 if (!data.is_cancelable) {
                     if (deleteReservationModal.querySelector("#deleteReservationNotCancelable").classList.contains("d-none")) {
                         deleteReservationModal.querySelector("#deleteReservationNotCancelable").classList.remove("d-none")
                         deleteReservationModal.querySelector("#deleteReservationNotCancelable").classList.add("d-block")
                     }
-                    deleteReservationModal.querySelector("#deleteReservationDeleteButton").disabled = true;
+                    submitButton.disabled = true;
                 }
                 else {
                     if (data.is_group) {
@@ -219,28 +262,44 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' }
             };
-    
-            console.log(requestOptions);
-    
+        
             const r_id = deleteReservationModal.querySelector('#d_reservation_id').value
+            const r_type = deleteReservationModal.querySelector('#d_reservation_type').value
             const r_course = deleteReservationModal.querySelector('#d_course_name').innerText
+
+            const submitButton = deleteReservationModal.querySelector('#deleteReservationSubmitButton')
+            const submitSpinner = submitButton.querySelector('span.spinner-border')
+
+            submitButton.disabled = true
+            submitSpinner.classList.remove("d-none")
+            submitSpinner.classList.add("d-inline-block")
 
             fetch(`/api/reservation/${r_id}`, requestOptions)
             .then(response => {
                 return response.text();
             })
             .then(data => { 
-                console.log(data)
                 const responseBody = JSON.parse(data)
                 if (responseBody.success === false) {
                     console.error(JSON.parse(data).message)
                     deleteReservationModal.querySelector('#deleteReservationError .alert span').innerText = JSON.parse(data).message
                     deleteReservationModal.querySelector('#deleteReservationError').classList.remove("d-none")
                     deleteReservationModal.querySelector('#deleteReservationError').classList.add("d-block")
+                    submitButton.disabled = false
                 }
                 else {
-                    window.location.assign("/reservations?reservationDeleted=true&reservationTitle=" + r_course)
+                    window.location.assign("/reservations?reservationDeleted=true" + (r_type == 'group' ? "&reservationGroup=true" : "") + "&reservationTitle=" + r_course)
                 }
+                submitSpinner.classList.remove("d-inline-block")        
+                submitSpinner.classList.add("d-none")
+            })
+            .catch(error => {
+                deleteReservationModal.querySelector('#deleteReservationError .alert span').innerText = error
+                deleteReservationModal.querySelector('#deleteReservationError').classList.remove("d-none")
+                deleteReservationModal.querySelector('#deleteReservationError').classList.add("d-block")
+                submitButton.disabled = false
+                submitSpinner.classList.remove("d-inline-block")        
+                submitSpinner.classList.add("d-none")
             });
             
             event.preventDefault();

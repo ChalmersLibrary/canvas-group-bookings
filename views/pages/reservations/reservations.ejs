@@ -19,13 +19,21 @@
       <% if (reservationDeleted) { %>
         <div class="alert alert-success" role="alert">
           <strong>Tillfället "<%= reservationTitle %>" har avbokats.</strong>
-          Du kommer även att få bekräftelse via Canvas Inbox om detta.
+          <% if (reservationGroup) { %>
+            Hela gruppen kommer även att få en bekräftelse till Canvas Inbox om detta.
+          <% } else { %>
+            Du kommer även att få en bekräftelse till Canvas Inbox om detta.
+          <% } %>
         </div>
       <% } %>
       <% if (reservationDone) { %>
         <div class="alert alert-success" role="alert">
           <strong>Tillfället har bokats.</strong>
-          Du kommer även att få bekräftelse via Canvas Inbox om detta.
+          <% if (reservationGroup) { %>
+            Hela gruppen kommer även att få en bekräftelse till Canvas Inbox om detta.
+          <% } else { %>
+            Du kommer även att få en bekräftelse till Canvas Inbox om detta.
+          <% } %>
         </div>
       <% } %>
         <% reservations.forEach(reservation => { %>
