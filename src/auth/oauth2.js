@@ -86,21 +86,39 @@ function setupAuthEndpoints(app, callbackUrl) {
     });
 };
 
+/**
+ * Check if there is an access token for the user id in the request.
+ * First checks LTI for canvas user id, then checks user object.
+ * 
+ * If we have "Anonymous" LTI access, this may force another approval for this app.
+ * The recommended setting is running "Public" LTI access so we get "custom_canvas_user_id",
+ * or run "Anonymous" but provide this id in custom fields when adding the LTI integration.
+ * 
+ * Uses 'simple-oauth2' to check if token has expired, and refreshes it. Note the refresh
+ * token notes in the code below.
+ * 
+ * If there is no token at all, the calling code should redirect into the OAuth2 flow.
+ */
 async function checkAccessToken(req) {
     let tokenResult = new TokenResult();
+    let userId;
 
-    // TODO: The problem here is that if the session cookie disappears, and we have Anonymous LTI access,
-    //       we won't know the user id. The user id could still be in the db with an Access Token that has
-    //       a valid Refresh Token, but we can't reach it. Then the user will have to approve the OAuth2
-    //       access once more and gets another approved integration key in Canvas. Should we force Public LTI?
-
-    if (!req.session.user) {
-        log.error("No user object in session, redirecting to OAuth flow...");
-        tokenResult.success = false;
-        tokenResult.message = "No user object in session.";
+    if (req.session.lti && req.session.lti.custom_canvas_user_id) {
+        userId = req.session.lti.custom_canvas_user_id;
+        log.info("UserId found in LTI session object.");
+    }
+    else if (req.session.user && req.session.user.id) {
+        userId = req.session.user.id;
+        log.info("UserId found in user session object.");
     }
     else {
-        await findAccessToken(req.session.user.id).then(async (token) => {
+        log.error("No user object in session or in LTI, redirecting to OAuth flow...");
+        tokenResult.success = false;
+        tokenResult.message = "Can't find any user id in session.";
+    }
+
+    if (userId !== undefined) {
+        await findAccessToken(userId).then(async (token) => {
             if (token !== undefined) {
                 let accessToken = await client.createToken(token);
                 await log.info("Token from findAccessToken: ", token);
@@ -120,7 +138,7 @@ async function checkAccessToken(req) {
     
                         // Save the user object to session for faster access
                         let userData = await user.createSessionUserdataFromToken(req, newAccessTokenWithRefreshToken).then((result) => {
-                            console.log(result);
+                            log.info(result);
                         });
 
                         req.session.save(function(err) {
