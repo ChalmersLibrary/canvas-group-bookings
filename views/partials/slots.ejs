@@ -57,7 +57,7 @@
             <tr class="" data-course_id="<%= slot.course_id %>" data-available="<%= slot.reservable_for_this_user %>">
                 <td class="d-md-table-cell d-md-none">
                     <%= slot.course_name %><br>
-                    <strong class="text-capitalize"><%- slot.time_human_readable_sv %></strong><br>
+                    <strong><%- slot.time_human_readable_sv %></strong><br>
                     <%= slot.instructor_name %>, <%= slot.location_name %>
                     <div>
                         <% if (slot.res_max == slot.res_now) { %>
