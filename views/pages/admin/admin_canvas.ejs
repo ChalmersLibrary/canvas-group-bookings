@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../../partials/head_admin'); %>
+</head>
+<body class="container-fluid float-start">
+
+<header>
+  <%- include('../../partials/header', { user: session.user }); %>
+</header>
+
+<main>
+    <div class="container-fluid py-2">
+        <h1>Administration</h1>
+    </div>
+
+    <div class="container-fluid py-2">
+        <div class="row">
+            <div class="col-9">
+                <div class="card">
+                    <div class="card-header">
+                        Canvaskoppling
+                    </div>
+                    <div class="card-body">
+                        <form>
+                            <p>
+                                <label for="canvas_course_name">Kursnamn:</label><br>
+                                <strong>PLACEHOLDER_CANVAS_COURSE_NAME</strong>
+                            </p>
+                            <p>
+                                <label for="group_category_mapping">Giltiga gruppkategorier:</label><br>
+                                <select multiple>
+                                    <option value="1">PLACEHOLDER_GROUP_CATEGORY_1</option>
+                                    <option value="2">PLACEHOLDER_GROUP_CATEGORY_2</option>
+                                    <option value="3">PLACEHOLDER_GROUP_CATEGORY_3</option>
+                                </select>
+                            </p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-3">
+                <%- include('../../partials/admin_navigation', { current_page: 'canvas' }); %>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer>
+  <%- include('../../partials/footer', { version: version }); %>
+</footer>
+
+</body>
+</html>

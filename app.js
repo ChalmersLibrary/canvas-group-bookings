@@ -60,7 +60,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(function (req, res, next) {
     res.setHeader(
       'Content-Security-Policy', 
-      "default-src 'self'; script-src 'self' cdn.jsdelivr.net; style-src 'self' cdn.jsdelivr.net fonts.googleapis.com; font-src 'self' cdn.jsdelivr.net fonts.gstatic.com; img-src 'self' data:; frame-src 'self'" + (process.env.CSP_FRAME_SRC_ALLOW ? " " + process.env.CSP_FRAME_SRC_ALLOW : "")
+      "default-src 'self'; script-src 'self' cdn.jsdelivr.net unpkg.com; style-src 'self' cdn.jsdelivr.net fonts.googleapis.com; font-src 'self' cdn.jsdelivr.net fonts.gstatic.com; img-src 'self' data:; frame-src 'self'" + (process.env.CSP_FRAME_SRC_ALLOW ? " " + process.env.CSP_FRAME_SRC_ALLOW : "")
     );
     
     next();
@@ -94,7 +94,7 @@ auth.setupAuthEndpoints(app, process.env.AUTH_REDIRECT_CALLBACK);
  * General middleware that runs first, checking access token and LTI session.
  * Also populates session object with user information like id, name, groups.
  */
-app.use(['/', '/test', '/reservations', '/admin', '/api/*'], async function (req, res, next) {
+app.use(['/', '/test', '/reservations', '/admin*', '/api/*'], async function (req, res, next) {
     await auth.checkAccessToken(req).then(async (result) => {
         if (result !== undefined && result.success === true) {
             await user.mockLtiSession(req);
@@ -302,13 +302,48 @@ app.get('/reservations', async (req, res, next) => {
     });
 });
 
-// Admin web pages
+/**
+ * Admin: start page
+ */
 app.get('/admin', async (req, res, next) => {
     if (req.session.user.isAdministrator) {
         return res.render('pages/admin/admin', {
             status: 'up',
             version: pkg.version,
             session: req.session
+        });
+    }
+    else {
+        next(new Error("You must have administrator privileges to access this page."));
+    }
+});
+
+/**
+ * Admin: Canvas connection
+ */
+ app.get('/admin/canvas', async (req, res, next) => {
+    if (req.session.user.isAdministrator) {
+        return res.render('pages/admin/admin_canvas', {
+            status: 'up',
+            version: pkg.version,
+            session: req.session
+        });
+    }
+    else {
+        next(new Error("You must have administrator privileges to access this page."));
+    }
+});
+
+/**
+ * Admin: Courses (for slots)
+ */
+ app.get('/admin/course', async (req, res, next) => {
+    if (req.session.user.isAdministrator) {
+        return res.render('pages/admin/admin_course', {
+            status: 'up',
+            version: pkg.version,
+            session: req.session,
+            courses: await db.getAllCoursesWithStatistics(res.locals.courseId)
         });
     }
     else {

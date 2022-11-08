@@ -284,6 +284,22 @@ async function getValidCourses(canvas_course_id) {
     return data;
 }
 
+async function getAllCoursesWithStatistics(canvas_course_id) {
+    let data;
+
+    await query("SELECT c.id, c.name, c.is_group, c.is_individual, " +
+                "(SELECT COUNT(*) AS slots FROM slots_view sv WHERE sv.course_id=c.id), " +
+                "(SELECT COUNT(*) AS reservations FROM reservations_view rv, slot s WHERE rv.slot_id=s.id AND s.course_id=c.id) " +
+                "FROM course c " + 
+                "WHERE c.canvas_course_id=$1", [ canvas_course_id ]).then((result) => {
+        data = result.rows;
+    }).catch((error) => {
+        log.error(error);
+    });
+    
+    return data;
+}
+
 async function getCourse(id) {
     let data;
 
@@ -494,6 +510,7 @@ module.exports = {
     deleteReservation,
     getNumberOfReservations,
     getValidCourses,
+    getAllCoursesWithStatistics,
     getValidInstructors,
     getValidLocations,
     getCourse,

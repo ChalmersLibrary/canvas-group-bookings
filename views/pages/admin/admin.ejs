@@ -1,43 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <%- include('../../partials/head'); %>
+  <%- include('../../partials/head_admin'); %>
 </head>
-<body class="container-lg float-start">
+<body class="container-fluid float-start">
 
 <header>
   <%- include('../../partials/header', { user: session.user }); %>
 </header>
 
 <main>
-    <div class="container py-2">
-        <h1 class="display-5">Administration</h1>
+    <div class="container-fluid py-2">
+        <h1>Administration</h1>
     </div>
 
-    <div class="container py-2">
+    <div class="container-fluid py-2">
         <div class="row">
-            <div class="col-3">
+            <div class="col-9">
                 <div class="card">
                     <div class="card-header">
-                        Listor
+                        Administrera
                     </div>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item"><a href="">Tillfällen</a></li>
-                        <li class="list-group-item"><a href="/admin/slots-new">Tider</a></li>
-                        <li class="list-group-item"><a href="">Handledare</a></li>
-                        <li class="list-group-item"><a href="">Lokaler</a></li>
-                        <li class="list-group-item"><a href="">Övrigt</a></li>
-                    </ul>
-                </div>        
+                    <div class="card-body">
+                        Här kommer lite hjälptext i framtiden.
+                    </div>
+                </div>
             </div>
-            <div class="col-9">
-                Huvudområde
-            </div>          
+            <div class="col-3">
+                <%- include('../../partials/admin_navigation') %>
+            </div>
         </div>
     </div>
 </main>
-
-<%- include('../../partials/debug'); %>
 
 <footer>
   <%- include('../../partials/footer', { version: version }); %>

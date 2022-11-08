@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../../partials/head_admin'); %>
+</head>
+<body class="container-fluid float-start">
+
+<header>
+  <%- include('../../partials/header', { user: session.user }); %>
+</header>
+
+<main>
+    <div class="container-fluid py-2">
+        <h1>Administration</h1>
+    </div>
+
+    <div class="container-fluid py-2">
+        <div class="row">
+            <div class="col-9">
+                <div class="card">
+                    <div class="card-header">
+                        Tillfällen kopplade till denna Canvaskurs
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-md table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Namn</th>
+                                    <th class="text-right">Tider</th>
+                                    <th class="text-right">Bokningar</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% courses.forEach(course => { %>
+                                    <tr>
+                                        <td><%= course.name %></td>
+                                        <td class="text-right"><%= course.slots %></td>
+                                        <td class="text-right"><%= course.reservations %></td>
+                                        <td>
+                                            <div class="float-end">
+                                                <button type="button" title="Redigera" data-bs-toggle="modal" data-bs-target="#edit___" data-bs-slot-id="<%= course.id %>" class="btn btn-secondary btn-md"><i class="bi-pencil-fill"></i></button>
+                                                <button type="button" title="Radera" data-bs-toggle="modal" data-bs-target="#delete___" data-bs-slot-id="<%= course.id %>" class="btn btn-secondary btn-md mx-2"><i class="bi-trash-fill"></i></button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                        <p class="text-muted col-md-8">
+                            Tillfällen är separata delar som du sedan kan skapa bokningsbara tider på. Tillfällen styr saker som grupp/individ, max antal deltagare, texter som skickas i meddelanden mm.
+                        </p>
+                        <div class="button-bar">
+                            <button class="btn btn-md btn-secondary">Skapa nytt tillfälle</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-3">
+                <%- include('../../partials/admin_navigation', { current_page: 'course' }); %>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer>
+  <%- include('../../partials/footer', { version: version }); %>
+</footer>
+
+</body>
+</html>
