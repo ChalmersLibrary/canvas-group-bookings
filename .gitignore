@@ -1,6 +1,9 @@
 # Sessions
 sessions/
 
+# Mockup LTI data for local development
+mock-lti.json
+
 # Latest commit hash, special
 views/partials/git_latest_commit_hash.ejs
 
