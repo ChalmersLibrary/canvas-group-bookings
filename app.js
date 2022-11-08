@@ -90,7 +90,10 @@ app.post('/lti', lti.handleLaunch('/'));
 // Setup OAuth2 endpoints and communication
 auth.setupAuthEndpoints(app, process.env.AUTH_REDIRECT_CALLBACK);
 
-// General middleware that runs first, checking access token and LTI session
+/**
+ * General middleware that runs first, checking access token and LTI session.
+ * Also populates session object with user information like id, name, groups.
+ */
 app.use(['/', '/test', '/reservations', '/admin', '/api/*'], async function (req, res, next) {
     await auth.checkAccessToken(req).then(async (result) => {
         if (result !== undefined && result.success === true) {
@@ -102,7 +105,6 @@ app.use(['/', '/test', '/reservations', '/admin', '/api/*'], async function (req
 
                 // Add the groups from Canvas for this user
                 let canvasGroupCategoryFilter = await db.getCourseGroupCategoryFilter(res.locals.courseId);
-                log.info(canvasGroupCategoryFilter);
                 req.session.user.groups = await canvasApi.getCourseGroups(res.locals.courseId, canvasGroupCategoryFilter, { token_type: result.token_type, access_token: result.access_token });
                 req.session.user.groups_ids = new Array();
                 req.session.user.groups_human_readable = new Array();
@@ -113,10 +115,10 @@ app.use(['/', '/test', '/reservations', '/admin', '/api/*'], async function (req
                 }
 
                 // Move on to the actual route handler
-                next()
+                next();
             }
             else {
-                next(new Error("No LTI information found in session."));
+                next(new Error("No LTI information found in session. This application must be started with LTI request."));
             }
         }
         else {
