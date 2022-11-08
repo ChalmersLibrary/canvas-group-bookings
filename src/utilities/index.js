@@ -25,6 +25,10 @@ function getTemplate(type) {
     return content;
 }
 
+function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 function replaceMessageMagics(body, course_name, reservation_message, cancellation_policy_hours, user_name, time_start, location_name, instructor_name, instructor_email, group_name, group_names) {
     body = body.replace("{{reservation_course_name}}", course_name);
     body = body.replace("{{reservation_message}}", reservation_message);
@@ -37,7 +41,7 @@ function replaceMessageMagics(body, course_name, reservation_message, cancellati
     body = body.replace("{{instructor_name}}", instructor_name);
     body = body.replace("{{instructor_email}}", instructor_email);
     body = body.replace("{{CONVERSATION_ROBOT_NAME}}", process.env.CONVERSATION_ROBOT_NAME ? process.env.CONVERSATION_ROBOT_NAME : "Canvas Conversation Robot");
-    
+
     return body;
 }
 
@@ -45,5 +49,6 @@ module.exports = {
     getDatePart,
     getTimePart,
     getTemplate,
+    capitalizeFirstLetter,
     replaceMessageMagics
 }
