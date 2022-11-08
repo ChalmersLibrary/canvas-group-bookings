@@ -105,7 +105,7 @@ app.use(['/', '/test', '/reservations', '/admin', '/api/*'], async function (req
 
                 // Add the groups from Canvas for this user
                 let canvasGroupCategoryFilter = await db.getCourseGroupCategoryFilter(res.locals.courseId);
-                req.session.user.groups = await canvasApi.getCourseGroups(res.locals.courseId, canvasGroupCategoryFilter, { token_type: result.token_type, access_token: result.access_token });
+                req.session.user.groups = await canvasApi.getCourseGroups(res.locals.courseId, canvasGroupCategoryFilter, result);
                 req.session.user.groups_ids = new Array();
                 req.session.user.groups_human_readable = new Array();
             

@@ -20,11 +20,12 @@ const clientConfig = {
 
 const client = new AuthorizationCode(clientConfig);
 
-function TokenResult(success, message, access_token, token_type) {
+function TokenResult(success, message, access_token, token_type, user_id) {
     this.success = success;
     this.message = message;
     this.access_token = access_token;
     this.token_type = token_type;
+    this.user_id = user_id;
 };
 
 function setupAuthEndpoints(app, callbackUrl) {
@@ -134,7 +135,8 @@ async function checkAccessToken(req) {
                         tokenResult.success = true;
                         tokenResult.message = "Refreshed expired token.";
                         tokenResult.access_token = newAccessTokenWithRefreshToken.access_token;
-                        tokenResult.access_token = newAccessTokenWithRefreshToken.token_type;
+                        tokenResult.token_type = newAccessTokenWithRefreshToken.token_type;
+                        tokenResult.user_id = newAccessTokenWithRefreshToken.user.id;
                     }
                     catch (error) {
                         if (error.data.payload) {
@@ -154,7 +156,7 @@ async function checkAccessToken(req) {
                     log.info("Access token is ok, not expired.");
 
                     // Save the user object to session for faster access
-                    user.createSessionUserdataFromToken(req, token);
+                    await user.createSessionUserdataFromToken(req, token);
 
                     req.session.save(function(err) {
                         if (err) {
@@ -167,6 +169,8 @@ async function checkAccessToken(req) {
                     tokenResult.message = "Access token is ok, not expired.";
                     tokenResult.access_token = token.access_token;
                     tokenResult.token_type = token.token_type;
+                    tokenResult.user_id = token.user.id;
+
                 }
             }
             else {

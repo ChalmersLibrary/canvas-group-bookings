@@ -27,7 +27,7 @@ async function mockLtiSession(req) {
 async function createSessionUserdataFromToken(req, token) {
     if (req.session) {
         if (token !== undefined) {
-            req.session.user = { id: token.user.id, name: token.user.name, email: req.session.lti.lis_person_contact_email_primary, locale: token.user.effective_locale.substr(0,2) };
+            req.session.user = { id: token.user.id, name: token.user.name, locale: token.user.effective_locale.substr(0,2) };
         }
     }
     else {
