@@ -124,7 +124,7 @@ app.use(['/', '/test', '/reservations', '/admin*', '/api/*'], async function (re
         else {
             if (req.query.from == "callback") {
                 log.error("Coming from callback, but with no session. Third party cookies problem.");
-                next(new Error("Can't create a session for you. Third party cookies must be enabled in your web browser."));
+                throw new Error("Can't create a session for you. Third party cookies must be enabled in your web browser.");
             }
             else {
                 log.error("Access token is not valid or not found, redirecting to auth flow...");
