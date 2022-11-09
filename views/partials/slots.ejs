@@ -5,6 +5,7 @@
         </div>    
     </div>
 <% } %>
+<!--
 <div class="card slots-filter">
     <div class="card-header">
         Filtrera
@@ -36,6 +37,16 @@
         </div>
     </div>
 </div>
+-->
+<% if (segments && segments.length) { %>
+    <ul class="nav nav-tabs">
+        <% segments.forEach(segment => { %>
+            <li class="nav-item">
+                <a class="nav-link <%= segment.active ? 'active' : '' %>" href="?segment=<%= segment.id %>"><%= segment.name %></a>
+            </li>      
+        <% }) %>
+    </ul>
+<% } %>
 <% if (!slots.length) { %>
     <div class="alert alert-secondary my-3" role="alert">
         <h4 class="alert-heading">Det finns inga tillgängliga tider</h4>

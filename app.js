@@ -181,9 +181,32 @@ app.get('/test', async (req, res) => {
 
 // Main page with available slots for user to reserve */
 app.get('/', async (req, res, next) => {
-    const availableSlots = await db.getAllSlots(res.locals.courseId, new Date().toLocaleDateString('sv-SE'));
+    let availableSlots;
+
+    const segments = await db.getSegments(res.locals.courseId);
+
+    if (segments && segments.length) {
+        if (req.query.segment) {
+            for (const segment of segments) {
+                if (segment.id == parseInt(req.query.segment)) {
+                    segment.active = true;
+                }
+            }
+    
+            availableSlots = await db.getAllSlotsInSegment(res.locals.courseId, parseInt(req.query.segment), new Date().toLocaleDateString('sv-SE'));
+        }
+        else {
+            segments[0].active = true;
+
+            availableSlots = await db.getAllSlotsInSegment(res.locals.courseId, parseInt(segments[0].id), new Date().toLocaleDateString('sv-SE'));
+        }    
+    }
+    else {
+        availableSlots = await db.getAllSlots(res.locals.courseId, new Date().toLocaleDateString('sv-SE'));
+    }
 
     /* Calculate if this slot is bookable, based on existing reservations */
+    /* TODO: make it more general in utilities or something! */
     for (const slot of availableSlots) {
         slot.reservable_for_this_user = true;
 
@@ -239,6 +262,7 @@ app.get('/', async (req, res, next) => {
         version: pkg.version,
         session: req.session,
         groups: req.session.user.groups,
+        segments: segments,
         slots: availableSlots,
         courses: await db.getValidCourses(new Date().toLocaleDateString('sv-SE')),
         instructors: await db.getValidInstructors(),
@@ -250,6 +274,7 @@ app.get('/', async (req, res, next) => {
         version: pkg.version,
         session: req.session,
         groups: req.session.user.groups,
+        segments: segments,
         slots: availableSlots,
         courses: await db.getValidCourses(res.locals.courseId),
         instructors: await db.getValidInstructors(res.locals.courseId),

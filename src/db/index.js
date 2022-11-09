@@ -30,6 +30,25 @@ async function query(text, params) {
 }
 
 /**
+ * Returns possible segments for a Canvas course, segments are used in courses and slots 
+ * to enable easy filtering of slots.
+ */
+async function getSegments(canvas_course_id) {
+    let data;
+
+    await query("SELECT * FROM segment s WHERE s.canvas_course_id=$1", [
+        canvas_course_id
+    ]).then((result) => {
+        data = result.rows;
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    });
+
+    return data;
+}
+
+/**
  * Returns an array of Canvas Group Category Ids that are force-filtered for a specific Canvas Course Id
  */
 async function getCourseGroupCategoryFilter(canvas_course_id) {
@@ -54,7 +73,9 @@ async function getCourseGroupCategoryFilter(canvas_course_id) {
     return returnedData;
 }
 
-/* Returns all slots from a specific date */
+/**
+ * Returns all slots, available or not, for a specific Canvas course, starting from a specific date
+ */
 async function getAllSlots(canvas_course_id, date) {
     let data;
     let returnedData = [];
@@ -63,6 +84,37 @@ async function getAllSlots(canvas_course_id, date) {
 
     await query("SELECT * FROM slots_view s WHERE s.canvas_course_id = $1 AND s.time_start >= $2", [
         canvas_course_id,
+        date
+    ]).then((result) => {
+        data = result.rows;
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    });
+    
+    /* TODO: think about if these additions/conversions should be done outside, and this should be just clean db code? */
+    if (data !== undefined && data.length) {
+        data.forEach(slot => {
+            slot.time_human_readable_sv = utils.capitalizeFirstLetter(new Date(slot.time_start).toLocaleDateString('sv-SE', dateOptions) + " kl " + new Date(slot.time_start).toLocaleTimeString('sv-SE', timeOptions) + "–" + new Date(slot.time_end).toLocaleTimeString('sv-SE', timeOptions));
+            returnedData.push(slot);
+        });
+    }
+
+    return returnedData;
+}
+
+/**
+ * Returns all slots, available or not, for a specific Canvas course and a segment, starting from a specific date
+ */
+ async function getAllSlotsInSegment(canvas_course_id, segment_id, date) {
+    let data;
+    let returnedData = [];
+    const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const timeOptions = { hour: '2-digit', minute: '2-digit' };
+
+    await query("SELECT * FROM slots_view s WHERE s.canvas_course_id = $1 AND s.course_segment_id = $2 AND s.time_start >= $3", [
+        canvas_course_id,
+        segment_id,
         date
     ]).then((result) => {
         data = result.rows;
@@ -289,7 +341,9 @@ async function getAllCoursesWithStatistics(canvas_course_id) {
 
     await query("SELECT c.id, c.name, c.is_group, c.is_individual, " +
                 "(SELECT COUNT(*) AS slots FROM slots_view sv WHERE sv.course_id=c.id), " +
-                "(SELECT COUNT(*) AS reservations FROM reservations_view rv, slot s WHERE rv.slot_id=s.id AND s.course_id=c.id) " +
+                "(SELECT SUM(res_max) AS spots FROM slots_view sv WHERE sv.course_id=c.id), " +
+                "(SELECT COUNT(rv.*) AS reservations FROM reservations_view rv, slot s WHERE rv.slot_id=s.id AND s.course_id=c.id), " +
+                "(SELECT COUNT(r.*) AS deleted FROM reservation r, slot s WHERE r.deleted_at IS NOT NULL AND r.slot_id=s.id AND s.course_id=c.id) " +
                 "FROM course c " + 
                 "WHERE c.canvas_course_id=$1", [ canvas_course_id ]).then((result) => {
         data = result.rows;
@@ -499,8 +553,10 @@ async function applyVersion(version) {
 
 module.exports = {
     query,
+    getSegments,
     getCourseGroupCategoryFilter,
     getAllSlots,
+    getAllSlotsInSegment,
     getSlot,
     getSlotReservations,
     getSimpleSlotReservations,
