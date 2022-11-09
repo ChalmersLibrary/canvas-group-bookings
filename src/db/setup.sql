@@ -145,6 +145,10 @@ CREATE VIEW "reservations_view" AS
             WHEN now() at time zone 'Europe/Stockholm' <= s.time_start - (c.cancellation_policy_hours * interval '1 hour') THEN true 
             ELSE false 
         END AS is_cancelable,
+        CASE 
+            WHEN now() at time zone 'Europe/Stockholm' >= s.time_start THEN true 
+            ELSE false 
+        END AS is_passed,
     c.canvas_course_id,
     l.id AS location_id,
     l.name AS location_name,
