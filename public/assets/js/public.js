@@ -51,53 +51,82 @@ document.addEventListener("DOMContentLoaded", function(event) {
     if (reserveSlotModal) {
         reserveSlotModal.addEventListener('show.bs.modal', event => {
             const button = event.relatedTarget
+            const submitButton = reserveSlotModal.querySelector('#reserveSlotSubmitButton')
             const slot_id = button.getAttribute('data-bs-slot-id')
+            submitButton.disabled = true
             fetch(`/api/slot/${slot_id}`)
-            .then(response => response.json())
-            .then(data => {
-                reserveSlotModal.querySelector('#r_slot_id').value = data.id
-                reserveSlotModal.querySelector('#r_type').value = data.type
-                reserveSlotModal.querySelector('#r_message').value = ""
-                reserveSlotModal.querySelector('#r_course_name').innerText = data.course_name
-                reserveSlotModal.querySelector('#r_instructor_name').innerText = data.instructor_name
-                reserveSlotModal.querySelector('#r_location_name').innerText = data.location_name
-                reserveSlotModal.querySelector('#r_slot_time').innerText = data.time_human_readable_sv
-                if (data.course_message_required == false) {
-                    reserveSlotModal.querySelector("#r_message").removeAttribute("required")
-                }
-                if (data.course_description !== '') {
-                    reserveSlotModal.querySelector('#r_course_description').innerText = data.course_description
-                    reserveSlotModal.querySelector('#r_course_description').classList.remove("d-none")
-                }
-                if (data.type === "individual") {
-                    if (reserveSlotModal.querySelector('#reserveSlotGroupConnectNotice').classList.contains("d-block")) {
-                        reserveSlotModal.querySelector('#reserveSlotGroupConnectNotice').classList.remove("d-block")
-                        reserveSlotModal.querySelector('#reserveSlotGroupConnectNotice').classList.add("d-none")
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.success == false) {
+                    reserveSlotModal.querySelector('#reserveSlotError div.alert span').innerText = data.message
+                    if (reserveSlotModal.querySelector('#reserveSlotError').classList.contains("d-none")) {
+                        reserveSlotModal.querySelector('#reserveSlotError').classList.remove("d-none")
+                        reserveSlotModal.querySelector('#reserveSlotError').classList.add("d-block")
                     }
-                    if (reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.contains("d-block")) {
-                        reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.remove("d-block")
-                        reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.add("d-none")
-                    }
-                    reserveSlotModal.querySelector('#reserveSlotIndividualBlock').classList.remove("d-none")
-                    reserveSlotModal.querySelector('#reserveSlotIndividualBlock').classList.add("d-block")
-                    reserveSlotModal.querySelector('#reserveSlotGroupBlock').classList.remove("d-block")
-                    reserveSlotModal.querySelector('#reserveSlotGroupBlock').classList.add("d-none")
                 }
                 else {
-                    reserveSlotModal.querySelector('#reservations').replaceChildren()
-                    if (data.reservations && data.reservations.length > 0) {
-                        data.reservations.forEach(reservation => {
-                            const r = reserveSlotModal.querySelector('#reservations').appendChild(document.createElement('div'))
-                            r.innerText = reservation.canvas_group_name
-                        })
-                        if (data.res_now == (data.res_max - 1) && data.course_message_all_when_full) {
-                            if (reserveSlotModal.querySelector('#reserveSlotGroupConnectNotice').classList.contains("d-none")) {
-                                reserveSlotModal.querySelector('#reserveSlotGroupConnectNotice').classList.remove("d-none")
-                                reserveSlotModal.querySelector('#reserveSlotGroupConnectNotice').classList.add("d-block")
+                    reserveSlotModal.querySelector('#r_slot_id').value = data.id
+                    reserveSlotModal.querySelector('#r_type').value = data.type
+                    reserveSlotModal.querySelector('#r_message').value = ""
+                    reserveSlotModal.querySelector('#r_course_name').innerText = data.course_name
+                    reserveSlotModal.querySelector('#r_instructor_name').innerText = data.instructor_name
+                    reserveSlotModal.querySelector('#r_location_name').innerText = data.location_name
+                    reserveSlotModal.querySelector('#r_slot_time').innerText = data.time_human_readable_sv
+                    if (reserveSlotModal.querySelector('#reserveSlotError').classList.contains("d-block")) {
+                        reserveSlotModal.querySelector('#reserveSlotError').classList.remove("d-block")
+                        reserveSlotModal.querySelector('#reserveSlotError').classList.add("d-none")
+                    }    
+                    if (data.course_message_required == false) {
+                        reserveSlotModal.querySelector("#r_message").removeAttribute("required")
+                    }
+                    if (data.course_description !== '') {
+                        reserveSlotModal.querySelector('#r_course_description').innerText = data.course_description
+                        reserveSlotModal.querySelector('#r_course_description').classList.remove("d-none")
+                    }
+                    if (data.type === "individual") {
+                        if (reserveSlotModal.querySelector('#reserveSlotGroupConnectNotice').classList.contains("d-block")) {
+                            reserveSlotModal.querySelector('#reserveSlotGroupConnectNotice').classList.remove("d-block")
+                            reserveSlotModal.querySelector('#reserveSlotGroupConnectNotice').classList.add("d-none")
+                        }
+                        if (reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.contains("d-block")) {
+                            reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.remove("d-block")
+                            reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.add("d-none")
+                        }
+                        reserveSlotModal.querySelector('#reserveSlotIndividualBlock').classList.remove("d-none")
+                        reserveSlotModal.querySelector('#reserveSlotIndividualBlock').classList.add("d-block")
+                        reserveSlotModal.querySelector('#reserveSlotGroupBlock').classList.remove("d-block")
+                        reserveSlotModal.querySelector('#reserveSlotGroupBlock').classList.add("d-none")
+                    }
+                    else {
+                        reserveSlotModal.querySelector('#reservations').replaceChildren()
+                        if (data.reservations && data.reservations.length > 0) {
+                            data.reservations.forEach(reservation => {
+                                const r = reserveSlotModal.querySelector('#reservations').appendChild(document.createElement('div'))
+                                r.innerText = reservation.canvas_group_name
+                            })
+                            if (data.res_now == (data.res_max - 1) && data.course_message_all_when_full) {
+                                if (reserveSlotModal.querySelector('#reserveSlotGroupConnectNotice').classList.contains("d-none")) {
+                                    reserveSlotModal.querySelector('#reserveSlotGroupConnectNotice').classList.remove("d-none")
+                                    reserveSlotModal.querySelector('#reserveSlotGroupConnectNotice').classList.add("d-block")
+                                }
+                                if (reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.contains("d-block")) {
+                                    reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.remove("d-block")
+                                    reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.add("d-none")
+                                }
                             }
-                            if (reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.contains("d-block")) {
-                                reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.remove("d-block")
-                                reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.add("d-none")
+                            else {
+                                if (reserveSlotModal.querySelector('#reserveSlotGroupConnectNotice').classList.contains("d-block")) {
+                                    reserveSlotModal.querySelector('#reserveSlotGroupConnectNotice').classList.remove("d-block")
+                                    reserveSlotModal.querySelector('#reserveSlotGroupConnectNotice').classList.add("d-none")
+                                }
+                                if (reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.contains("d-none")) {
+                                    reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.remove("d-none")
+                                    reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.add("d-block")
+                                }
+                            }
+                            if (reserveSlotModal.querySelector('#reservationsContainer').classList.contains("d-none")) {
+                                reserveSlotModal.querySelector('#reservationsContainer').classList.remove("d-none")
+                                reserveSlotModal.querySelector('#reservationsContainer').classList.add("d-block")
                             }
                         }
                         else {
@@ -109,32 +138,22 @@ document.addEventListener("DOMContentLoaded", function(event) {
                                 reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.remove("d-none")
                                 reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.add("d-block")
                             }
-                        }
-                        if (reserveSlotModal.querySelector('#reservationsContainer').classList.contains("d-none")) {
-                            reserveSlotModal.querySelector('#reservationsContainer').classList.remove("d-none")
-                            reserveSlotModal.querySelector('#reservationsContainer').classList.add("d-block")
-                        }
-                    }
-                    else {
-                        if (reserveSlotModal.querySelector('#reserveSlotGroupConnectNotice').classList.contains("d-block")) {
-                            reserveSlotModal.querySelector('#reserveSlotGroupConnectNotice').classList.remove("d-block")
-                            reserveSlotModal.querySelector('#reserveSlotGroupConnectNotice').classList.add("d-none")
-                        }
-                        if (reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.contains("d-none")) {
-                            reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.remove("d-none")
-                            reserveSlotModal.querySelector('#reserveSlotGroupNotice').classList.add("d-block")
-                        }
-                        if (reserveSlotModal.querySelector('#reservationsContainer').classList.contains("d-block")) {
-                            reserveSlotModal.querySelector('#reservationsContainer').classList.remove("d-block")
-                            reserveSlotModal.querySelector('#reservationsContainer').classList.add("d-none")
+                            if (reserveSlotModal.querySelector('#reservationsContainer').classList.contains("d-block")) {
+                                reserveSlotModal.querySelector('#reservationsContainer').classList.remove("d-block")
+                                reserveSlotModal.querySelector('#reservationsContainer').classList.add("d-none")
+                            }
                         }
                     }
+                    submitButton.disabled = false
                 }
             })
-            if (reserveSlotModal.querySelector('#reserveSlotError').classList.contains("d-block")) {
-                reserveSlotModal.querySelector('#reserveSlotError').classList.remove("d-block")
-                reserveSlotModal.querySelector('#reserveSlotError').classList.add("d-none")
-            }
+            .catch((error) => {
+                reserveSlotModal.querySelector('#reserveSlotError').innerText = error
+                if (reserveSlotModal.querySelector('#reserveSlotError').classList.contains("d-none")) {
+                    reserveSlotModal.querySelector('#reserveSlotError').classList.remove("d-none")
+                    reserveSlotModal.querySelector('#reserveSlotError').classList.add("d-block")
+                }
+            })
         });
     }
     
