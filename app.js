@@ -400,7 +400,7 @@ app.get('/api/slot/:id', async (req, res, next) => {
 
         return res.send({
             success: false,
-            error: error
+            message: error.message
         });
     }
 });
