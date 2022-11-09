@@ -130,9 +130,14 @@ CREATE VIEW "reservations_view" AS
     s.time_end,
     c.is_group,
     c.is_individual,
+        CASE
+            WHEN c.is_group THEN 'group'::text
+            ELSE 'individual'::text
+        END AS type,
     c.max_groups,
     c.max_individuals,
     (SELECT count(canvas_user_id) FROM reservation WHERE slot_id=r.slot_id AND deleted_at IS NULL) AS res_now,
+    c.id AS course_id,
     c.name AS course_name,
     c.description AS course_description,
     c.cancellation_policy_hours AS cancellation_policy_hours,
@@ -141,10 +146,12 @@ CREATE VIEW "reservations_view" AS
             ELSE false 
         END AS is_cancelable,
     c.canvas_course_id,
+    l.id AS location_id,
     l.name AS location_name,
     l.description AS location_description,
     l.campus_maps_id AS location_cmap_id,
     l.external_url AS location_url,
+    i.id AS instructor_id,
     i.name AS instructor_name
    FROM reservation r,
     slot s,
