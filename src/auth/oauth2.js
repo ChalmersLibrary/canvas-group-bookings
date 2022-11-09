@@ -82,7 +82,8 @@ function setupAuthEndpoints(app, callbackUrl) {
 
         log.info("Callback finished, redirecting to root app.");
 
-        return res.location("/?from=callback");
+        res.location("/?from=callback");
+        return res.redirect("/?from=callback");
     });
 };
 
