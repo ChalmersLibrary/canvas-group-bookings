@@ -620,6 +620,80 @@ app.delete('/api/reservation/:id', async (req, res) => {
 
         await db.deleteReservation(req.session.user.id, req.session.user.groups_ids, req.params.id);
 
+        // Send confirmation messages with Canvas Conversation Robot to Inbox
+        log.info("CONVERSATION_ROBOT_SEND_MESSAGES=" + process.env.CONVERSATION_ROBOT_SEND_MESSAGES);
+        if (process.env.CONVERSATION_ROBOT_API_TOKEN && process.env.CONVERSATION_ROBOT_SEND_MESSAGES == "true") {
+            try {
+                const course = await db.getCourse(reservation.course_id);
+                const instructor = await db.getInstructor(reservation.instructor_id);
+
+                if (reservation.type == "group") {
+                    const subject = "Bekräftad avbokning: " + reservation.canvas_group_name + ", " + course.name;
+                    const subject_cc = "(Kopia) Bekräftad avbokning: " + reservation.canvas_group_name + ", " + course.name + " (" + req.session.user.name + ")";
+                    const recipient = "group_" + reservation.canvas_group_id;
+                    const template_type = "reservation_group_canceled";
+
+                    let body = utils.getTemplate(template_type);
+
+                    if (body === 'undefined') {
+                        body = course.message_cancelled_body;
+                    }
+
+                    if (body !== 'undefined' && body != '') {
+                        body = utils.replaceMessageMagics(body, course.name, "", course.cancellation_policy_hours, req.session.user.name, reservation.time_human_readable_sv, reservation.location_name, instructor.name, instructor.email, reservation.canvas_group_name);
+        
+                        let conversation_result_group = await canvasApi.createConversation(recipient, subject, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
+                        let log_id = await db.addCanvasConversationLog(reservation.slot_id, reservation.id, reservation.canvas_course_id, recipient, subject, body);
+
+                        log.info("Sent confirmation message to the group, id " + log_id.id);
+
+                        if (course.message_cc_instructor) {
+                            let conversation_result_cc = await canvasApi.createConversation(instructor.canvas_user_id, subject_cc, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
+                            let log_id_cc = await db.addCanvasConversationLog(reservation.slot_id, reservation.id, reservation.canvas_course_id, instructor.canvas_user_id, subject_cc, body);
+
+                            log.info("Sent a copy of confirmation message to the instructor, id " + log_id_cc.id);
+                        }
+                    }
+                    else {
+                        log.error("Could not find message body neither in general template file '" + template_type + "' or in db for courseId " + reservation.course_id);
+                    }
+                }
+                else {
+                    const subject = "Bekräftad avbokning: " + course.name;
+                    const subject_cc = "(Kopia) Bekräftad avbokning: " + course.name + ", " + req.session.user.name;
+                    const template_type = "reservation_individual_canceled";
+
+                    let body = utils.getTemplate(template_type);
+
+                    if (body === 'undefined') {
+                        body = course.message_confirmation_body;
+                    }
+
+                    if (body !== 'undefined' && body != '') {
+                        body = utils.replaceMessageMagics(body, course.name, "", course.cancellation_policy_hours, req.session.user.name, reservation.time_human_readable_sv, reservation.location_name, instructor.name, instructor.email);
+
+                        let conversation_result_user = await canvasApi.createConversation(req.session.user.id, subject, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
+                        let log_id = await db.addCanvasConversationLog(reservation.slot_id, reservation.id, reservation.canvas_course_id, req.session.user.id, subject, body);
+                        
+                        log.info("Sent confirmation message to the user, id " + log_id.id);
+
+                        if (course.message_cc_instructor) {
+                            let conversation_result_cc = await canvasApi.createConversation(instructor.canvas_user_id, subject_cc, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
+                            let log_id_cc = await db.addCanvasConversationLog(reservation.slot_id, reservation.id, reservation.canvas_course_id, instructor.canvas_user_id, subject_cc, body);
+                            
+                            log.info("Sent a copy of confirmation message to the instructor, id " + log_id_cc.id);
+                        }
+                    }
+                    else {
+                        log.error("Could not find message body neither in general template file '" + template_type + "' or in db for courseId " + reservation.course_id);
+                    }
+                }
+            }
+            catch (error) {
+                log.error("When sending confirmation message: " + error);
+            }
+        }
+
         return res.send({
             success: true,
             message: 'Reservation was deleted.',
