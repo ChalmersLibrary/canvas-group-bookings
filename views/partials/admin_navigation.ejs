@@ -1,24 +1,44 @@
-<div class="card">
-    <div class="card-header">
-        Navigera
-    </div>
-    <ul class="list-group list-group-flush">
-        <li class="list-group-item">
-            <% if (current_page == 'canvas') { %>
-                <strong>Canvaskoppling</strong>
-            <% } else { %>
-                <a href="/admin/canvas">Canvaskoppling</a>
-            <% } %>
-        </li>
-        <li class="list-group-item">
-            <% if (current_page == 'course') { %>
-                <strong>Tillfällen</strong>
-            <% } else { %>
-                <a href="/admin/course">Tillfällen</a>
-            <% } %>
-        </li>
-        <li class="list-group-item"><a href="/admin/segment">Segment</a></li>
-        <li class="list-group-item"><a href="/admin/instructor">Handledare</a></li>
-        <li class="list-group-item"><a href="/admin/location">Lokaler</a></li>
-    </ul>
-</div>
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <% if (current_page == '/') { %>
+            <a class="nav-link active" href="/admin">Administrera</a>
+        <% } else { %>
+            <a class="nav-link" href="/admin">Administrera</a>
+        <% } %>
+    </li>
+    <li class="nav-item">
+        <% if (current_page == 'canvas') { %>
+            <a class="nav-link active" href="/admin/canvas">Canvas</a>
+        <% } else { %>
+            <a class="nav-link" href="/admin/canvas">Canvas</a>
+        <% } %>
+    </li>
+    <li class="nav-item">
+        <% if (current_page == 'course') { %>
+            <a class="nav-link active" href="/admin/course">Tillfällen</a>
+        <% } else { %>
+            <a class="nav-link" href="/admin/course">Tillfällen</a>
+        <% } %>
+    </li>
+    <li class="nav-item">
+        <% if (current_page == 'segment') { %>
+            <a class="nav-link active" href="/admin/segment">Segment</a>
+        <% } else { %>
+            <a class="nav-link" href="/admin/segment">Segment</a>
+        <% } %>
+    </li>
+    <li class="nav-item">
+        <% if (current_page == 'instructor') { %>
+            <a class="nav-link active" href="/admin/instructor">Handledare</a>
+        <% } else { %>
+            <a class="nav-link" href="/admin/instructor">Handledare</a>
+        <% } %>
+    </li>
+    <li class="nav-item">
+        <% if (current_page == 'location') { %>
+            <a class="nav-link active" href="/admin/location">Lokaler</a>
+        <% } else { %>
+            <a class="nav-link" href="/admin/location">Lokaler</a>
+        <% } %>
+    </li>
+</ul>

@@ -12,11 +12,12 @@
 <main>
     <div class="container-fluid py-2">
         <h1>Administration</h1>
+        <%- include('../../partials/admin_navigation', { current_page: 'course' }) %>
     </div>
 
     <div class="container-fluid py-2">
         <div class="row">
-            <div class="col-9">
+            <div class="col-md-9">
                 <div class="card">
                     <div class="card-header">
                         Tillfällen kopplade till denna Canvaskurs
@@ -55,7 +56,6 @@
                             </tbody>
                         </table>
                         <p class="text-muted col-md-8">
-                            Tillfällen är separata delar som du sedan kan skapa bokningsbara tider på. Tillfällen styr saker som grupp/individ, max antal deltagare, texter som skickas i meddelanden mm.
                         </p>
                         <div class="button-bar">
                             <button class="btn btn-md btn-secondary">Skapa nytt tillfälle</button>
@@ -63,8 +63,20 @@
                     </div>
                 </div>
             </div>
-            <div class="col-3">
-                <%- include('../../partials/admin_navigation', { current_page: 'course' }); %>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-header">
+                        Hjälp
+                    </div>
+                    <div class="card-body text-muted">
+                        <p>
+                            Tillfällen är separata delar som du sedan kan skapa bokningsbara tider på.
+                        </p>
+                        <p>
+                            Tillfällen styr saker som grupp/individ, max antal deltagare, texter som skickas i meddelanden mm.
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

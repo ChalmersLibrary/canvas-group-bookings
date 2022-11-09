@@ -12,11 +12,12 @@
 <main>
     <div class="container-fluid py-2">
         <h1>Administration</h1>
+        <%- include('../../partials/admin_navigation', { current_page: 'canvas' }) %>
     </div>
 
     <div class="container-fluid py-2">
         <div class="row">
-            <div class="col-9">
+            <div class="col-md-9">
                 <div class="card">
                     <div class="card-header">
                         Canvaskoppling
@@ -37,10 +38,27 @@
                             </p>
                         </form>
                     </div>
-                </div>
+                </div>        
             </div>
-            <div class="col-3">
-                <%- include('../../partials/admin_navigation', { current_page: 'canvas' }); %>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-header">
+                        Hjälp
+                    </div>
+                    <div class="card-body text-muted">
+                        <p>
+                            Grundkopplingar till den kurs i Canvas som verktyget används för.
+                        </p>
+                        <p>
+                            Om det finns många grupper i kursen och en student kan tänkas vara kopplad
+                            till flera olika, men bara en speciell gruppuppsättning ska användas vid bokningar, kan du välja att filtrera vilka gruppuppsättningar som
+                            är giltiga.
+                        </p>
+                        <p>
+                            Om inget är markerat så är alla giltiga.
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
