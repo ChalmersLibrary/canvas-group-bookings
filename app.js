@@ -123,6 +123,7 @@ app.use(['/', '/test', '/reservations', '/admin*', '/api/*'], async function (re
         }
         else {
             if (req.query.from == "callback") {
+                log.error("Coming from callback, but with no session. Third party cookies problem.");
                 next(new Error("Can't create a session for you. Third party cookies must be enabled in your web browser."));
             }
             else {
