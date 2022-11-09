@@ -189,7 +189,7 @@ async function getReservationsForUser(canvas_course_id, user_id, groups) {
     const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     const timeOptions = { hour: '2-digit', minute: '2-digit' };
     
-    await query("SELECT * FROM reservations_view WHERE canvas_course_id = $1 AND (canvas_user_id = $2 OR canvas_group_id = ANY ($3)) ORDER BY time_start ASC", [ 
+    await query("SELECT * FROM reservations_view WHERE canvas_course_id = $1 AND (canvas_user_id = $2 OR canvas_group_id = ANY ($3)) ORDER BY is_passed, time_start ASC", [ 
         canvas_course_id,
         user_id,
         groups
