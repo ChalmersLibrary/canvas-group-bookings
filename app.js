@@ -208,49 +208,55 @@ app.get('/', async (req, res, next) => {
     /* Calculate if this slot is bookable, based on existing reservations */
     /* TODO: make it more general in utilities or something! */
     for (const slot of availableSlots) {
-        slot.reservable_for_this_user = true;
-
-        if (slot.res_now == slot.res_max) {
+        if (req.session.user.isAdministrator) {
             slot.reservable_for_this_user = false;
-            slot.reservable_notice = "Tiden är fullbokad.";
-        }
-
-        if (slot.type == "group") {
-            if (slot.res_group_ids) {
-                for (const id of slot.res_group_ids) {
-                    for (const group of req.session.user.groups) {
-                        if (group.id === id) {
-                            slot.reservable_for_this_user = false;
-                            slot.reservable_notice = "Din grupp är bokad på denna tid.";
-                        }
-                    }
-                }
-            }
-            if (slot.res_course_group_ids && slot.reservable_for_this_user) {
-                for (const id of slot.res_course_group_ids) {
-                    for (const group of req.session.user.groups) {
-                        if (group.id === id) {
-                            slot.reservable_for_this_user = false;
-                            slot.reservable_notice = "Din grupp är bokad på en annan tid för " + slot.course_name + ".";
-                        }
-                    }
-                }
-            }
+            slot.reservable_notice = "Administratör kan inte boka tider.";
         }
         else {
-            if (slot.res_user_ids) {
-                for (const id of slot.res_user_ids) {
-                    if (req.session.user.id === id) {
-                        slot.reservable_for_this_user = false;
-                        slot.reservable_notice = "Du är bokad på denna tid.";
+            slot.reservable_for_this_user = true;
+
+            if (slot.res_now == slot.res_max) {
+                slot.reservable_for_this_user = false;
+                slot.reservable_notice = "Tiden är fullbokad.";
+            }
+    
+            if (slot.type == "group") {
+                if (slot.res_group_ids) {
+                    for (const id of slot.res_group_ids) {
+                        for (const group of req.session.user.groups) {
+                            if (group.id === id) {
+                                slot.reservable_for_this_user = false;
+                                slot.reservable_notice = "Din grupp är bokad på denna tid.";
+                            }
+                        }
+                    }
+                }
+                if (slot.res_course_group_ids && slot.reservable_for_this_user) {
+                    for (const id of slot.res_course_group_ids) {
+                        for (const group of req.session.user.groups) {
+                            if (group.id === id) {
+                                slot.reservable_for_this_user = false;
+                                slot.reservable_notice = "Din grupp är bokad på en annan tid för " + slot.course_name + ".";
+                            }
+                        }
                     }
                 }
             }
-            if (slot.res_course_user_ids && slot.reservable_for_this_user) {
-                for (const id of slot.res_course_user_ids) {
-                    if (req.session.user.id === id) {
-                        slot.reservable_for_this_user = false;
-                        slot.reservable_notice = "Du är bokad på en annan tid för " + slot.course_name + ".";
+            else {
+                if (slot.res_user_ids) {
+                    for (const id of slot.res_user_ids) {
+                        if (req.session.user.id === id) {
+                            slot.reservable_for_this_user = false;
+                            slot.reservable_notice = "Du är bokad på denna tid.";
+                        }
+                    }
+                }
+                if (slot.res_course_user_ids && slot.reservable_for_this_user) {
+                    for (const id of slot.res_course_user_ids) {
+                        if (req.session.user.id === id) {
+                            slot.reservable_for_this_user = false;
+                            slot.reservable_notice = "Du är bokad på en annan tid för " + slot.course_name + ".";
+                        }
                     }
                 }
             }
