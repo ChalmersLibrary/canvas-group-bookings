@@ -25,18 +25,25 @@
                         <table class="table table-md table-hover">
                             <thead>
                                 <tr>
-                                    <th>Namn</th>
+                                    <th>Namn och typ</th>
                                     <th class="text-right">Tider</th>
-                                    <th class="text-right">Bokningar</th>
+                                    <th class="text-right">Platser</th>
+                                    <th class="text-right">Bokade</th>
+                                    <th class="text-right">Avbokade</th>
                                     <th></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <% courses.forEach(course => { %>
                                     <tr>
-                                        <td><%= course.name %></td>
+                                        <td>
+                                            <strong><%= course.name %></strong><br>
+                                            <%= course.is_group ? "Gruppbokning" : "Individuell bokning" %>
+                                        </td>
                                         <td class="text-right"><%= course.slots %></td>
+                                        <td class="text-right"><%= course.spots %></td>
                                         <td class="text-right"><%= course.reservations %></td>
+                                        <td class="text-right"><%= course.deleted %></td>
                                         <td>
                                             <div class="float-end">
                                                 <button type="button" title="Redigera" data-bs-toggle="modal" data-bs-target="#edit___" data-bs-slot-id="<%= course.id %>" class="btn btn-secondary btn-md"><i class="bi-pencil-fill"></i></button>
