@@ -112,7 +112,7 @@ async function checkAccessToken(req) {
         log.info("UserId found in user session object.");
     }
     else {
-        log.error("No user object in session or in LTI, redirecting to OAuth flow...");
+        log.error("No user object in session or in LTI, seems like we have no session!");
         tokenResult.success = false;
         tokenResult.message = "Can't find any user id in session.";
     }

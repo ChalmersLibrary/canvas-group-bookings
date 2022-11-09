@@ -122,8 +122,13 @@ app.use(['/', '/test', '/reservations', '/admin*', '/api/*'], async function (re
             }
         }
         else {
-            log.error("Access token is not valid or not found, redirecting to auth flow...");
-            return res.redirect("/auth");
+            if (req.query.from == "callback") {
+                next(new Error("Can't create a session for you. Third party cookies must be enabled in your web browser."));
+            }
+            else {
+                log.error("Access token is not valid or not found, redirecting to auth flow...");
+                return res.redirect("/auth");    
+            }
         }
     })
     .catch(error => {
