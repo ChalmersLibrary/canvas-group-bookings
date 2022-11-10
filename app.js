@@ -121,6 +121,7 @@ app.use(['/', '/test', '/reservations', '/admin*', '/api/*'], async function (re
                 log.error("No LTI information found in session. This application must be started with LTI request.");
 
                 return res.render("pages/error", {
+                    version: pkg.version,
                     error: "Kan inte läsa LTI-information",
                     message: "Bokningsverktyget måste startas som en LTI-applikation inifrån Canvas för att få information om kontexten."
                 });
@@ -131,6 +132,7 @@ app.use(['/', '/test', '/reservations', '/admin*', '/api/*'], async function (re
                 log.error("Coming from callback, but with no session. Third party cookies problem.");
                 
                 return res.render("pages/error", {
+                    version: pkg.version,
                     error: "Kan inte skapa en session",
                     message: "Du måste tillåta cookies från tredje part i din webbläsare. Bokningsverktyget använder cookies för att kunna hantera din identitiet från Canvas."
                 });
