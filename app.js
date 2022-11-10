@@ -120,23 +120,24 @@ app.use(['/', '/test', '/reservations', '/admin*', '/api/*'], async function (re
             else {
                 log.error("No LTI information found in session. This application must be started with LTI request.");
 
-                return res.send({
-                    status: "error",
-                    message: "No LTI information found in session. This application must be started with LTI request."
+                return res.render("pages/error", {
+                    error: "Kan inte läsa LTI-information",
+                    message: "Bokningsverktyget måste startas som en LTI-applikation inifrån Canvas för att få information om kontexten."
                 });
             }
         }
         else {
             if (req.query.from == "callback") {
                 log.error("Coming from callback, but with no session. Third party cookies problem.");
-
-                return res.send({
-                    status: "error",
-                    message: "Can't create a session for you. Third party cookies must be enabled."
+                
+                return res.render("pages/error", {
+                    error: "Kan inte skapa en session",
+                    message: "Du måste tillåta cookies från tredje part i din webbläsare. Bokningsverktyget använder cookies för att kunna hantera din identitiet från Canvas."
                 });
             }
             else {
                 log.error("Access token is not valid or not found, redirecting to auth flow...");
+
                 return res.redirect("/auth");
             }
         }
@@ -154,8 +155,14 @@ app.use(['/', '/test', '/reservations', '/admin*', '/api/*'], async function (re
 });
 
 // Test
-app.get('/test', async (req, res) => {
+app.get('/test', async (req, res, next) => {
     await log.info("Testing endpoint requested.");
+
+    try {
+        throw new Error("This is an error!");
+    } catch (error) {
+        next(error);
+    }
 
     // Two groups (works for user in same course, in one group but not in second group)
     // let conversation_result = await canvasApi.createConversation(new Array("group_128953", "group_128954"), "Test conversation from nodejs", "This is a test conversation for two groups, created programmatically from Canvas API.", req.session.user.id);
@@ -164,15 +171,15 @@ app.get('/test', async (req, res) => {
     // let conversation_result = await canvasApi.createConversation(new Array("group_128953"), "Test conversation from nodejs", "This is a test conversation for two groups, created programmatically from Canvas API.", req.session.user.id);
     
     // One or two or three user
-    let conversation_result = await canvasApi.createConversation(
+    /* let conversation_result = await canvasApi.createConversation(
         [ req.session.user.id, 973 ],
         "Another test conversation", 
         "This is a test conversation.\nIt's created programmatically in Canvas API using nodejs.\n\nAll the best,\nChalmers Canvas Conversation Robot", 
-        { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
+        { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN }); */
 
     // let conversation_result = {};
 
-    let result = await db.query("SELECT version()")
+    /* let result = await db.query("SELECT version()")
     .then((result) => {
             return res.send({
                 status: 'up',
@@ -191,7 +198,7 @@ app.get('/test', async (req, res) => {
             });
     });
 
-    await log.info("Db query done.");
+    await log.info("Db query done."); */
 });
 
 // Main page with available slots for user to reserve */
