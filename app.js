@@ -158,11 +158,11 @@ app.use(['/', '/test', '/reservations', '/admin*', '/api/*'], async function (re
 app.get('/test', async (req, res, next) => {
     await log.info("Testing endpoint requested.");
 
-    try {
-        throw new Error("This is an error!");
-    } catch (error) {
-        next(error);
-    }
+    return res.render("pages/error", {
+        version: pkg.version,
+        error: "Kan inte skapa en session",
+        message: "Du måste tillåta cookies från tredje part i din webbläsare. Bokningsverktyget använder cookies för att kunna hantera din identitiet från Canvas."
+    });
 
     // Two groups (works for user in same course, in one group but not in second group)
     // let conversation_result = await canvasApi.createConversation(new Array("group_128953", "group_128954"), "Test conversation from nodejs", "This is a test conversation for two groups, created programmatically from Canvas API.", req.session.user.id);

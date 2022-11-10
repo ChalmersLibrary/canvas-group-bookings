@@ -1,17 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <%- include('../partials/head'); %>
+  <%- include('../partials/head_clean'); %>
 </head>
-<body class="container float-start">
+<body class="container-fluid float-start">
 
 <header>
-  <%- include('../partials/header', { user: session.user }); %>
+  <%- include('../partials/header_clean'); %>
 </header>
 
 <main>
-  <h1 class="display-5">Ett fel har uppstått</h1>
-  <pre><%= error %></pre>
+  <h2>Ett fel har uppstått: <%= error %></h2>
   <p><%= message %></p>
 </main>
 
