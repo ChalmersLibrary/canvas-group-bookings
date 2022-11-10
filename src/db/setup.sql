@@ -51,7 +51,6 @@ CREATE TABLE IF NOT EXISTS "instructor"
     "name" varchar,
     "email" varchar,
     "canvas_user_id" integer,
-    "canvas_course_id" integer,
     "created_at" timestamp NOT NULL DEFAULT now(),
     "created_by" integer,
     "updated_at" timestamp,
@@ -64,7 +63,6 @@ CREATE TABLE IF NOT EXISTS "instructor"
 CREATE TABLE IF NOT EXISTS "location" 
 (
     "id" serial,
-    "canvas_course_id" integer,
     "name" varchar,
     "description" text,
     "external_url" varchar,
@@ -179,6 +177,7 @@ CREATE VIEW "slots_view" AS SELECT s.id,
     s.location_id,
     l.name AS location_name,
     l.description AS location_description,
+    l.external_url AS location_url,
     l.campus_maps_id AS location_cmap_id,
     s.time_start,
     s.time_end,

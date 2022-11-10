@@ -29,7 +29,7 @@ function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-function replaceMessageMagics(body, course_name, reservation_message, cancellation_policy_hours, user_name, time_start, location_name, instructor_name, instructor_email, group_name, group_names) {
+function replaceMessageMagics(body, course_name, reservation_message, cancellation_policy_hours, user_name, time_start, location_name, location_url, instructor_name, instructor_email, group_name, group_names) {
     body = body.replace("{{reservation_course_name}}", course_name);
     body = body.replace("{{reservation_message}}", reservation_message);
     body = body.replace("{{reservation_group_name}}", group_name);
@@ -37,7 +37,7 @@ function replaceMessageMagics(body, course_name, reservation_message, cancellati
     body = body.replace("{{cancellation_policy_hours}}", cancellation_policy_hours);
     body = body.replace("{{canvas_user_name}}", user_name);
     body = body.replace("{{reservation_slot_time}}", time_start);
-    body = body.replace("{{location_name}}", location_name);
+    body = body.replace("{{location_name}}", location_name + (location_url ? ", " + location_url : ""));
     body = body.replace("{{instructor_name}}", instructor_name);
     body = body.replace("{{instructor_email}}", instructor_email);
     body = body.replace("{{CONVERSATION_ROBOT_NAME}}", process.env.CONVERSATION_ROBOT_NAME ? process.env.CONVERSATION_ROBOT_NAME : "Canvas Conversation Robot");

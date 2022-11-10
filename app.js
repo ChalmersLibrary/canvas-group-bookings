@@ -521,7 +521,7 @@ app.post('/api/reservation', async (req, res, next) => {
                     }
 
                     if (body !== 'undefined' && body != '') {
-                        body = utils.replaceMessageMagics(body, course.name, message, course.cancellation_policy_hours, req.session.user.name, slot.time_human_readable_sv, slot.location_name, instructor.name, instructor.email, group_name);
+                        body = utils.replaceMessageMagics(body, course.name, message, course.cancellation_policy_hours, req.session.user.name, slot.time_human_readable_sv, slot.location_name, slot.location_url, instructor.name, instructor.email, group_name);
         
                         let conversation_result_group = await canvasApi.createConversation(recipient, subject, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
                         let log_id = await db.addCanvasConversationLog(slot_id, reservation.id, slot.canvas_course_id, recipient, subject, body);
@@ -548,7 +548,7 @@ app.post('/api/reservation', async (req, res, next) => {
                             }
 
                             if (body_all !== 'undefined' && body_all != '') {
-                                body_all = utils.replaceMessageMagics(body_all, course.name, message, course.cancellation_policy_hours, req.session.user.name, slot_now.time_human_readable_sv, slot_now.location_name, instructor.name, instructor.email, group_name, slot_now.res_group_names.join(", "));
+                                body_all = utils.replaceMessageMagics(body_all, course.name, message, course.cancellation_policy_hours, req.session.user.name, slot_now.time_human_readable_sv, slot_now.location_name, slot_now.location_url, instructor.name, instructor.email, group_name, slot_now.res_group_names.join(", "));
 
                                 for (const id of slot_now.res_group_ids) {
                                     recipients.push("group_" + id);
@@ -582,7 +582,7 @@ app.post('/api/reservation', async (req, res, next) => {
                     }
 
                     if (body !== 'undefined' && body != '') {
-                        body = utils.replaceMessageMagics(body, course.name, message, course.cancellation_policy_hours, req.session.user.name, slot.time_human_readable_sv, slot.location_name, instructor.name, instructor.email);
+                        body = utils.replaceMessageMagics(body, course.name, message, course.cancellation_policy_hours, req.session.user.name, slot.time_human_readable_sv, slot.location_name, slot.location_url, instructor.name, instructor.email);
 
                         let conversation_result_user = await canvasApi.createConversation(req.session.user.id, subject, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
                         let log_id = await db.addCanvasConversationLog(slot_id, reservation.id, slot.canvas_course_id, req.session.user.id, subject, body);
@@ -670,7 +670,7 @@ app.delete('/api/reservation/:id', async (req, res) => {
                     }
 
                     if (body !== 'undefined' && body != '') {
-                        body = utils.replaceMessageMagics(body, course.name, "", course.cancellation_policy_hours, req.session.user.name, reservation.time_human_readable_sv, reservation.location_name, instructor.name, instructor.email, reservation.canvas_group_name);
+                        body = utils.replaceMessageMagics(body, course.name, "", course.cancellation_policy_hours, req.session.user.name, reservation.time_human_readable_sv, reservation.location_name, "", instructor.name, instructor.email, reservation.canvas_group_name);
         
                         let conversation_result_group = await canvasApi.createConversation(recipient, subject, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
                         let log_id = await db.addCanvasConversationLog(reservation.slot_id, reservation.id, reservation.canvas_course_id, recipient, subject, body);
@@ -700,7 +700,7 @@ app.delete('/api/reservation/:id', async (req, res) => {
                     }
 
                     if (body !== 'undefined' && body != '') {
-                        body = utils.replaceMessageMagics(body, course.name, "", course.cancellation_policy_hours, req.session.user.name, reservation.time_human_readable_sv, reservation.location_name, instructor.name, instructor.email);
+                        body = utils.replaceMessageMagics(body, course.name, "", course.cancellation_policy_hours, req.session.user.name, reservation.time_human_readable_sv, reservation.location_name, "", instructor.name, instructor.email);
 
                         let conversation_result_user = await canvasApi.createConversation(req.session.user.id, subject, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
                         let log_id = await db.addCanvasConversationLog(reservation.slot_id, reservation.id, reservation.canvas_course_id, req.session.user.id, subject, body);
