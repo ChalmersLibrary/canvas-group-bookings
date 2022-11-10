@@ -4,6 +4,7 @@ Grupp: {{reservation_group_name}}
 Tillfälle: {{reservation_course_name}}
 Tid: {{reservation_slot_time}}
 Plats: {{location_name}}
+Handledare: {{instructor_name}}
 Meddelande: {{reservation_message}}
 
 Om ni behöver avboka kan vem som helst i gruppen göra det i Bokningsverktyget under länken "Dina bokningar". Notera att ni måste avboka {{cancellation_policy_hours}}h innan starttid.
