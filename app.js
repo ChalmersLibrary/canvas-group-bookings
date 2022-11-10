@@ -118,13 +118,22 @@ app.use(['/', '/test', '/reservations', '/admin*', '/api/*'], async function (re
                 next();
             }
             else {
-                next(new Error("No LTI information found in session. This application must be started with LTI request."));
+                log.error("No LTI information found in session. This application must be started with LTI request.");
+
+                return res.send({
+                    status: "error",
+                    message: "No LTI information found in session. This application must be started with LTI request."
+                });
             }
         }
         else {
             if (req.query.from == "callback") {
                 log.error("Coming from callback, but with no session. Third party cookies problem.");
-                return res.redirect("/error");
+
+                return res.send({
+                    status: "error",
+                    message: "Can't create a session for you. Third party cookies must be enabled."
+                });
             }
             else {
                 log.error("Access token is not valid or not found, redirecting to auth flow...");
