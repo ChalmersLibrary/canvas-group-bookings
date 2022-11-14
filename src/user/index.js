@@ -40,12 +40,17 @@ async function createSessionUserdataFromToken(req, token) {
 // Add flags in the session user object
 async function addUserFlagsForRoles(req) {
     if(req.session.user && req.session.lti) {
-        if (req.session.lti.roles) {
+        if (req.session.lti.ext_roles) {
             req.session.user.isAdministrator = false;
-            req.session.lti.roles.forEach((role) => {
-                log.debug("LTI role: " + role);
-                if (role === "Instructor" || role === "urn:lti:instrole:ims/lis/Administrator") {
+            req.session.user.isInstructor = false;
+
+            req.session.lti.ext_roles.split(",").forEach((role) => {
+                log.info(role);
+                if (role === "urn:lti:instrole:ims/lis/Administrator" || role === "urn:lti:role:ims/lis/Administrator") {
                     req.session.user.isAdministrator = true;
+                }
+                if (role === "urn:lti:instrole:ims/lis/Instructor" || role === "urn:lti:role:ims/lis/Instructor") {
+                    req.session.user.isInstructor = true;
                 }
             });
         }

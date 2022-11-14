@@ -9,15 +9,17 @@
         <li class="nav-item">
           <a class="nav-link" href="/">Tillgängliga tider</a>
         </li>
-        <% if (!user.isAdministrator) { %>
+        <% if (!user.isAdministrator && !user.isInstructor) { %>
           <li class="nav-item">
             <a class="nav-link" href="/reservations">Mina bokningar <span id="statsReservationsCount" class="badge badge-pill badge-success"></span></a>
           </li>
         <% } %>
-        <% if (user.isAdministrator) { %>
+        <% if (user.isInstructor) { %>
           <li class="nav-item">
             <a class="nav-link" href="/instructor/upcoming">Mina tillfällen <span id="statsInstructorSlotCount" class="badge badge-pill badge-success"></span></a>
           </li>
+        <% } %>
+        <% if (user.isAdministrator) { %>
           <li class="nav-item">
             <a class="nav-link" href="/admin">Administration</a>
           </li>
@@ -25,13 +27,15 @@
       </ul>
       <span class="navbar-text">
         <%= user.name %>
-        <% if (!user.groups) { %>
-          <strong><small>(ingen grupp)</small></strong>
+        <% if (user.isAdministrator) { %>
+          <strong>(administratör)</strong>
+        <% } else if (user.isInstructor) { %>
+          <strong>(lärare)</strong>
         <% } else { %>
-          <% if (user.isAdministrator) { %>
-            <strong><small>(administratör)</small></strong>
+          <% if (user.groups_human_readable && user.groups_human_readable.length) { %>
+            <strong>(<%= user.groups_human_readable.join(", ") %>)</strong>  
           <% } else { %>
-            <strong><small>(<%= user.groups_human_readable.join(", ") %>)</small></strong>  
+            <strong>(ingen grupp)</strong>
           <% } %>
         <% } %>
       </span>

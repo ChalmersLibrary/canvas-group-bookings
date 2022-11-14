@@ -364,26 +364,31 @@ app.get('/reservations', async (req, res, next) => {
  * Show the instructor a list of upcoming events, with reservation details
  */
 app.get('/instructor/upcoming', async (req, res, next) => {
-    const slots = await db.getAllSlotsForInstructor(res.locals.courseId, req.session.user.id, new Date().toLocaleDateString('sv-SE'));
+    if (req.session.user.isInstructor) {
+        const slots = await db.getAllSlotsForInstructor(res.locals.courseId, req.session.user.id, new Date().toLocaleDateString('sv-SE'));
 
-    for (const slot of slots) {
-        slot.reservations = await db.getExtendedSlotReservations(slot.id);
-        slot.res_percent = Math.round((slot.res_now / slot.res_max) * 100);
+        for (const slot of slots) {
+            slot.reservations = await db.getExtendedSlotReservations(slot.id);
+            slot.res_percent = Math.round((slot.res_now / slot.res_max) * 100);
+        }
+    
+        /* return res.send({
+            status: 'up',
+            version: pkg.version,
+            session: req.session,
+            slots: slots
+        }); */
+    
+        return res.render('pages/instructor/upcoming_slots', {
+            status: 'up',
+            version: pkg.version,
+            session: req.session,
+            slots: slots
+        });    
     }
-
-    /* return res.send({
-        status: 'up',
-        version: pkg.version,
-        session: req.session,
-        slots: slots
-    }); */
-
-    return res.render('pages/instructor/upcoming_slots', {
-        status: 'up',
-        version: pkg.version,
-        session: req.session,
-        slots: slots
-    });
+    else {
+        next(new Error("You must have instructor privileges to access this page."));    
+    }
 });
 
 /**
@@ -792,13 +797,13 @@ app.get('/api/statistics', async (req, res, next) => {
     }
 });
 
-/* ==================== */
-/* API Endpoints, admin */
-/* ==================== */
+/* ========================= */
+/* API Endpoints, instructor */
+/* ========================= */
 
 /* Get one slot */
 app.get('/api/admin/slot/:id', async (req, res) => {
-    if (req.session.user.isAdministrator) {
+    if (req.session.user.isInstructor) {
         try {
             const slot = await db.getSlot(req.params.id)
             const reservations = await db.getSlotReservations(req.params.id);
@@ -822,13 +827,13 @@ app.get('/api/admin/slot/:id', async (req, res) => {
         }
     }
     else {
-        next(new Error("You must have administrator privileges to access this page."));
+        next(new Error("You must have instructor privileges to access this page."));
     }
 });
 
 /* Update a given timeslot */
 app.put('/api/admin/slot/:id', async (req, res) => {
-    if (req.session.user.isAdministrator) {
+    if (req.session.user.isInstructor) {
         const { course_id, instructor_id, location_id, time_start, time_end } = req.body;
 
         try {
@@ -849,13 +854,13 @@ app.put('/api/admin/slot/:id', async (req, res) => {
         }
     }
     else {
-        next(new Error("You must have administrator privileges to access this page."));
+        next(new Error("You must have instructor privileges to access this page."));
     }
 });
 
 /* Delete a given timeslot */
 app.delete('/api/admin/slot/:id', async (req, res) => { 
-    if (req.session.user.isAdministrator) {
+    if (req.session.user.isInstructor) {
         try {
             await db.deleteSlot(req.params.id);
 
@@ -874,13 +879,13 @@ app.delete('/api/admin/slot/:id', async (req, res) => {
         }
     }
     else {
-        next(new Error("You must have administrator privileges to access this page."));
+        next(new Error("You must have instructor privileges to access this page."));
     }
 });
 
 /* Create a new (series of) timeslot(s) */
 app.post('/api/admin/slot', async (req, res) => {
-    if (req.session.user.isAdministrator) {
+    if (req.session.user.isInstructor) {
         const { course_id, instructor_id, location_id } = req.body;
 
         let slots = [];
@@ -920,7 +925,7 @@ app.post('/api/admin/slot', async (req, res) => {
         }
     }
     else {
-        next(new Error("You must have administrator privileges to access this page."));
+        next(new Error("You must have instructor privileges to access this page."));
     }
 });
 
