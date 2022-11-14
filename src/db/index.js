@@ -183,6 +183,47 @@ async function getSimpleSlotReservations(id) {
     return data;
 }
 
+/* Get some more information on reservations for a slot (instructor) */
+async function getExtendedSlotReservations(id) {
+    let data;
+
+    await query("SELECT canvas_group_id, canvas_group_name, canvas_user_id, canvas_user_name, type, max_groups, max_individuals, res_now FROM reservations_view WHERE slot_id = $1", [ id ]).then((result) => {
+        data = result.rows;
+    }).catch((error) => {
+        log.error(error);
+    });
+    
+    return data;
+}
+
+async function getAllSlotsForInstructor(canvas_course_id, instructor_id, date) {
+    let data;
+    let returnedData = [];
+    const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const timeOptions = { hour: '2-digit', minute: '2-digit' };
+
+    await query("SELECT s.* FROM slots_view s, instructor i WHERE s.canvas_course_id = $1 AND s.time_start >= $3 AND s.instructor_id = i.id AND i.canvas_user_id=$2 ORDER BY s.time_start ASC", [
+        canvas_course_id,
+        instructor_id,
+        date
+    ]).then((result) => {
+        data = result.rows;
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    });
+    
+    /* TODO: think about if these additions/conversions should be done outside, and this should be just clean db code? */
+    if (data !== undefined && data.length) {
+        data.forEach(slot => {
+            slot.time_human_readable_sv = utils.capitalizeFirstLetter(new Date(slot.time_start).toLocaleDateString('sv-SE', dateOptions) + " kl " + new Date(slot.time_start).toLocaleTimeString('sv-SE', timeOptions) + "–" + new Date(slot.time_end).toLocaleTimeString('sv-SE', timeOptions));
+            returnedData.push(slot);
+        });
+    }
+
+    return returnedData;
+}
+
 async function getReservationsForUser(canvas_course_id, user_id, groups) {
     let data;
     let returnedData = [];
@@ -559,7 +600,9 @@ module.exports = {
     getAllSlotsInSegment,
     getSlot,
     getSlotReservations,
+    getAllSlotsForInstructor,
     getSimpleSlotReservations,
+    getExtendedSlotReservations,
     getReservationsForUser,
     getReservation,
     createSlotReservation,

@@ -60,7 +60,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(function (req, res, next) {
     res.setHeader(
       'Content-Security-Policy', 
-      "default-src 'self'; script-src 'self' cdn.jsdelivr.net unpkg.com; style-src 'self' cdn.jsdelivr.net fonts.googleapis.com; font-src 'self' cdn.jsdelivr.net fonts.gstatic.com; img-src 'self' data:; frame-src 'self'" + (process.env.CSP_FRAME_SRC_ALLOW ? " " + process.env.CSP_FRAME_SRC_ALLOW : "")
+      "default-src 'self'; script-src 'self' cdn.jsdelivr.net unpkg.com; style-src 'self' 'unsafe-inline' cdn.jsdelivr.net fonts.googleapis.com; font-src 'self' cdn.jsdelivr.net fonts.gstatic.com; img-src 'self' data:; frame-src 'self'" + (process.env.CSP_FRAME_SRC_ALLOW ? " " + process.env.CSP_FRAME_SRC_ALLOW : "")
     );
     
     next();
@@ -312,6 +312,9 @@ app.get('/', async (req, res, next) => {
     });
 });
 
+/**
+ * Show the user a list of reservations done, both for this user or a group the user is member of.
+ */
 app.get('/reservations', async (req, res, next) => {
     const reservations = await db.getReservationsForUser(res.locals.courseId, req.session.user.id, req.session.user.groups_ids);
 
@@ -354,6 +357,32 @@ app.get('/reservations', async (req, res, next) => {
         reservationDone: req.query.reservationDone && req.query.reservationDone == "true",
         reservationGroup: req.query.reservationGroup && req.query.reservationGroup == "true",
         reservationTitle: req.query.reservationTitle ? req.query.reservationTitle : null
+    });
+});
+
+/**
+ * Show the instructor a list of upcoming events, with reservation details
+ */
+app.get('/instructor/upcoming', async (req, res, next) => {
+    const slots = await db.getAllSlotsForInstructor(res.locals.courseId, req.session.user.id, new Date().toLocaleDateString('sv-SE'));
+
+    for (const slot of slots) {
+        slot.reservations = await db.getExtendedSlotReservations(slot.id);
+        slot.res_percent = Math.round((slot.res_now / slot.res_max) * 100);
+    }
+
+    /* return res.send({
+        status: 'up',
+        version: pkg.version,
+        session: req.session,
+        slots: slots
+    }); */
+
+    return res.render('pages/instructor/upcoming_slots', {
+        status: 'up',
+        version: pkg.version,
+        session: req.session,
+        slots: slots
     });
 });
 
