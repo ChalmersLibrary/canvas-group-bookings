@@ -39,7 +39,7 @@
 </div>
 -->
 <% if (segments && segments.length) { %>
-    <ul class="nav nav-tabs">
+    <ul class="nav nav-pills">
         <% segments.forEach(segment => { %>
             <li class="nav-item">
                 <a class="nav-link <%= segment.active ? 'active' : '' %>" href="?segment=<%= segment.id %>"><%= segment.name %></a>
@@ -48,9 +48,9 @@
     </ul>
 <% } %>
 <% if (!slots.length) { %>
-    <div class="alert alert-secondary my-3" role="alert">
-        <h4 class="alert-heading">Det finns inga tillgängliga tider</h4>
-        <p>Här kan man skriva något mer om när det släpps tider eller annan matnyttig information.</p>
+    <div class="alert alert-primary my-3" role="alert">
+        <h4 class="alert-heading">Det finns inga tider att boka</h4>
+        <p>Kika in igen senare eller vänta tills en handledare meddelar att nya tider finns att boka.</p>
     </div>
 <% } else { %>
 <table id="slots" class="table table-hover my-3">
