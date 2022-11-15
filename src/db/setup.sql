@@ -17,10 +17,13 @@ CREATE TABLE IF NOT EXISTS "user_token"
     PRIMARY KEY ("canvas_user_id", "canvas_domain")
 );
 
+-- Main table for courses/things offered within a Canvas course, slots are made on these
+
 CREATE TABLE IF NOT EXISTS "course" 
 (
     "id" serial,
     "canvas_course_id" integer NOT NULL,
+    "segment_id" integer,
     "name" varchar,
     "description" text,
     "is_group" boolean,
@@ -29,13 +32,30 @@ CREATE TABLE IF NOT EXISTS "course"
     "max_individuals" integer,
     "max_per_type" integer NOT NULL DEFAULT 1,
     "default_slot_duration_minutes" integer,
-    "cancellation_policy_hours" integer,
-    "message_is_mandatory" boolean NOT NULL default false,
-    "message_all_when_full" boolean NOT NULL default false,
+    "cancellation_policy_hours" integer NOT NULL DEFAULT 24,
+    "message_is_mandatory" boolean NOT NULL DEFAULT false,
+    "message_all_when_full" boolean NOT NULL DEFAULT false,
     "message_cc_instructor" boolean NOT NULL DEFAULT true,
     "message_confirmation_body" text,
     "message_full_body" text,
     "message_cancelled_body" text,
+    "created_at" timestamp NOT NULL DEFAULT now(),
+    "created_by" integer,
+    "updated_at" timestamp,
+    "updated_by" integer,
+    "deleted_at" timestamp,
+    "deleted_by" integer,
+    PRIMARY KEY ("id")
+);
+
+-- Segments are used to tag courses for better filtering, ie Fackspråk/Biblioteket
+
+CREATE TABLE IF NOT EXISTS "segment" 
+(
+    "id" serial,
+    "name" varchar,
+    "description" text,
+    "canvas_course_id" integer,
     "created_at" timestamp NOT NULL DEFAULT now(),
     "created_by" integer,
     "updated_at" timestamp,
@@ -50,7 +70,6 @@ CREATE TABLE IF NOT EXISTS "instructor"
     "id" serial,
     "name" varchar,
     "email" varchar,
-    "canvas_user_id" integer,
     "created_at" timestamp NOT NULL DEFAULT now(),
     "created_by" integer,
     "updated_at" timestamp,
@@ -66,6 +85,7 @@ CREATE TABLE IF NOT EXISTS "location"
     "name" varchar,
     "description" text,
     "external_url" varchar,
+    "campus_maps_id" varchar,
     "created_at" timestamp NOT NULL DEFAULT now(),
     "created_by" integer,
     "updated_at" timestamp,
@@ -74,6 +94,45 @@ CREATE TABLE IF NOT EXISTS "location"
     "deleted_by" integer,
     PRIMARY KEY ("id")
 );
+
+-- Mapping tables to re-use instructor and location information
+
+CREATE TABLE IF NOT EXISTS "canvas_course_instructor_mapping"
+(
+    "id" serial,
+    "canvas_course_id" integer,
+    "instructor_id" integer REFERENCES "instructor",
+    "created_at" timestamp NOT NULL DEFAULT now(),
+    "updated_at" timestamp,
+    "deleted_at" timestamp,
+    PRIMARY KEY ("id")
+);
+
+CREATE TABLE IF NOT EXISTS "canvas_course_location_mapping"
+(
+    "id" serial,
+    "canvas_course_id" integer,
+    "location_id" integer REFERENCES "location",
+    "created_at" timestamp NOT NULL DEFAULT now(),
+    "updated_at" timestamp,
+    "deleted_at" timestamp,
+    PRIMARY KEY ("id")
+);
+
+-- Mapping for possible filtering of Group Category in a Canvas Course
+
+CREATE TABLE IF NOT EXISTS "canvas_course_group_category_mapping"
+(
+    "id" serial,
+    "canvas_course_id" integer,
+    "canvas_group_category_id" integer,
+    "created_at" timestamp NOT NULL DEFAULT now(),
+    "updated_at" timestamp,
+    "deleted_at" timestamp,
+    PRIMARY KEY ("id")
+);
+
+-- Main table for available slots (times)
 
 CREATE TABLE IF NOT EXISTS "slot" 
 (
@@ -91,6 +150,8 @@ CREATE TABLE IF NOT EXISTS "slot"
     "deleted_by" integer,
     PRIMARY KEY ("id")
 );
+
+-- Main table for reservations on slots
 
 CREATE TABLE IF NOT EXISTS "reservation" 
 (
@@ -110,7 +171,22 @@ CREATE TABLE IF NOT EXISTS "reservation"
     PRIMARY KEY ("id")
 );
 
--- Views
+-- Logging of messages sent with Canvas Conversations API
+
+CREATE TABLE IF NOT EXISTS "canvas_conversation_log"
+(
+    "id" serial,
+    "slot_id" integer,
+    "reservation_id" integer,
+    "canvas_course_id" integer,
+    "canvas_recipients" varchar,
+    "message_subject" varchar,
+    "message_body" text,
+    "created_at" timestamp NOT NULL DEFAULT now(),
+    PRIMARY KEY ("id")
+);
+
+-- Views, includes "Europe/Stockholm" which is not optimal, TODO: Fix timezone before public release
 
 DROP VIEW IF EXISTS "reservations_view";
 CREATE VIEW "reservations_view" AS
@@ -219,29 +295,5 @@ CREATE VIEW "slots_view" AS SELECT s.id,
   WHERE s.course_id = c.id AND s.instructor_id = i.id AND s.location_id = l.id AND s.deleted_at IS NULL
   ORDER BY s.time_start;
 
--- Mockup some data, bound to Canvas course id 1508 (this will not work since all tables are not in this, should be a separate file...)
-INSERT INTO "course" ("name", "canvas_course_id", "is_group", "is_individual", "max_groups", "max_individuals") VALUES ('Handledningstillfälle 1', 1508, true, false, 2, 0);
-INSERT INTO "course" ("name", "canvas_course_id", "is_group", "is_individual", "max_groups", "max_individuals") VALUES ('Handledningstillfälle 2', 1508, true, false, 1, 0);
-INSERT INTO "course" ("name", "canvas_course_id", "is_group", "is_individual", "max_groups", "max_individuals") VALUES ('Föreläsning 1', 1508, false, true, 0, 100);
-INSERT INTO "instructor" ("name", "canvas_course_id", "canvas_user_id") VALUES ('Rolf Johansson', 1618);
-INSERT INTO "instructor" ("name", "canvas_course_id", "canvas_user_id") VALUES ('Carl Johan Carlsson', 1060);
-INSERT INTO "instructor" ("name", "canvas_course_id", "canvas_user_id") VALUES ('Fia Börjesson', 1058);
-INSERT INTO "instructor" ("name", "canvas_course_id", "canvas_user_id") VALUES ('Magnus Axelsson', 8);
-INSERT INTO "instructor" ("name", "canvas_course_id", "canvas_user_id") VALUES ('Karin Ljungklint', 938);
-INSERT INTO "canvas_course_instructor_mapping" ("canvas_course_id", "instructor_id") VALUES (1508, 1);
-INSERT INTO "canvas_course_instructor_mapping" ("canvas_course_id", "instructor_id") VALUES (1508, 2);
-INSERT INTO "canvas_course_instructor_mapping" ("canvas_course_id", "instructor_id") VALUES (1508, 3);
-INSERT INTO "canvas_course_instructor_mapping" ("canvas_course_id", "instructor_id") VALUES (1508, 4);
-INSERT INTO "canvas_course_instructor_mapping" ("canvas_course_id", "instructor_id") VALUES (1508, 5);
-INSERT INTO "location" ("name", "canvas_course_id", "created_by") VALUES ('Lokal A1', 1);
-INSERT INTO "location" ("name", "canvas_course_id", "created_by") VALUES ('Lokal A2', 1);
-INSERT INTO "location" ("name", "canvas_course_id", "created_by") VALUES ('Lokal A3', 1);
-INSERT INTO "location" ("name", "canvas_course_id", "created_by", "description") VALUES ('Language Lab/Språklabb', 1, 'För att komma till Fackspråk - språklabb går ni in på biblioteket och fortsätter förbi lånedisken fram till spiraltrappan. Vid trappan ska ni en våning ner. På våningen under ska ni till höger efter trappan och ta er till studentköket och lunchrummet. När ni kommit till lunchrummet ser ni Fackspråks lokaler samt lässtudion snett till vänster.');
-INSERT INTO "location" ("name", "canvas_course_id", "created_by", "external_url") VALUES ('ZOOM Calle', 1, 'https://chalmers.zoom.us/j/64438289001');
-INSERT INTO "location" ("name", "canvas_course_id", "created_by", "external_url") VALUES ('ZOOM Fia', 1, 'https://chalmers.zoom.us/j/69630313118');
-INSERT INTO "location" ("name", "canvas_course_id", "created_by", "description") VALUES ('CAMPUS - Seminarierum 1', 1, 'För att enklast komma till Seminarierum 1: gå in genom bibliotekets nya glasentré (närmast Kemigården) och gå upp för stora trappan rakt fram. Seminarierum 1 ligger sedan till vänster.');
-INSERT INTO "canvas_course_location_mapping" ("canvas_course_id", "location_id") VALUES (1508, 1);
--- ... and some more ...
-
--- Version history
+-- Version history, new versions are named setup_2.sql, setup_3.sql and so on, must remember to end SQL with version insert.
 INSERT INTO version (db_version) VALUES (1);
