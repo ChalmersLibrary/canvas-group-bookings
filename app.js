@@ -365,26 +365,34 @@ app.get('/reservations', async (req, res, next) => {
  */
 app.get('/instructor/upcoming', async (req, res, next) => {
     if (req.session.user.isInstructor) {
-        const slots = await db.getAllSlotsForInstructor(res.locals.courseId, req.session.user.id, new Date().toLocaleDateString('sv-SE'));
+        try {
+            const slots = await db.getAllSlotsForInstructor(res.locals.courseId, req.session.user.id, new Date().toLocaleDateString('sv-SE'));
 
-        for (const slot of slots) {
-            slot.reservations = await db.getExtendedSlotReservations(slot.id);
-            slot.res_percent = Math.round((slot.res_now / slot.res_max) * 100);
+            for (const slot of slots) {
+                slot.reservations = await db.getExtendedSlotReservations(slot.id);
+                slot.res_percent = Math.round((slot.res_now / slot.res_max) * 100);
+            }
+        
+            /* return res.send({
+                status: 'up',
+                version: pkg.version,
+                session: req.session,
+                slots: slots
+            }); */
+        
+            return res.render('pages/instructor/upcoming_slots', {
+                status: 'up',
+                version: pkg.version,
+                session: req.session,
+                slots: slots
+            });                    
         }
-    
-        /* return res.send({
-            status: 'up',
-            version: pkg.version,
-            session: req.session,
-            slots: slots
-        }); */
-    
-        return res.render('pages/instructor/upcoming_slots', {
-            status: 'up',
-            version: pkg.version,
-            session: req.session,
-            slots: slots
-        });    
+        catch (error) {
+            return res.send({
+                status: 'error',
+                message: error.message
+            });  
+        }
     }
     else {
         next(new Error("You must have instructor privileges to access this page."));    
