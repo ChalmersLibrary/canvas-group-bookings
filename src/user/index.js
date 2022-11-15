@@ -37,19 +37,20 @@ async function createSessionUserdataFromToken(req, token) {
     return req.session.user;
 }
 
-// Add flags in the session user object
+// Add flags in the session user object, requires custom field "custom_canvas_roles"
+// with variable substitution "$Canvas.membership.roles".
 async function addUserFlagsForRoles(req) {
     if(req.session.user && req.session.lti) {
-        if (req.session.lti.ext_roles) {
+        if (req.session.lti.custom_canvas_roles) {
             req.session.user.isAdministrator = false;
             req.session.user.isInstructor = false;
 
-            req.session.lti.ext_roles.split(",").forEach((role) => {
+            req.session.lti.custom_canvas_roles.split(",").forEach((role) => {
                 log.info(role);
-                if (role === "urn:lti:instrole:ims/lis/Administrator" || role === "urn:lti:role:ims/lis/Administrator") {
+                if (role === "Examiner" || role === "Account Admin") {
                     req.session.user.isAdministrator = true;
                 }
-                if (role === "urn:lti:instrole:ims/lis/Instructor" || role === "urn:lti:role:ims/lis/Instructor") {
+                if (role === "TeacherEnrollment") {
                     req.session.user.isInstructor = true;
                 }
             });
