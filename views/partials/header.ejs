@@ -28,14 +28,14 @@
       <span class="navbar-text">
         <%= user.name %>
         <% if (user.isAdministrator) { %>
-          <strong>(administratör)</strong>
+          <small>(administratör)</small>
         <% } else if (user.isInstructor) { %>
-          <strong>(lärare)</strong>
+          <small>(lärare)</small>
         <% } else { %>
           <% if (user.groups_human_readable && user.groups_human_readable.length) { %>
-            <strong>(<%= user.groups_human_readable.join(", ") %>)</strong>  
+            <small>(<%= user.groups_human_readable.join(", ") %>)</small>  
           <% } else { %>
-            <strong>(ingen grupp)</strong>
+            <small>(ingen grupp)</small>
           <% } %>
         <% } %>
       </span>
