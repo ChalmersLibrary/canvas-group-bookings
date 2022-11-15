@@ -10,11 +10,11 @@ INSERT INTO "course" ("name", "segment_id", "canvas_course_id", "is_group", "is_
 INSERT INTO "course" ("name", "segment_id", "canvas_course_id", "is_group", "is_individual", "max_groups", "max_individuals") VALUES ('Biblioteket infoworkshop',2,1508,true,false,10,0);
 INSERT INTO "course" ("name", "segment_id", "canvas_course_id", "is_group", "is_individual", "max_groups", "max_individuals") VALUES ('Fackspråk föreläsning 1',1,1508,false,true,0,100);
 
-INSERT INTO "instructor" ("name", "email", "canvas_course_id", "canvas_user_id") VALUES ('Rolf Johansson', 'rolf.johansson@chalmers.se', 1508, 1618);
-INSERT INTO "instructor" ("name", "email", "canvas_course_id", "canvas_user_id") VALUES ('Fia Börjesson', 'fibo@chalmers.se', 1508, 1058);
-INSERT INTO "instructor" ("name", "email", "canvas_course_id", "canvas_user_id") VALUES ('Carl Johan Carlsson', 'caca@chalmers.se', 1508, 1060);
-INSERT INTO "instructor" ("name", "email", "canvas_course_id", "canvas_user_id") VALUES ('Magnus Axelsson', 'magnax@chalmers.se', 1508, 8);
-INSERT INTO "instructor" ("name", "email", "canvas_course_id", "canvas_user_id") VALUES ('Karin Ljungklint', 'karin.ljungklint@chalmers.se', 1508, 938);
+INSERT INTO "instructor" ("name", "email", "canvas_user_id") VALUES ('Rolf Johansson', 'rolf.johansson@chalmers.se', 1618);
+INSERT INTO "instructor" ("name", "email", "canvas_user_id") VALUES ('Fia Börjesson', 'fibo@chalmers.se', 1058);
+INSERT INTO "instructor" ("name", "email", "canvas_user_id") VALUES ('Carl Johan Carlsson', 'caca@chalmers.se', 1060);
+INSERT INTO "instructor" ("name", "email", "canvas_user_id") VALUES ('Magnus Axelsson', 'magnax@chalmers.se', 8);
+INSERT INTO "instructor" ("name", "email", "canvas_user_id") VALUES ('Karin Ljungklint', 'karin.ljungklint@chalmers.se', 938);
 
 INSERT INTO "canvas_course_instructor_mapping" ("canvas_course_id", "instructor_id") VALUES (1508, 1);
 INSERT INTO "canvas_course_instructor_mapping" ("canvas_course_id", "instructor_id") VALUES (1508, 2);

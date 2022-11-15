@@ -70,6 +70,7 @@ CREATE TABLE IF NOT EXISTS "instructor"
     "id" serial,
     "name" varchar,
     "email" varchar,
+    "canvas_user_id" integer,
     "created_at" timestamp NOT NULL DEFAULT now(),
     "created_by" integer,
     "updated_at" timestamp,
