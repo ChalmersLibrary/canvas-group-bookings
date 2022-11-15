@@ -145,7 +145,7 @@
 </table>
 <% } %>
 
-<% if (session.user.isAdministrator) { %>
+<% if (session.user.isAdministrator || session.user.isInstructor) { %>
     <%- include('slots_admin_modal_new'); %>
     <%- include('slots_admin_modal_edit'); %>
     <%- include('slots_admin_modal_delete'); %>
