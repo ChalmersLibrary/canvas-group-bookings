@@ -49,6 +49,7 @@ async function addUserFlagsForRoles(req) {
                 log.info(role);
                 if (role === "Examiner" || role === "Account Admin") {
                     req.session.user.isAdministrator = true;
+                    req.session.user.isInstructor = true;
                 }
                 if (role === "TeacherEnrollment") {
                     req.session.user.isInstructor = true;
