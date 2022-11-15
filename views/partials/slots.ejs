@@ -1,4 +1,4 @@
-<% if (session.user.isAdministrator) { %>
+<% if (session.user.isAdministrator || session.user.isInstructor) { %>
     <div class="row my-3">
         <div class="col">
             <button type="button" class="btn btn-md btn-secondary" data-bs-toggle="modal" data-bs-target="#newSlotSeries">Lägg till nya tider</button>
