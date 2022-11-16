@@ -1,1 +1,1 @@
-<p class="text-small text-muted">Version <%= version %>, &copy; 2022 Chalmers University of Technology</p>
+<p class="text-small text-muted">Version <%= version %><%= typeof(internal) != 'undefined' && internal.db && internal.db.includes("test") ? " (testdb)" : null %><br>(c) 2022 Chalmers Tekniska Högskola</p>

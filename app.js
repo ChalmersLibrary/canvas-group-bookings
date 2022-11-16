@@ -114,6 +114,12 @@ app.use(['/', '/test', '/reservations', '/admin*', '/api/*'], async function (re
                     req.session.user.groups_ids.push(group.id);
                 }
 
+                // Add some debug information
+                req.session.internal = {
+                    version: pkg.version,
+                    db: process.env.PGDATABASE
+                };
+
                 // Move on to the actual route handler
                 next();
             }
@@ -122,6 +128,7 @@ app.use(['/', '/test', '/reservations', '/admin*', '/api/*'], async function (re
 
                 return res.render("pages/error", {
                     version: pkg.version,
+                    internal: req.session.internal,
                     error: "Kan inte läsa LTI-information",
                     message: "Bokningsverktyget måste startas som en LTI-applikation inifrån Canvas för att få information om kontexten."
                 });
@@ -133,6 +140,7 @@ app.use(['/', '/test', '/reservations', '/admin*', '/api/*'], async function (re
                 
                 return res.render("pages/error", {
                     version: pkg.version,
+                    internal: req.session.internal,
                     error: "Kan inte skapa en session",
                     message: "Du måste tillåta cookies från tredje part i din webbläsare. Bokningsverktyget använder cookies för att kunna hantera din identitiet från Canvas."
                 });
@@ -162,6 +170,7 @@ app.get('/test', async (req, res, next) => {
 
     return res.render("pages/error", {
         version: pkg.version,
+        internal: req.session.internal,
         error: "Kan inte skapa en session",
         message: "Du måste tillåta cookies från tredje part i din webbläsare. Bokningsverktyget använder cookies för att kunna hantera din identitiet från Canvas."
     });
@@ -289,6 +298,7 @@ app.get('/', async (req, res, next) => {
 
     /* return res.send({
         status: 'up',
+        internal: req.session.internal,
         version: pkg.version,
         session: req.session,
         groups: req.session.user.groups,
@@ -301,6 +311,7 @@ app.get('/', async (req, res, next) => {
 
     return res.render('pages/index', {
         status: 'up',
+        internal: req.session.internal,
         version: pkg.version,
         session: req.session,
         groups: req.session.user.groups,
@@ -350,6 +361,7 @@ app.get('/reservations', async (req, res, next) => {
 
     return res.render('pages/reservations/reservations', {
         status: 'up',
+        internal: req.session.internal,
         version: pkg.version,
         session: req.session,
         reservations: reservations,
@@ -382,6 +394,7 @@ app.get('/instructor/upcoming', async (req, res, next) => {
         
             return res.render('pages/instructor/upcoming_slots', {
                 status: 'up',
+                internal: req.session.internal,
                 version: pkg.version,
                 session: req.session,
                 slots: slots
@@ -406,6 +419,7 @@ app.get('/admin', async (req, res, next) => {
     if (req.session.user.isAdministrator) {
         return res.render('pages/admin/admin', {
             status: 'up',
+            internal: req.session.internal,
             version: pkg.version,
             session: req.session
         });
@@ -422,6 +436,7 @@ app.get('/admin', async (req, res, next) => {
     if (req.session.user.isAdministrator) {
         return res.render('pages/admin/admin_canvas', {
             status: 'up',
+            internal: req.session.internal,
             version: pkg.version,
             session: req.session
         });
@@ -438,6 +453,7 @@ app.get('/admin', async (req, res, next) => {
     if (req.session.user.isAdministrator) {
         return res.render('pages/admin/admin_course', {
             status: 'up',
+            internal: req.session.internal,
             version: pkg.version,
             session: req.session,
             courses: await db.getAllCoursesWithStatistics(res.locals.courseId)
