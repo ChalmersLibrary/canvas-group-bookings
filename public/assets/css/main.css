@@ -16,6 +16,7 @@ label {
 div.slot_template {
     display: none;
 }
+ul.nav-tabs,
 div.reservations,
 div.button-bar {
     margin-bottom: 1em;

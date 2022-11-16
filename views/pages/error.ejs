@@ -3,13 +3,13 @@
 <head>
   <%- include('../partials/head_clean'); %>
 </head>
-<body class="container-fluid float-start">
+<body>
 
 <header>
   <%- include('../partials/header_clean'); %>
 </header>
 
-<main>
+<main class="container-fluid py-2">
   <h2>Ett fel har uppstått: <%= error %></h2>
   <p><%= message %></p>
 </main>
