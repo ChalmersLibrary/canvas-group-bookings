@@ -95,17 +95,18 @@ auth.setupAuthEndpoints(app, process.env.AUTH_REDIRECT_CALLBACK);
  * Also populates session object with user information like id, name, groups.
  */
 app.use(['/', '/test', '/reservations', '/admin*', '/api/*'], async function (req, res, next) {
-    await auth.checkAccessToken(req).then(async (result) => {
-        if (result !== undefined && result.success === true) {
+    await auth.checkAccessToken(req).then(async (token) => {
+        if (token !== undefined && token.success === true) {
             await user.mockLtiSession(req);
             await user.addUserFlagsForRoles(req);
 
             if (req.session.lti) {
+                res.locals.token = token;
                 res.locals.courseId = req.session.lti.custom_canvas_course_id ? req.session.lti.custom_canvas_course_id : "lti_context_id:" + req.session.lti.context_id;
-
+                
                 // Add the groups from Canvas for this user
                 let canvasGroupCategoryFilter = await db.getCourseGroupCategoryFilter(res.locals.courseId);
-                req.session.user.groups = await canvasApi.getCourseGroups(res.locals.courseId, canvasGroupCategoryFilter, result);
+                req.session.user.groups = await canvasApi.getCourseGroups(res.locals.courseId, canvasGroupCategoryFilter, token);
                 req.session.user.groups_ids = new Array();
                 req.session.user.groups_human_readable = new Array();
             
@@ -434,12 +435,44 @@ app.get('/admin', async (req, res, next) => {
  */
  app.get('/admin/canvas', async (req, res, next) => {
     if (req.session.user.isAdministrator) {
-        return res.render('pages/admin/admin_canvas', {
-            status: 'up',
-            internal: req.session.internal,
-            version: pkg.version,
-            session: req.session
-        });
+        try {
+            let canvas_group_categories = await canvasApi.getCourseGroupCategories(res.locals.courseId, res.locals.token);
+            const db_group_categories_filter = await db.getCourseGroupCategoryFilter(res.locals.courseId);
+
+            for (const c of canvas_group_categories) {
+                if (db_group_categories_filter.includes(c.id)) {
+                    c.filtered_in_db = true;
+                }
+                else {
+                    c.filtered_in_db = false;
+                }
+            }
+
+            /* return res.send({
+                status: 'up',
+                internal: req.session.internal,
+                version: pkg.version,
+                session: req.session,
+                data: {
+                    canvas_course_name: req.session.lti.context_title,
+                    canvas_group_categories: canvas_group_categories
+                }
+            }); */
+
+            return res.render('pages/admin/admin_canvas', {
+                status: 'up',
+                internal: req.session.internal,
+                version: pkg.version,
+                session: req.session,
+                data: {
+                    canvas_course_name: req.session.lti.context_title,
+                    canvas_group_categories: canvas_group_categories
+                }
+            });
+        }
+        catch (error) {
+            throw new Error(error);
+        }
     }
     else {
         next(new Error("You must have administrator privileges to access this page."));

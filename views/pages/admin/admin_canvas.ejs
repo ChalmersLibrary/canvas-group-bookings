@@ -26,16 +26,19 @@
                     <form>
                         <p>
                             <label for="canvas_course_name">Kursnamn:</label><br>
-                            <strong>PLACEHOLDER_CANVAS_COURSE_NAME</strong>
+                            <%= data.canvas_course_name %>
                         </p>
                         <p>
-                            <label for="group_category_mapping">Giltiga gruppkategorier:</label><br>
-                            <select multiple>
-                                <option value="1">PLACEHOLDER_GROUP_CATEGORY_1</option>
-                                <option value="2">PLACEHOLDER_GROUP_CATEGORY_2</option>
-                                <option value="3">PLACEHOLDER_GROUP_CATEGORY_3</option>
+                            <label for="group_category_mapping">Giltiga gruppuppsättningar:</label><br>
+                            <select class="form-select" multiple size="<%= Math.max(data.canvas_group_categories.length, 10) %>">
+                                <% data.canvas_group_categories.forEach(c => { %>
+                                    <option <%= c.filtered_in_db ? 'selected' : null %> value="<%= c.id %>"><%= c.name %></option>
+                                <% }) %>
                             </select>
                         </p>
+                        <div class="button-bar">
+                            <button type="submit" class="btn btn-md btn-primary">Spara ändringar</button>
+                        </div>
                     </form>
                 </div>
             </div>        

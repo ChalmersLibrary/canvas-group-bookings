@@ -250,7 +250,122 @@ async function createConversation(recipients, subject, body, token) {
     }
 }
 
+/**
+ * Get group categories in a given course, used for filtering in admin pages
+ */
+async function getCourseGroupCategories(courseId, token) {
+    try {
+        const cachedData = await cache.getCache('courseGroupCategoriesCache', courseId);
+
+        if (cachedData !== undefined) {
+            log.info("[Cache] Using found NodeCache entry for key " + courseId);
+            log.info("[Cache] Cache value: " + typeof(cachedData) === 'Object' ? JSON.stringify(cachedData) : cachedData);
+            log.info("[Cache] Statistics: " + JSON.stringify(await cache.getCacheStats('courseGroupsCache')));
+        
+            await cache.addCacheRead('courseGroupCategoriesCache');
+    
+            return new Promise((resolve) => {
+                resolve(cachedData);
+            });    
+        }
+        else {
+            let thisApiPath = API_HOST + API_PATH + "/courses/" + courseId + "/group_categories?per_page=" + API_PER_PAGE;
+            let apiData = new Array();
+            let returnedApiData = new Array();
+            let errorCount = 0;
+
+            while (errorCount < API_MAX_ERROR_COUNT && thisApiPath && token) {
+                log.info("GET " + thisApiPath);
+            
+                try {
+                    const response = await axios.get(thisApiPath, {
+                        headers: {
+                            "User-Agent": "Chalmers/Azure/Request",
+                            "Authorization": token.token_type + " " + token.access_token
+                        }
+                    });
+        
+                    apiData.push(response.data);
+
+                    if (response.headers["X-Request-Cost"]) {
+                        log.info("Request cost: " + response.headers["X-Request-Cost"]);
+                    }
+        
+                    if (response.headers["link"]) {
+                        let link = LinkHeader.parse(response.headers["link"]);
+                
+                        if (link.has("rel", "next")) {
+                            thisApiPath = link.get("rel", "next")[0].uri;
+                        }
+                        else {
+                            thisApiPath = false;
+                        }
+                    }
+                    else {
+                        thisApiPath = false;
+                    }
+                }
+                catch (error) {
+                    errorCount++;
+                
+                    if (error.response.status == 401 && error.response.headers['www-authenticate']) { // refresh token, then try again
+                        log.info("401, with www-authenticate header.");
+
+                        await auth.refreshAccessToken(token.user_id).then((result) => {
+                            log.info(result);
+                            if (result.success) {
+                                log.info("Refreshed access token in 401, with www-authenticate header.");
+                            }
+                            else {
+                                log.error(result);
+                            }
+                        })
+                        .catch(error => {
+                            log.error(error);
+                        });
+                    }
+                    else if (error.response.status == 401 && !error.response.headers['www-authenticate']) { // no access, redirect to auth
+                        log.error("Not authorized in Canvas for use of this API endpoint.");
+                        return(error);
+                    }
+                    else {
+                        log.error(error);
+                        return(error);
+                    }
+                }
+            }
+
+            // Compile new object from all pages.
+            apiData.forEach((page) => {
+                page.forEach((record) => {
+                    returnedApiData.push({
+                        id: record.id, 
+                        name: record.name
+                    });
+                });
+            });
+
+            /* Save to cache */
+            await cache.setCache('courseGroupCategoriesCache', courseId, returnedApiData);
+            await cache.addCacheWrite('courseGroupCategoriesCache');
+
+            return new Promise((resolve) => {
+                resolve(returnedApiData);
+            })
+        }
+    }
+    catch (error) {
+        console.log(error);
+
+        return new Promise((reject) => {
+            reject(error);
+        });
+    }
+}
+
+
 module.exports = {
     createConversation,
     getCourseGroups,
+    getCourseGroupCategories
 }
