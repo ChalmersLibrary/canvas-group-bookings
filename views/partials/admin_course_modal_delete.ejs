@@ -1,0 +1,19 @@
+<div class="modal modal-md fade" id="deleteCourse" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteCourseLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form id="deleteCourseForm" action="/api/admin/course">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editSlotLabel">Radera tillfälle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Stäng"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Dialogruta för att radera ett tillfälle och alla tider kopplade till det.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
+                    <button type="submit" class="btn btn-danger" id="editCourseSaveButton">Radera</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

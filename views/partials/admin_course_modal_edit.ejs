@@ -1,0 +1,100 @@
+<div class="modal modal-xl fade" id="editCourse" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="editCourseLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form class="needs-validation" id="editCourseForm" novalidate method="post" action="/api/admin/course">
+            <input type="hidden" id="e_course_id" name="course_id" value="" />
+            <input type="hidden" id="e_canvas_course_id" name="canvas_course_id" value="" />
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editSlotLabel">Redigera tillfälle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Stäng"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <p>
+                                <label for="e_name">Namn:</label><br>
+                                <input type="text" class="form-control" id="e_name" name="name" value="[PLACEHOLDER]">    
+                            </p>
+                            <p>
+                                <label for="e_description">Beskrivning:</label><br>
+                                <textarea class="form-control" rows="3" id="e_description" name="description">[PLACEHOLDER]</textarea>
+                            </p>
+                            <p>
+                                <label for="e_segment">Segment:</label><br>
+                                <select class="form-control" id="e_segment" name="segment"></select>
+                            </p>
+                            <p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="e_type" id="e_type_is_group">
+                                    <label class="form-check-label" for="e_type_is_group">
+                                        Gruppbokning
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="e_type" id="e_type_is_individual">
+                                    <label class="form-check-label" for="e_type_is_individual">
+                                        Individuell bokning
+                                    </label>
+                                </div>
+                            </p>
+                            <p>
+                                <label for="max_number">Max antal bokningar per utlagd tid:</label><br>
+                                <input type="number" class="form-control" min="1" max="9999" value="1" id="e_max_number" name="max_number">
+                            </p>
+                            <p>
+                                <label for="max_per_type">Max antal bokningar totalt inom tillfället:</label><br>
+                                <input type="number" class="form-control" min="1" max="9999" value="1" id="e_max_per_type" name="max_per_type">
+                            </p>
+                            <p>
+                                <label for="cancellation_policy_hours">Avbokningspolicy, antal timmar innan:</label><br>
+                                <input type="number" class="form-control" min="1" max="120" value="24" id="e_cancellation_policy_hours">
+                            </p>
+                            <p>
+                                <label for="default_slot_duration_minutes">Förvald längd i minuter på utlagd tid:</label><br>
+                                <input type="number" class="form-control" min="1" max="1440" value="90" id="e_default_slot_duration_minutes">
+                            </p>
+                            <p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="e_message_is_mandatory" checked>
+                                    <label class="form-check-label" for="e_message_is_mandatory">
+                                        Meddelande är obligatoriskt vid bokning
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="e_message_all_when_full" checked>
+                                    <label class="form-check-label" for="e_message_all_when_full">
+                                        Koppla ihop alla grupper med separat meddelande när en tid är fullbokad
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="e_message_cc_instructor" checked>
+                                    <label class="form-check-label" for="e_message_cc_instructor">
+                                        Skicka kopia på alla meddelanden till handledaren
+                                    </label>
+                                </div>
+                            </p>
+                        </div>
+                        <div class="col-lg-6">
+                            <p>
+                                <label for="e_message_confirmation_body">Meddelandetext, bekräftelse:</label><br>
+                                <textarea class="form-control" id="e_message_confirmation_body" style="height: 200px;" placeholder=""></textarea>    
+                            </p>
+                            <p>
+                                <label for="e_message_full_body">Meddelandetext, ihopkoppling/fullbokat:</label><br>
+                                <textarea class="form-control" id="e_message_full_body" style="height: 200px;" placeholder=""></textarea>    
+                            </p>
+                            <p>
+                                <label for="e_message_cancelled_body">Meddelandetext, avbokning:</label><br>
+                                <textarea class="form-control" id="e_message_cancelled_body" style="height: 200px;" placeholder=""></textarea>    
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
+                    <button type="submit" class="btn btn-primary" id="editCourseSaveButton">Uppdatera</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

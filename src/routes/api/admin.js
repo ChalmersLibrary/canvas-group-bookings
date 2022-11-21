@@ -39,4 +39,30 @@ router.put('/canvas/:id', async (req, res, next) => {
     }
 });
 
+router.get('/course/:id', async (req, res, next) => {
+    if (req.session.user.isAdministrator) {
+        try {
+            const course = await db.getCourse(req.params.id);
+            const segments = await db.getSegments(course.canvas_course_id);
+
+            return res.send({
+                success: true,
+                segments: segments,
+                course: course
+            });
+        }
+        catch (error) {
+            log.error(error);
+
+            return res.send({
+                success: false,
+                message: error.message
+            });
+        }
+    }
+    else {
+        next(new Error("You must have administrator privileges to access this page."));
+    }   
+});
+
 module.exports = router;

@@ -44,8 +44,8 @@
                                     <td class="text-right"><%= course.deleted %></td>
                                     <td>
                                         <div class="float-end">
-                                            <button type="button" title="Redigera" data-bs-toggle="modal" data-bs-target="#edit___" data-bs-slot-id="<%= course.id %>" class="btn btn-secondary btn-md"><i class="bi-pencil-fill"></i></button>
-                                            <button type="button" title="Radera" data-bs-toggle="modal" data-bs-target="#delete___" data-bs-slot-id="<%= course.id %>" class="btn btn-secondary btn-md mx-2"><i class="bi-trash-fill"></i></button>
+                                            <button type="button" title="Redigera" data-bs-toggle="modal" data-bs-target="#editCourse" data-bs-course-id="<%= course.id %>" class="btn btn-secondary btn-md"><i class="bi-pencil-fill"></i></button>
+                                            <button type="button" title="Radera" data-bs-toggle="modal" data-bs-target="#deleteCourse" data-bs-course-id="<%= course.id %>" class="btn btn-secondary btn-md mx-2"><i class="bi-trash-fill"></i></button>
                                         </div>
                                     </td>
                                 </tr>
@@ -77,6 +77,9 @@
         </div>
     </div>
 </main>
+
+<%- include('../../partials/admin_course_modal_edit'); %>
+<%- include('../../partials/admin_course_modal_delete'); %>
 
 <footer>
   <%- include('../../partials/footer', { version: version }); %>
