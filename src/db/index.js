@@ -49,31 +49,6 @@ async function getSegments(canvas_course_id) {
 }
 
 /**
- * Returns an array of Canvas Group Category Ids that are force-filtered for a specific Canvas Course Id
- */
-async function getCourseGroupCategoryFilter(canvas_course_id) {
-    let data;
-    let returnedData = [];
-
-    await query("SELECT DISTINCT canvas_group_category_id FROM canvas_course_group_category_mapping c WHERE c.canvas_course_id=$1", [
-        canvas_course_id
-    ]).then((result) => {
-        data = result.rows;
-    }).catch((error) => {
-        log.error(error);
-        throw new Error(error);
-    });
-
-    if (data !== undefined && data.length) {
-        data.forEach(mapping => {
-            returnedData.push(mapping.canvas_group_category_id);
-        });
-    }
-
-    return returnedData;
-}
-
-/**
  * Returns all slots, available or not, for a specific Canvas course, starting from a specific date
  */
 async function getAllSlots(canvas_course_id, date) {
@@ -513,9 +488,38 @@ async function addCanvasConversationLog(slot_id, reservation_id, canvas_course_i
 }
 
 /**
- * Functions for administration
+ * FUNCTIONS FOR ADMINISTRATION
  */
-async function adminUpdateCanvasConnection(canvas_course_id, group_category_mappings) {
+
+/**
+ * Returns an array of Canvas Group Category Ids that are force-filtered for a specific Canvas Course Id
+ */
+async function getCourseGroupCategoryFilter(canvas_course_id) {
+    let data;
+    let returnedData = [];
+
+    await query("SELECT DISTINCT canvas_group_category_id FROM canvas_course_group_category_mapping c WHERE c.canvas_course_id=$1", [
+        canvas_course_id
+    ]).then((result) => {
+        data = result.rows;
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    });
+
+    if (data !== undefined && data.length) {
+        data.forEach(mapping => {
+            returnedData.push(mapping.canvas_group_category_id);
+        });
+    }
+
+    return returnedData;
+}
+
+/**
+ * Updates Canvas connection in db with possible mapping for group category filtering
+ */
+async function updateCanvasConnection(canvas_course_id, group_category_mappings) {
     await query("DELETE FROM canvas_course_group_category_mapping WHERE canvas_course_id=$1", [ 
         canvas_course_id
     ]).then((result) => {
@@ -530,6 +534,8 @@ async function adminUpdateCanvasConnection(canvas_course_id, group_category_mapp
         throw new Error(error);
     });
 }
+
+
 
 async function checkDatabaseVersion() {
     let run_setup = false;
@@ -637,6 +643,6 @@ module.exports = {
     updateSlot,
     deleteSlot,
     addCanvasConversationLog,
-    adminUpdateCanvasConnection,
+    updateCanvasConnection,
     checkDatabaseVersion,
 }

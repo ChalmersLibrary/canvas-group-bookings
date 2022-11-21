@@ -17,9 +17,8 @@ router.put('/canvas/:id', async (req, res, next) => {
     if (req.session.user.isAdministrator) {
         try {
             const { group_category_mapping } = req.body;
-            console.log(group_category_mapping);
 
-            await db.adminUpdateCanvasConnection(req.params.id, group_category_mapping);
+            await db.updateCanvasConnection(req.params.id, group_category_mapping);
 
             return res.send({
                 success: true,
