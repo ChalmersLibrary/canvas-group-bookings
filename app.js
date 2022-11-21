@@ -10,13 +10,11 @@ const fileStore = require('session-file-store')(session);
 const pgSessionStore = require('connect-pg-simple')(session);
 const helmet = require('helmet');
 const cors = require('cors');
-const auth = require('./src/auth/oauth2');
-const lti = require('./src/lti/canvas');
 const canvasApi = require('./src/api/canvas');
-const user = require('./src/user');
 const db = require('./src/db');
 const utils = require('./src/utilities');
 const cache = require('./src/cache');
+const routes = require('./src/routes');
 
 const port = process.env.PORT || 3000;
 const cookieMaxAge = 3600000 * 24 * 30 * 4; // 4 months
@@ -81,89 +79,8 @@ app.set('view engine', 'ejs');
 // Check database version
 db.checkDatabaseVersion();
 
-
-// This should go into router.js?
-
-// Handle LTI Launch
-app.post('/lti', lti.handleLaunch('/'));
-
-// Setup OAuth2 endpoints and communication
-auth.setupAuthEndpoints(app, process.env.AUTH_REDIRECT_CALLBACK);
-
-/**
- * General middleware that runs first, checking access token and LTI session.
- * Also populates session object with user information like id, name, groups.
- */
-app.use(['/', '/test', '/reservations', '/admin*', '/api/*'], async function (req, res, next) {
-    await auth.checkAccessToken(req).then(async (token) => {
-        if (token !== undefined && token.success === true) {
-            await user.mockLtiSession(req);
-            await user.addUserFlagsForRoles(req);
-
-            if (req.session.lti) {
-                res.locals.token = token;
-                res.locals.courseId = req.session.lti.custom_canvas_course_id ? req.session.lti.custom_canvas_course_id : "lti_context_id:" + req.session.lti.context_id;
-                
-                // Add the groups from Canvas for this user
-                let canvasGroupCategoryFilter = await db.getCourseGroupCategoryFilter(res.locals.courseId);
-                req.session.user.groups = await canvasApi.getCourseGroups(res.locals.courseId, canvasGroupCategoryFilter, token);
-                req.session.user.groups_ids = new Array();
-                req.session.user.groups_human_readable = new Array();
-            
-                for (const group of req.session.user.groups) {
-                    req.session.user.groups_human_readable.push(group.name);
-                    req.session.user.groups_ids.push(group.id);
-                }
-
-                // Add some debug information
-                req.session.internal = {
-                    version: pkg.version,
-                    db: process.env.PGDATABASE
-                };
-
-                // Move on to the actual route handler
-                next();
-            }
-            else {
-                log.error("No LTI information found in session. This application must be started with LTI request.");
-
-                return res.render("pages/error", {
-                    version: pkg.version,
-                    internal: req.session.internal,
-                    error: "Kan inte läsa LTI-information",
-                    message: "Bokningsverktyget måste startas som en LTI-applikation inifrån Canvas för att få information om kontexten."
-                });
-            }
-        }
-        else {
-            if (req.query.from == "callback") {
-                log.error("Coming from callback, but with no session. Third party cookies problem.");
-                
-                return res.render("pages/error", {
-                    version: pkg.version,
-                    internal: req.session.internal,
-                    error: "Kan inte skapa en session",
-                    message: "Du måste tillåta cookies från tredje part i din webbläsare. Bokningsverktyget använder cookies för att kunna hantera din identitiet från Canvas."
-                });
-            }
-            else {
-                log.error("Access token is not valid or not found, redirecting to auth flow...");
-
-                return res.redirect("/auth");
-            }
-        }
-    })
-    .catch(error => {
-        log.error(error);
-
-        if (error.message.includes("invalid_grant")) {
-            return res.redirect("/auth");
-        }
-        else {
-            next(new Error(error));
-        }
-    });
-});
+// Setup all routes
+app.use('/', routes);
 
 // Test
 app.get('/test', async (req, res, next) => {
@@ -465,6 +382,7 @@ app.get('/admin', async (req, res, next) => {
                 version: pkg.version,
                 session: req.session,
                 data: {
+                    canvas_course_id: res.locals.courseId,
                     canvas_course_name: req.session.lti.context_title,
                     canvas_group_categories: canvas_group_categories
                 }
@@ -480,7 +398,7 @@ app.get('/admin', async (req, res, next) => {
 });
 
 /**
- * Admin: Courses (for slots)
+ * Admin: Courses (to create slots on)
  */
  app.get('/admin/course', async (req, res, next) => {
     if (req.session.user.isAdministrator) {
@@ -851,138 +769,6 @@ app.get('/api/statistics', async (req, res, next) => {
             success: false,
             error: error
         });
-    }
-});
-
-/* ========================= */
-/* API Endpoints, instructor */
-/* ========================= */
-
-/* Get one slot */
-app.get('/api/admin/slot/:id', async (req, res) => {
-    if (req.session.user.isInstructor) {
-        try {
-            const slot = await db.getSlot(req.params.id)
-            const reservations = await db.getSlotReservations(req.params.id);
-            slot.reservations = reservations;
-            slot.shortcut = {
-                start_date: utils.getDatePart(slot.time_start),
-                end_date: utils.getDatePart(slot.time_end),
-                start_time: utils.getTimePart(slot.time_start),
-                end_time: utils.getTimePart(slot.time_end)
-            }
-
-            return res.send(slot);                        
-        }
-        catch (error) {
-            log.error(error);
-
-            return res.send({
-                success: false,
-                error: error
-            });
-        }
-    }
-    else {
-        next(new Error("You must have instructor privileges to access this page."));
-    }
-});
-
-/* Update a given timeslot */
-app.put('/api/admin/slot/:id', async (req, res) => {
-    if (req.session.user.isInstructor) {
-        const { course_id, instructor_id, location_id, time_start, time_end } = req.body;
-
-        try {
-            await db.updateSlot(req.params.id, course_id, instructor_id, location_id, time_start, time_end);
-
-            return res.send({
-                success: true,
-                message: 'Slot was updated.'
-            });
-        }
-        catch (error) {
-            log.error(error);
-
-            return res.send({
-                success: false,
-                message: error.message
-            });
-        }
-    }
-    else {
-        next(new Error("You must have instructor privileges to access this page."));
-    }
-});
-
-/* Delete a given timeslot */
-app.delete('/api/admin/slot/:id', async (req, res) => { 
-    if (req.session.user.isInstructor) {
-        try {
-            await db.deleteSlot(req.params.id);
-
-            return res.send({
-                success: true,
-                message: 'Slot was deleted.'
-            });
-        }
-        catch (error) {
-            log.error(error);
-
-            return res.send({
-                success: false,
-                message: error.message
-            });
-        }
-    }
-    else {
-        next(new Error("You must have instructor privileges to access this page."));
-    }
-});
-
-/* Create a new (series of) timeslot(s) */
-app.post('/api/admin/slot', async (req, res) => {
-    if (req.session.user.isInstructor) {
-        const { course_id, instructor_id, location_id } = req.body;
-
-        let slots = [];
-
-        let data = {
-            course_id: course_id,
-            instructor_id: instructor_id,
-            location_id: location_id,
-            slots: slots
-        };
-
-        try {
-            for (const key in req.body) {
-                if (key.startsWith("slot_date")) {
-                    const this_slot_no = key.charAt(key.length - 1);
-
-                    if (!isNaN(this_slot_no)) {
-                        slots.push({
-                            start: req.body[key] + "T" + req.body['slot_time_start_' + this_slot_no],
-                            end: req.body[key] + "T" + req.body['slot_time_end_' + this_slot_no]
-                        });
-                    }
-                }
-            }
-
-            await db.createSlots(data);
-
-            return res.redirect("/");                        
-        }
-        catch (error) {
-            log.error(error);
-
-            return res.send({
-                success: false,
-                message: error.message
-            });
-        }
-    }
-    else {
-        next(new Error("You must have instructor privileges to access this page."));
     }
 });
 
