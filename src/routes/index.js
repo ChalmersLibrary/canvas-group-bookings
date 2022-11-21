@@ -9,7 +9,7 @@ const user = require('../user');
 const db = require('../db');
 const canvasApi = require('../api/canvas');
 const pkg = require('../../package.json');
-const routesApiInstructor = require('./api/instructor');
+const routesApi = require('./api');
 
 // Handle LTI Launch
 router.post('/lti', lti.handleLaunch('/'));
@@ -92,6 +92,6 @@ router.use(['/', '/test', '/reservations', '/admin*', '/api/*'], async function 
     });
 });
 
-router.use('/api/instructor', routesApiInstructor);
+router.use('/api', routesApi);
 
 module.exports = router;
