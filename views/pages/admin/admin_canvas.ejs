@@ -23,14 +23,15 @@
                     Canvaskoppling
                 </div>
                 <div class="card-body">
-                    <form>
+                    <form id="editSettingsCanvas">
+                        <input type="hidden" name="canvas_course_id" id="e_canvas_course_id" value="<%= data.canvas_course_id %>">
                         <p>
                             <label for="canvas_course_name">Kursnamn:</label><br>
                             <%= data.canvas_course_name %>
                         </p>
                         <p>
                             <label for="group_category_mapping">Giltiga gruppuppsättningar:</label><br>
-                            <select class="form-select" multiple size="<%= Math.max(data.canvas_group_categories.length, 10) %>">
+                            <select id="e_group_category_mapping" name="group_category_mapping" class="form-select" multiple size="<%= Math.max(data.canvas_group_categories.length, 10) %>">
                                 <% data.canvas_group_categories.forEach(c => { %>
                                     <option <%= c.filtered_in_db ? 'selected' : null %> value="<%= c.id %>"><%= c.name %></option>
                                 <% }) %>
@@ -38,6 +39,9 @@
                         </p>
                         <div class="button-bar">
                             <button type="submit" class="btn btn-md btn-primary">Spara ändringar</button>
+                        </div>
+                        <div id="editFormCanvasError" class="alert alert-danger d-none" role="alert">
+                            <strong>Ett fel uppstod: </strong><span></span>
                         </div>
                     </form>
                 </div>
@@ -53,9 +57,8 @@
                         Grundkopplingar till den kurs i Canvas som verktyget används för.
                     </p>
                     <p>
-                        Om det finns många grupper i kursen och en student kan tänkas vara kopplad
-                        till flera olika, men bara en speciell gruppuppsättning ska användas vid bokningar, kan du välja att filtrera vilka gruppuppsättningar som
-                        är giltiga.
+                        Om det finns många grupper i kursen och en student kan tänkas vara kopplad till flera olika, 
+                        kan du välja att filtrera vilka gruppuppsättningar som är giltiga.
                     </p>
                     <p>
                         Om inget är markerat så är alla giltiga.

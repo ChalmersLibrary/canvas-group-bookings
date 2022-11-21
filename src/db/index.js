@@ -512,6 +512,25 @@ async function addCanvasConversationLog(slot_id, reservation_id, canvas_course_i
     return data;
 }
 
+/**
+ * Functions for administration
+ */
+async function adminUpdateCanvasConnection(canvas_course_id, group_category_mappings) {
+    await query("DELETE FROM canvas_course_group_category_mapping WHERE canvas_course_id=$1", [ 
+        canvas_course_id
+    ]).then((result) => {
+        for (const group_category_id of group_category_mappings) {
+            query("INSERT INTO canvas_course_group_category_mapping (canvas_course_id, canvas_group_category_id) VALUES ($1, $2)", [
+                canvas_course_id,
+                group_category_id
+            ]);
+        }
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    });
+}
+
 async function checkDatabaseVersion() {
     let run_setup = false;
     let check_new_version = true;
@@ -618,5 +637,6 @@ module.exports = {
     updateSlot,
     deleteSlot,
     addCanvasConversationLog,
+    adminUpdateCanvasConnection,
     checkDatabaseVersion,
 }
