@@ -48,6 +48,11 @@ router.get('/course/:id', async (req, res, next) => {
             return res.send({
                 success: true,
                 segments: segments,
+                templates: {
+                    done: course.is_group ? utils.getTemplate('reservation_group_done') : utils.getTemplate('reservation_individual_done'),
+                    cancel: course.is_group ? utils.getTemplate('reservation_group_canceled') : utils.getTemplate('reservation_individual_canceled'),
+                    full: utils.getTemplate('reservation_group_full')
+                },
                 course: course
             });
         }

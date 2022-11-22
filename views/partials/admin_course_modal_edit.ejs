@@ -1,4 +1,4 @@
-<div class="modal modal-xl fade" id="editCourse" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="editCourseLabel" aria-hidden="true">
+<div class="modal modal-lg fade" id="editCourse" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="editCourseLabel" aria-hidden="true">
     <div class="modal-dialog">
         <form class="needs-validation" id="editCourseForm" novalidate method="post" action="/api/admin/course">
             <input type="hidden" id="e_course_id" name="course_id" value="" />
@@ -9,19 +9,29 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Stäng"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="row">
-                        <div class="col-lg-6">
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                          <button class="nav-link active" id="basic-tab" data-bs-toggle="tab" data-bs-target="#tab-basic" type="button" role="tab" aria-controls="tab-basic" aria-selected="true">Grundläggande</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                          <button class="nav-link" id="values-tab" data-bs-toggle="tab" data-bs-target="#tab-values" type="button" role="tab" aria-controls="tab-values" aria-selected="false">Begränsningar och förval</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="flags-tab" data-bs-toggle="tab" data-bs-target="#tab-flags" type="button" role="tab" aria-controls="tab-flags" aria-selected="false">Flaggor</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="messages-tab" data-bs-toggle="tab" data-bs-target="#tab-messages" type="button" role="tab" aria-controls="tab-messages" aria-selected="false">Meddelanden</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="myTabContent">
+                        <div class="tab-pane fade show active" id="tab-basic" role="tabpanel" aria-labelledby="basic-tab">
                             <p>
                                 <label for="e_name">Namn:</label><br>
-                                <input type="text" class="form-control" id="e_name" name="name" value="[PLACEHOLDER]">    
+                                <input type="text" class="form-control" id="e_name" value="[PLACEHOLDER]">    
                             </p>
                             <p>
                                 <label for="e_description">Beskrivning:</label><br>
-                                <textarea class="form-control" rows="3" id="e_description" name="description">[PLACEHOLDER]</textarea>
-                            </p>
-                            <p>
-                                <label for="e_segment">Segment:</label><br>
-                                <select class="form-control" id="e_segment" name="segment"></select>
+                                <textarea class="form-control" rows="3" id="e_description">[PLACEHOLDER]</textarea>
                             </p>
                             <p>
                                 <div class="form-check">
@@ -37,56 +47,93 @@
                                     </label>
                                 </div>
                             </p>
+                            <p id="e_segmentPart">
+                                <label for="e_segment">Segment:</label><br>
+                                <select class="form-control" id="e_segment" name="segment"></select>
+                            </p>
+                        </div>
+                        <div class="tab-pane fade" id="tab-values" role="tabpanel" aria-labelledby="values-tab">
                             <p>
-                                <label for="max_number">Max antal bokningar per utlagd tid:</label><br>
-                                <input type="number" class="form-control" min="1" max="9999" value="1" id="e_max_number" name="max_number">
+                                <label for="e_max_number" class="">Max antal bokningar per utlagd tid:</label><br>
+                                <input type="number" class="form-control" min="1" max="9999" value="1" id="e_max_number">
                             </p>
                             <p>
-                                <label for="max_per_type">Max antal bokningar totalt inom tillfället:</label><br>
-                                <input type="number" class="form-control" min="1" max="9999" value="1" id="e_max_per_type" name="max_per_type">
+                                <label for="e_max_per_type">Max antal bokningar totalt inom tillfället:</label><br>
+                                <input type="number" class="form-control" min="1" max="9999" value="1" id="e_max_per_type">
                             </p>
                             <p>
-                                <label for="cancellation_policy_hours">Avbokningspolicy, antal timmar innan:</label><br>
+                                <label for="e_cancellation_policy_hours">Avbokningspolicy, antal timmar innan:</label><br>
                                 <input type="number" class="form-control" min="1" max="120" value="24" id="e_cancellation_policy_hours">
                             </p>
                             <p>
-                                <label for="default_slot_duration_minutes">Förvald längd i minuter på utlagd tid:</label><br>
-                                <input type="number" class="form-control" min="1" max="1440" value="90" id="e_default_slot_duration_minutes">
+                                <label for="e_default_slot_duration_minutes">Förvald längd i minuter på utlagd tid (stödfunktion):</label><br>
+                                <input type="number" class="form-control" min="0" max="1440" value="90" id="e_default_slot_duration_minutes">
                             </p>
+                        </div>
+                        <div class="tab-pane fade" id="tab-flags" role="tabpanel" aria-labelledby="flags-tab">
                             <p>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="" id="e_message_is_mandatory" checked>
+                                    <input class="form-check-input" type="checkbox" value="true" id="e_message_is_mandatory">
                                     <label class="form-check-label" for="e_message_is_mandatory">
                                         Meddelande är obligatoriskt vid bokning
                                     </label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="" id="e_message_all_when_full" checked>
+                                    <input class="form-check-input" type="checkbox" value="true" id="e_message_all_when_full">
                                     <label class="form-check-label" for="e_message_all_when_full">
                                         Koppla ihop alla grupper med separat meddelande när en tid är fullbokad
                                     </label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="" id="e_message_cc_instructor" checked>
+                                    <input class="form-check-input" type="checkbox" value="true" id="e_message_cc_instructor">
                                     <label class="form-check-label" for="e_message_cc_instructor">
                                         Skicka kopia på alla meddelanden till handledaren
                                     </label>
                                 </div>
                             </p>
                         </div>
-                        <div class="col-lg-6">
+                        <div class="tab-pane fade" id="tab-messages" role="tabpanel" aria-labelledby="messages-tab">                            
                             <p>
-                                <label for="e_message_confirmation_body">Meddelandetext, bekräftelse:</label><br>
-                                <textarea class="form-control" id="e_message_confirmation_body" style="height: 200px;" placeholder=""></textarea>    
+                                <div class="form-floating">
+                                    <textarea class="form-control" id="e_message_confirmation_body" style="height: 200px;" placeholder=""></textarea>    
+                                    <label for="e_message_confirmation_body">Meddelande för bekräftelse av bokning</label>
+                                </div>
                             </p>
                             <p>
-                                <label for="e_message_full_body">Meddelandetext, ihopkoppling/fullbokat:</label><br>
-                                <textarea class="form-control" id="e_message_full_body" style="height: 200px;" placeholder=""></textarea>    
+                                <div class="form-floating">
+                                    <textarea class="form-control" id="e_message_cancelled_body" style="height: 200px;" placeholder=""></textarea>    
+                                    <label for="e_message_cancelled_body">Meddelande för bekräftelse av avbokning</label>
+                                </div>
                             </p>
-                            <p>
-                                <label for="e_message_cancelled_body">Meddelandetext, avbokning:</label><br>
-                                <textarea class="form-control" id="e_message_cancelled_body" style="height: 200px;" placeholder=""></textarea>    
+                            <p id="e_message_full_bodyPart">
+                                <div class="form-floating">
+                                    <textarea class="form-control" id="e_message_full_body" style="height: 200px;" placeholder=""></textarea>    
+                                    <label for="e_message_full_body">Meddelande för ihopkoppling av alla bokade</label>
+                                </div>
                             </p>
+                            <div class="card">
+                                <div class="card-header">
+                                    Hjälp
+                                </div>
+                                <div class="card-body text-muted">
+                                    <p>
+                                        Dynamiska värden i texten skrivs {{variabelnamn}}, följande finns:<br>
+                                        <small>
+                                            {{reservation_course_name}} namn på tillfälle<br>
+                                            {{reservation_message}} meddelande från den som bokar<br>
+                                            {{reservation_slot_time}} datum och tid för tillfället<br>
+                                            {{slot_group_names}} gruppnamn på andra som bokat<br>
+                                            {{reservation_group_name}} gruppnamn som bokar<br>
+                                            {{canvas_user_name}} namn på personen som bokar<br>
+                                            {{location_name}} namn på platsen plus ev länk<br>
+                                            {{cancellation_policy_hours}} avbokningspolicy, antal timmar<br>
+                                            {{instructor_name}} handledarens namn<br>
+                                            {{instructor_email}} handledarens e-postadress<br>
+                                            {{CONVERSATION_ROBOT_NAME}} namn på roboten
+                                        </small>
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

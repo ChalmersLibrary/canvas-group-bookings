@@ -49,6 +49,25 @@ document.addEventListener("DOMContentLoaded", function(event) {
             editCourseModal.querySelector('#e_description').innerHTML = data.course.description
             editCourseModal.querySelector('#e_type_is_group').checked = data.course.is_group
             editCourseModal.querySelector('#e_type_is_individual').checked = data.course.is_individual
+            editCourseModal.querySelector('#e_max_number').value = data.course.is_group ? data.course.max_groups : data.course.max_individuals
+            editCourseModal.querySelector('#e_max_per_type').value = data.course.max_per_type
+            editCourseModal.querySelector('#e_cancellation_policy_hours').value = data.course.cancellation_policy_hours
+            editCourseModal.querySelector('#e_default_slot_duration_minutes').value = data.course.default_slot_duration_minutes
+            editCourseModal.querySelector('#e_message_is_mandatory').checked = data.course.message_is_mandatory ? true : null
+            editCourseModal.querySelector('#e_message_all_when_full').checked = data.course.message_all_when_full ? true : null
+            editCourseModal.querySelector('#e_message_cc_instructor').checked = data.course.message_cc_instructor ? true : null
+            editCourseModal.querySelector('#e_message_confirmation_body').innerHTML = data.course.message_confirmation_body != null ? data.course.message_confirmation_body : data.templates.done
+            editCourseModal.querySelector('#e_message_cancelled_body').innerHTML = data.course.message_cancelled_body != null ? data.course.message_cancelled_body : data.templates.cancel
+            editCourseModal.querySelector('#e_message_full_body').innerHTML = data.course.message_full_body != null ? data.course.message_full_body : data.templates.full
+            if (data.segments && data.segments.length) {
+                editCourseModal.querySelector('#e_segment').replaceChildren()
+                data.segments.forEach((s, key) => {
+                    document.getElementById('e_segment')[key] = new Option(s.name, s.id, s.id == data.course.segment_id ? true : false, s.id == data.course.segment_id ? true : false)
+                })
+            }
+            else {
+                editCourseModal.querySelector('#e_segmentPart').classList.add('d-none')
+            }
         })
     });
 
