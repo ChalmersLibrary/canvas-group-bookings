@@ -8,8 +8,15 @@
                     <h5 class="modal-title" id="editSlotLabel">Redigera tillfälle</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Stäng"></button>
                 </div>
-                <div class="modal-body">
-                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <div class="modal-body" id="loadingSpinner">
+                    <div class="d-flex justify-content-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body" id="loadedContent">
+                    <ul class="nav nav-tabs" id="courseTab" role="tablist">
                         <li class="nav-item" role="presentation">
                           <button class="nav-link active" id="basic-tab" data-bs-toggle="tab" data-bs-target="#tab-basic" type="button" role="tab" aria-controls="tab-basic" aria-selected="true">Grundläggande</button>
                         </li>
@@ -23,7 +30,7 @@
                             <button class="nav-link" id="messages-tab" data-bs-toggle="tab" data-bs-target="#tab-messages" type="button" role="tab" aria-controls="tab-messages" aria-selected="false">Meddelanden</button>
                         </li>
                     </ul>
-                    <div class="tab-content" id="myTabContent">
+                    <div class="tab-content" id="courseTabContent">
                         <div class="tab-pane fade show active" id="tab-basic" role="tabpanel" aria-labelledby="basic-tab">
                             <p>
                                 <label for="e_name">Namn:</label><br>
@@ -93,45 +100,25 @@
                             </p>
                         </div>
                         <div class="tab-pane fade" id="tab-messages" role="tabpanel" aria-labelledby="messages-tab">                            
-                            <p>
-                                <div class="form-floating">
-                                    <textarea class="form-control" id="e_message_confirmation_body" style="height: 200px;" placeholder=""></textarea>    
-                                    <label for="e_message_confirmation_body">Meddelande för bekräftelse av bokning</label>
-                                </div>
-                            </p>
-                            <p>
-                                <div class="form-floating">
-                                    <textarea class="form-control" id="e_message_cancelled_body" style="height: 200px;" placeholder=""></textarea>    
-                                    <label for="e_message_cancelled_body">Meddelande för bekräftelse av avbokning</label>
-                                </div>
-                            </p>
-                            <p id="e_message_full_bodyPart">
-                                <div class="form-floating">
-                                    <textarea class="form-control" id="e_message_full_body" style="height: 200px;" placeholder=""></textarea>    
-                                    <label for="e_message_full_body">Meddelande för ihopkoppling av alla bokade</label>
-                                </div>
-                            </p>
+                            <div class="form-floating my-3">
+                                <textarea class="form-control" id="e_message_confirmation_body" style="height: 200px;" placeholder=""></textarea>    
+                                <label for="e_message_confirmation_body">Meddelande för bekräftelse av bokning</label>
+                            </div>
+                            <div class="form-floating my-3">
+                                <textarea class="form-control" id="e_message_cancelled_body" style="height: 200px;" placeholder=""></textarea>    
+                                <label for="e_message_cancelled_body">Meddelande för bekräftelse av avbokning</label>
+                            </div>
+                            <div class="form-floating my-3" id="e_message_full_bodyPart">
+                                <textarea class="form-control" id="e_message_full_body" style="height: 200px;" placeholder=""></textarea>    
+                                <label for="e_message_full_body">Meddelande för ihopkoppling av alla bokade</label>
+                            </div>
                             <div class="card">
                                 <div class="card-header">
-                                    Hjälp
+                                    Dynamiska delar i text
                                 </div>
                                 <div class="card-body text-muted">
-                                    <p>
-                                        Dynamiska värden i texten skrivs {{variabelnamn}}, följande finns:<br>
-                                        <small>
-                                            {{reservation_course_name}} namn på tillfälle<br>
-                                            {{reservation_message}} meddelande från den som bokar<br>
-                                            {{reservation_slot_time}} datum och tid för tillfället<br>
-                                            {{slot_group_names}} gruppnamn på andra som bokat<br>
-                                            {{reservation_group_name}} gruppnamn som bokar<br>
-                                            {{canvas_user_name}} namn på personen som bokar<br>
-                                            {{location_name}} namn på platsen plus ev länk<br>
-                                            {{cancellation_policy_hours}} avbokningspolicy, antal timmar<br>
-                                            {{instructor_name}} handledarens namn<br>
-                                            {{instructor_email}} handledarens e-postadress<br>
-                                            {{CONVERSATION_ROBOT_NAME}} namn på roboten
-                                        </small>
-                                    </p>
+                                    Dynamiska delar skrivs som {{variabelnamn}} i löpande text:<br>
+                                    <table class="table table-sm table-striped" id="message_template_vars"></table>
                                 </div>
                             </div>
                         </div>
