@@ -52,10 +52,8 @@
                             <% }) %>
                         </tbody>
                     </table>
-                    <p class="text-muted col-md-8">
-                    </p>
                     <div class="button-bar">
-                        <button class="btn btn-md btn-secondary">Skapa nytt tillfälle</button>
+                        <button type="button" title="Skapa nytt tillfälle" data-bs-toggle="modal" data-bs-target="#newCourse" class="btn btn-md btn-secondary">Skapa nytt tillfälle</button>
                     </div>
                 </div>
             </div>
@@ -78,6 +76,7 @@
     </div>
 </main>
 
+<%- include('../../partials/admin_course_modal_new'); %>
 <%- include('../../partials/admin_course_modal_edit'); %>
 <%- include('../../partials/admin_course_modal_delete'); %>
 

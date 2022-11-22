@@ -5,40 +5,40 @@
             <input type="hidden" id="e_canvas_course_id" name="canvas_course_id" value="" />
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="editSlotLabel">Redigera tillfälle</h5>
+                    <h5 class="modal-title" id="editCourseLabel">Redigera tillfälle</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Stäng"></button>
                 </div>
-                <div class="modal-body" id="loadingSpinner">
+                <div class="modal-body" id="editLoadingSpinner">
                     <div class="d-flex justify-content-center">
                         <div class="spinner-border" role="status">
                             <span class="visually-hidden">Loading...</span>
                         </div>
                     </div>
                 </div>
-                <div class="modal-body" id="loadedContent">
-                    <ul class="nav nav-tabs" id="courseTab" role="tablist">
+                <div class="modal-body" id="editLoadedContent">
+                    <ul class="nav nav-tabs" id="editCourseTab" role="tablist">
                         <li class="nav-item" role="presentation">
-                          <button class="nav-link active" id="basic-tab" data-bs-toggle="tab" data-bs-target="#tab-basic" type="button" role="tab" aria-controls="tab-basic" aria-selected="true">Grundläggande</button>
+                          <button class="nav-link active" id="edit-basic-tab" data-bs-toggle="tab" data-bs-target="#edit-tab-basic" type="button" role="tab" aria-controls="edit-tab-basic" aria-selected="true">Grundläggande</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                          <button class="nav-link" id="values-tab" data-bs-toggle="tab" data-bs-target="#tab-values" type="button" role="tab" aria-controls="tab-values" aria-selected="false">Begränsningar och förval</button>
+                          <button class="nav-link" id="edit-values-tab" data-bs-toggle="tab" data-bs-target="#edit-tab-values" type="button" role="tab" aria-controls="edit-tab-values" aria-selected="false">Begränsningar och förval</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="flags-tab" data-bs-toggle="tab" data-bs-target="#tab-flags" type="button" role="tab" aria-controls="tab-flags" aria-selected="false">Flaggor</button>
+                            <button class="nav-link" id="edit-flags-tab" data-bs-toggle="tab" data-bs-target="#edit-tab-flags" type="button" role="tab" aria-controls="edit-tab-flags" aria-selected="false">Flaggor</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="messages-tab" data-bs-toggle="tab" data-bs-target="#tab-messages" type="button" role="tab" aria-controls="tab-messages" aria-selected="false">Meddelanden</button>
+                            <button class="nav-link" id="edit-messages-tab" data-bs-toggle="tab" data-bs-target="#edit-tab-messages" type="button" role="tab" aria-controls="edit-tab-messages" aria-selected="false">Meddelanden</button>
                         </li>
                     </ul>
-                    <div class="tab-content" id="courseTabContent">
-                        <div class="tab-pane fade show active" id="tab-basic" role="tabpanel" aria-labelledby="basic-tab">
+                    <div class="tab-content" id="editCourseTabContent">
+                        <div class="tab-pane fade show active" id="edit-tab-basic" role="tabpanel" aria-labelledby="edit-basic-tab">
                             <p>
                                 <label for="e_name">Namn:</label><br>
-                                <input type="text" class="form-control" id="e_name" value="[PLACEHOLDER]">    
+                                <input type="text" class="form-control" id="e_name" value="">    
                             </p>
                             <p>
                                 <label for="e_description">Beskrivning:</label><br>
-                                <textarea class="form-control" rows="3" id="e_description">[PLACEHOLDER]</textarea>
+                                <textarea class="form-control" rows="3" id="e_description"></textarea>
                             </p>
                             <p>
                                 <div class="form-check">
@@ -56,10 +56,10 @@
                             </p>
                             <p id="e_segmentPart">
                                 <label for="e_segment">Segment:</label><br>
-                                <select class="form-control" id="e_segment" name="segment"></select>
+                                <select class="form-control" id="e_segment"></select>
                             </p>
                         </div>
-                        <div class="tab-pane fade" id="tab-values" role="tabpanel" aria-labelledby="values-tab">
+                        <div class="tab-pane fade" id="edit-tab-values" role="tabpanel" aria-labelledby="edit-values-tab">
                             <p>
                                 <label for="e_max_number" class="">Max antal bokningar per utlagd tid:</label><br>
                                 <input type="number" class="form-control" min="1" max="9999" value="1" id="e_max_number">
@@ -77,7 +77,7 @@
                                 <input type="number" class="form-control" min="0" max="1440" value="90" id="e_default_slot_duration_minutes">
                             </p>
                         </div>
-                        <div class="tab-pane fade" id="tab-flags" role="tabpanel" aria-labelledby="flags-tab">
+                        <div class="tab-pane fade" id="edit-tab-flags" role="tabpanel" aria-labelledby="edit-flags-tab">
                             <p>
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" value="true" id="e_message_is_mandatory">
@@ -99,7 +99,7 @@
                                 </div>
                             </p>
                         </div>
-                        <div class="tab-pane fade" id="tab-messages" role="tabpanel" aria-labelledby="messages-tab">                            
+                        <div class="tab-pane fade" id="edit-tab-messages" role="tabpanel" aria-labelledby="edit-messages-tab">                            
                             <div class="form-floating my-3">
                                 <textarea class="form-control" id="e_message_confirmation_body" style="height: 200px;" placeholder=""></textarea>    
                                 <label for="e_message_confirmation_body">Meddelande för bekräftelse av bokning</label>
@@ -118,7 +118,7 @@
                                 </div>
                                 <div class="card-body text-muted">
                                     Dynamiska delar skrivs som {{variabelnamn}} i löpande text:<br>
-                                    <table class="table table-sm table-striped" id="message_template_vars"></table>
+                                    <table class="table table-sm table-striped" id="e_message_template_vars"></table>
                                 </div>
                             </div>
                         </div>

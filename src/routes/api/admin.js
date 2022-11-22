@@ -86,4 +86,56 @@ router.get('/course/:id', async (req, res, next) => {
     }   
 });
 
+/**
+ * Get helper data such as segments, templates and template vars, for use in new course
+ */
+router.get('/course', async (req, res, next) => {
+    if (req.session.user.isAdministrator) {
+        try {
+            const segments = await db.getSegments(res.locals.courseId);
+
+            return res.send({
+                success: true,
+                segments: segments,
+                templates: {
+                    group: {
+                        done: utils.getTemplate('reservation_group_done'),
+                        cancel: utils.getTemplate('reservation_group_canceled'),
+                        full: utils.getTemplate('reservation_group_full')
+                    },
+                    individual: {
+                        done: utils.getTemplate('reservation_individual_done'),
+                        cancel: utils.getTemplate('reservation_individual_canceled'),
+                        full: utils.getTemplate('reservation_individual_full')
+                    }
+                },
+                template_vars: [
+                    { name: "reservation_course_name", description: "Namn på tillfället" },
+                    { name: "reservation_message", description: "Ev meddelande från den som bokar" },
+                    { name: "reservation_slot_time", description: "Datum och tid för bokade tillfället" },
+                    { name: "slot_group_names", description: "Namn på andra grupper som redan bokat" },
+                    { name: "reservation_group_name", description: "Namn på grupp som bokar" },
+                    { name: "canvas_user_name", description: "Namn på individ som bokar" },
+                    { name: "location_name", description: "Platsens namn med ev länk" },
+                    { name: "cancellation_policy_hours", description: "Avbokningspolicy i antal timmar" },
+                    { name: "instructor_name", description: "Handledarens namn" },
+                    { name: "instructor_email", description: "Handledarens e-postadress" },
+                    { name: "CONVERSATION_ROBOT_NAME", description: "Namn på roboten, för signatur" }
+                ]
+            });
+        }
+        catch (error) {
+            log.error(error);
+
+            return res.send({
+                success: false,
+                message: error.message
+            });
+        }
+    }
+    else {
+        next(new Error("You must have administrator privileges to access this page."));
+    }   
+});
+
 module.exports = router;

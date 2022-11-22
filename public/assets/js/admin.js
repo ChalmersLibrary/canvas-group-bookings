@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", function(event) {
     const editFormCanvas = document.getElementById("editSettingsCanvas")
     const editCourseModal = document.getElementById("editCourse")
+    const newCourseModal = document.getElementById("newCourse")
 
     /* The form Edit Settings for Canvas is submitted */
     editFormCanvas && editFormCanvas.addEventListener("submit", function(event) {
@@ -35,23 +36,59 @@ document.addEventListener("DOMContentLoaded", function(event) {
         event.stopPropagation();
     });
 
+    /* The modal for new Course is shown */
+    newCourseModal && newCourseModal.addEventListener("show.bs.modal", function(event) {
+        document.getElementById('newLoadingSpinner').style.display = "block"
+        document.getElementById('newLoadedContent').style.display = "none"
+        fetch("/api/admin/course/")
+        .then(response => response.json())
+        .then(data => {
+            console.log(data)
+            bootstrap.Tab.getInstance(newCourseModal.querySelector('#newCourseTab li:first-child button')).show()
+            newCourseModal.querySelector('#n_message_all_when_full').addEventListener('change', e => {
+                e.target.checked == true ? newCourseModal.querySelector('#n_message_full_bodyPart').style.display = 'block' : newCourseModal.querySelector('#n_message_full_bodyPart').style.display = 'none'
+            })
+            newCourseModal.querySelector('#n_message_template_vars').replaceChildren()
+            data.template_vars.forEach(v => {
+                this_row = document.getElementById('n_message_template_vars').insertRow()
+                this_cell_name = this_row.insertCell()
+                this_cell_desc = this_row.insertCell()
+                this_cell_name.innerHTML = "{{" + v.name + "}}"
+                this_cell_desc.innerHTML = v.description
+            })
+            if (data.segments && data.segments.length) {
+                newCourseModal.querySelector('#n_segment').replaceChildren()
+                data.segments.forEach((s, key) => {
+                    document.getElementById('n_segment')[key] = new Option(s.name, s.id)
+                })
+            }
+            else {
+                newCourseModal.querySelector('#n_segmentPart').classList.add('d-none')
+            }
+        })
+        .then(finished => {
+            document.getElementById('newLoadingSpinner').style.display = "none"
+            document.getElementById('newLoadedContent').style.display = "block"
+        })
+    })
+
     /* The modal for editing a Course is shown */
     editCourseModal && editCourseModal.addEventListener('show.bs.modal', event => {
-        document.getElementById('loadingSpinner').style.display = "block"
-        document.getElementById('loadedContent').style.display = "none"
+        document.getElementById('editLoadingSpinner').style.display = "block"
+        document.getElementById('editLoadedContent').style.display = "none"
         const button = event.relatedTarget
         const course_id = button.getAttribute('data-bs-course-id')
         fetch(`/api/admin/course/${course_id}`)
         .then(response => response.json())
         .then(data => {
             console.log(data)
-            bootstrap.Tab.getInstance(editCourseModal.querySelector('#courseTab li:first-child button')).show()
+            bootstrap.Tab.getInstance(editCourseModal.querySelector('#editCourseTab li:first-child button')).show()
             editCourseModal.querySelector('#e_message_all_when_full').addEventListener('change', e => {
                 e.target.checked == true ? editCourseModal.querySelector('#e_message_full_bodyPart').style.display = 'block' : editCourseModal.querySelector('#e_message_full_bodyPart').style.display = 'none'
             })
-            editCourseModal.querySelector('#message_template_vars').replaceChildren()
+            editCourseModal.querySelector('#e_message_template_vars').replaceChildren()
             data.template_vars.forEach(v => {
-                this_row = document.getElementById('message_template_vars').insertRow()
+                this_row = document.getElementById('e_message_template_vars').insertRow()
                 this_cell_name = this_row.insertCell()
                 this_cell_desc = this_row.insertCell()
                 this_cell_name.innerHTML = "{{" + v.name + "}}"
@@ -84,8 +121,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
             }
         })
         .then(finished => {
-            document.getElementById('loadingSpinner').style.display = "none"
-            document.getElementById('loadedContent').style.display = "block"
+            document.getElementById('editLoadingSpinner').style.display = "none"
+            document.getElementById('editLoadedContent').style.display = "block"
         })
     });
 
