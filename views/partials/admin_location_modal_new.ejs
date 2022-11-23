@@ -1,0 +1,22 @@
+<div class="modal modal-md fade" id="newLocation" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="newLocationLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form class="needs-validation" id="newLocationForm" novalidate action="/api/admin/location">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newLocationLabel">Ny plats</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Stäng"></button>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        <label for="e_name">Namn:</label><br>
+                        <input type="text" class="form-control" id="n_name" value="">    
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
+                    <button type="submit" class="btn btn-primary" id="newLocationSaveButton">Skapa</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

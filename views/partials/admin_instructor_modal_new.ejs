@@ -1,0 +1,28 @@
+<div class="modal modal-md fade" id="newInstructor" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="newInstructorLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form class="needs-validation" id="newInstructorForm" novalidate action="/api/admin/instructor">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newInstructorLabel">Lägg till handledare</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Stäng"></button>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        <small>Handledare måste finnas som deltagare i kursen och rollen måste vara Lärare eller Examinator.</small>
+                    </p>
+                    <p>
+                        <label for="n_instructor_canvas_is">Namn från Canvas:</label>
+                        <select class="form-control" id="n_instructor_canvas_is">
+                            <option value="">Palle Kuling</option>
+                            <option value="">Erika Ordnung</option>
+                        </select>
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
+                    <button type="submit" class="btn btn-primary" id="newInstructorSaveButton">Lägg till handledare</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

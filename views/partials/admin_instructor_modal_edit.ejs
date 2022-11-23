@@ -1,0 +1,30 @@
+<div class="modal modal-lg fade" id="editInstructor" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="editInstructorLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form class="needs-validation" id="editInstructorForm" novalidate action="/api/admin/instructor">
+            <input type="hidden" id="e_instructor_id" value="" />
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editInstructorLabel">Redigera handledare</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Stäng"></button>
+                </div>
+                <div class="modal-body loading-spinner">
+                    <div class="d-flex justify-content-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body loaded-content" style="display:none;">
+                    <p>
+                        <label for="e_name">Namn:</label><br>
+                        <input type="text" class="form-control" id="e_name" value="">    
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
+                    <button type="submit" class="btn btn-primary" id="editInstructorSaveButton">Uppdatera</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

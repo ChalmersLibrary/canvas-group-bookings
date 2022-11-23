@@ -1,1 +1,4 @@
-<p class="text-small text-muted">Version <%= version %><%= typeof(internal) != 'undefined' && internal.db && internal.db.includes("test") ? " (testdb)" : null %><br>(c) 2022 Chalmers Tekniska Högskola</p>
+<small class="text-muted">
+    Version: <%= internal.version %> <%= internal.db && internal.db.includes("test") ? " (testdb)" : null %>
+    <br>(c) 2022 Chalmers Tekniska Högskola
+</small>

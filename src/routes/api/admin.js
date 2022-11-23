@@ -86,4 +86,28 @@ router.get('/course/:id', async (req, res, next) => {
     }   
 });
 
+router.get('/segment/:id', async (req, res, next) => {
+    if (req.session.user.isAdministrator) {
+        try {
+            const segment = await db.getSegment(req.params.id);
+
+            return res.send({
+                success: true,
+                segment: segment
+            });
+        }
+        catch (error) {
+            log.error(error);
+
+            return res.send({
+                success: false,
+                message: error.message
+            });
+        }
+    }
+    else {
+        next(new Error("You must have administrator privileges to access this page."));
+    }   
+});
+
 module.exports = router;

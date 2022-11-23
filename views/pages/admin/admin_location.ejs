@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../../partials/head_admin'); %>
+</head>
+<body class="container-fluid float-start">
+
+<header>
+  <%- include('../../partials/header', { user: session.user }); %>
+</header>
+
+<main class="container-fluid py-2">
+    <h1>Administration</h1>
+    <%- include('../../partials/admin_navigation', { current_page: 'location' }) %>
+
+    <div class="row">
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-header">
+                    Platser kopplade till denna Canvaskurs
+                </div>
+                <div class="card-body">
+                    <table class="table table-md table-hover">
+                        <thead>
+                            <tr>
+                                <th>Namn</th>
+                                <th class="text-right">Tider</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% locations.forEach(location => { %>
+                                <tr>
+                                    <td>
+                                        <strong><%= location.name %></strong>
+                                        <span class="mx-2">
+                                            <% if (location.description) { %><i class="text-secondary bi-info-circle-fill" title="Lokal beskrivning"></i><% } %>
+                                            <% if (location.external_url) { %><i class="text-secondary bi-webcam-fill" title="Extern länk till Zoom"></i><% } %>
+                                            <% if (location.campus_maps_id) { %><i class="text-secondary bi-geo-alt-fill" title="Länk till Campus Maps"></i><% } %>    
+                                        </span>
+                                        <div>
+                                            <small><%= location.description ? location.description.substring(0, Math.min(80, location.description.length)) : null %></small>
+                                        </div>
+                                    </td>
+                                    <td><%= location.slots %></td>
+                                    <td>
+                                        <div class="float-end">
+                                            <button type="button" title="Redigera" data-bs-toggle="modal" data-bs-target="#editLocation" data-bs-location-id="<%= location.id %>" class="btn btn-secondary btn-md"><i class="bi-pencil-fill"></i></button>
+                                            <button type="button" title="Radera" data-bs-toggle="modal" data-bs-target="#deleteLocation" data-bs-location-id="<%= location.id %>" class="btn btn-secondary btn-md mx-2"><i class="bi-trash-fill"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                    <div class="button-bar">
+                        <button type="button" class="btn btn-md btn-secondary" title="Skapa plats" data-bs-toggle="modal" data-bs-target="#newLocation">Skapa ny plats</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-header">
+                    Hjälp
+                </div>
+                <div class="card-body text-muted">
+                    <p>
+                        Platser kan vara lokaler eller digitala rum.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<%- include('../../partials/admin_location_modal_new'); %>
+<%- include('../../partials/admin_location_modal_edit'); %>
+<%- include('../../partials/admin_location_modal_delete'); %>
+
+<footer>
+  <%- include('../../partials/footer'); %>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,30 @@
+<div class="modal modal-md fade" id="newSegment" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="newSegmentLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form class="needs-validation" id="newSegmentForm" novalidate action="/api/admin/segment">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newSegmentLabel">Nytt segment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Stäng"></button>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        <label for="e_name">Namn:</label><br>
+                        <input type="text" class="form-control" id="n_name" value="">    
+                    </p>
+                    <p>
+                        <label for="e_name">Kod:</label><br>
+                        <input type="text" class="form-control" id="n_sign" maxlength="2" value="">    
+                    </p>
+                    <p>
+                        <label for="e_description">Beskrivning:</label><br>
+                        <textarea class="form-control" rows="3" id="n_description"></textarea>
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
+                    <button type="submit" class="btn btn-primary" id="newSegmentSaveButton">Skapa segment</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

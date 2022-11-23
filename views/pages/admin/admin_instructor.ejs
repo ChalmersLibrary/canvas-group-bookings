@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../../partials/head_admin'); %>
+</head>
+<body class="container-fluid float-start">
+
+<header>
+  <%- include('../../partials/header', { user: session.user }); %>
+</header>
+
+<main class="container-fluid py-2">
+    <h1>Administration</h1>
+    <%- include('../../partials/admin_navigation', { current_page: 'instructor' }) %>
+
+    <div class="row">
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-header">
+                    Handledare kopplade till denna Canvaskurs
+                </div>
+                <div class="card-body">
+                    <table class="table table-md table-hover">
+                        <thead>
+                            <tr>
+                                <th>Namn</th>
+                                <th class="text-right">Tider</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% instructors.forEach(instructor => { %>
+                                <tr>
+                                    <td>
+                                        <strong><%= instructor.name %></strong><br>
+                                        <small><%= instructor.email %></small>
+                                    </td>
+                                    <td><%= instructor.slots %></td>
+                                    <td>
+                                        <div class="float-end">
+                                            <button type="button" title="Redigera" data-bs-toggle="modal" data-bs-target="#editInstructor" data-bs-instructor-id="<%= instructor.id %>" class="btn btn-secondary btn-md"><i class="bi-pencil-fill"></i></button>
+                                            <button type="button" title="Radera" data-bs-toggle="modal" data-bs-target="#deleteInstructor" data-bs-instructor-id="<%= instructor.id %>" class="btn btn-secondary btn-md mx-2"><i class="bi-trash-fill"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                    <div class="button-bar">
+                        <button type="button" class="btn btn-md btn-secondary" title="Skapa handledare" data-bs-toggle="modal" data-bs-target="#newInstructor">Lägg till handledare</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-header">
+                    Hjälp
+                </div>
+                <div class="card-body text-muted">
+                    <p>
+                        Handledare, kopplar mot Canvas-användare i kursen med rollen Teacher/Lärare eller Examinator/Examiner.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<%- include('../../partials/admin_instructor_modal_new'); %>
+<%- include('../../partials/admin_instructor_modal_edit'); %>
+<%- include('../../partials/admin_instructor_modal_delete'); %>
+
+<footer>
+  <%- include('../../partials/footer'); %>
+</footer>
+
+</body>
+</html>
