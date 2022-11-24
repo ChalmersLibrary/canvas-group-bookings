@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     const editFormCanvas = document.getElementById("editSettingsCanvas")
     const editCourseModal = document.getElementById("editCourse")
     const newCourseModal = document.getElementById("newCourse")
+    const newCourseForm = document.getElementById("newCourseForm")
 
     /* The form Edit Settings for Canvas is submitted */
     editFormCanvas && editFormCanvas.addEventListener("submit", function(event) {
@@ -70,6 +71,53 @@ document.addEventListener("DOMContentLoaded", function(event) {
             document.getElementById('newLoadingSpinner').style.display = "none"
             document.getElementById('newLoadedContent').style.display = "block"
         })
+    })
+
+    /* The New Course Form is submitted */
+    newCourseForm.addEventListener("submit", function(event) {
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                segment_id: newCourseForm.querySelector('#n_segment').value ? newCourseForm.querySelector('#n_segment').value : null,
+                name: newCourseForm.querySelector('#n_name').value,
+                description: newCourseForm.querySelector('#n_description').value,
+                is_group: newCourseForm.querySelector('#n_type_is_group').checked ? true : false,
+                is_individual: newCourseForm.querySelector('#n_type_is_individual').checked ? true : false,
+                max_groups: newCourseForm.querySelector('#n_max_number').value,
+                max_individuals: newCourseForm.querySelector('#n_max_number').value,
+                max_per_type: newCourseForm.querySelector('#n_max_per_type').value,
+                default_slot_duration_minutes: newCourseForm.querySelector('#n_default_slot_duration_minutes').value,
+                cancellation_policy_hours: newCourseForm.querySelector('#n_cancellation_policy_hours').value,
+                message_is_mandatory: newCourseForm.querySelector('#n_message_is_mandatory').checked ? true : false,
+                message_all_when_full: newCourseForm.querySelector('#n_message_all_when_full').checked ? true : false,
+                message_cc_instructor: newCourseForm.querySelector('#n_message_cc_instructor').checked ? true : false,
+                message_confirmation_body: newCourseForm.querySelector('#n_message_confirmation_body').value,
+                message_full_body: newCourseForm.querySelector('#n_message_full_body').value,
+                message_cancelled_body: newCourseForm.querySelector('#n_message_cancelled_body').value
+            })
+        };
+
+        console.log(requestOptions)
+
+        fetch("/api/admin/course", requestOptions)
+        .then(response => {
+            return response.text()
+        })
+        .then(data => { 
+            console.log(data)
+            const responseBody = JSON.parse(data)
+            if (responseBody.success === false) {
+                newCourseModal.querySelector('div.alert.alert-error span').innerText = JSON.parse(data).message
+                newCourseModal.querySelector('div.alert.alert-error').style.display = "block"
+            }
+            else {
+                window.location.assign("/admin/course")
+            }
+        });
+        
+        event.preventDefault()
+        event.stopPropagation()
     })
 
     /* The modal for editing a Course is shown */
