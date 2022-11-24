@@ -30,6 +30,27 @@ async function query(text, params) {
 }
 
 /**
+ * Returns data about a specific segment
+ * 
+ * @param {integer} segment_id Id for segment
+ * @returns 
+ */
+async function getSegment(segment_id) {
+    let data;
+
+    await query("SELECT * FROM segment s WHERE s.id=$1", [
+        segment_id
+    ]).then((result) => {
+        data = result.rows[0];
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    });
+
+    return data;
+}
+
+/**
  * Returns possible segments for a Canvas course, segments are used in courses and slots 
  * to enable easy filtering of slots.
  */
@@ -37,6 +58,26 @@ async function getSegments(canvas_course_id) {
     let data;
 
     await query("SELECT * FROM segment s WHERE s.canvas_course_id=$1", [
+        canvas_course_id
+    ]).then((result) => {
+        data = result.rows;
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    });
+
+    return data;
+}
+
+/**
+ * Get all segments for a course, with statistics
+ * @param {number} canvas_course_id Id for Canvas course
+ * @returns 
+ */
+async function getSegmentsWithStatistics(canvas_course_id) {
+    let data;
+
+    await query("SELECT s.*,(SELECT count(DISTINCT id) AS courses FROM course WHERE segment_id=s.id) FROM segment s WHERE s.canvas_course_id=$1", [
         canvas_course_id
     ]).then((result) => {
         data = result.rows;
@@ -322,24 +363,6 @@ async function getNumberOfReservations(user_id, groups) {
     return data[0];
 }
 
-async function updateReservationMailSentUser(reservation_id) {
-    await query("UPDATE reservation SET mail_sent_user=now() WHERE id=$1", [ reservation_id ]).then((result) => {
-        log.info(result);
-    }).catch((error) => {
-        log.error(error);
-        throw new Error(error);
-    }); 
-}
-
-async function updateReservationMessageSentGroup(reservation_id) {
-    await query("UPDATE reservation SET mail_sent_group=now() WHERE id=$1", [ reservation_id ]).then((result) => {
-        log.info(result);
-    }).catch((error) => {
-        log.error(error);
-        throw new Error(error);
-    }); 
-}
-
 async function getValidCourses(canvas_course_id) {
     let data;
 
@@ -409,6 +432,21 @@ async function getInstructor(id) {
     return data;
 }
 
+async function getInstructorsWithStatistics(canvas_course_id) {
+    let data;
+
+    await query("SELECT DISTINCT i.*,(SELECT count(DISTINCT s.id) AS slots FROM slot s, course c2 WHERE s.instructor_id=i.id AND s.course_id=c2.id AND c2.canvas_course_id=$1) FROM instructor i, canvas_course_instructor_mapping c WHERE i.id=c.instructor_id AND c.canvas_course_id=$1", [ 
+        canvas_course_id 
+    ]).then((result) => {
+        data = result.rows;
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    });
+
+    return data;
+}
+
 async function getValidLocations(canvas_course_id) {
     let data;
 
@@ -419,6 +457,21 @@ async function getValidLocations(canvas_course_id) {
         throw new Error(error);
     });
     
+    return data;
+}
+
+async function getLocationsWithStatistics(canvas_course_id) {
+    let data;
+
+    await query("SELECT DISTINCT l.*,(SELECT count(DISTINCT s.id) AS slots FROM slot s, course c2 WHERE s.location_id=l.id AND s.course_id=c2.id AND c2.canvas_course_id=$1) FROM location l, canvas_course_location_mapping c WHERE l.id=c.location_id AND c.canvas_course_id=$1", [ 
+        canvas_course_id 
+    ]).then((result) => {
+        data = result.rows;
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    });
+
     return data;
 }
 
@@ -619,7 +672,9 @@ async function applyVersion(version) {
 
 module.exports = {
     query,
+    getSegment,
     getSegments,
+    getSegmentsWithStatistics,
     getCourseGroupCategoryFilter,
     getAllSlots,
     getAllSlotsInSegment,
@@ -636,7 +691,9 @@ module.exports = {
     getValidCourses,
     getAllCoursesWithStatistics,
     getValidInstructors,
+    getInstructorsWithStatistics,
     getValidLocations,
+    getLocationsWithStatistics,
     getCourse,
     getInstructor,
     createSlots,

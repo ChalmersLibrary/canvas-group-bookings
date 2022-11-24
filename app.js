@@ -415,6 +415,56 @@ app.get('/admin', async (req, res, next) => {
     }
 });
 
+/**
+ * Admin: Segments
+ */
+ app.get('/admin/segment', async (req, res, next) => {
+    if (req.session.user.isAdministrator) {
+        return res.render('pages/admin/admin_segment', {
+            internal: req.session.internal,
+            session: req.session,
+            segments: await db.getSegmentsWithStatistics(res.locals.courseId)
+        });
+    }
+    else {
+        next(new Error("You must have administrator privileges to access this page."));
+    }
+});
+
+/**
+ * Admin: Instructors
+ */
+ app.get('/admin/instructor', async (req, res, next) => {
+    if (req.session.user.isAdministrator) {
+        return res.render('pages/admin/admin_instructor', {
+            internal: req.session.internal,
+            session: req.session,
+            instructors: await db.getInstructorsWithStatistics(res.locals.courseId)
+        });
+    }
+    else {
+        next(new Error("You must have administrator privileges to access this page."));
+    }
+});
+
+/**
+ * Admin: Locations
+ */
+ app.get('/admin/location', async (req, res, next) => {
+    if (req.session.user.isAdministrator) {
+        return res.render('pages/admin/admin_location', {
+            internal: req.session.internal,
+            session: req.session,
+            locations: await db.getLocationsWithStatistics(res.locals.courseId)
+        });
+    }
+    else {
+        next(new Error("You must have administrator privileges to access this page."));
+    }
+});
+
+
+
 /* ===================== */
 /* API Endpoints, public */
 /* ===================== */

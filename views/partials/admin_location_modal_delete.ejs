@@ -1,0 +1,28 @@
+<div class="modal modal-md fade" id="deleteLocation" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteLocationLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form id="deleteLocationForm" action="/api/admin/location">
+            <input type="hidden" id="d_location_id" value="" />
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteLocationLabel">Radera plats</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Stäng"></button>
+                </div>
+                <div class="modal-body loading-spinner">
+                    <div class="d-flex justify-content-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body loaded-content" style="display:none;">
+                    <p>Dialogruta för att radera en plats.</p>
+                    <p>Föra över plats till annan om det finns aktiva tider.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
+                    <button type="submit" class="btn btn-danger" id="deleteLocationSaveButton">Radera</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,28 @@
+<div class="modal modal-md fade" id="deleteSegment" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteSegmentLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form id="deleteSegmentForm" action="/api/admin/segment">
+            <input type="hidden" id="d_segment_id" name="course_id" value="" />
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteSegmentLabel">Radera segment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Stäng"></button>
+                </div>
+                <div class="modal-body loading-spinner">
+                    <div class="d-flex justify-content-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body loaded-content" style="display:none;">
+                    <p>Dialogruta för att radera ett segment.</p>
+                    <p>Välj annat segment att föra över till om det finns tillfällen kopplade.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
+                    <button type="submit" class="btn btn-danger" id="deleteSegmentSaveButton">Radera</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

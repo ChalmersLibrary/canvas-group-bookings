@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../../partials/head_admin'); %>
+</head>
+<body class="container-fluid float-start">
+
+<header>
+  <%- include('../../partials/header', { user: session.user }); %>
+</header>
+
+<main class="container-fluid py-2">
+    <h1>Administration</h1>
+    <%- include('../../partials/admin_navigation', { current_page: 'segment' }) %>
+
+    <div class="row">
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-header">
+                    Segment kopplade till denna Canvaskurs
+                </div>
+                <div class="card-body">
+                    <table class="table table-md table-hover">
+                        <thead>
+                            <tr>
+                                <th>Namn</th>
+                                <th class="text-right">Tillfällen</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% segments.forEach(segment => { %>
+                                <tr>
+                                    <td>
+                                        <strong><%= segment.name %></strong>
+                                    </td>
+                                    <td><span class="float-xxx"><%= segment.courses %></span></td>
+                                    <td>
+                                        <div class="float-end">
+                                            <button type="button" title="Redigera" data-bs-target="#editSegment" data-bs-segment-id="<%= segment.id %>" class="btn btn-secondary btn-md"><i class="bi-pencil-fill"></i></button>
+                                            <button type="button" title="Radera" data-bs-toggle="modal" data-bs-target="#deleteSegment" data-bs-segment-id="<%= segment.id %>" class="btn btn-secondary btn-md mx-2"><i class="bi-trash-fill"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                    <div class="button-bar">
+                        <button type="button" class="btn btn-md btn-secondary" title="Skapa segment" data-bs-toggle="modal" data-bs-target="#newSegment">Skapa nytt segment</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-header">
+                    Hjälp
+                </div>
+                <div class="card-body text-muted">
+                    <p>
+                        Segment används för att dela upp tillfällen i olika kategorier för att enklare hitta rätt tider. 
+                        Om du väljer att skapa segment, måste varje tillfälle tillhöra ett segment.
+                    </p>
+                    <p>
+                        Om det redan finns tillfällen när du skapar ett nytt första segment, kopplas alla tillfällen till
+                        detta segment. För att ändra segment, redigera tillfället.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<%- include('../../partials/admin_segment_modal_new'); %>
+<%- include('../../partials/admin_segment_modal_edit'); %>
+<%- include('../../partials/admin_segment_modal_delete'); %>
+
+<footer>
+  <%- include('../../partials/footer'); %>
+</footer>
+
+</body>
+</html>
