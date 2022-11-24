@@ -138,4 +138,38 @@ router.get('/course', async (req, res, next) => {
     }   
 });
 
+/**
+ * Create a new course
+ */
+router.post('/course', async (req, res, next) => {
+    if (req.session.user.isAdministrator) {
+        try {
+            const { 
+                segment_id, name, description, is_group, is_individual, max_groups, max_individuals, max_per_type, default_slot_duration_minutes, 
+                cancellation_policy_hours, message_is_mandatory, message_all_when_full, message_cc_instructor, message_confirmation_body, message_full_body, message_cancelled_body
+            } = req.body;
+
+            console.xlog(req.body)
+
+            // await db.createCourse({ req.body }});
+
+            return res.send({
+                success: true,
+                message: 'New course has been created.'
+            });
+        }
+        catch (error) {
+            log.error(error);
+
+            return res.send({
+                success: false,
+                message: error.message
+            });
+        }
+    }
+    else {
+        next(new Error("You must have administrator privileges to access this page."));
+    }
+});
+
 module.exports = router;
