@@ -435,22 +435,11 @@ app.get('/admin', async (req, res, next) => {
  app.get('/admin/instructor', async (req, res, next) => {
     if (req.session.user.isAdministrator) {
         let course_instructors = await db.getInstructorsWithStatistics(res.locals.courseId);
-        let canvas_instructors = await canvasApi.getCourseTeacherEnrollments(res.locals.courseId, res.locals.token);
-
-        for (const i of canvas_instructors) {
-            if (course_instructors.map(instructor => instructor.canvas_user_id).includes(i.id)) {
-                i.mapped_to_canvas_course = true
-            }
-            else {
-                i.mapped_to_canvas_course = false
-            }
-        }
 
         return res.render('pages/admin/admin_instructor', {
             internal: req.session.internal,
             session: req.session,
-            instructors: course_instructors,
-            canvas_instructors: canvas_instructors
+            instructors: course_instructors
         });
     }
     else {

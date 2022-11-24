@@ -13,6 +13,7 @@ const CACHE_CHECK_EXPIRE = 600; // 10m
 /* Actual caches */
 const courseGroupsCache = new NodeCache({ errorOnMissing:true, stdTTL: CACHE_TTL_CANVAS, checkperiod: CACHE_CHECK_EXPIRE });
 const courseGroupCategoriesCache = new NodeCache({ errorOnMissing:true, stdTTL: CACHE_TTL_CANVAS, checkperiod: CACHE_CHECK_EXPIRE });
+const courseTeacherEnrollmentsCache = new NodeCache({ errorOnMissing:true, stdTTL: CACHE_TTL_CANVAS, checkperiod: CACHE_CHECK_EXPIRE });
 
 /* Setup caches with read/write stats */
 let caches = [
@@ -27,6 +28,12 @@ let caches = [
         writes: 0,
         reads: 0,
         bucket: courseGroupCategoriesCache
+    },
+    {
+        name: "courseTeacherEnrollmentsCache",
+        writes: 0,
+        reads: 0,
+        bucket: courseTeacherEnrollmentsCache
     }
 ];
 
@@ -37,6 +44,9 @@ courseGroupsCache.on('expired', function(key) {
 courseGroupCategoriesCache.on('expired', function(key) {
     log.info("[Cache] Expired NodeCache entry for courseGroupCategoriesCache key '" + key + "'.");
 });
+courseTeacherEnrollmentsCache.on('expired', function(key) {
+    log.info("[Cache] Expired NodeCache entry for courseTeacherEnrollmentsCache key '" + key + "'.");
+});
 
 /* Debug log when cache is set */
 courseGroupsCache.on('set', function(key, value) {
@@ -44,6 +54,9 @@ courseGroupsCache.on('set', function(key, value) {
 });
 courseGroupCategoriesCache.on('set', function(key, value) {
     log.info("[Cache] Set entry for courseGroupCategoriesCache key '" + key + "': " + typeof(value) === 'Object' ? JSON.stringify(value) : value);
+});
+courseTeacherEnrollmentsCache.on('set', function(key, value) {
+    log.info("[Cache] Set entry for courseTeacherEnrollmentsCache key '" + key + "': " + typeof(value) === 'Object' ? JSON.stringify(value) : value);
 });
 
 /* Cache statistics */

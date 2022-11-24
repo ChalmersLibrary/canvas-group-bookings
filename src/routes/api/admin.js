@@ -4,6 +4,7 @@ const express = require('express');
 const router = express.Router();
 const log = require('../../logging/');
 const db = require('../../db');
+const canvasApi = require('../../api/canvas');
 const utils = require('../../utilities');
 
 /* ============================ */
@@ -220,6 +221,44 @@ router.get('/segment/:id', async (req, res, next) => {
     else {
         next(new Error("You must have administrator privileges to access this page."));
     }   
+});
+
+/**
+ * Get information about Canvas candidates for adding instructors, etc
+ */
+router.get('/instructor', async (req, res, next) => {
+    if (req.session.user.isAdministrator) {
+        try {
+            const course_instructors = await db.getInstructorsWithStatistics(res.locals.courseId);
+            let canvas_instructors = await canvasApi.getCourseTeacherEnrollments(res.locals.courseId, res.locals.token);
+
+            for (const i of canvas_instructors) {
+                if (course_instructors.map(instructor => instructor.canvas_user_id).includes(i.id)) {
+                    i.mapped_to_canvas_course = true
+                }
+                else {
+                    i.mapped_to_canvas_course = false
+                }
+            }
+
+            return res.send({
+                success: true,
+                course_instructors: course_instructors,
+                canvas_instructors: canvas_instructors
+            });
+        }
+        catch (error) {
+            log.error(error);
+
+            return res.send({
+                success: false,
+                message: error.message
+            });
+        }
+    }
+    else {
+        next(new Error("You must have administrator privileges to access this page."));
+    }
 });
 
 /**

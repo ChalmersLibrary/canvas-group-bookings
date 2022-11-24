@@ -380,7 +380,7 @@ async function getAllCoursesWithStatistics(canvas_course_id) {
 
     await query("SELECT c.id, c.name, c.is_group, c.is_individual, " +
                 "(SELECT COUNT(*) AS slots FROM slots_view sv WHERE sv.course_id=c.id), " +
-                "(SELECT SUM(res_max) AS spots FROM slots_view sv WHERE sv.course_id=c.id), " +
+                "(SELECT COALESCE(SUM(res_max), 0) AS spots FROM slots_view sv WHERE sv.course_id=c.id), " +
                 "(SELECT COUNT(rv.*) AS reservations FROM reservations_view rv, slot s WHERE rv.slot_id=s.id AND s.course_id=c.id), " +
                 "(SELECT COUNT(r.*) AS deleted FROM reservation r, slot s WHERE r.deleted_at IS NOT NULL AND r.slot_id=s.id AND s.course_id=c.id) " +
                 "FROM course c " + 
@@ -406,10 +406,124 @@ async function getCourse(id) {
     return data;
 }
 
+/**
+ * Create a new course for a specific Canvas course, with lots of attributes.
+ * Returns the created course id.
+ */
+async function createCourse(canvas_course_id, parameters) {
+    let data;
+
+    let {
+        segment_id, name, description, is_group, is_individual, max_groups, max_individuals, max_per_type, default_slot_duration_minutes, 
+        cancellation_policy_hours, message_is_mandatory, message_all_when_full, message_cc_instructor, message_confirmation_body, message_full_body, message_cancelled_body
+    } = parameters;
+
+    if (is_group) {
+        max_individuals = null;
+    }
+    else if (is_individual) {
+        max_groups = null;
+    }
+
+    if (message_confirmation_body == '') {
+        message_confirmation_body = null;
+    }
+    if (message_full_body == '') {
+        message_full_body = null;
+    }
+    if (message_cancelled_body == '') {
+        message_cancelled_body = null;
+    }
+
+    await query("INSERT INTO course (canvas_course_id, segment_id, name, description, is_group, is_individual, max_groups, max_individuals, max_per_type, default_slot_duration_minutes, cancellation_policy_hours, message_is_mandatory, message_all_when_full, message_cc_instructor, message_confirmation_body, message_full_body, message_cancelled_body) " +
+                "VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17) RETURNING id", [ 
+        canvas_course_id,
+        segment_id, 
+        name, 
+        description, 
+        is_group, 
+        is_individual, 
+        max_groups, 
+        max_individuals, 
+        max_per_type, 
+        default_slot_duration_minutes, 
+        cancellation_policy_hours, 
+        message_is_mandatory, 
+        message_all_when_full, 
+        message_cc_instructor, 
+        message_confirmation_body, 
+        message_full_body, 
+        message_cancelled_body
+    ]).then((result) => {
+        data = result.rows[0];
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    });
+
+    return data;
+}
+
+/**
+ * Update information about a course.
+ */
+async function updateCourse(course_id, parameters) {
+    let {
+        segment_id, name, description, is_group, is_individual, max_groups, max_individuals, max_per_type, default_slot_duration_minutes, 
+        cancellation_policy_hours, message_is_mandatory, message_all_when_full, message_cc_instructor, message_confirmation_body, message_full_body, message_cancelled_body
+    } = parameters;
+
+    if (is_group) {
+        max_individuals = null;
+    }
+    else if (is_individual) {
+        max_groups = null;
+    }
+
+    if (message_confirmation_body == '') {
+        message_confirmation_body = null;
+    }
+    if (message_full_body == '') {
+        message_full_body = null;
+    }
+    if (message_cancelled_body == '') {
+        message_cancelled_body = null;
+    }
+
+    await query("UPDATE course SET segment_id=$1, name=$2, description=$3, is_group=$4, is_individual=$5, max_groups=$6, max_individuals=$7, max_per_type=$8, default_slot_duration_minutes=$9, " +
+                "cancellation_policy_hours=$10, message_is_mandatory=$11, message_all_when_full=$12, message_cc_instructor=$13, message_confirmation_body=$14, message_full_body=$15, message_cancelled_body=$16 " +
+                "WHERE id=$17", [ 
+        segment_id, 
+        name, 
+        description, 
+        is_group, 
+        is_individual, 
+        max_groups, 
+        max_individuals, 
+        max_per_type, 
+        default_slot_duration_minutes, 
+        cancellation_policy_hours, 
+        message_is_mandatory, 
+        message_all_when_full, 
+        message_cc_instructor, 
+        message_confirmation_body, 
+        message_full_body, 
+        message_cancelled_body,
+        course_id
+    ]).then((result) => {
+        log.info(result);
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    });
+}
+
 async function getValidInstructors(canvas_course_id) {
     let data;
 
-    await query("SELECT DISTINCT i.id, i.name FROM instructor i, canvas_course_instructor_mapping c WHERE i.id=c.instructor_id AND c.canvas_course_id=$1", [ canvas_course_id ]).then((result) => {
+    await query("SELECT DISTINCT i.id, i.name FROM instructor i, canvas_course_instructor_mapping c WHERE i.id=c.instructor_id AND c.canvas_course_id=$1", [ 
+        canvas_course_id 
+    ]).then((result) => {
         data = result.rows;
     }).catch((error) => {
         log.error(error);
@@ -690,6 +804,8 @@ module.exports = {
     getNumberOfReservations,
     getValidCourses,
     getAllCoursesWithStatistics,
+    createCourse,
+    updateCourse,
     getValidInstructors,
     getInstructorsWithStatistics,
     getValidLocations,

@@ -1,22 +1,30 @@
 <div class="modal modal-md fade" id="newInstructor" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="newInstructorLabel" aria-hidden="true">
     <div class="modal-dialog">
         <form class="needs-validation" id="newInstructorForm" novalidate action="/api/admin/instructor">
+            <input type="hidden" id="n_instructor_name" value="">
+            <input type="hidden" id="n_instructor_email" value="">
+            <input type="hidden" id="n_instructor_avatar_url" value="">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="newInstructorLabel">Lägg till handledare</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Stäng"></button>
                 </div>
-                <div class="modal-body">
-                    <p>
-                        <small>Handledare måste finnas som deltagare i kursen och rollen måste vara Lärare eller Examinator.</small>
+                <div class="modal-body loading-spinner">
+                    <div class="d-flex justify-content-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body loaded-content" style="display:none;">
+                    <p id="n_instructor_addPart">
+                        <label for="n_instructor_canvas_id">Namn från Canvas:</label>
+                        <select class="form-control" id="n_instructor_canvas_id"></select>
                     </p>
-                    <p>
-                        <label for="n_instructor_canvas_is">Namn från Canvas:</label>
-                        <select class="form-control" id="n_instructor_canvas_is">
-                            <option value="">Palle Kuling</option>
-                            <option value="">Erika Ordnung</option>
-                        </select>
-                    </p>
+                    <div id="n_instructor_all_addedPart" style="display:none;" class="alert alert-primary">
+                        <strong>Det finns inga personer att lägga till.</strong>
+                        <span>Alla som har rollen Lärare eller Examinator i kursen är redan tillagda som handledare.</span>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
