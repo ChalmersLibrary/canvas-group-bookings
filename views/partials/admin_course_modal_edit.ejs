@@ -8,14 +8,14 @@
                     <h5 class="modal-title" id="editCourseLabel">Redigera tillfälle</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Stäng"></button>
                 </div>
-                <div class="modal-body" id="editLoadingSpinner">
+                <div class="modal-body loading-spinner">
                     <div class="d-flex justify-content-center">
                         <div class="spinner-border" role="status">
                             <span class="visually-hidden">Loading...</span>
                         </div>
                     </div>
                 </div>
-                <div class="modal-body" id="editLoadedContent">
+                <div class="modal-body loaded-content" style="display:none;">
                     <ul class="nav nav-tabs" id="editCourseTab" role="tablist">
                         <li class="nav-item" role="presentation">
                           <button class="nav-link active" id="edit-basic-tab" data-bs-toggle="tab" data-bs-target="#edit-tab-basic" type="button" role="tab" aria-controls="edit-tab-basic" aria-selected="true">Grundläggande</button>
@@ -34,7 +34,7 @@
                         <div class="tab-pane fade show active" id="edit-tab-basic" role="tabpanel" aria-labelledby="edit-basic-tab">
                             <p>
                                 <label for="e_name">Namn:</label><br>
-                                <input type="text" class="form-control" id="e_name" value="">    
+                                <input type="text" class="form-control" id="e_name" value="" required>    
                             </p>
                             <p>
                                 <label for="e_description">Beskrivning:</label><br>
@@ -61,7 +61,7 @@
                         </div>
                         <div class="tab-pane fade" id="edit-tab-values" role="tabpanel" aria-labelledby="edit-values-tab">
                             <p>
-                                <label for="e_max_number" class="">Max antal bokningar per utlagd tid:</label><br>
+                                <label for="e_max_number" class="">Max antal bokningsbara platser per utlagd tid:</label><br>
                                 <input type="number" class="form-control" min="1" max="9999" value="1" id="e_max_number">
                             </p>
                             <p>
@@ -101,17 +101,22 @@
                         </div>
                         <div class="tab-pane fade" id="edit-tab-messages" role="tabpanel" aria-labelledby="edit-messages-tab">                            
                             <div class="form-floating my-3">
-                                <textarea class="form-control" id="e_message_confirmation_body" style="height: 200px;" placeholder=""></textarea>    
+                                <textarea class="form-control" id="e_message_confirmation_body" style="height: 200px;"></textarea>    
                                 <label for="e_message_confirmation_body">Meddelande för bekräftelse av bokning</label>
                             </div>
                             <div class="form-floating my-3">
-                                <textarea class="form-control" id="e_message_cancelled_body" style="height: 200px;" placeholder=""></textarea>    
+                                <textarea class="form-control" id="e_message_cancelled_body" style="height: 200px;"></textarea>    
                                 <label for="e_message_cancelled_body">Meddelande för bekräftelse av avbokning</label>
                             </div>
-                            <div class="form-floating my-3" id="e_message_full_bodyPart">
-                                <textarea class="form-control" id="e_message_full_body" style="height: 200px;" placeholder=""></textarea>    
+                            <div class="form-floating my-3" id="e_message_full_bodyPart" style="display:none;">
+                                <textarea class="form-control" id="e_message_full_body" style="height: 200px;"></textarea>    
                                 <label for="e_message_full_body">Meddelande för ihopkoppling av alla bokade</label>
                             </div>
+                            <p>
+                                <div class="alert alert-primary">
+                                    <strong>Notera: </strong> Om fälten lämnas tomma, kommer generellt utformade meddelanden att användas.
+                                </div>
+                            </p>
                             <div class="card">
                                 <div class="card-header">
                                     Dynamiska delar i text
@@ -122,6 +127,10 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div class="alert alert-error alert-danger" style="display:none;">
+                        <strong>Ett fel inträffade: </strong>
+                        <span></span>
                     </div>
                 </div>
                 <div class="modal-footer">

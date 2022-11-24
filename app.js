@@ -403,9 +403,7 @@ app.get('/admin', async (req, res, next) => {
  app.get('/admin/course', async (req, res, next) => {
     if (req.session.user.isAdministrator) {
         return res.render('pages/admin/admin_course', {
-            status: 'up',
             internal: req.session.internal,
-            version: pkg.version,
             session: req.session,
             courses: await db.getAllCoursesWithStatistics(res.locals.courseId)
         });
@@ -436,10 +434,23 @@ app.get('/admin', async (req, res, next) => {
  */
  app.get('/admin/instructor', async (req, res, next) => {
     if (req.session.user.isAdministrator) {
+        let course_instructors = await db.getInstructorsWithStatistics(res.locals.courseId);
+        let canvas_instructors = await canvasApi.getCourseTeacherEnrollments(res.locals.courseId, res.locals.token);
+
+        for (const i of canvas_instructors) {
+            if (course_instructors.map(instructor => instructor.canvas_user_id).includes(i.id)) {
+                i.mapped_to_canvas_course = true
+            }
+            else {
+                i.mapped_to_canvas_course = false
+            }
+        }
+
         return res.render('pages/admin/admin_instructor', {
             internal: req.session.internal,
             session: req.session,
-            instructors: await db.getInstructorsWithStatistics(res.locals.courseId)
+            instructors: course_instructors,
+            canvas_instructors: canvas_instructors
         });
     }
     else {

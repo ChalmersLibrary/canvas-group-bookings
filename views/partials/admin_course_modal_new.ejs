@@ -6,14 +6,14 @@
                     <h5 class="modal-title" id="newCourseLabel">Skapa nytt tillfälle</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Stäng"></button>
                 </div>
-                <div class="modal-body" id="newLoadingSpinner">
+                <div class="modal-body loading-spinner">
                     <div class="d-flex justify-content-center">
                         <div class="spinner-border" role="status">
                             <span class="visually-hidden">Loading...</span>
                         </div>
                     </div>
                 </div>
-                <div class="modal-body" id="newLoadedContent">
+                <div class="modal-body loaded-content" style="display:none;">
                     <ul class="nav nav-tabs" id="newCourseTab" role="tablist">
                         <li class="nav-item" role="presentation">
                           <button class="nav-link active" id="new-basic-tab" data-bs-toggle="tab" data-bs-target="#new-tab-basic" type="button" role="tab" aria-controls="new-tab-basic" aria-selected="true">Grundläggande</button>
@@ -32,7 +32,7 @@
                         <div class="tab-pane fade show active" id="new-tab-basic" role="tabpanel" aria-labelledby="new-basic-tab">
                             <p>
                                 <label for="n_name">Namn:</label><br>
-                                <input type="text" class="form-control" id="n_name" value="">    
+                                <input type="text" class="form-control" id="n_name" value="" required>    
                             </p>
                             <p>
                                 <label for="n_description">Beskrivning:</label><br>
@@ -59,7 +59,7 @@
                         </div>
                         <div class="tab-pane fade" id="new-tab-values" role="tabpanel" aria-labelledby="new-values-tab">
                             <p>
-                                <label for="n_max_number" class="">Max antal bokningar per utlagd tid:</label><br>
+                                <label for="n_max_number" class="">Max antal bokningsbara platser per utlagd tid:</label><br>
                                 <input type="number" class="form-control" min="1" max="9999" value="1" id="n_max_number">
                             </p>
                             <p>

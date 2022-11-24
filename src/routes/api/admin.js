@@ -144,18 +144,13 @@ router.get('/course', async (req, res, next) => {
 router.post('/course', async (req, res, next) => {
     if (req.session.user.isAdministrator) {
         try {
-            const { 
-                segment_id, name, description, is_group, is_individual, max_groups, max_individuals, max_per_type, default_slot_duration_minutes, 
-                cancellation_policy_hours, message_is_mandatory, message_all_when_full, message_cc_instructor, message_confirmation_body, message_full_body, message_cancelled_body
-            } = req.body;
-
-            console.xlog(req.body)
-
-            // await db.createCourse({ req.body }});
+            console.log(req.body)
+            const created_id = await db.createCourse(res.locals.courseId, req.body);
 
             return res.send({
                 success: true,
-                message: 'New course has been created.'
+                message: 'New course has been created.',
+                created_id: created_id
             });
         }
         catch (error) {
@@ -172,6 +167,37 @@ router.post('/course', async (req, res, next) => {
     }
 });
 
+/**
+ * Update information about a course.
+ */
+router.put('/course/:id', async (req, res, next) => {
+    if (req.session.user.isAdministrator) {
+        try {
+            console.log(req.body)
+            await db.updateCourse(req.params.id, req.body);
+
+            return res.send({
+                success: true,
+                message: 'Course has been updated.'
+            });
+        }
+        catch (error) {
+            log.error(error);
+
+            return res.send({
+                success: false,
+                message: error.message
+            });
+        }
+    }
+    else {
+        next(new Error("You must have administrator privileges to access this page."));
+    }
+});
+
+/**
+ * Get information about a Segment, for the edit dialog
+ */
 router.get('/segment/:id', async (req, res, next) => {
     if (req.session.user.isAdministrator) {
         try {
@@ -195,5 +221,87 @@ router.get('/segment/:id', async (req, res, next) => {
         next(new Error("You must have administrator privileges to access this page."));
     }   
 });
+
+/**
+ * Get information about an Instructor, for the edit dialog
+ */
+router.get('/instructor/:id', async (req, res, next) => {
+    if (req.session.user.isAdministrator) {
+        try {
+            const instructor = await db.getInstructor(req.params.id);
+
+            return res.send({
+                success: true,
+                instructor: segment
+            });
+        }
+        catch (error) {
+            log.error(error);
+
+            return res.send({
+                success: false,
+                message: error.message
+            });
+        }
+    }
+    else {
+        next(new Error("You must have administrator privileges to access this page."));
+    }   
+});
+
+/**
+ * Update information about an Instructor
+ */
+router.put('/instructor/:id', async (req, res, next) => {
+    if (req.session.user.isAdministrator) {
+        try {
+            console.log(req.body)
+            await db.updateInstructor(req.params.id, req.body);
+
+            return res.send({
+                success: true,
+                message: 'Instructor has been updated.'
+            });
+        }
+        catch (error) {
+            log.error(error);
+
+            return res.send({
+                success: false,
+                message: error.message
+            });
+        }
+    }
+    else {
+        next(new Error("You must have administrator privileges to access this page."));
+    }
+});
+
+router.post('/instructor', async (req, res, next) => {
+    if (req.session.user.isAdministrator) {
+        try {
+            console.log(req.body)
+            const created_id = await db.createInstructor(res.locals.courseId, req.body);
+
+            return res.send({
+                success: true,
+                message: 'New course has been created.',
+                created_id: created_id
+            });
+        }
+        catch (error) {
+            log.error(error);
+
+            return res.send({
+                success: false,
+                message: error.message
+            });
+        }
+    }
+    else {
+        next(new Error("You must have administrator privileges to access this page."));
+    }
+});
+
 
 module.exports = router;
