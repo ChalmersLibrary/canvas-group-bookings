@@ -1,8 +1,6 @@
 <div class="modal modal-md fade" id="newInstructor" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="newInstructorLabel" aria-hidden="true">
     <div class="modal-dialog">
         <form class="needs-validation" id="newInstructorForm" novalidate action="/api/admin/instructor">
-            <input type="hidden" id="n_instructor_name" value="">
-            <input type="hidden" id="n_instructor_email" value="">
             <input type="hidden" id="n_instructor_avatar_url" value="">
             <div class="modal-content">
                 <div class="modal-header">
@@ -17,13 +15,30 @@
                     </div>
                 </div>
                 <div class="modal-body loaded-content" style="display:none;">
-                    <p id="n_instructor_addPart">
-                        <label for="n_instructor_canvas_id">Namn från Canvas:</label>
-                        <select class="form-control" id="n_instructor_canvas_id"></select>
-                    </p>
+                    <div id="n_instructor_addPart">
+                        <p>
+                            <label for="n_instructor_canvas_id">Person i Canvaskursen:</label>
+                            <select class="form-control" id="n_instructor_canvas_id"></select>
+                        </p>
+                        <p>
+                            <label for="n_instructor_name">Namn:</label><br>
+                            <input type="text" class="form-control" id="n_instructor_name" value="" disabled>
+                        </p>
+                        <p>
+                            <label for="n_instructor_email">E-postadress:</label><br>
+                            <input type="text" class="form-control" id="n_instructor_email" value="" disabled>
+                        </p>    
+                        <div class="alert alert-primary">
+                            Endast personer i denna Canvaskurs med rollen Lärare eller Examinator kan läggas till som handledare.
+                        </div>
+                    </div>
                     <div id="n_instructor_all_addedPart" style="display:none;" class="alert alert-primary">
                         <strong>Det finns inga personer att lägga till.</strong>
                         <span>Alla som har rollen Lärare eller Examinator i kursen är redan tillagda som handledare.</span>
+                    </div>
+                    <div class="alert alert-danger alert-error" style="display:none;">
+                        <strong>Ett fel har uppstått:</strong>
+                        <span></span>
                     </div>
                 </div>
                 <div class="modal-footer">

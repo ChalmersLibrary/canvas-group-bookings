@@ -8,16 +8,24 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     /* The modal for new Instructor is shown, load users into select */
     newInstructorModal && newInstructorModal.addEventListener("show.bs.modal", function(event) {
+        let api_data = [];
         newInstructorModal.querySelector('div.modal-body.loading-spinner').style.display = "block"
         newInstructorModal.querySelector('div.modal-body.loaded-content').style.display = "none"
         fetch("/api/admin/instructor")
         .then(response => response.json())
         .then(data => {
             console.log(data)
+            api_data = data // store the data as we need to reference it
             if (data.canvas_instructors && data.canvas_instructors.filter(ci => ci.mapped_to_canvas_course == false).length) {
                 newInstructorModal.querySelector('#n_instructor_canvas_id').replaceChildren()
                 data.canvas_instructors.filter(ci => ci.mapped_to_canvas_course == false).forEach((i, key) => {
                     document.getElementById('n_instructor_canvas_id')[key] = new Option(i.name, i.id)
+                })
+                document.getElementById('n_instructor_canvas_id').addEventListener("change", function(event) {
+                    console.log(event)
+                    console.log(event.target.selectedOptions[0].value)
+                    newInstructorForm.querySelector('#n_instructor_name').value = api_data.canvas_instructors.filter(x => x.id == event.target.selectedOptions[0].value)[0].name
+                    newInstructorForm.querySelector('#n_instructor_email').value = api_data.canvas_instructors.filter(x => x.id == event.target.selectedOptions[0].value)[0].email
                 })
             }
             else {
@@ -27,6 +35,11 @@ document.addEventListener("DOMContentLoaded", function(event) {
             }
         })
         .then(finished => {
+            console.log(document.getElementById('n_instructor_canvas_id').value);
+            console.log(api_data.canvas_instructors.filter(x => x.id == document.getElementById('n_instructor_canvas_id').value)[0].name)
+            newInstructorForm.querySelector('#n_instructor_name').value = api_data.canvas_instructors.filter(x => x.id == document.getElementById('n_instructor_canvas_id').value)[0].name
+            newInstructorForm.querySelector('#n_instructor_email').value = api_data.canvas_instructors.filter(x => x.id == document.getElementById('n_instructor_canvas_id').value)[0].email
+            newInstructorForm.querySelector('#n_instructor_existing_id').value = api_data.all_instructors.filter(x => x.canvas_user_id == document.getElementById('n_instructor_canvas_id').value)[0].id
             newInstructorModal.querySelector('div.modal-body.loading-spinner').style.display = "none"
             newInstructorModal.querySelector('div.modal-body.loaded-content').style.display = "block"
         })
@@ -38,28 +51,15 @@ document.addEventListener("DOMContentLoaded", function(event) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                segment_id: newInstructorForm.querySelector('#n_segment').value ? newInstructorForm.querySelector('#n_segment').value : null,
-                name: newInstructorForm.querySelector('#n_name').value,
-                description: newInstructorForm.querySelector('#n_description').value,
-                is_group: newInstructorForm.querySelector('#n_type_is_group').checked ? true : false,
-                is_individual: newInstructorForm.querySelector('#n_type_is_individual').checked ? true : false,
-                max_groups: newInstructorForm.querySelector('#n_type_is_group').checked ? newInstructorForm.querySelector('#n_max_number').value : null,
-                max_individuals: newInstructorForm.querySelector('#n_type_is_individual').checked ? newInstructorForm.querySelector('#n_max_number').value : null,
-                max_per_type: newInstructorForm.querySelector('#n_max_per_type').value,
-                default_slot_duration_minutes: newInstructorForm.querySelector('#n_default_slot_duration_minutes').value,
-                cancellation_policy_hours: newInstructorForm.querySelector('#n_cancellation_policy_hours').value,
-                message_is_mandatory: newInstructorForm.querySelector('#n_message_is_mandatory').checked ? true : false,
-                message_all_when_full: newInstructorForm.querySelector('#n_message_all_when_full').checked ? true : false,
-                message_cc_instructor: newInstructorForm.querySelector('#n_message_cc_instructor').checked ? true : false,
-                message_confirmation_body: newInstructorForm.querySelector('#n_message_confirmation_body').value,
-                message_full_body: newInstructorForm.querySelector('#n_message_full_body').value,
-                message_cancelled_body: newInstructorForm.querySelector('#n_message_cancelled_body').value
+                canvas_user_id: newInstructorForm.querySelector('#n_instructor_canvas_id').value,
+                name: newInstructorForm.querySelector('#n_instructor_name').value,
+                email: newInstructorForm.querySelector('#n_instructor_email').value
             })
         }
 
         console.log(requestOptions)
 
-        fetch("/api/admin/course", requestOptions)
+        fetch("/api/admin/instructor", requestOptions)
         .then(response => {
             return response.text()
         })
@@ -71,7 +71,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 newInstructorModal.querySelector('div.alert.alert-error').style.display = "block"
             }
             else {
-                window.location.assign("/admin/course")
+                window.location.assign("/admin/instructor")
             }
         })
         

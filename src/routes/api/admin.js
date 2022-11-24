@@ -230,6 +230,7 @@ router.get('/instructor', async (req, res, next) => {
     if (req.session.user.isAdministrator) {
         try {
             const course_instructors = await db.getInstructorsWithStatistics(res.locals.courseId);
+            const all_instructors = await db.getAllInstructors();
             let canvas_instructors = await canvasApi.getCourseTeacherEnrollments(res.locals.courseId, res.locals.token);
 
             for (const i of canvas_instructors) {
@@ -244,6 +245,7 @@ router.get('/instructor', async (req, res, next) => {
             return res.send({
                 success: true,
                 course_instructors: course_instructors,
+                all_instructors: all_instructors,
                 canvas_instructors: canvas_instructors
             });
         }
