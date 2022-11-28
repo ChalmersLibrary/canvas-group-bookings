@@ -721,6 +721,26 @@ async function createLocation(name, description, external_url, campus_maps_id) {
     
     return data;
 }
+
+async function updateLocation(id, name, description, external_url, campus_maps_id) {
+    let data;
+
+    await query("UPDATE location SET name=$2, description=$3, external_url=$4, campus_maps_id=$5 WHERE id=$1", [
+        id,
+        name,
+        description,
+        external_url,
+        campus_maps_id
+    ]).then((result) => {
+        data = result.rows[0];
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    });
+    
+    return data;
+}
+
 async function connectLocation(canvas_course_id, location_id) {
     let data;
 
@@ -980,6 +1000,7 @@ module.exports = {
     getAllLocations,
     getLocation,
     createLocation,
+    updateLocation,
     connectLocation,
     disconnectLocation,
     getCourse,

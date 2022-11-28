@@ -92,4 +92,70 @@ document.addEventListener("DOMContentLoaded", function(event) {
         event.preventDefault()
         event.stopPropagation()
     })
+
+    /* The modal for edit location is show */
+    editLocationModal && editLocationModal.addEventListener('show.bs.modal', event => {
+        editLocationModal.querySelector('div.modal-body.loading-spinner').style.display = "block"
+        editLocationModal.querySelector('div.modal-body.loaded-content').style.display = "none"
+        const button = event.relatedTarget
+        const location_id = button.getAttribute('data-bs-location-id')
+        fetch(`/api/admin/location/${location_id}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data)
+            editLocationForm.querySelector('#e_location_id').value = location_id
+            editLocationForm.querySelector('#e_location_name').value = data.location.name
+            editLocationForm.querySelector('#e_location_description').innerHTML = data.location.description
+            editLocationForm.querySelector('#e_location_external_url').value = data.location.external_url
+            editLocationForm.querySelector('#e_location_campus_maps_id').value = data.location.campus_maps_id
+        })
+        .then(finished => {
+            editLocationModal.querySelector('div.modal-body.loading-spinner').style.display = "none"
+            editLocationModal.querySelector('div.modal-body.loaded-content').style.display = "block"
+        })
+    })
+
+    /* The Edit Instructor Form is submitted */
+    editLocationForm && editLocationForm.addEventListener("submit", function(event) {
+        if (!editLocationForm.checkValidity()) {
+            event.preventDefault()
+            event.stopPropagation()
+            editLocationForm.classList.add('was-validated')
+        }
+        else {
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: editLocationForm.querySelector('#e_location_name').value,
+                    description: editLocationForm.querySelector('#e_location_description').value,
+                    external_url: editLocationForm.querySelector('#e_location_external_url').value,
+                    campus_maps_id: editLocationForm.querySelector('#e_location_campus_maps_id').value
+                })
+            }
+    
+            console.log(requestOptions)
+    
+            const location_id = editLocationForm.querySelector('#e_location_id').value
+    
+            fetch(`/api/admin/location/${location_id}`, requestOptions)
+            .then(response => {
+                return response.text()
+            })
+            .then(data => { 
+                console.log(data)
+                const responseBody = JSON.parse(data)
+                if (responseBody.success === false) {
+                    editLocationModal.querySelector('div.alert.alert-error span').innerText = JSON.parse(data).message
+                    editLocationModal.querySelector('div.alert.alert-error').style.display = "block"
+                }
+                else {
+                    window.location.assign("/admin/location")
+                }
+            })
+            
+            event.preventDefault()
+            event.stopPropagation()    
+        }
+    })
 })

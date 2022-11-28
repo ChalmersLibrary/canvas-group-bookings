@@ -16,9 +16,24 @@
                 </div>
                 <div class="modal-body loaded-content" style="display:none;">
                     <p>
-                        <label for="e_name">Namn:</label><br>
-                        <input type="text" class="form-control" id="e_name" value="">    
+                        <label for="e_location_name">Namn:</label><br>
+                        <input type="text" class="form-control" id="e_location_name" value="" required>    
                     </p>
+                    <p>
+                        <label for="e_location_description">Beskrivning:</label><br>
+                        <textarea id="e_location_description" class="form-control" style="height:190px;"></textarea>
+                    </p>
+                    <p>
+                        <label for="e_location_external_url">Extern länk:</label><br>
+                        <input type="text" class="form-control" id="e_location_external_url" value="">
+                    </p>
+                    <p>
+                        <label for="e_location_campus_maps_id">Chalmers Maps Id:</label><br>
+                        <input type="text" class="form-control" id="e_location_campus_maps_id" value="">
+                    </p>
+                    <div class="alert alert-danger alert-error" style="display:none;">
+                        <strong>Ett fel uppstod: </strong><span></span>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>

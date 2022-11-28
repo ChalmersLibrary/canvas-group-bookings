@@ -385,6 +385,52 @@ router.get('/location', async (req, res, next) => {
     }
 });
 
+router.get('/location/:id', async (req, res, next) => {
+    try {
+        const location = await db.getLocation(req.params.id);
+
+        return res.send({
+            success: true,
+            location: location
+        });
+    }
+    catch (error) {
+        log.error(error);
+
+        return res.send({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
+/**
+ * Update location information.
+ */
+router.put('/location/:id', async (req, res, next) => {
+    try {
+        const { name, description, external_url, campus_maps_id } = req.body;
+        const existing_location = await db.getLocation(req.params.id);
+        
+        if (existing_location) {
+            await db.updateLocation(existing_location.id, name, description, external_url, campus_maps_id);
+        }
+
+        return res.send({
+            success: true,
+            message: 'Location has been updated.'
+        });
+    }
+    catch (error) {
+        log.error(error);
+
+        return res.send({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
 /**
  * Create (and/or connect) a location
  */
