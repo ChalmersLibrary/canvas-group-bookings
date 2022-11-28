@@ -549,7 +549,7 @@ async function getInstructor(id) {
 async function getInstructorWithStatistics(canvas_course_id, instructor_id) {
     let data;
 
-    await query("SELECT DISTINCT i.*,(SELECT count(DISTINCT s.id) AS slots FROM slot s, course c2 WHERE s.instructor_id=i.id AND s.course_id=c2.id AND c2.canvas_course_id=$1) FROM instructor i, canvas_course_instructor_mapping c WHERE i.id=c.instructor_id AND c.canvas_course_id=$1 AND c.instructor_id=$2", [ 
+    await query("SELECT DISTINCT i.*,(SELECT count(DISTINCT s.id) AS slots FROM slot s, course c2 WHERE s.instructor_id=i.id AND s.course_id=c2.id AND c2.canvas_course_id=$1) FROM instructor i, canvas_course_instructor_mapping c WHERE i.id=c.instructor_id AND c.canvas_course_id=$1 AND i.id=$2", [ 
         canvas_course_id,
         instructor_id 
     ]).then((result) => {
@@ -661,6 +661,21 @@ async function getValidLocations(canvas_course_id) {
     return data;
 }
 
+async function getLocationWithStatistics(canvas_course_id, location_id) {
+    let data;
+
+    await query("SELECT DISTINCT l.*,(SELECT count(DISTINCT s.id) AS slots FROM slot s, course c2 WHERE s.location_id=l.id AND s.course_id=c2.id AND c2.canvas_course_id=$1) FROM location l, canvas_course_location_mapping c WHERE l.id=c.location_id AND c.canvas_course_id=$1 AND l.id=$2", [ 
+        canvas_course_id,
+        location_id
+    ]).then((result) => {
+        data = result.rows[0];
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    });
+
+    return data;
+}
 async function getLocationsWithStatistics(canvas_course_id) {
     let data;
 
@@ -761,6 +776,19 @@ async function disconnectLocation(canvas_course_id, location_id) {
     await query("DELETE FROM canvas_course_location_mapping WHERE canvas_course_id=$1 AND location_id=$2", [
         canvas_course_id,
         location_id
+    ]).then((result) => {
+        log.info(result);
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    });
+}
+
+async function replaceConnectedLocation(canvas_course_id, location_id, new_location_id) {
+    await query("UPDATE slot SET location_id=$3 FROM course WHERE slot.location_id=$2 AND slot.course_id=course.id AND course.canvas_course_id=$1", [
+        canvas_course_id,
+        location_id,
+        new_location_id
     ]).then((result) => {
         log.info(result);
     }).catch((error) => {
@@ -996,6 +1024,7 @@ module.exports = {
     disconnectInstructor,
     replaceConnectedInstructor,
     getValidLocations,
+    getLocationWithStatistics,
     getLocationsWithStatistics,
     getAllLocations,
     getLocation,
@@ -1003,6 +1032,7 @@ module.exports = {
     updateLocation,
     connectLocation,
     disconnectLocation,
+    replaceConnectedLocation,
     getCourse,
     createSlots,
     updateSlot,

@@ -170,4 +170,69 @@ document.addEventListener("DOMContentLoaded", function(event) {
             event.stopPropagation()    
         }
     })
+
+    deleteLocationModal && deleteLocationModal.addEventListener('show.bs.modal', event => {
+        deleteLocationModal.querySelector('div.modal-body.loading-spinner').style.display = "block"
+        deleteLocationModal.querySelector('div.modal-body.loaded-content').style.display = "none"
+        const button = event.relatedTarget
+        const location_id = button.getAttribute('data-bs-location-id')
+        fetch(`/api/admin/location/${location_id}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data)
+            deleteLocationModal.querySelector('#d_location_id').value = location_id
+            deleteLocationModal.querySelector('#d_location_name').innerHTML = data.location.name
+            deleteLocationModal.querySelector('#d_replace_with_location').replaceChildren()
+            document.getElementById('d_replace_with_location')[0] = new Option("Ingen ersättning", "")
+            data.course_locations.filter(ci => ci.id != location_id).forEach((i, key) => {
+                document.getElementById('d_replace_with_location')[key+1] = new Option("Ersätt med " + i.name, i.id)
+            })
+            if (data.location.slots > 0) {
+                deleteLocationModal.querySelector('div.loaded-content div.location-deletable').style.display = "none"
+                deleteLocationModal.querySelector('div.loaded-content div.location-replace').style.display = "block"
+            }
+            else {
+                deleteLocationModal.querySelector('div.loaded-content div.location-deletable').style.display = "block"
+                deleteLocationModal.querySelector('div.loaded-content div.location-replace').style.display = "none"
+            }
+        })
+        .then(finished => {
+            deleteLocationModal.querySelector('div.modal-body.loading-spinner').style.display = "none"
+            deleteLocationModal.querySelector('div.modal-body.loaded-content').style.display = "block"
+        })
+    })
+
+    /* The form for deleting/replacing a location is submitted */
+    deleteLocationForm && deleteLocationForm.addEventListener("submit", function(event) {
+        const requestOptions = {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                replace_with_location_id: deleteLocationForm.querySelector('#d_replace_with_location').value
+            })
+        }
+
+        console.log(requestOptions)
+
+        const location_id = deleteLocationForm.querySelector('#d_location_id').value
+
+        fetch(`/api/admin/location/${location_id}`, requestOptions)
+        .then(response => {
+            return response.text()
+        })
+        .then(data => { 
+            console.log(data)
+            const responseBody = JSON.parse(data)
+            if (responseBody.success === false) {
+                deleteLocationForm.querySelector('div.alert.alert-error span').innerText = JSON.parse(data).message
+                deleteLocationForm.querySelector('div.alert.alert-error').style.display = "block"
+            }
+            else {
+                window.location.assign("/admin/location")
+            }
+        })
+        
+        event.preventDefault()
+        event.stopPropagation()
+    })
 })

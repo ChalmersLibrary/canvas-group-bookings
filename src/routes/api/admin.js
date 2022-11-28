@@ -387,11 +387,13 @@ router.get('/location', async (req, res, next) => {
 
 router.get('/location/:id', async (req, res, next) => {
     try {
-        const location = await db.getLocation(req.params.id);
+        const location = await db.getLocationWithStatistics(res.locals.courseId, req.params.id);
+        const course_locations = await db.getLocationsWithStatistics(res.locals.courseId);
 
         return res.send({
             success: true,
-            location: location
+            location: location,
+            course_locations: course_locations
         });
     }
     catch (error) {
@@ -457,6 +459,31 @@ router.put('/location/:id', async (req, res, next) => {
         return res.send({
             success: true,
             message: 'New location has been created and/or connected.'
+        });
+    }
+    catch (error) {
+        log.error(error);
+
+        return res.send({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
+router.delete('/location/:id', async (req, res, next) => {
+    try {
+        const { replace_with_location_id } = req.body;
+
+        if (replace_with_location_id) {
+            await db.replaceConnectedLocation(res.locals.courseId, req.params.id, replace_with_location_id);
+        }
+
+        await db.disconnectLocation(res.locals.courseId, req.params.id);
+
+        return res.send({
+            success: true,
+            message: 'Location has been disconnected from this Canvas course.'
         });
     }
     catch (error) {
