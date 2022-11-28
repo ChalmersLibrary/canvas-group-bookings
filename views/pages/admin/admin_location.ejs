@@ -46,7 +46,7 @@
                                     <td>
                                         <div class="float-end">
                                             <button type="button" title="Redigera" data-bs-toggle="modal" data-bs-target="#editLocation" data-bs-location-id="<%= location.id %>" class="btn btn-secondary btn-md"><i class="bi-pencil-fill"></i></button>
-                                            <button type="button" title="Radera" data-bs-toggle="modal" data-bs-target="#deleteLocation" data-bs-location-id="<%= location.id %>" class="btn btn-secondary btn-md mx-2"><i class="bi-trash-fill"></i></button>
+                                            <button type="button" title="Ta bort" data-bs-toggle="modal" data-bs-target="#deleteLocation" data-bs-location-id="<%= location.id %>" class="btn btn-secondary btn-md mx-2"><i class="bi-trash-fill"></i></button>
                                         </div>
                                     </td>
                                 </tr>
@@ -66,7 +66,11 @@
                 </div>
                 <div class="card-body text-muted">
                     <p>
-                        Platser kan vara lokaler eller digitala rum.
+                        Lokaler eller platser används för information för de som bokat. Det kan även vara digitala rum, om de har en extern länk.
+                    </p>
+                    <p>
+                        Tänk på att alla lokaler delas mellan alla kurser i en installation av verktyget. Om du ändrar t ex beskrivning så berör det alla
+                        Canvaskurser som har lokalen tillagd.
                     </p>
                 </div>
             </div>
