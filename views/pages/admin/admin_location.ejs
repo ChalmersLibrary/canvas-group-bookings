@@ -35,7 +35,13 @@
                                         <strong><%= location.name %></strong>
                                         <span class="mx-2">
                                             <% if (location.description) { %><i class="text-secondary bi-info-circle-fill" title="Lokal beskrivning"></i><% } %>
-                                            <% if (location.external_url) { %><i class="text-secondary bi-webcam-fill" title="Extern länk till Zoom"></i><% } %>
+                                            <% if (location.external_url) { %>
+                                                <% if (location.external_url.includes("chalmers.zoom")) { %>
+                                                    <i class="text-secondary bi-webcam-fill" title="Zoom-möte"></i>
+                                                <% } else { %>
+                                                    <i class="text-secondary bi-link" title="Extern länk"></i>
+                                                <% } %>
+                                            <% } %>
                                             <% if (location.campus_maps_id) { %><i class="text-secondary bi-geo-alt-fill" title="Länk till Campus Maps"></i><% } %>    
                                         </span>
                                         <div>

@@ -38,6 +38,18 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 }
                 else { // this would mean that ALL locations in db is added to this course...
                 }
+
+                document.getElementById('n_location_campus_maps_id').addEventListener("input", function(event) {
+                    if (event.target.value.includes("https://maps.chalmers.se/#")) {
+                        document.getElementById('n_location_campus_maps_id').value = event.target.value.replace("https://maps.chalmers.se/#", "")
+                    }
+                    else {
+                        const regexUuid = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/gi;
+                        if (!regexUuid.test(event.target.value)) {
+                            document.getElementById('n_location_campus_maps_id').value = ""
+                        }
+                    }
+                })
             }
             else {
                 newLocationModal.querySelector('div.modal-body.content-error span').innerHTML = data.message
