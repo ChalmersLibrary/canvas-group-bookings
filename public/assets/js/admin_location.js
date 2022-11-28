@@ -120,6 +120,18 @@ document.addEventListener("DOMContentLoaded", function(event) {
             editLocationForm.querySelector('#e_location_description').innerHTML = data.location.description
             editLocationForm.querySelector('#e_location_external_url').value = data.location.external_url
             editLocationForm.querySelector('#e_location_campus_maps_id').value = data.location.campus_maps_id
+
+            document.getElementById('e_location_campus_maps_id').addEventListener("input", function(event) {
+                if (event.target.value.includes("https://maps.chalmers.se/#")) {
+                    document.getElementById('e_location_campus_maps_id').value = event.target.value.replace("https://maps.chalmers.se/#", "")
+                }
+                else {
+                    const regexUuid = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/gi;
+                    if (!regexUuid.test(event.target.value)) {
+                        document.getElementById('e_location_campus_maps_id').value = ""
+                    }
+                }
+            })
         })
         .then(finished => {
             editLocationModal.querySelector('div.modal-body.loading-spinner').style.display = "none"
