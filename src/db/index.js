@@ -546,6 +546,22 @@ async function getInstructor(id) {
     return data;
 }
 
+async function getInstructorWithStatistics(canvas_course_id, instructor_id) {
+    let data;
+
+    await query("SELECT DISTINCT i.*,(SELECT count(DISTINCT s.id) AS slots FROM slot s, course c2 WHERE s.instructor_id=i.id AND s.course_id=c2.id AND c2.canvas_course_id=$1) FROM instructor i, canvas_course_instructor_mapping c WHERE i.id=c.instructor_id AND c.canvas_course_id=$1 AND c.instructor_id=$2", [ 
+        canvas_course_id,
+        instructor_id 
+    ]).then((result) => {
+        data = result.rows[0];
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    });
+
+    return data;
+}
+
 async function getInstructorsWithStatistics(canvas_course_id) {
     let data;
 
@@ -572,6 +588,64 @@ async function getAllInstructors() {
     });
     
     return data;
+}
+
+async function createInstructor(canvas_user_id, name, email) {
+    let data;
+
+    await query("INSERT INTO instructor (canvas_user_id, name, email) VALUES ($1, $2, $3) RETURNING id", [
+        canvas_user_id,
+        name,
+        email
+    ]).then((result) => {
+        data = result.rows[0];
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    });
+    
+    return data;
+}
+
+async function connectInstructor(canvas_course_id, instructor_id) {
+    let data;
+
+    await query("INSERT INTO canvas_course_instructor_mapping (canvas_course_id, instructor_id) VALUES ($1, $2) RETURNING id", [
+        canvas_course_id,
+        instructor_id
+    ]).then((result) => {
+        data = result.rows[0];
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    });
+    
+    return data;
+}
+
+async function disconnectInstructor(canvas_course_id, instructor_id) {
+    await query("DELETE FROM canvas_course_instructor_mapping WHERE canvas_course_id=$1 AND instructor_id=$2", [
+        canvas_course_id,
+        instructor_id
+    ]).then((result) => {
+        log.info(result);
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    });
+}
+
+async function replaceConnectedInstructor(canvas_course_id, instructor_id, new_instructor_id) {
+    await query("UPDATE slot SET instructor_id=$3 FROM course WHERE slot.instructor_id=$2 AND slot.course_id=course.id AND course.canvas_course_id=$1", [
+        canvas_course_id,
+        instructor_id,
+        new_instructor_id
+    ]).then((result) => {
+        log.info(result);
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    });
 }
 
 async function getValidLocations(canvas_course_id) {
@@ -820,9 +894,14 @@ module.exports = {
     createCourse,
     updateCourse,
     getValidInstructors,
+    getInstructorWithStatistics,
     getInstructorsWithStatistics,
     getInstructor,
     getAllInstructors,
+    createInstructor,
+    connectInstructor,
+    disconnectInstructor,
+    replaceConnectedInstructor,
     getValidLocations,
     getLocationsWithStatistics,
     getCourse,

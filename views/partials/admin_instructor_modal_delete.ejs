@@ -1,10 +1,10 @@
 <div class="modal modal-md fade" id="deleteInstructor" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteInstructorLabel" aria-hidden="true">
     <div class="modal-dialog">
         <form id="deleteInstructorForm" action="/api/admin/instructor">
-            <input type="hidden" id="d_instructor_id" value="" />
+            <input type="hidden" id="d_instructor_id" value="">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="deleteInstructorLabel">Radera handledare</h5>
+                    <h5 class="modal-title" id="deleteInstructorLabel">Ta bort handledare</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Stäng"></button>
                 </div>
                 <div class="modal-body loading-spinner">
@@ -15,12 +15,28 @@
                     </div>
                 </div>
                 <div class="modal-body loaded-content" style="display:none;">
-                    <p>Dialogruta för att radera en handledare.</p>
-                    <p>Föra över handledare till annan om det finns tider.</p>
+                    <p>
+                        <strong id="d_name"></strong><br>
+                        <small id="d_email"></small>
+                    </p>
+                    <div class="instructor-deletable" style="display:none;">
+                    </div>
+                    <div class="instructor-replace" style="display:none;">
+                        <div class="alert alert-danger">
+                            Handledaren är kopplad till tider i denna kurs. Du kan välja att ersätta med en annan handledare, eller låta nuvarande namn stå kvar på tiderna.
+                            Notera att inga nya tider kommer att kunna skapas med handledaren som tas bort.
+                        </div>
+                        <label for="d_replace_with_instructor">Välj:</label><br>
+                        <select id="d_replace_with_instructor" class="form-control"></select>
+                    </div>
+                    <div class="alert alert-error alert-danger" style="display:none;">
+                        <strong>Ett fel inträffade: </strong>
+                        <span></span>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
-                    <button type="submit" class="btn btn-danger" id="deleteInstructorSaveButton">Radera</button>
+                    <button type="submit" class="btn btn-danger" id="deleteInstructorSaveButton">Ta bort</button>
                 </div>
             </div>
         </form>

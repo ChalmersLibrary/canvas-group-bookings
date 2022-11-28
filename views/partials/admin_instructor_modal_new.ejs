@@ -2,6 +2,7 @@
     <div class="modal-dialog">
         <form class="needs-validation" id="newInstructorForm" novalidate action="/api/admin/instructor">
             <input type="hidden" id="n_instructor_avatar_url" value="">
+            <input type="hidden" id="n_instructor_existing_id" value="">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="newInstructorLabel">Lägg till handledare</h5>
@@ -39,6 +40,11 @@
                     <div class="alert alert-danger alert-error" style="display:none;">
                         <strong>Ett fel har uppstått:</strong>
                         <span></span>
+                    </div>
+                </div>
+                <div class="modal-body content-error" style="display:none;">
+                    <div class="alert alert-danger">
+                        <strong>Ett fel uppstod: </strong><span></span>
                     </div>
                 </div>
                 <div class="modal-footer">

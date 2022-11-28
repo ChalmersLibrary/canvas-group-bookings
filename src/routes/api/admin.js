@@ -12,31 +12,41 @@ const utils = require('../../utilities');
 /* ============================ */
 
 /**
+ * General match for checking administrator status, otherwise we return a JSON error message
+ */
+router.use('/*', async (req, res, next) => {
+    if (!req.session.user.isAdministrator) {
+        return res.send({
+            success: false,
+            message: "You don't have access to this endpoint."
+        });
+    }
+    else {
+        next();
+    }
+});
+
+/**
  * Create or update information about connections to Canvas, group category filtering etc
  */
 router.put('/canvas/:id', async (req, res, next) => {
-    if (req.session.user.isAdministrator) {
-        try {
-            const { group_category_mapping } = req.body;
+    try {
+        const { group_category_mapping } = req.body;
 
-            await db.updateCanvasConnection(req.params.id, group_category_mapping);
+        await db.updateCanvasConnection(req.params.id, group_category_mapping);
 
-            return res.send({
-                success: true,
-                message: 'Canvas information was updated.'
-            });
-        }
-        catch (error) {
-            log.error(error);
-
-            return res.send({
-                success: false,
-                message: error.message
-            });
-        }
+        return res.send({
+            success: true,
+            message: 'Canvas information was updated.'
+        });
     }
-    else {
-        next(new Error("You must have administrator privileges to access this page."));
+    catch (error) {
+        log.error(error);
+
+        return res.send({
+            success: false,
+            message: error.message
+        });
     }
 });
 
@@ -44,127 +54,112 @@ router.put('/canvas/:id', async (req, res, next) => {
  * Get information about a specific course, used for editing
  */
 router.get('/course/:id', async (req, res, next) => {
-    if (req.session.user.isAdministrator) {
-        try {
-            const course = await db.getCourse(req.params.id);
-            const segments = await db.getSegments(course.canvas_course_id);
+    try {
+        const course = await db.getCourse(req.params.id);
+        const segments = await db.getSegments(course.canvas_course_id);
 
-            return res.send({
-                success: true,
-                segments: segments,
-                templates: {
-                    done: course.is_group ? utils.getTemplate('reservation_group_done') : utils.getTemplate('reservation_individual_done'),
-                    cancel: course.is_group ? utils.getTemplate('reservation_group_canceled') : utils.getTemplate('reservation_individual_canceled'),
-                    full: utils.getTemplate('reservation_group_full')
-                },
-                template_vars: [
-                    { name: "reservation_course_name", description: "Namn på tillfället" },
-                    { name: "reservation_message", description: "Ev meddelande från den som bokar" },
-                    { name: "reservation_slot_time", description: "Datum och tid för bokade tillfället" },
-                    { name: "slot_group_names", description: "Namn på andra grupper som redan bokat" },
-                    { name: "reservation_group_name", description: "Namn på grupp som bokar" },
-                    { name: "canvas_user_name", description: "Namn på individ som bokar" },
-                    { name: "location_name", description: "Platsens namn med ev länk" },
-                    { name: "cancellation_policy_hours", description: "Avbokningspolicy i antal timmar" },
-                    { name: "instructor_name", description: "Handledarens namn" },
-                    { name: "instructor_email", description: "Handledarens e-postadress" },
-                    { name: "CONVERSATION_ROBOT_NAME", description: "Namn på roboten, för signatur" }
-                ],
-                course: course
-            });
-        }
-        catch (error) {
-            log.error(error);
-
-            return res.send({
-                success: false,
-                message: error.message
-            });
-        }
+        return res.send({
+            success: true,
+            segments: segments,
+            templates: {
+                done: course.is_group ? utils.getTemplate('reservation_group_done') : utils.getTemplate('reservation_individual_done'),
+                cancel: course.is_group ? utils.getTemplate('reservation_group_canceled') : utils.getTemplate('reservation_individual_canceled'),
+                full: utils.getTemplate('reservation_group_full')
+            },
+            template_vars: [
+                { name: "reservation_course_name", description: "Namn på tillfället" },
+                { name: "reservation_message", description: "Ev meddelande från den som bokar" },
+                { name: "reservation_slot_time", description: "Datum och tid för bokade tillfället" },
+                { name: "slot_group_names", description: "Namn på andra grupper som redan bokat" },
+                { name: "reservation_group_name", description: "Namn på grupp som bokar" },
+                { name: "canvas_user_name", description: "Namn på individ som bokar" },
+                { name: "location_name", description: "Platsens namn med ev länk" },
+                { name: "cancellation_policy_hours", description: "Avbokningspolicy i antal timmar" },
+                { name: "instructor_name", description: "Handledarens namn" },
+                { name: "instructor_email", description: "Handledarens e-postadress" },
+                { name: "CONVERSATION_ROBOT_NAME", description: "Namn på roboten, för signatur" }
+            ],
+            course: course
+        });
     }
-    else {
-        next(new Error("You must have administrator privileges to access this page."));
-    }   
+    catch (error) {
+        log.error(error);
+
+        return res.send({
+            success: false,
+            message: error.message
+        });
+    }
 });
 
 /**
  * Get helper data such as segments, templates and template vars, for use in new course
  */
 router.get('/course', async (req, res, next) => {
-    if (req.session.user.isAdministrator) {
-        try {
-            const segments = await db.getSegments(res.locals.courseId);
+    try {
+        const segments = await db.getSegments(res.locals.courseId);
 
-            return res.send({
-                success: true,
-                segments: segments,
-                templates: {
-                    group: {
-                        done: utils.getTemplate('reservation_group_done'),
-                        cancel: utils.getTemplate('reservation_group_canceled'),
-                        full: utils.getTemplate('reservation_group_full')
-                    },
-                    individual: {
-                        done: utils.getTemplate('reservation_individual_done'),
-                        cancel: utils.getTemplate('reservation_individual_canceled'),
-                        full: utils.getTemplate('reservation_individual_full')
-                    }
+        return res.send({
+            success: true,
+            segments: segments,
+            templates: {
+                group: {
+                    done: utils.getTemplate('reservation_group_done'),
+                    cancel: utils.getTemplate('reservation_group_canceled'),
+                    full: utils.getTemplate('reservation_group_full')
                 },
-                template_vars: [
-                    { name: "reservation_course_name", description: "Namn på tillfället" },
-                    { name: "reservation_message", description: "Ev meddelande från den som bokar" },
-                    { name: "reservation_slot_time", description: "Datum och tid för bokade tillfället" },
-                    { name: "slot_group_names", description: "Namn på andra grupper som redan bokat" },
-                    { name: "reservation_group_name", description: "Namn på grupp som bokar" },
-                    { name: "canvas_user_name", description: "Namn på individ som bokar" },
-                    { name: "location_name", description: "Platsens namn med ev länk" },
-                    { name: "cancellation_policy_hours", description: "Avbokningspolicy i antal timmar" },
-                    { name: "instructor_name", description: "Handledarens namn" },
-                    { name: "instructor_email", description: "Handledarens e-postadress" },
-                    { name: "CONVERSATION_ROBOT_NAME", description: "Namn på roboten, för signatur" }
-                ]
-            });
-        }
-        catch (error) {
-            log.error(error);
-
-            return res.send({
-                success: false,
-                message: error.message
-            });
-        }
+                individual: {
+                    done: utils.getTemplate('reservation_individual_done'),
+                    cancel: utils.getTemplate('reservation_individual_canceled'),
+                    full: utils.getTemplate('reservation_individual_full')
+                }
+            },
+            template_vars: [
+                { name: "reservation_course_name", description: "Namn på tillfället" },
+                { name: "reservation_message", description: "Ev meddelande från den som bokar" },
+                { name: "reservation_slot_time", description: "Datum och tid för bokade tillfället" },
+                { name: "slot_group_names", description: "Namn på andra grupper som redan bokat" },
+                { name: "reservation_group_name", description: "Namn på grupp som bokar" },
+                { name: "canvas_user_name", description: "Namn på individ som bokar" },
+                { name: "location_name", description: "Platsens namn med ev länk" },
+                { name: "cancellation_policy_hours", description: "Avbokningspolicy i antal timmar" },
+                { name: "instructor_name", description: "Handledarens namn" },
+                { name: "instructor_email", description: "Handledarens e-postadress" },
+                { name: "CONVERSATION_ROBOT_NAME", description: "Namn på roboten, för signatur" }
+            ]
+        });
     }
-    else {
-        next(new Error("You must have administrator privileges to access this page."));
-    }   
+    catch (error) {
+        log.error(error);
+
+        return res.send({
+            success: false,
+            message: error.message
+        });
+    }
 });
 
 /**
  * Create a new course
  */
 router.post('/course', async (req, res, next) => {
-    if (req.session.user.isAdministrator) {
-        try {
-            console.log(req.body)
-            const created_id = await db.createCourse(res.locals.courseId, req.body);
+    try {
+        console.log(req.body)
+        const created_id = await db.createCourse(res.locals.courseId, req.body);
 
-            return res.send({
-                success: true,
-                message: 'New course has been created.',
-                created_id: created_id
-            });
-        }
-        catch (error) {
-            log.error(error);
-
-            return res.send({
-                success: false,
-                message: error.message
-            });
-        }
+        return res.send({
+            success: true,
+            message: 'New course has been created.',
+            created_id: created_id
+        });
     }
-    else {
-        next(new Error("You must have administrator privileges to access this page."));
+    catch (error) {
+        log.error(error);
+
+        return res.send({
+            success: false,
+            message: error.message
+        });
     }
 });
 
@@ -172,27 +167,22 @@ router.post('/course', async (req, res, next) => {
  * Update information about a course.
  */
 router.put('/course/:id', async (req, res, next) => {
-    if (req.session.user.isAdministrator) {
-        try {
-            console.log(req.body)
-            await db.updateCourse(req.params.id, req.body);
+    try {
+        console.log(req.body)
+        await db.updateCourse(req.params.id, req.body);
 
-            return res.send({
-                success: true,
-                message: 'Course has been updated.'
-            });
-        }
-        catch (error) {
-            log.error(error);
-
-            return res.send({
-                success: false,
-                message: error.message
-            });
-        }
+        return res.send({
+            success: true,
+            message: 'Course has been updated.'
+        });
     }
-    else {
-        next(new Error("You must have administrator privileges to access this page."));
+    catch (error) {
+        log.error(error);
+
+        return res.send({
+            success: false,
+            message: error.message
+        });
     }
 });
 
@@ -200,147 +190,169 @@ router.put('/course/:id', async (req, res, next) => {
  * Get information about a Segment, for the edit dialog
  */
 router.get('/segment/:id', async (req, res, next) => {
-    if (req.session.user.isAdministrator) {
-        try {
-            const segment = await db.getSegment(req.params.id);
+    try {
+        const segment = await db.getSegment(req.params.id);
 
-            return res.send({
-                success: true,
-                segment: segment
-            });
-        }
-        catch (error) {
-            log.error(error);
-
-            return res.send({
-                success: false,
-                message: error.message
-            });
-        }
+        return res.send({
+            success: true,
+            segment: segment
+        });
     }
-    else {
-        next(new Error("You must have administrator privileges to access this page."));
-    }   
+    catch (error) {
+        log.error(error);
+
+        return res.send({
+            success: false,
+            message: error.message
+        });
+    }  
 });
 
 /**
  * Get information about Canvas candidates for adding instructors, etc
  */
 router.get('/instructor', async (req, res, next) => {
-    if (req.session.user.isAdministrator) {
-        try {
-            const course_instructors = await db.getInstructorsWithStatistics(res.locals.courseId);
-            const all_instructors = await db.getAllInstructors();
-            let canvas_instructors = await canvasApi.getCourseTeacherEnrollments(res.locals.courseId, res.locals.token);
+    try {
+        const course_instructors = await db.getInstructorsWithStatistics(res.locals.courseId);
+        const all_instructors = await db.getAllInstructors();
+        let canvas_instructors = await canvasApi.getCourseTeacherEnrollments(res.locals.courseId, res.locals.token);
 
-            for (const i of canvas_instructors) {
-                if (course_instructors.map(instructor => instructor.canvas_user_id).includes(i.id)) {
-                    i.mapped_to_canvas_course = true
-                }
-                else {
-                    i.mapped_to_canvas_course = false
-                }
+        for (const i of canvas_instructors) {
+            if (course_instructors.map(instructor => instructor.canvas_user_id).includes(i.id)) {
+                i.mapped_to_canvas_course = true
             }
-
-            return res.send({
-                success: true,
-                course_instructors: course_instructors,
-                all_instructors: all_instructors,
-                canvas_instructors: canvas_instructors
-            });
+            else {
+                i.mapped_to_canvas_course = false
+            }
         }
-        catch (error) {
-            log.error(error);
 
-            return res.send({
-                success: false,
-                message: error.message
-            });
-        }
+        return res.send({
+            success: true,
+            course_instructors: course_instructors,
+            all_instructors: all_instructors,
+            canvas_instructors: canvas_instructors
+        });
     }
-    else {
-        next(new Error("You must have administrator privileges to access this page."));
+    catch (error) {
+        log.error(error);
+
+        return res.send({
+            success: false,
+            message: error.message
+        });
     }
 });
 
 /**
- * Get information about an Instructor, for the edit dialog
+ * Get information about an Instructor, for the edit and delete dialog
  */
 router.get('/instructor/:id', async (req, res, next) => {
-    if (req.session.user.isAdministrator) {
-        try {
-            const instructor = await db.getInstructor(req.params.id);
+    try {
+        const instructor = await db.getInstructorWithStatistics(res.locals.courseId, req.params.id);
+        const course_instructors = await db.getInstructorsWithStatistics(res.locals.courseId);
 
-            return res.send({
-                success: true,
-                instructor: segment
-            });
-        }
-        catch (error) {
-            log.error(error);
-
-            return res.send({
-                success: false,
-                message: error.message
-            });
-        }
+        return res.send({
+            success: true,
+            course_instructors: course_instructors,
+            instructor: instructor
+        });
     }
-    else {
-        next(new Error("You must have administrator privileges to access this page."));
-    }   
+    catch (error) {
+        log.error(error);
+
+        return res.send({
+            success: false,
+            message: error.message
+        });
+    } 
 });
 
 /**
  * Update information about an Instructor
  */
 router.put('/instructor/:id', async (req, res, next) => {
-    if (req.session.user.isAdministrator) {
-        try {
-            console.log(req.body)
-            await db.updateInstructor(req.params.id, req.body);
+    try {
+        console.log(req.body)
+        await db.updateInstructor(req.params.id, req.body);
 
-            return res.send({
-                success: true,
-                message: 'Instructor has been updated.'
-            });
-        }
-        catch (error) {
-            log.error(error);
-
-            return res.send({
-                success: false,
-                message: error.message
-            });
-        }
+        return res.send({
+            success: true,
+            message: 'Instructor has been updated.'
+        });
     }
-    else {
-        next(new Error("You must have administrator privileges to access this page."));
+    catch (error) {
+        log.error(error);
+
+        return res.send({
+            success: false,
+            message: error.message
+        });
     }
 });
 
-router.post('/instructor', async (req, res, next) => {
-    if (req.session.user.isAdministrator) {
-        try {
-            console.log(req.body)
-            const created_id = await db.createInstructor(res.locals.courseId, req.body);
+/**
+ * Delete (possibly replace) connected instructor
+ */
+router.delete('/instructor/:id', async (req, res, next) => {
+    try {
+        const { replace_with_instructor_id } = req.body;
 
-            return res.send({
-                success: true,
-                message: 'New course has been created.',
-                created_id: created_id
-            });
+        if (replace_with_instructor_id) {
+            await db.replaceConnectedInstructor(res.locals.courseId, req.params.id, replace_with_instructor_id);
         }
-        catch (error) {
-            log.error(error);
 
-            return res.send({
-                success: false,
-                message: error.message
-            });
-        }
+        await db.disconnectInstructor(res.locals.courseId, req.params.id);
+
+        return res.send({
+            success: true,
+            message: 'Instructor has been disconnected from this Canvas course.'
+        });
     }
-    else {
-        next(new Error("You must have administrator privileges to access this page."));
+    catch (error) {
+        log.error(error);
+
+        return res.send({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
+/**
+ * Create (and/or connect) an instructor
+ */
+router.post('/instructor', async (req, res, next) => {
+    try {
+        console.log(req.body)
+        const { existing_user_id, canvas_user_id, name, email } = req.body;
+
+        if (existing_user_id) {
+            const existing_instructor = await db.getInstructor(existing_user_id);
+        
+            if (existing_instructor) {
+                await db.connectInstructor(res.locals.courseId, existing_instructor.id);
+            }
+        }
+        else {
+            const created_instructor = await db.createInstructor(canvas_user_id, name, email);
+
+            if (created_instructor) {
+                await db.connectInstructor(res.locals.courseId, created_instructor.id);
+            }
+        }
+
+        return res.send({
+            success: true,
+            message: 'New instructor has been created and/or connected.'
+        });
+    }
+    catch (error) {
+        log.error(error);
+
+        return res.send({
+            success: false,
+            message: error.message
+        });
     }
 });
 
