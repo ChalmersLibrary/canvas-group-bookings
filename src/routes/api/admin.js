@@ -356,5 +356,71 @@ router.post('/instructor', async (req, res, next) => {
     }
 });
 
+router.get('/location', async (req, res, next) => {
+    try {
+        const course_locations = await db.getLocationsWithStatistics(res.locals.courseId);
+        const locations = await db.getAllLocations();
+
+        for (const l of locations) {
+            if (course_locations.map(location => location.id).includes(l.id)) {
+                l.mapped_to_canvas_course = true
+            }
+            else {
+                l.mapped_to_canvas_course = false
+            }
+        }
+
+        return res.send({
+            success: true,
+            locations: locations
+        });
+    }
+    catch (error) {
+        log.error(error);
+
+        return res.send({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
+/**
+ * Create (and/or connect) a location
+ */
+ router.post('/location', async (req, res, next) => {
+    try {
+        console.log(req.body)
+        const { existing_location_id, name, description, external_url, campus_maps_id } = req.body;
+
+        if (existing_location_id) {
+            const existing_location = await db.getLocation(existing_location_id);
+        
+            if (existing_location) {
+                await db.connectLocation(res.locals.courseId, existing_location.id);
+            }
+        }
+        else {
+            const created_location = await db.createLocation(name, description, external_url, campus_maps_id);
+
+            if (created_location) {
+                await db.connectLocation(res.locals.courseId, created_location.id);
+            }
+        }
+
+        return res.send({
+            success: true,
+            message: 'New location has been created and/or connected.'
+        });
+    }
+    catch (error) {
+        log.error(error);
+
+        return res.send({
+            success: false,
+            message: error.message
+        });
+    }
+});
 
 module.exports = router;

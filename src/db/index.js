@@ -580,7 +580,7 @@ async function getInstructorsWithStatistics(canvas_course_id) {
 async function getAllInstructors() {
     let data;
 
-    await query("SELECT * FROM instructor").then((result) => {
+    await query("SELECT * FROM instructor ORDER BY name").then((result) => {
         data = result.rows;
     }).catch((error) => {
         log.error(error);
@@ -674,6 +674,79 @@ async function getLocationsWithStatistics(canvas_course_id) {
     });
 
     return data;
+}
+
+async function getAllLocations() {
+    let data;
+
+    await query("SELECT * FROM location ORDER BY name").then((result) => {
+        data = result.rows;
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    });
+    
+    return data;
+}
+
+async function getLocation(location_id) {
+    let data;
+
+    await query("SELECT * FROM location WHERE id=$1", [ 
+        location_id 
+    ]).then((result) => {
+        data = result.rows[0];
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    });
+    
+    return data;
+}
+
+async function createLocation(name, description, external_url, campus_maps_id) {
+    let data;
+
+    await query("INSERT INTO location (name, description, external_url, campus_maps_id) VALUES ($1, $2, $3, $4) RETURNING id", [
+        name,
+        description,
+        external_url,
+        campus_maps_id
+    ]).then((result) => {
+        data = result.rows[0];
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    });
+    
+    return data;
+}
+async function connectLocation(canvas_course_id, location_id) {
+    let data;
+
+    await query("INSERT INTO canvas_course_location_mapping (canvas_course_id, location_id) VALUES ($1, $2) RETURNING id", [
+        canvas_course_id,
+        location_id
+    ]).then((result) => {
+        data = result.rows[0];
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    });
+    
+    return data;
+}
+
+async function disconnectLocation(canvas_course_id, location_id) {
+    await query("DELETE FROM canvas_course_location_mapping WHERE canvas_course_id=$1 AND location_id=$2", [
+        canvas_course_id,
+        location_id
+    ]).then((result) => {
+        log.info(result);
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    });
 }
 
 async function createSlots(data) {
@@ -904,6 +977,11 @@ module.exports = {
     replaceConnectedInstructor,
     getValidLocations,
     getLocationsWithStatistics,
+    getAllLocations,
+    getLocation,
+    createLocation,
+    connectLocation,
+    disconnectLocation,
     getCourse,
     createSlots,
     updateSlot,

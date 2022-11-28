@@ -3,18 +3,72 @@
         <form class="needs-validation" id="newLocationForm" novalidate action="/api/admin/location">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="newLocationLabel">Ny plats</h5>
+                    <h5 class="modal-title" id="newLocationLabel">Lägg till plats</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Stäng"></button>
                 </div>
-                <div class="modal-body">
-                    <p>
-                        <label for="e_name">Namn:</label><br>
-                        <input type="text" class="form-control" id="n_name" value="">    
-                    </p>
+                <div class="modal-body loading-spinner">
+                    <div class="d-flex justify-content-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body loaded-content" style="display:none;">
+                    <ul class="nav nav-tabs" id="newLocationTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                          <button class="nav-link active" id="new-search-tab" data-bs-toggle="tab" data-bs-target="#new-tab-search" type="button" role="tab" aria-controls="new-tab-search" aria-selected="true">Sök plats</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                          <button class="nav-link" id="new-manual-tab" data-bs-toggle="tab" data-bs-target="#new-tab-manual" type="button" role="tab" aria-controls="new-tab-manual" aria-selected="false">Skapa ny</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="newCourseTabContent">
+                        <div class="tab-pane fade show active" id="new-tab-search" role="tabpanel" aria-labelledby="new-search-tab">
+                            <p>
+                                <select id="n_existing_location_id" class="form-select">
+                                    <option selected>Välj...</option>
+                                </select>
+                            </p>
+                            <p>
+                                <strong>Namn:</strong><br>
+                                <span id="n_disp_location_name"></span>
+                            </p>
+                            <p>
+                                <strong>Beskrivning:</strong><br>
+                                <span id="n_disp_location_description"></span>
+                            </p>
+                            <p>
+                                <strong>Extern URL:</strong><br>
+                                <span id="n_disp_location_external_url"></span>
+                            </p>
+                            <p>
+                                <strong>Chalmers Maps Id:</strong><br>
+                                <span id="n_disp_location_campus_maps_id"></span>
+                            </p>
+                        </div>
+                        <div class="tab-pane fade" id="new-tab-manual" role="tabpanel" aria-labelledby="new-manual-tab">
+                            <p>
+                                <label for="n_location_name">Namn:</label><br>
+                                <input type="text" class="form-control" id="n_location_name" value="" required>    
+                            </p>
+                            <p>
+                                <label for="n_location_description">Beskrivning:</label><br>
+                                <textarea id="n_location_description" class="form-control" style="height:190px;"></textarea>
+                            </p>
+                            <p>
+                                <label for="n_location_external_url">Extern länk:</label><br>
+                                <input type="text" class="form-control" id="n_location_external_url" value="">
+                            </p>
+                            <p>
+                                <label for="n_location_campus_maps_id">Chalmers Maps Id:</label><br>
+                                <input type="text" class="form-control" id="n_location_campus_maps_id" value="">
+                            </p>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
-                    <button type="submit" class="btn btn-primary" id="newLocationSaveButton">Skapa</button>
+                    <button type="submit" class="btn btn-primary" id="newLocationSaveButton">Lägg till</button>
                 </div>
             </div>
         </form>
