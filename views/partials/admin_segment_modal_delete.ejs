@@ -1,7 +1,7 @@
 <div class="modal modal-md fade" id="deleteSegment" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteSegmentLabel" aria-hidden="true">
     <div class="modal-dialog">
         <form id="deleteSegmentForm" action="/api/admin/segment">
-            <input type="hidden" id="d_segment_id" name="course_id" value="" />
+            <input type="hidden" id="d_segment_id" value="">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="deleteSegmentLabel">Radera segment</h5>
@@ -15,12 +15,31 @@
                     </div>
                 </div>
                 <div class="modal-body loaded-content" style="display:none;">
-                    <p>Dialogruta för att radera ett segment.</p>
-                    <p>Välj annat segment att föra över till om det finns tillfällen kopplade.</p>
+                    <p>
+                        <strong id="d_segment_name"></strong>
+                    </p>
+                    <div class="segment-deletable" style="display:none;">
+                    </div>
+                    <div class="segment-replace" style="display:none;">
+                        <div class="alert alert-danger">
+                            Segmentet är kopplat till tillfällen i denna kurs. Du måste välja ett annat segment att ersätta med, eftersom alla tillfällen måste ha ett segment
+                            om det finns sådana i Canvaskursen. 
+                        </div>
+                        <label for="d_replace_with_segment">Välj:</label><br>
+                        <select id="d_replace_with_segment" class="form-control"></select>
+                    </div>
+                    <div class="segment-delete-final" style="display:none;">
+                        <div class="alert alert-danger">
+                            Det här är det enda segmentet i denna kurs. Om du väljer att radera det, kommer alla tillfällen att uppdateras så att de inte längre använder segment.
+                        </div>
+                    </div>
+                    <div class="alert alert-error alert-danger" style="display:none;">
+                        <strong>Ett fel inträffade: </strong><span></span>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
-                    <button type="submit" class="btn btn-danger" id="deleteSegmentSaveButton">Radera</button>
+                    <button type="submit" class="btn btn-danger" id="deleteSegmentSaveButton">Radera <span class="spinner-border spinner-border-sm" style="display:none;" role="status" aria-hidden="true"></span></button>
                 </div>
             </div>
         </form>

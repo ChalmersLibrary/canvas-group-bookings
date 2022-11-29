@@ -8,21 +8,28 @@
                 </div>
                 <div class="modal-body">
                     <p>
-                        <label for="e_name">Namn:</label><br>
-                        <input type="text" class="form-control" id="n_name" value="">    
+                        <label for="n_segment_name">Namn:</label><br>
+                        <input type="text" class="form-control" id="n_segment_name" value="" required>    
                     </p>
                     <p>
-                        <label for="e_name">Kod:</label><br>
-                        <input type="text" class="form-control" id="n_sign" maxlength="2" value="">    
+                        <label for="n_segment_sign">Kod:</label><br>
+                        <input type="text" class="form-control" id="n_segment_sign" maxlength="2" value="">    
                     </p>
                     <p>
-                        <label for="e_description">Beskrivning:</label><br>
-                        <textarea class="form-control" rows="3" id="n_description"></textarea>
+                        <label for="n_segment_description">Beskrivning:</label><br>
+                        <textarea class="form-control" id="n_segment_description" style="height:100px;"></textarea>
                     </p>
+                    <div class="alert alert-primary alert-first-segment" style="display:none;">
+                        <strong>Du skapar ett första segment. </strong>
+                        <span>Existerande tillfällen kommer att tilldelas detta nya segment, eftersom tillfällen måste ha segment om de finns.</span>
+                    </div>
+                    <div class="alert alert-danger alert-error" style="display:none;">
+                        <strong>Ett fel uppstod: </strong><span></span>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
-                    <button type="submit" class="btn btn-primary" id="newSegmentSaveButton">Skapa segment</button>
+                    <button type="submit" class="btn btn-primary" id="newSegmentSaveButton">Skapa segment <span class="spinner-border spinner-border-sm" style="display:none;" role="status" aria-hidden="true"></span></button>
                 </div>
             </div>
         </form>

@@ -34,10 +34,10 @@
                                     <td>
                                         <strong><%= segment.name %></strong>
                                     </td>
-                                    <td><span class="float-xxx"><%= segment.courses %></span></td>
+                                    <td><%= segment.courses %></td>
                                     <td>
                                         <div class="float-end">
-                                            <button type="button" title="Redigera" data-bs-target="#editSegment" data-bs-segment-id="<%= segment.id %>" class="btn btn-secondary btn-md"><i class="bi-pencil-fill"></i></button>
+                                            <button type="button" title="Redigera" data-bs-toggle="modal" data-bs-target="#editSegment" data-bs-segment-id="<%= segment.id %>" class="btn btn-secondary btn-md"><i class="bi-pencil-fill"></i></button>
                                             <button type="button" title="Radera" data-bs-toggle="modal" data-bs-target="#deleteSegment" data-bs-segment-id="<%= segment.id %>" class="btn btn-secondary btn-md mx-2"><i class="bi-trash-fill"></i></button>
                                         </div>
                                     </td>
@@ -46,7 +46,7 @@
                         </tbody>
                     </table>
                     <div class="button-bar">
-                        <button type="button" class="btn btn-md btn-secondary" title="Skapa segment" data-bs-toggle="modal" data-bs-target="#newSegment">Skapa nytt segment</button>
+                        <button type="button" class="btn btn-md btn-secondary" title="Skapa segment" data-bs-toggle="modal" data-bs-target="#newSegment" data-bs-existing-segments="<%= segments.length %>">Skapa nytt segment</button>
                     </div>
                 </div>
             </div>

@@ -215,16 +215,19 @@ router.delete('/course/:id', async (req, res, next) => {
     }
 });
 
+
 /**
  * Get information about a Segment, for the edit dialog
  */
 router.get('/segment/:id', async (req, res, next) => {
     try {
-        const segment = await db.getSegment(req.params.id);
+        const segment = await db.getSegmentWithStatistics(req.params.id);
+        const course_segments = await db.getSegmentsWithStatistics(res.locals.courseId);
 
         return res.send({
             success: true,
-            segment: segment
+            segment: segment,
+            course_segments: course_segments
         });
     }
     catch (error) {
@@ -236,6 +239,96 @@ router.get('/segment/:id', async (req, res, next) => {
         });
     }  
 });
+
+/**
+ * Create a new segment, apply this segment to all courses in this Canvas course if it's the first
+ */
+router.post('/segment', async (req, res, next) => {
+    try {
+        const { name, sign, description } = req.body;
+        let message;
+
+        const existing_segments = await db.getSegmentsWithStatistics(res.locals.courseId);
+
+        if (existing_segments.length) {
+            const segment = await db.createSegment(res.locals.courseId, req.session.user.id, name, sign, description);
+
+            message = "New segment was created.";
+        }
+        else {
+            const segment = await db.createSegment(res.locals.courseId, req.session.user.id, name, sign, description);
+            await db.applySegmentToAllCourses(segment.id, res.locals.courseId, req.session.user.id);
+
+            message = "New segment was created and applied to existing courses.";
+        }
+
+        return res.send({
+            success: true,
+            message: message
+        });
+    }
+    catch (error) {
+        log.error(error);
+
+        return res.send({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
+router.put('/segment/:id', async (req, res, next) => {
+    try {
+        const { name, sign, description } = req.body;
+
+        const segment = await db.updateSegment(req.params.id, req.session.user.id, name, sign, description);
+
+        return res.send({
+            success: true,
+            message: "Segment has been updated."
+        });
+    }
+    catch (error) {
+        log.error(error);
+
+        return res.send({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
+router.delete('/segment/:id', async (req, res, next) => {
+    try {
+        const { replace_with_segment_id } = req.body;
+
+        if (replace_with_segment_id) {
+            if (replace_with_segment_id == req.params.id) {
+                await db.replaceExistingSegmentInCourses(req.params.id, null, req.session.user.id); // Last segment, null all segment columns
+            }
+            else {
+                await db.replaceExistingSegmentInCourses(req.params.id, replace_with_segment_id, req.session.user.id);
+            }
+        }
+
+        await db.deleteSegment(req.params.id, req.session.user.id);
+
+        return res.send({
+            success: true,
+            message: 'Segment has been deleted from this Canvas course.'
+        });
+    }
+    catch (error) {
+        log.error(error);
+
+        return res.send({
+            success: false,
+            message: error.message
+        });
+    }
+})
+
+
 
 /**
  * Get information about Canvas candidates for adding instructors, etc

@@ -57,7 +57,7 @@ async function getSegment(segment_id) {
 async function getSegments(canvas_course_id) {
     let data;
 
-    await query("SELECT * FROM segment s WHERE s.canvas_course_id=$1", [
+    await query("SELECT * FROM segment s WHERE s.canvas_course_id=$1 AND deleted_at IS NULL", [
         canvas_course_id
     ]).then((result) => {
         data = result.rows;
@@ -77,7 +77,7 @@ async function getSegments(canvas_course_id) {
 async function getSegmentsWithStatistics(canvas_course_id) {
     let data;
 
-    await query("SELECT s.*,(SELECT count(DISTINCT id)::integer AS courses FROM course WHERE segment_id=s.id) FROM segment s WHERE s.canvas_course_id=$1", [
+    await query("SELECT s.*,(SELECT count(DISTINCT id)::integer AS courses FROM course WHERE segment_id=s.id) FROM segment s WHERE s.canvas_course_id=$1 AND s.deleted_at IS NULL", [
         canvas_course_id
     ]).then((result) => {
         data = result.rows;
@@ -87,6 +87,99 @@ async function getSegmentsWithStatistics(canvas_course_id) {
     });
 
     return data;
+}
+
+/**
+ * Get a single segment with statistics
+ */
+async function getSegmentWithStatistics(segment_id) {
+    let data;
+
+    await query("SELECT s.*,(SELECT count(DISTINCT id)::integer AS courses FROM course WHERE segment_id=s.id) FROM segment s WHERE s.id=$1", [
+        segment_id
+    ]).then((result) => {
+        data = result.rows[0];
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    });
+
+    return data;
+}
+
+/**
+ * Create a new segment
+ */
+async function createSegment(canvas_course_id, canvas_user_id, name, sign, description) {
+    let data;
+
+    await query("INSERT INTO segment (canvas_course_id, created_by, name, sign, description) VALUES ($1, $2, $3, $4, $5) RETURNING id", [
+        canvas_course_id,
+        canvas_user_id,
+        name,
+        sign,
+        description
+    ]).then((result) => {
+        data = result.rows[0];
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    });
+    
+    return data;
+}
+
+async function updateSegment(segment_id, canvas_user_id, name, sign, description) {
+    await query("UPDATE segment SET name=$3, sign=$4, description=$5, updated_at=now(), updated_by=$2 WHERE id=$1", [
+        segment_id,
+        canvas_user_id,
+        name,
+        sign,
+        description
+    ]).then((result) => {
+        log.info(result);
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    }); 
+}
+
+async function deleteSegment(segment_id, canvas_user_id) {
+    await query("UPDATE segment SET deleted_at=now(), deleted_by=$1 WHERE id=$2", [
+        canvas_user_id,
+        segment_id
+    ]).then((result) => {
+        log.info(result);
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    });
+}
+
+async function applySegmentToAllCourses(segment_id, canvas_course_id, canvas_user_id) {
+    await query("UPDATE course SET segment_id=$1, updated_at=now(), updated_by=$2 WHERE canvas_course_id=$3", [
+        segment_id,
+        canvas_user_id,
+        canvas_course_id
+    ]).then((result) => {
+        log.info(result);
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    });
+}
+
+async function replaceExistingSegmentInCourses(old_segment_id, new_segment_id, canvas_user_id) {
+    await query("UPDATE course SET segment_id=$2, updated_at=now(), updated_by=$3 WHERE segment_id=$1", [
+        old_segment_id,
+        new_segment_id,
+        canvas_user_id
+    ]).then((result) => {
+        log.info(result);
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    }); 
 }
 
 /**
@@ -1031,6 +1124,12 @@ module.exports = {
     getSegment,
     getSegments,
     getSegmentsWithStatistics,
+    getSegmentWithStatistics,
+    createSegment,
+    updateSegment,
+    deleteSegment,
+    applySegmentToAllCourses,
+    replaceExistingSegmentInCourses,
     getCourseGroupCategoryFilter,
     getAllSlots,
     getAllSlotsInSegment,
