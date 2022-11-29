@@ -59,11 +59,11 @@
                         </div>
                         <div class="tab-pane fade" id="new-tab-values" role="tabpanel" aria-labelledby="new-values-tab">
                             <p>
-                                <label for="n_max_number" class="">Max antal bokningsbara platser per utlagd tid:</label><br>
+                                <label for="n_max_number" class="">Antal bokningsbara platser per utlagd tid:</label><br>
                                 <input type="number" class="form-control" min="1" max="9999" value="1" id="n_max_number">
                             </p>
                             <p>
-                                <label for="n_max_per_type">Max antal bokningar totalt inom tillfället:</label><br>
+                                <label for="n_max_per_type">Max antal bokningar på tider inom tillfället:</label><br>
                                 <input type="number" class="form-control" min="1" max="9999" value="1" id="n_max_per_type">
                             </p>
                             <p>
@@ -110,11 +110,6 @@
                                 <textarea class="form-control" id="n_message_full_body" style="height: 200px;" placeholder=""></textarea>    
                                 <label for="n_message_full_body">Meddelande för ihopkoppling av alla bokade</label>
                             </div>
-                            <p>
-                                <div class="alert alert-primary">
-                                    <strong>Notera: </strong> Om fälten lämnas tomma, kommer generellt utformade meddelanden att användas.
-                                </div>
-                            </p>
                             <div class="card">
                                 <div class="card-header">
                                     Dynamiska delar i text
@@ -133,7 +128,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
-                    <button type="submit" class="btn btn-primary" id="newCourseSaveButton">Skapa tillfälle</button>
+                    <button type="submit" class="btn btn-primary" id="newCourseSaveButton">Skapa tillfälle <span class="spinner-border spinner-border-sm" style="display:none;" role="status" aria-hidden="true"></span></button>
                 </div>
             </div>
         </form>

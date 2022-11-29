@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     const deleteLocationModal = document.getElementById("deleteLocation")
     const deleteLocationForm = document.getElementById("deleteLocationForm")
 
-    /* The modal for new Location is shown, load users into select */
+    /* The modal for new Location is shown */
     newLocationModal && newLocationModal.addEventListener("show.bs.modal", function(event) {
         let api_data = [];
         newLocationModal.querySelector('div.modal-body.loading-spinner').style.display = "block"
@@ -26,14 +26,21 @@ document.addEventListener("DOMContentLoaded", function(event) {
                     document.getElementById('n_existing_location_id').addEventListener("change", function(event) {
                         if (event.target.selectedOptions[0].value != '') {
                             newLocationForm.querySelector('#n_location_name').required = false;
+                            newLocationForm.querySelector('#n_disp_location_name').innerHTML = api_data.locations.filter(x => x.id == event.target.selectedOptions[0].value)[0].name
+                            newLocationForm.querySelector('#n_disp_location_description').innerHTML = api_data.locations.filter(x => x.id == event.target.selectedOptions[0].value)[0].description
+                            newLocationForm.querySelector('#n_disp_location_external_url').innerHTML = api_data.locations.filter(x => x.id == event.target.selectedOptions[0].value)[0].external_url
+                            newLocationForm.querySelector('#n_disp_location_campus_maps_id').innerHTML = api_data.locations.filter(x => x.id == event.target.selectedOptions[0].value)[0].campus_maps_id
+                            newLocationForm.querySelector('div.card.selected-location-details').style.display = "block"
                         }
                         else {
                             newLocationForm.querySelector('#n_location_name').required = true;
+                            newLocationForm.querySelector('div.card.selected-location-details').style.display = "none"
                         }
-                        newLocationForm.querySelector('#n_disp_location_name').innerHTML = api_data.locations.filter(x => x.id == event.target.selectedOptions[0].value)[0].name
-                        newLocationForm.querySelector('#n_disp_location_description').innerHTML = api_data.locations.filter(x => x.id == event.target.selectedOptions[0].value)[0].description
-                        newLocationForm.querySelector('#n_disp_location_external_url').innerHTML = api_data.locations.filter(x => x.id == event.target.selectedOptions[0].value)[0].external_url
-                        newLocationForm.querySelector('#n_disp_location_campus_maps_id').innerHTML = api_data.locations.filter(x => x.id == event.target.selectedOptions[0].value)[0].campus_maps_id
+                    })
+                    document.getElementById('new-manual-tab').addEventListener("shown.bs.tab", function(event) {
+                        document.getElementById('n_existing_location_id').value = ''
+                        newLocationForm.querySelector('#n_location_name').required = true;
+                        newLocationForm.querySelector('div.card.selected-location-details').style.display = "none"
                     })
                 }
                 else { // this would mean that ALL locations in db is added to this course...
@@ -58,8 +65,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
             newLocationModal.querySelector('div.modal-body.loading-spinner').style.display = "none"
             newLocationModal.querySelector('div.modal-body.loaded-content').style.display = "block"
         })
-        .then(finished => {
-        })
     })
 
     /* The form for new location is submitted */
@@ -70,6 +75,11 @@ document.addEventListener("DOMContentLoaded", function(event) {
             newLocationForm.classList.add('was-validated')
         }
         else {
+            const submitButton = newLocationForm.querySelector('#newLocationSaveButton')
+            const submitSpinner = submitButton.querySelector('span.spinner-border')
+            submitButton.disabled = true
+            submitSpinner.style.display = "inline-block"
+
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -90,13 +100,28 @@ document.addEventListener("DOMContentLoaded", function(event) {
             })
             .then(data => { 
                 console.log(data)
-                const responseBody = JSON.parse(data)
-                if (responseBody.success === false) {
-                    newLocationModal.querySelector('div.alert.alert-error span').innerText = JSON.parse(data).message
-                    newLocationModal.querySelector('div.alert.alert-error').style.display = "block"
+                try {
+                    const responseBody = JSON.parse(data)
+                    if (responseBody.success) {
+                        window.location.assign("/admin/location")
+                    }
+                    else {
+                        newLocationForm.querySelector('div.alert.alert-error span').innerText = JSON.parse(data).message
+                        newLocationForm.querySelector('div.alert.alert-error').style.display = "block"
+                        submitButton.disabled = false
+                        submitSpinner.style.display = "none"
+                    }
                 }
-                else {
-                    window.location.assign("/admin/location")
+                catch (error) {
+                    if (data.includes("<pre>") && data.match(/<pre>(.*?)<\/pre>/)[1]) {
+                        newLocationForm.querySelector('div.alert.alert-error span').innerText = error.message + ", " + data.match(/<pre>(.*?)<\/pre>/)[1]
+                    }
+                    else {
+                        newLocationForm.querySelector('div.alert.alert-error span').innerText = error.message    
+                    }
+                    newLocationForm.querySelector('div.alert.alert-error').style.display = "block"
+                    submitButton.disabled = false
+                    submitSpinner.style.display = "none"
                 }
             })
         }
@@ -147,6 +172,11 @@ document.addEventListener("DOMContentLoaded", function(event) {
             editLocationForm.classList.add('was-validated')
         }
         else {
+            const submitButton = editLocationForm.querySelector('#editLocationSaveButton')
+            const submitSpinner = submitButton.querySelector('span.spinner-border')
+            submitButton.disabled = true
+            submitSpinner.style.display = "inline-block"
+
             const requestOptions = {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
@@ -168,13 +198,28 @@ document.addEventListener("DOMContentLoaded", function(event) {
             })
             .then(data => { 
                 console.log(data)
-                const responseBody = JSON.parse(data)
-                if (responseBody.success === false) {
-                    editLocationModal.querySelector('div.alert.alert-error span').innerText = JSON.parse(data).message
-                    editLocationModal.querySelector('div.alert.alert-error').style.display = "block"
+                try {
+                    const responseBody = JSON.parse(data)
+                    if (responseBody.success) {
+                        window.location.assign("/admin/location")
+                    }
+                    else {
+                        editLocationForm.querySelector('div.alert.alert-error span').innerText = JSON.parse(data).message
+                        editLocationForm.querySelector('div.alert.alert-error').style.display = "block"
+                        submitButton.disabled = false
+                        submitSpinner.style.display = "none"
+                    }   
                 }
-                else {
-                    window.location.assign("/admin/location")
+                catch (error) {
+                    if (data.includes("<pre>") && data.match(/<pre>(.*?)<\/pre>/)[1]) {
+                        editLocationForm.querySelector('div.alert.alert-error span').innerText = error.message + ", " + data.match(/<pre>(.*?)<\/pre>/)[1]
+                    }
+                    else {
+                        editLocationForm.querySelector('div.alert.alert-error span').innerText = error.message    
+                    }
+                    editLocationForm.querySelector('div.alert.alert-error').style.display = "block"
+                    submitButton.disabled = false
+                    submitSpinner.style.display = "none"
                 }
             })
             
@@ -216,35 +261,63 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     /* The form for deleting/replacing a location is submitted */
     deleteLocationForm && deleteLocationForm.addEventListener("submit", function(event) {
-        const requestOptions = {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                replace_with_location_id: deleteLocationForm.querySelector('#d_replace_with_location').value
-            })
+        if (!deleteLocationForm.checkValidity()) {
+            event.preventDefault()
+            event.stopPropagation()
+            deleteLocationForm.classList.add('was-validated')
         }
+        else {
+            const submitButton = deleteLocationForm.querySelector('#deleteLocationSaveButton')
+            const submitSpinner = submitButton.querySelector('span.spinner-border')
+            submitButton.disabled = true
+            submitSpinner.style.display = "inline-block"
 
-        console.log(requestOptions)
-
-        const location_id = deleteLocationForm.querySelector('#d_location_id').value
-
-        fetch(`/api/admin/location/${location_id}`, requestOptions)
-        .then(response => {
-            return response.text()
-        })
-        .then(data => { 
-            console.log(data)
-            const responseBody = JSON.parse(data)
-            if (responseBody.success === false) {
-                deleteLocationForm.querySelector('div.alert.alert-error span').innerText = JSON.parse(data).message
-                deleteLocationForm.querySelector('div.alert.alert-error').style.display = "block"
+            const requestOptions = {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    replace_with_location_id: deleteLocationForm.querySelector('#d_replace_with_location').value
+                })
             }
-            else {
-                window.location.assign("/admin/location")
-            }
-        })
-        
-        event.preventDefault()
-        event.stopPropagation()
+
+            console.log(requestOptions)
+
+            const location_id = deleteLocationForm.querySelector('#d_location_id').value
+
+            fetch(`/api/admin/location/${location_id}`, requestOptions)
+            .then(response => {
+                return response.text()
+            })
+            .then(data => { 
+                console.log(data)
+                try {
+                    const responseBody = JSON.parse(data)
+                    if (responseBody.success) {
+                        window.location.assign("/admin/location")
+                    }
+                    else {
+                        deleteLocationForm.querySelector('div.alert.alert-error span').innerText = JSON.parse(data).message
+                        deleteLocationForm.querySelector('div.alert.alert-error').style.display = "block"
+                        submitButton.disabled = false
+                        submitSpinner.style.display = "none"
+                    }  
+                }
+                catch (error) {
+                    if (data.includes("<pre>") && data.match(/<pre>(.*?)<\/pre>/)[1]) {
+                        deleteLocationForm.querySelector('div.alert.alert-error span').innerText = error.message + ", " + data.match(/<pre>(.*?)<\/pre>/)[1]
+                    }
+                    else {
+                        deleteLocationForm.querySelector('div.alert.alert-error span').innerText = error.message    
+                    }
+                    deleteLocationForm.querySelector('div.alert.alert-error').style.display = "block"
+                    submitButton.disabled = false
+                    submitSpinner.style.display = "none"
+                }
+                
+            })
+            
+            event.preventDefault()
+            event.stopPropagation()
+        }
     })
 })

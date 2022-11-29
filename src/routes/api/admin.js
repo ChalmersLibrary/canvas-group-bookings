@@ -55,7 +55,7 @@ router.put('/canvas/:id', async (req, res, next) => {
  */
 router.get('/course/:id', async (req, res, next) => {
     try {
-        const course = await db.getCourse(req.params.id);
+        const course = await db.getCourseWithStatistics(req.params.id);
         const segments = await db.getSegments(course.canvas_course_id);
 
         return res.send({
@@ -145,7 +145,7 @@ router.get('/course', async (req, res, next) => {
 router.post('/course', async (req, res, next) => {
     try {
         console.log(req.body)
-        const created_id = await db.createCourse(res.locals.courseId, req.body);
+        const created_id = await db.createCourse(res.locals.courseId, req.session.user.id, req.body);
 
         return res.send({
             success: true,
@@ -169,11 +169,40 @@ router.post('/course', async (req, res, next) => {
 router.put('/course/:id', async (req, res, next) => {
     try {
         console.log(req.body)
-        await db.updateCourse(req.params.id, req.body);
+        await db.updateCourse(req.params.id, req.session.user.id, req.body);
 
         return res.send({
             success: true,
             message: 'Course has been updated.'
+        });
+    }
+    catch (error) {
+        log.error(error);
+
+        return res.send({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
+/**
+ * Delete a course
+ */
+router.delete('/course/:id', async (req, res, next) => {
+    try {
+        const course = await db.getCourseWithStatistics(req.params.id);
+
+        if (course.slots_all == 0) {
+            await db.deleteCourse(req.params.id, req.session.user.id);
+        }
+        else {
+            throw new Error("Course has slots, can't delete.");
+        }
+
+        return res.send({
+            success: true,
+            message: 'Course has been deleted.'
         });
     }
     catch (error) {

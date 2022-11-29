@@ -53,46 +53,71 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 newInstructorModal.querySelector('#newInstructorSaveButton').disabled = true
             }
         })
-        .then(finished => {
-        })
     })
 
     /* The New Instructor Form is submitted */
     newInstructorForm && newInstructorForm.addEventListener("submit", function(event) {
-        const requestOptions = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                existing_user_id: newInstructorForm.querySelector('#n_instructor_existing_id').value,
-                canvas_user_id: newInstructorForm.querySelector('#n_instructor_canvas_id').value,
-                name: newInstructorForm.querySelector('#n_instructor_name').value,
-                email: newInstructorForm.querySelector('#n_instructor_email').value
-            })
+        if (!newInstructorForm.checkValidity()) {
+            event.preventDefault()
+            event.stopPropagation()
+            newInstructorForm.classList.add('was-validated')
         }
+        else {
+            const submitButton = newInstructorForm.querySelector('#newInstructorSaveButton')
+            const submitSpinner = submitButton.querySelector('span.spinner-border')
+            submitButton.disabled = true
+            submitSpinner.style.display = "inline-block"
 
-        console.log(requestOptions)
+            const requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    existing_user_id: newInstructorForm.querySelector('#n_instructor_existing_id').value,
+                    canvas_user_id: newInstructorForm.querySelector('#n_instructor_canvas_id').value,
+                    name: newInstructorForm.querySelector('#n_instructor_name').value,
+                    email: newInstructorForm.querySelector('#n_instructor_email').value
+                })
+            }
 
-        fetch("/api/admin/instructor", requestOptions)
-        .then(response => {
-            return response.text()
-        })
-        .then(data => { 
-            console.log(data)
-            const responseBody = JSON.parse(data)
-            if (responseBody.success === false) {
-                newInstructorModal.querySelector('div.alert.alert-error span').innerText = JSON.parse(data).message
-                newInstructorModal.querySelector('div.alert.alert-error').style.display = "block"
-            }
-            else {
-                window.location.assign("/admin/instructor")
-            }
-        })
-        
-        event.preventDefault()
-        event.stopPropagation()
+            console.log(requestOptions)
+
+            fetch("/api/admin/instructor", requestOptions)
+            .then(response => {
+                return response.text()
+            })
+            .then(data => { 
+                console.log(data)
+                try {
+                    const responseBody = JSON.parse(data)
+                    if (responseBody.success) {
+                        window.location.assign("/admin/instructor")
+                    }
+                    else {
+                        newInstructorModal.querySelector('div.alert.alert-error span').innerText = JSON.parse(data).message
+                        newInstructorModal.querySelector('div.alert.alert-error').style.display = "block"
+                        submitButton.disabled = false
+                        submitSpinner.style.display = "none"
+                    }
+                }
+                catch (error) {
+                    if (data.includes("<pre>") && data.match(/<pre>(.*?)<\/pre>/)[1]) {
+                        newInstructorModal.querySelector('div.alert.alert-error span').innerText = error.message + ", " + data.match(/<pre>(.*?)<\/pre>/)[1]
+                    }
+                    else {
+                        newInstructorModal.querySelector('div.alert.alert-error span').innerText = error.message    
+                    }
+                    newInstructorModal.querySelector('div.alert.alert-error').style.display = "block"
+                    submitButton.disabled = false
+                    submitSpinner.style.display = "none" 
+                }
+            })
+            
+            event.preventDefault()
+            event.stopPropagation()
+        }
     })
 
-    /* The modal for editing an Instructor is shown */
+    /* The modal for editing an Instructor is shown (this is currently not supported as we have no unique data) */
     editInstructorModal && editInstructorModal.addEventListener('show.bs.modal', event => {
         editInstructorModal.querySelector('div.modal-body.loading-spinner').style.display = "block"
         editInstructorModal.querySelector('div.modal-body.loaded-content').style.display = "none"
@@ -109,37 +134,60 @@ document.addEventListener("DOMContentLoaded", function(event) {
         })
     })
 
-    /* The Edit Instructor Form is submitted */
+    /* The Edit Instructor Form is submitted (this form is currently not supported) */
     editInstructorForm && editInstructorForm.addEventListener("submit", function(event) {
-        const requestOptions = {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-            })
+        if (!editInstructorForm.checkValidity()) {
+            event.preventDefault()
+            event.stopPropagation()
+            editInstructorForm.classList.add('was-validated')
         }
+        else {
+            const submitButton = editInstructorForm.querySelector('#editInstructorSaveButton')
+            const submitSpinner = submitButton.querySelector('span.spinner-border')
+            submitButton.disabled = true
+            submitSpinner.style.display = "inline-block"
 
-        console.log(requestOptions)
-
-        const instructor_id = editInstructorForm.querySelector('#e_instructor_id').value
-
-        fetch(`/api/admin/instructor/${instructor_id}`, requestOptions)
-        .then(response => {
-            return response.text()
-        })
-        .then(data => { 
-            console.log(data)
-            const responseBody = JSON.parse(data)
-            if (responseBody.success === false) {
-                editInstructorModal.querySelector('div.alert.alert-error span').innerText = JSON.parse(data).message
-                editInstructorModal.querySelector('div.alert.alert-error').style.display = "block"
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                })
             }
-            else {
-                window.location.assign("/admin/instructor")
-            }
-        })
-        
-        event.preventDefault()
-        event.stopPropagation()
+
+            console.log(requestOptions)
+
+            const instructor_id = editInstructorForm.querySelector('#e_instructor_id').value
+
+            fetch(`/api/admin/instructor/${instructor_id}`, requestOptions)
+            .then(response => {
+                return response.text()
+            })
+            .then(data => { 
+                console.log(data)
+                try {
+                    const responseBody = JSON.parse(data)
+                    if (responseBody.success) {
+                        window.location.assign("/admin/instructor")
+                    }
+                    else {
+                        editInstructorModal.querySelector('div.alert.alert-error span').innerText = JSON.parse(data).message
+                        editInstructorModal.querySelector('div.alert.alert-error').style.display = "block"
+                        submitButton.disabled = false
+                        submitSpinner.style.display = "none"
+                    } 
+                }
+                catch (error) {
+                    editInstructorModal.querySelector('div.alert.alert-error span').innerText = error.message
+                    editInstructorModal.querySelector('div.alert.alert-error').style.display = "block"
+                    submitButton.disabled = false
+                    submitSpinner.style.display = "none"
+                }
+                
+            })
+            
+            event.preventDefault()
+            event.stopPropagation()
+        }
     })
 
     /* The modal for deleting/replacing an instructor is shown */
@@ -177,35 +225,62 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     /* The form for deleting/replacing an instructor is submitted */
     deleteInstructorForm && deleteInstructorForm.addEventListener("submit", function(event) {
-        const requestOptions = {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                replace_with_instructor_id: deleteInstructorForm.querySelector('#d_replace_with_instructor').value
-            })
+        if (!deleteInstructorForm.checkValidity()) {
+            event.preventDefault()
+            event.stopPropagation()
+            deleteInstructorForm.classList.add('was-validated')
         }
+        else {
+            const submitButton = deleteInstructorForm.querySelector('#deleteInstructorSaveButton')
+            const submitSpinner = submitButton.querySelector('span.spinner-border')
+            submitButton.disabled = true
+            submitSpinner.style.display = "inline-block"
 
-        console.log(requestOptions)
-
-        const instructor_id = deleteInstructorForm.querySelector('#d_instructor_id').value
-
-        fetch(`/api/admin/instructor/${instructor_id}`, requestOptions)
-        .then(response => {
-            return response.text()
-        })
-        .then(data => { 
-            console.log(data)
-            const responseBody = JSON.parse(data)
-            if (responseBody.success === false) {
-                deleteInstructorForm.querySelector('div.alert.alert-error span').innerText = JSON.parse(data).message
-                deleteInstructorForm.querySelector('div.alert.alert-error').style.display = "block"
+            const requestOptions = {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    replace_with_instructor_id: deleteInstructorForm.querySelector('#d_replace_with_instructor').value
+                })
             }
-            else {
-                window.location.assign("/admin/instructor")
-            }
-        })
-        
-        event.preventDefault()
-        event.stopPropagation()
+
+            console.log(requestOptions)
+
+            const instructor_id = deleteInstructorForm.querySelector('#d_instructor_id').value
+
+            fetch(`/api/admin/instructor/${instructor_id}`, requestOptions)
+            .then(response => {
+                return response.text()
+            })
+            .then(data => { 
+                console.log(data)
+                try {
+                    const responseBody = JSON.parse(data)
+                    if (responseBody.success) {
+                        window.location.assign("/admin/instructor")
+                    }
+                    else {
+                        deleteInstructorForm.querySelector('div.alert.alert-error span').innerText = JSON.parse(data).message
+                        deleteInstructorForm.querySelector('div.alert.alert-error').style.display = "block"
+                        submitButton.disabled = false
+                        submitSpinner.style.display = "none"
+                    }
+                }
+                catch (error) {
+                    if (data.includes("<pre>") && data.match(/<pre>(.*?)<\/pre>/)[1]) {
+                        deleteInstructorForm.querySelector('div.alert.alert-error span').innerText = error.message + ", " + data.match(/<pre>(.*?)<\/pre>/)[1]
+                    }
+                    else {
+                        deleteInstructorForm.querySelector('div.alert.alert-error span').innerText = error.message    
+                    }
+                    deleteInstructorForm.querySelector('div.alert.alert-error').style.display = "block"
+                    submitButton.disabled = false
+                    submitSpinner.style.display = "none"
+                }
+            })
+            
+            event.preventDefault()
+            event.stopPropagation()
+        }
     })
 })

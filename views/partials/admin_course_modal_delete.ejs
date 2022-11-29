@@ -1,17 +1,42 @@
 <div class="modal modal-md fade" id="deleteCourse" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteCourseLabel" aria-hidden="true">
     <div class="modal-dialog">
         <form id="deleteCourseForm" action="/api/admin/course">
+            <input type="hidden" id="d_course_id" value="">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="editSlotLabel">Radera tillfälle</h5>
+                    <h5 class="modal-title" id="deleteCourseLabel">Radera tillfälle</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Stäng"></button>
                 </div>
-                <div class="modal-body">
-                    <p>Dialogruta för att radera ett tillfälle och alla tider kopplade till det.</p>
+                <div class="modal-body loading-spinner">
+                    <div class="d-flex justify-content-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body loaded-content" style="display:none;">
+                    <p>
+                        <strong id="d_course_name"></strong><br>
+                        <span class="text-muted" id="d_course_type"></span>
+                    </p>
+                    <div class="course-deletable" style="display:none;">
+                    </div>
+                    <div class="course-replace" style="display:none;">
+                        <div class="alert alert-danger">
+                            Tillfället är kopplat till tider i denna kurs, därför kan det inte tas bort.
+                        </div>
+                        <!--
+                        <label for="d_replace_with_course">Välj:</label><br>
+                        <select id="d_replace_with_course" class="form-control"></select>
+                        -->
+                    </div>
+                    <div class="alert alert-error alert-danger" style="display:none;">
+                        <strong>Ett fel inträffade: </strong><span></span>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
-                    <button type="submit" class="btn btn-danger" id="editCourseSaveButton">Radera</button>
+                    <button type="submit" class="btn btn-danger" id="deleteCourseSaveButton">Radera <span class="spinner-border spinner-border-sm" style="display:none;" role="status" aria-hidden="true"></span></button>
                 </div>
             </div>
         </form>

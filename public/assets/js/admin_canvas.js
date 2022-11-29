@@ -18,15 +18,22 @@ document.addEventListener("DOMContentLoaded", function(event) {
             return response.text();
         })
         .then(data => { 
-            const responseBody = JSON.parse(data)
-            if (responseBody.success === false) {
-                console.error(JSON.parse(data).message)
-                editFormCanvas.querySelector('#editFormCanvasError.alert span').innerText = JSON.parse(data).message
+            try {
+                const responseBody = JSON.parse(data)
+                if (responseBody.success === false) {
+                    console.error(JSON.parse(data).message)
+                    editFormCanvas.querySelector('#editFormCanvasError.alert span').innerText = JSON.parse(data).message
+                    editFormCanvas.querySelector('#editFormCanvasError.alert').classList.remove("d-none")
+                    editFormCanvas.querySelector('#editFormCanvasError.alert').classList.add("d-block")
+                }
+                else {
+                    window.location.assign("/admin/canvas")
+                }  
+            }
+            catch (error) {
+                editFormCanvas.querySelector('#editFormCanvasError.alert span').innerText = error.message
                 editFormCanvas.querySelector('#editFormCanvasError.alert').classList.remove("d-none")
                 editFormCanvas.querySelector('#editFormCanvasError.alert').classList.add("d-block")
-            }
-            else {
-                window.location.assign("/admin/canvas")
             }
         })
         

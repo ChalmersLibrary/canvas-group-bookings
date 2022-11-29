@@ -1,8 +1,8 @@
 <div class="modal modal-lg fade" id="editCourse" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="editCourseLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <form class="needs-validation" id="editCourseForm" novalidate method="post" action="/api/admin/course">
-            <input type="hidden" id="e_course_id" name="course_id" value="" />
-            <input type="hidden" id="e_canvas_course_id" name="canvas_course_id" value="" />
+        <form class="needs-validation" id="editCourseForm" novalidate action="/api/admin/course">
+            <input type="hidden" id="e_course_id" value="" />
+            <input type="hidden" id="e_canvas_course_id" value="" />
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="editCourseLabel">Redigera tillfälle</h5>
@@ -38,7 +38,7 @@
                             </p>
                             <p>
                                 <label for="e_description">Beskrivning:</label><br>
-                                <textarea class="form-control" rows="3" id="e_description"></textarea>
+                                <textarea class="form-control" id="e_description" style="height:100px;"></textarea>
                             </p>
                             <p>
                                 <div class="form-check">
@@ -112,11 +112,6 @@
                                 <textarea class="form-control" id="e_message_full_body" style="height: 200px;"></textarea>    
                                 <label for="e_message_full_body">Meddelande för ihopkoppling av alla bokade</label>
                             </div>
-                            <p>
-                                <div class="alert alert-primary">
-                                    <strong>Notera: </strong> Om fälten lämnas tomma, kommer generellt utformade meddelanden att användas.
-                                </div>
-                            </p>
                             <div class="card">
                                 <div class="card-header">
                                     Dynamiska delar i text
@@ -135,7 +130,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
-                    <button type="submit" class="btn btn-primary" id="editCourseSaveButton">Uppdatera</button>
+                    <button type="submit" class="btn btn-primary" id="editCourseSaveButton">Uppdatera <span class="spinner-border spinner-border-sm" style="display:none;" role="status" aria-hidden="true"></span></button>
                 </div>
             </div>
         </form>

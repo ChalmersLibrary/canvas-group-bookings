@@ -77,7 +77,7 @@ async function getSegments(canvas_course_id) {
 async function getSegmentsWithStatistics(canvas_course_id) {
     let data;
 
-    await query("SELECT s.*,(SELECT count(DISTINCT id) AS courses FROM course WHERE segment_id=s.id) FROM segment s WHERE s.canvas_course_id=$1", [
+    await query("SELECT s.*,(SELECT count(DISTINCT id)::integer AS courses FROM course WHERE segment_id=s.id) FROM segment s WHERE s.canvas_course_id=$1", [
         canvas_course_id
     ]).then((result) => {
         data = result.rows;
@@ -375,16 +375,36 @@ async function getValidCourses(canvas_course_id) {
     return data;
 }
 
+async function getCourseWithStatistics(course_id) {
+    let data;
+
+    await query("SELECT c.*, " +
+                "(SELECT COUNT(*)::integer AS slots FROM slots_view sv WHERE sv.course_id=c.id), " +
+                "(SELECT COUNT(*)::integer AS slots_all FROM slot s WHERE s.course_id=c.id), " +
+                "(SELECT COALESCE(SUM(res_max), 0)::integer AS spots FROM slots_view sv WHERE sv.course_id=c.id), " +
+                "(SELECT COUNT(rv.*)::integer AS reservations FROM reservations_view rv, slot s WHERE rv.slot_id=s.id AND s.course_id=c.id), " +
+                "(SELECT COUNT(r.*)::integer AS reservations_all FROM reservation r, slot s WHERE r.slot_id=s.id AND s.course_id=c.id), " +
+                "(SELECT COUNT(r.*)::integer AS deleted FROM reservation r, slot s WHERE r.deleted_at IS NOT NULL AND r.slot_id=s.id AND s.course_id=c.id) " +
+                "FROM course c " + 
+                "WHERE c.id=$1", [ course_id ]).then((result) => {
+        data = result.rows[0];
+    }).catch((error) => {
+        log.error(error);
+    });
+    
+    return data;
+}
+
 async function getAllCoursesWithStatistics(canvas_course_id) {
     let data;
 
-    await query("SELECT c.id, c.name, c.is_group, c.is_individual, " +
-                "(SELECT COUNT(*) AS slots FROM slots_view sv WHERE sv.course_id=c.id), " +
-                "(SELECT COALESCE(SUM(res_max), 0) AS spots FROM slots_view sv WHERE sv.course_id=c.id), " +
-                "(SELECT COUNT(rv.*) AS reservations FROM reservations_view rv, slot s WHERE rv.slot_id=s.id AND s.course_id=c.id), " +
-                "(SELECT COUNT(r.*) AS deleted FROM reservation r, slot s WHERE r.deleted_at IS NOT NULL AND r.slot_id=s.id AND s.course_id=c.id) " +
+    await query("SELECT c.*, " +
+                "(SELECT COUNT(*)::integer AS slots FROM slots_view sv WHERE sv.course_id=c.id), " +
+                "(SELECT COALESCE(SUM(res_max), 0)::integer AS spots FROM slots_view sv WHERE sv.course_id=c.id), " +
+                "(SELECT COUNT(rv.*)::integer AS reservations FROM reservations_view rv, slot s WHERE rv.slot_id=s.id AND s.course_id=c.id), " +
+                "(SELECT COUNT(r.*)::integer AS deleted FROM reservation r, slot s WHERE r.deleted_at IS NOT NULL AND r.slot_id=s.id AND s.course_id=c.id) " +
                 "FROM course c " + 
-                "WHERE c.canvas_course_id=$1", [ canvas_course_id ]).then((result) => {
+                "WHERE c.deleted_at IS NULL AND c.canvas_course_id=$1", [ canvas_course_id ]).then((result) => {
         data = result.rows;
     }).catch((error) => {
         log.error(error);
@@ -410,7 +430,7 @@ async function getCourse(id) {
  * Create a new course for a specific Canvas course, with lots of attributes.
  * Returns the created course id.
  */
-async function createCourse(canvas_course_id, parameters) {
+async function createCourse(canvas_course_id, canvas_user_id, parameters) {
     let data;
 
     let {
@@ -435,8 +455,8 @@ async function createCourse(canvas_course_id, parameters) {
         message_cancelled_body = null;
     }
 
-    await query("INSERT INTO course (canvas_course_id, segment_id, name, description, is_group, is_individual, max_groups, max_individuals, max_per_type, default_slot_duration_minutes, cancellation_policy_hours, message_is_mandatory, message_all_when_full, message_cc_instructor, message_confirmation_body, message_full_body, message_cancelled_body) " +
-                "VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17) RETURNING id", [ 
+    await query("INSERT INTO course (canvas_course_id, segment_id, name, description, is_group, is_individual, max_groups, max_individuals, max_per_type, default_slot_duration_minutes, cancellation_policy_hours, message_is_mandatory, message_all_when_full, message_cc_instructor, message_confirmation_body, message_full_body, message_cancelled_body, created_by) " +
+                "VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18) RETURNING id", [ 
         canvas_course_id,
         segment_id, 
         name, 
@@ -453,7 +473,8 @@ async function createCourse(canvas_course_id, parameters) {
         message_cc_instructor, 
         message_confirmation_body, 
         message_full_body, 
-        message_cancelled_body
+        message_cancelled_body,
+        canvas_user_id
     ]).then((result) => {
         data = result.rows[0];
     }).catch((error) => {
@@ -467,7 +488,7 @@ async function createCourse(canvas_course_id, parameters) {
 /**
  * Update information about a course.
  */
-async function updateCourse(course_id, parameters) {
+async function updateCourse(course_id, canvas_user_id, parameters) {
     let {
         segment_id, name, description, is_group, is_individual, max_groups, max_individuals, max_per_type, default_slot_duration_minutes, 
         cancellation_policy_hours, message_is_mandatory, message_all_when_full, message_cc_instructor, message_confirmation_body, message_full_body, message_cancelled_body
@@ -491,8 +512,8 @@ async function updateCourse(course_id, parameters) {
     }
 
     await query("UPDATE course SET segment_id=$1, name=$2, description=$3, is_group=$4, is_individual=$5, max_groups=$6, max_individuals=$7, max_per_type=$8, default_slot_duration_minutes=$9, " +
-                "cancellation_policy_hours=$10, message_is_mandatory=$11, message_all_when_full=$12, message_cc_instructor=$13, message_confirmation_body=$14, message_full_body=$15, message_cancelled_body=$16 " +
-                "WHERE id=$17", [ 
+                "cancellation_policy_hours=$10, message_is_mandatory=$11, message_all_when_full=$12, message_cc_instructor=$13, message_confirmation_body=$14, message_full_body=$15, message_cancelled_body=$16, " +
+                "updated_at=now(), updated_by=$17 WHERE id=$18", [ 
         segment_id, 
         name, 
         description, 
@@ -509,6 +530,19 @@ async function updateCourse(course_id, parameters) {
         message_confirmation_body, 
         message_full_body, 
         message_cancelled_body,
+        canvas_user_id,
+        course_id
+    ]).then((result) => {
+        log.info(result);
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    });
+}
+
+async function deleteCourse(course_id, canvas_user_id) {
+    await query("UPDATE course SET deleted_at=now(), deleted_by=$1 WHERE id=$2", [
+        canvas_user_id,
         course_id
     ]).then((result) => {
         log.info(result);
@@ -549,7 +583,7 @@ async function getInstructor(id) {
 async function getInstructorWithStatistics(canvas_course_id, instructor_id) {
     let data;
 
-    await query("SELECT DISTINCT i.*,(SELECT count(DISTINCT s.id) AS slots FROM slot s, course c2 WHERE s.instructor_id=i.id AND s.course_id=c2.id AND c2.canvas_course_id=$1) FROM instructor i, canvas_course_instructor_mapping c WHERE i.id=c.instructor_id AND c.canvas_course_id=$1 AND i.id=$2", [ 
+    await query("SELECT DISTINCT i.*,(SELECT count(DISTINCT s.id)::integer AS slots FROM slot s, course c2 WHERE s.instructor_id=i.id AND s.course_id=c2.id AND c2.canvas_course_id=$1) FROM instructor i, canvas_course_instructor_mapping c WHERE i.id=c.instructor_id AND c.canvas_course_id=$1 AND i.id=$2", [ 
         canvas_course_id,
         instructor_id 
     ]).then((result) => {
@@ -565,7 +599,7 @@ async function getInstructorWithStatistics(canvas_course_id, instructor_id) {
 async function getInstructorsWithStatistics(canvas_course_id) {
     let data;
 
-    await query("SELECT DISTINCT i.*,(SELECT count(DISTINCT s.id) AS slots FROM slot s, course c2 WHERE s.instructor_id=i.id AND s.course_id=c2.id AND c2.canvas_course_id=$1) FROM instructor i, canvas_course_instructor_mapping c WHERE i.id=c.instructor_id AND c.canvas_course_id=$1", [ 
+    await query("SELECT DISTINCT i.*,(SELECT count(DISTINCT s.id)::integer AS slots FROM slot s, course c2 WHERE s.instructor_id=i.id AND s.course_id=c2.id AND c2.canvas_course_id=$1) FROM instructor i, canvas_course_instructor_mapping c WHERE i.id=c.instructor_id AND c.canvas_course_id=$1", [ 
         canvas_course_id 
     ]).then((result) => {
         data = result.rows;
@@ -664,7 +698,7 @@ async function getValidLocations(canvas_course_id) {
 async function getLocationWithStatistics(canvas_course_id, location_id) {
     let data;
 
-    await query("SELECT DISTINCT l.*,(SELECT count(DISTINCT s.id) AS slots FROM slot s, course c2 WHERE s.location_id=l.id AND s.course_id=c2.id AND c2.canvas_course_id=$1) FROM location l, canvas_course_location_mapping c WHERE l.id=c.location_id AND c.canvas_course_id=$1 AND l.id=$2", [ 
+    await query("SELECT DISTINCT l.*,(SELECT count(DISTINCT s.id)::integer AS slots FROM slot s, course c2 WHERE s.location_id=l.id AND s.course_id=c2.id AND c2.canvas_course_id=$1) FROM location l, canvas_course_location_mapping c WHERE l.id=c.location_id AND c.canvas_course_id=$1 AND l.id=$2", [ 
         canvas_course_id,
         location_id
     ]).then((result) => {
@@ -679,7 +713,7 @@ async function getLocationWithStatistics(canvas_course_id, location_id) {
 async function getLocationsWithStatistics(canvas_course_id) {
     let data;
 
-    await query("SELECT DISTINCT l.*,(SELECT count(DISTINCT s.id) AS slots FROM slot s, course c2 WHERE s.location_id=l.id AND s.course_id=c2.id AND c2.canvas_course_id=$1) FROM location l, canvas_course_location_mapping c WHERE l.id=c.location_id AND c.canvas_course_id=$1", [ 
+    await query("SELECT DISTINCT l.*,(SELECT count(DISTINCT s.id)::integer AS slots FROM slot s, course c2 WHERE s.location_id=l.id AND s.course_id=c2.id AND c2.canvas_course_id=$1) FROM location l, canvas_course_location_mapping c WHERE l.id=c.location_id AND c.canvas_course_id=$1", [ 
         canvas_course_id 
     ]).then((result) => {
         data = result.rows;
@@ -1011,9 +1045,11 @@ module.exports = {
     deleteReservation,
     getNumberOfReservations,
     getValidCourses,
+    getCourseWithStatistics,
     getAllCoursesWithStatistics,
     createCourse,
     updateCourse,
+    deleteCourse,
     getValidInstructors,
     getInstructorWithStatistics,
     getInstructorsWithStatistics,
