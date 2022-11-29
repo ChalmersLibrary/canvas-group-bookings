@@ -366,7 +366,7 @@ async function getNumberOfReservations(user_id, groups) {
 async function getValidCourses(canvas_course_id) {
     let data;
 
-    await query("SELECT * FROM course WHERE canvas_course_id=$1", [ canvas_course_id ]).then((result) => {
+    await query("SELECT * FROM course WHERE canvas_course_id=$1 AND deleted_at IS NULL", [ canvas_course_id ]).then((result) => {
         data = result.rows;
     }).catch((error) => {
         log.error(error);
