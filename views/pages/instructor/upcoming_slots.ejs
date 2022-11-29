@@ -37,6 +37,11 @@
                                 <% }) %>
                             </p>
                         <% } %>
+                        <div class="button-bar">
+                            <button type="button" title="Redigera" data-bs-toggle="modal" data-bs-target="#editSlot" data-bs-slot-id="<%= slot.id %>" class="btn btn-secondary btn-md"><i class="bi-pencil-fill"></i> Redigera</button>
+                            <button type="button" title="Radera" data-bs-toggle="modal" data-bs-target="#deleteSlot" data-bs-slot-id="<%= slot.id %>" class="btn btn-secondary btn-md"><i class="bi-trash-fill"></i> Radera</button>
+                            <button class="btn btn-primary btn-md" type="button" data-bs-toggle="offcanvas" data-bs-slot-id="<%= slot.id %>" data-bs-target="#offcanvasSlotDetails" aria-controls="offcanvasSlotDetails">Mer information</button>
+                        </div>
                     </div>
                 </div>
             <% }) %>
@@ -46,5 +51,6 @@
             <%- include('../../partials/footer', { version: version }); %>
         </footer>
 
+        <%- include('../../partials/instructor_upcoming_slots_offcanvas_details.ejs'); %>
     </body>
 </html>

@@ -1,18 +1,51 @@
 document.addEventListener("DOMContentLoaded", function(event) {
-    document.getElementById("newSlotForm").addEventListener("submit", function(event) {
-        console.log(event);
-        console.log("Time to submit the form: newSlotForm");
+    // TODO: FIX THIS CODE!!!!
 
-        /* event.preventDefault();
-        event.stopPropagation(); */
-    });
+    const slotDetailsOffcanvas = document.getElementById("offcanvasSlotDetails")
+
+    /* The slot details pane is shown, load information */
+    slotDetailsOffcanvas && slotDetailsOffcanvas.addEventListener('show.bs.offcanvas', event => {
+        const button = event.relatedTarget
+        const this_id = button.getAttribute('data-bs-slot-id')
+        slotDetailsOffcanvas.querySelector('div.offcanvas-body.loading-spinner').style.display = "block"
+        slotDetailsOffcanvas.querySelector('div.offcanvas-body.loaded-content').style.display = "none"
+
+        fetch(`/api/instructor/slot/${this_id}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data)
+            slotDetailsOffcanvas.querySelector('#offcanvasSlotDetailsLabel').innerHTML = data.course_name
+            slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_time').innerHTML = data.time_human_readable_sv
+            slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_location').innerHTML = data.location_name
+            slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_reservations').replaceChildren()
+            if (data.reservations && data.reservations.length) {
+                data.reservations.forEach(reservation => {
+                    const r = slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_reservations').appendChild(document.createElement('div'))
+                    if (reservation.is_group) {
+                        r.innerText = reservation.canvas_group_name + " (" + reservation.canvas_user_name + "), " + reservation.created_at.substring(0, 10);
+                    }
+                    else {
+                        r.innerText = reservation.canvas_user_name + ", " + reservation.created_at.substring(0, 10)
+                    }
+                })
+            }
+            else {
+                const r = slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_reservations').appendChild(document.createElement('div'))
+                r.innerText = slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_reservations').getAttribute("data-default-text")
+            }
+        })
+        .then(finished => {
+            slotDetailsOffcanvas.querySelector('div.offcanvas-body.loading-spinner').style.display = "none"
+            slotDetailsOffcanvas.querySelector('div.offcanvas-body.loaded-content').style.display = "block"    
+        })
+    })
 
     /* Edit Slot constants */
     const editSlotModal = document.getElementById('editSlot')
     const editSlotForm = document.getElementById("editSlotForm")
 
     /* The Edit Slot Modal is shown */
-    editSlotModal.addEventListener('show.bs.modal', event => {
+    editSlotModal && editSlotModal.addEventListener('show.bs.modal', event => {
         // Button that triggered the modal
         const button = event.relatedTarget
         // Extract info from data-bs-* attributes
@@ -64,7 +97,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     });
 
     /* The Edit Slot Modal Form is submitted */
-    editSlotForm.addEventListener("submit", function(event) {
+    editSlotForm && editSlotForm.addEventListener("submit", function(event) {
         console.log(event);
         console.log("Time to submit the form: editSlotForm");
 
@@ -111,7 +144,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     const deleteSlotForm = document.getElementById("deleteSlotForm")
 
     /* The Delete Slot Modal is shown */
-    deleteSlotModal.addEventListener('show.bs.modal', event => {
+    deleteSlotModal && deleteSlotModal.addEventListener('show.bs.modal', event => {
         // Button that triggered the modal
         const button = event.relatedTarget
         // Extract info from data-bs-* attributes
@@ -162,7 +195,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     /* The Delete Slot Modal Form is submitted */
 
-    deleteSlotForm.addEventListener("submit", function(event) {
+    deleteSlotForm && deleteSlotForm.addEventListener("submit", function(event) {
         console.log(event);
         console.log("Time to submit the form: deleteSlotForm");
 
@@ -198,7 +231,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
     });
 
     /* The New Slot Form is shown */
-
     document.getElementById("slot_new_slot").addEventListener("click", function(event) {
         const slots_container = document.getElementById("slot_times");
         const slots_current = slots_container.querySelectorAll("div.slot");
