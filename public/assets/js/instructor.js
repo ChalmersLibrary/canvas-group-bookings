@@ -1,7 +1,12 @@
 document.addEventListener("DOMContentLoaded", function(event) {
-    // TODO: FIX THIS CODE!!!!
-
+    /* Modal and form references */
     const slotDetailsOffcanvas = document.getElementById("offcanvasSlotDetails")
+    const newSlotModal = document.getElementById("newSlot")
+    const newSlotForm = document.getElementById("newSlotForm")
+    const editSlotModal = document.getElementById("editSlot")
+    const editSlotForm = document.getElementById("editSlotForm")
+    const deleteSlotModal = document.getElementById("deleteSlot")
+    const deleteSlotForm = document.getElementById("deleteSlotForm")
 
     /* The slot details pane is shown, load information */
     slotDetailsOffcanvas && slotDetailsOffcanvas.addEventListener('show.bs.offcanvas', event => {
@@ -41,18 +46,39 @@ document.addEventListener("DOMContentLoaded", function(event) {
         })
     })
 
-    /* Edit Slot constants */
-    const editSlotModal = document.getElementById('editSlot')
-    const editSlotForm = document.getElementById("editSlotForm")
+    /* The new slot modal is shown, handle add rows for times */
+    newSlotModal && newSlotModal.addEventListener('show.bs.modal', event => {
+        document.getElementById("slot_new_slot").addEventListener("click", function(event) {
+            const slots_container = document.getElementById("slot_times")
+            const slots_current = slots_container.querySelectorAll("div.slot")
+            const template = document.getElementById("slot_template").cloneNode(true)
+            const new_slot = slots_container.appendChild(template)
+            new_slot.setAttribute("id", "slot_" + (slots_current.length + 1))
+            new_slot.querySelectorAll("label").forEach((e) => {
+                e.setAttribute("for", e.getAttribute("for") + (slots_current.length + 1))
+            });
+            new_slot.querySelectorAll("input.form-control").forEach((e) => {
+                e.setAttribute("id", e.getAttribute("id") + (slots_current.length + 1))
+                e.setAttribute("name", e.getAttribute("name") + (slots_current.length + 1))
+            })
+            new_slot.querySelector("input.form-control[type='date']").setAttribute("value", slots_container.querySelector("#slot_date_" + (slots_current.length)).value)
+            new_slot.classList.remove("slot_template")
+            new_slot.classList.add("slot")
+        })
+    })
+
+    /* The new slot form is submitted */
+    newSlotForm && newSlotForm.addEventListener("submit", event => {
+        console.log("Should start spinner in button, but we post to real server action.")
+    })
 
     /* The Edit Slot Modal is shown */
     editSlotModal && editSlotModal.addEventListener('show.bs.modal', event => {
-        // Button that triggered the modal
         const button = event.relatedTarget
-        // Extract info from data-bs-* attributes
         const slot_id = button.getAttribute('data-bs-slot-id')
-        // If necessary, you could initiate an AJAX request here
-        // and then do the updating in a callback.
+        editSlotModal.querySelector('div.modal-body.loading-spinner').style.display = "block"
+        editSlotModal.querySelector('div.modal-body.loaded-content').style.display = "none"
+        
         fetch(`/api/instructor/slot/${slot_id}`)
         .then(response => response.json())
         .then(data => {
@@ -107,6 +133,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 }
             }
         })
+        .then(finished => {
+            editSlotModal.querySelector('div.modal-body.loading-spinner').style.display = "none"
+            editSlotModal.querySelector('div.modal-body.loaded-content').style.display = "block"    
+        })
         if (editSlotModal.querySelector('#editSlotError').classList.contains("d-block")) {
             editSlotModal.querySelector('#editSlotError').classList.remove("d-block")
             editSlotModal.querySelector('#editSlotError').classList.add("d-none")
@@ -115,8 +145,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     /* The Edit Slot Modal Form is submitted */
     editSlotForm && editSlotForm.addEventListener("submit", function(event) {
-        console.log(event);
-        console.log("Time to submit the form: editSlotForm");
+        const submitButton = editSlotForm.querySelector('#editSlotSaveButton')
+        const submitSpinner = submitButton.querySelector('span.spinner-border')
+        submitButton.disabled = true
+        submitSpinner.style.display = "inline-block"
 
         const requestOptions = {
             method: 'PUT',
@@ -141,14 +173,16 @@ document.addEventListener("DOMContentLoaded", function(event) {
         .then(data => { 
             console.log(data)
             const responseBody = JSON.parse(data)
-            if (responseBody.success === false) {
+            if (responseBody.success) {
+                window.location.assign("/")
+            }
+            else {
                 console.error(JSON.parse(data).message)
                 editSlotModal.querySelector('#editSlotError .alert span').innerText = JSON.parse(data).message
                 editSlotModal.querySelector('#editSlotError').classList.remove("d-none")
                 editSlotModal.querySelector('#editSlotError').classList.add("d-block")
-            }
-            else {
-                window.location.assign("/")
+                submitButton.disabled = true
+                submitSpinner.style.display = "none"
             }
         });
         
@@ -156,18 +190,14 @@ document.addEventListener("DOMContentLoaded", function(event) {
         event.stopPropagation();
     });
 
-    /* Delete slot constants */
-    const deleteSlotModal = document.getElementById('deleteSlot')
-    const deleteSlotForm = document.getElementById("deleteSlotForm")
-
     /* The Delete Slot Modal is shown */
     deleteSlotModal && deleteSlotModal.addEventListener('show.bs.modal', event => {
-        // Button that triggered the modal
         const button = event.relatedTarget
-        // Extract info from data-bs-* attributes
         const slot_id = button.getAttribute('data-bs-slot-id')
-        // If necessary, you could initiate an AJAX request here
-        // and then do the updating in a callback.
+
+        deleteSlotModal.querySelector('div.modal-body.loading-spinner').style.display = "block"
+        deleteSlotModal.querySelector('div.modal-body.loaded-content').style.display = "none"
+
         fetch(`/api/instructor/slot/${slot_id}`)
         .then(response => response.json())
         .then(data => {
@@ -204,6 +234,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 }
             }
         })
+        .then(finished => {
+            deleteSlotModal.querySelector('div.modal-body.loading-spinner').style.display = "none"
+            deleteSlotModal.querySelector('div.modal-body.loaded-content').style.display = "block"    
+        })
         if(deleteSlotModal.querySelector('#deleteSlotError').classList.contains("d-block")) {
             deleteSlotModal.querySelector('#deleteSlotError').classList.remove("d-block")
             deleteSlotModal.querySelector('#deleteSlotError').classList.add("d-none")
@@ -211,10 +245,11 @@ document.addEventListener("DOMContentLoaded", function(event) {
     });
 
     /* The Delete Slot Modal Form is submitted */
-
     deleteSlotForm && deleteSlotForm.addEventListener("submit", function(event) {
-        console.log(event);
-        console.log("Time to submit the form: deleteSlotForm");
+        const submitButton = deleteSlotForm.querySelector('#deleteSlotDeleteButton')
+        const submitSpinner = deleteSlotForm.querySelector('span.spinner-border')
+        submitButton.disabled = true
+        submitSpinner.style.display = "inline-block"
 
         const requestOptions = {
             method: 'DELETE',
@@ -232,14 +267,16 @@ document.addEventListener("DOMContentLoaded", function(event) {
         .then(data => { 
             console.log(data)
             const responseBody = JSON.parse(data)
-            if (responseBody.success === false) {
+            if (responseBody.success) {
+                window.location.assign("/")
+            }
+            else {
                 console.error(JSON.parse(data).message)
                 deleteSlotModal.querySelector('#deleteSlotError .alert span').innerText = JSON.parse(data).message
                 deleteSlotModal.querySelector('#deleteSlotError').classList.remove("d-none")
                 deleteSlotModal.querySelector('#deleteSlotError').classList.add("d-block")
-            }
-            else {
-                window.location.assign("/")
+                submitButton.disabled = true
+                submitSpinner.style.display = "inline-block"
             }
         });
         
@@ -247,24 +284,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         event.stopPropagation();
     });
 
-    /* The New Slot Form is shown */
-    document.getElementById("slot_new_slot").addEventListener("click", function(event) {
-        const slots_container = document.getElementById("slot_times");
-        const slots_current = slots_container.querySelectorAll("div.slot");
-        const template = document.getElementById("slot_template").cloneNode(true);
-        const new_slot = slots_container.appendChild(template);
-        new_slot.setAttribute("id", "slot_" + (slots_current.length + 1));
-        new_slot.querySelectorAll("label").forEach((e) => {
-            e.setAttribute("for", e.getAttribute("for") + (slots_current.length + 1));
-        });
-        new_slot.querySelectorAll("input.form-control").forEach((e) => {
-            e.setAttribute("id", e.getAttribute("id") + (slots_current.length + 1));
-            e.setAttribute("name", e.getAttribute("name") + (slots_current.length + 1));
-        });
-        new_slot.querySelector("input.form-control[type='date']").setAttribute("value", slots_container.querySelector("#slot_date_" + (slots_current.length)).value);
-        new_slot.classList.remove("slot_template");
-        new_slot.classList.add("slot");
-    });
+    
 
     /* Disables form submission if validation fails */
     (() => {
