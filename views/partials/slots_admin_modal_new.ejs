@@ -1,6 +1,6 @@
 <div class="modal modal-lg fade" id="newSlotSeries" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="newSlotSeriesLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <form class="needs-validation" id="newSlotForm" novalidate method="POST" action="/api/instructor/slot">
+        <form class="needs-validation" id="newSlotForm" novalidate method="post" action="/api/instructor/slot">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="newSlotSeriesLabel">Lägg till bokningsbara tider</h5>
@@ -58,15 +58,15 @@
                         <div class="row slot_template py-2" id="slot_template">
                             <div class="col-sm-4">
                                 <label for="slot_date_" class="form-label d-none">Datum:</label>
-                                <input type="date" class="form-control" id="slot_date_" name="slot_date_" required>
+                                <input type="date" class="form-control" id="slot_date_" name="slot_date_">
                             </div>
                             <div class="col-sm-4">
                                 <label for="slot_time_start_" class="form-label d-none">Startar:</label>
-                                <input type="time" class="form-control" id="slot_time_start_" name="slot_time_start_" required>
+                                <input type="time" class="form-control" id="slot_time_start_" name="slot_time_start_">
                             </div>
                             <div class="col-sm-4">
                                 <label for="slot_time_end_" class="form-label d-none">Slutar:</label>
-                                <input type="time" class="form-control" id="slot_time_end_" name="slot_time_end_" required>
+                                <input type="time" class="form-control" id="slot_time_end_" name="slot_time_end_">
                             </div>
                         </div>
                         <div class="row slot py-2" id="slot_1">

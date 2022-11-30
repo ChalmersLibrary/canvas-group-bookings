@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function(event) {
     /* Modal and form references */
     const slotDetailsOffcanvas = document.getElementById("offcanvasSlotDetails")
-    const newSlotModal = document.getElementById("newSlot")
+    const newSlotModal = document.getElementById("newSlotSeries")
     const newSlotForm = document.getElementById("newSlotForm")
     const editSlotModal = document.getElementById("editSlot")
     const editSlotForm = document.getElementById("editSlotForm")
@@ -60,6 +60,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
             new_slot.querySelectorAll("input.form-control").forEach((e) => {
                 e.setAttribute("id", e.getAttribute("id") + (slots_current.length + 1))
                 e.setAttribute("name", e.getAttribute("name") + (slots_current.length + 1))
+                e.setAttribute("required", "")
             })
             new_slot.querySelector("input.form-control[type='date']").setAttribute("value", slots_container.querySelector("#slot_date_" + (slots_current.length)).value)
             new_slot.classList.remove("slot_template")
@@ -67,10 +68,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
         })
     })
 
-    /* The new slot form is submitted */
-    newSlotForm && newSlotForm.addEventListener("submit", event => {
+    /* The new slot form is submitted, NOTE: needs to be rewritten if we should use spinner on button */
+    /* newSlotForm && newSlotForm.addEventListener("submit", event => {
         console.log("Should start spinner in button, but we post to real server action.")
-    })
+    }) */
 
     /* The Edit Slot Modal is shown */
     editSlotModal && editSlotModal.addEventListener('show.bs.modal', event => {
@@ -284,8 +285,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
         event.stopPropagation();
     });
 
-    
-
     /* Disables form submission if validation fails */
     (() => {
         'use strict'
@@ -299,6 +298,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
             if (!form.checkValidity()) {
                 event.preventDefault()
                 event.stopPropagation()
+                console.error("checkValidity: preventDefault & stopPropagation")
             }
         
             form.classList.add('was-validated')
