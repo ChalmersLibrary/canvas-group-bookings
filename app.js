@@ -82,6 +82,14 @@ db.checkDatabaseVersion();
 // Setup all routes
 app.use('/', routes);
 
+app.get('/debug', async (req, res, next) => {
+    return res.send({
+        version: pkg.version,
+        internal: req.session.internal,
+        session: req.session
+    });
+});
+
 // Test
 app.get('/test', async (req, res, next) => {
     await log.info("Testing endpoint requested.");
