@@ -143,7 +143,6 @@ async function updateSegment(segment_id, canvas_user_id, name, sign, description
         throw new Error(error);
     }); 
 }
-
 async function deleteSegment(segment_id, canvas_user_id) {
     await query("UPDATE segment SET deleted_at=now(), deleted_by=$1 WHERE id=$2", [
         canvas_user_id,
@@ -1085,6 +1084,7 @@ async function checkDatabaseVersion() {
                             latest_applied_version = (current_version + 1);
                         }).catch((error) => {
                             log.error(error);
+                            check_new_version = false;
                         });
                     }
                     else {
