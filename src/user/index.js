@@ -54,7 +54,6 @@ async function addUserFlagsForRoles(req) {
             req.session.user.isInstructor = false;
 
             req.session.lti.custom_canvas_roles.split(",").forEach((role) => {
-                log.info(role);
                 if (role === "Examiner" || role === "Account Admin") {
                     req.session.user.isAdministrator = true;
                     req.session.user.isInstructor = true;
