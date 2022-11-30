@@ -24,9 +24,13 @@
                             <p>
                                 <label for="instructor_id" class="form-label">Handledare:</label>
                                 <select required id="instructor_id" name="instructor_id" class="form-select" aria-label="Välj en handledare">
-                                    <option value="" selected disabled>Välj...</option>
+                                    <option value="" <%= session.user.db_id != null ? '' : 'selected' %> disabled>Välj...</option>
                                     <% instructors.forEach((instructor) => { %>
-                                        <option value="<%= instructor.id %>"><%= instructor.name %></option>                                
+                                        <% if (instructor.id == session.user.db_id) { %>
+                                            <option value="<%= instructor.id %>" selected><%= instructor.name %></option>
+                                        <% } else { %>
+                                            <option value="<%= instructor.id %>"><%= instructor.name %></option>
+                                        <% } %>
                                     <% }); %>
                                 </select>
                             </p>
