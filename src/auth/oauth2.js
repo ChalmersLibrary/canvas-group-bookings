@@ -252,29 +252,35 @@ async function refreshAccessToken(canvas_user_id) {
 
 async function persistAccessToken(token) {
     let domain = new URL(process.env.AUTH_HOST).hostname;
-    log.info("Persisting access token for user " + token.user.id + ", domain " + domain);
+    let client = process.env.AUTH_CLIENT_ID;
+
+    log.info("Persisting access token for user " + token.user.id + ", domain " + domain + ", client " + client);
     log.info(token);
 
-    await db.query("INSERT INTO user_token (canvas_user_id, canvas_domain, data, updated_at) VALUES ($1, $2, $3, now()) ON CONFLICT (canvas_user_id, canvas_domain) DO UPDATE SET data = EXCLUDED.data, updated_at = now()", [
+    await db.query("INSERT INTO user_token (canvas_user_id, canvas_domain, canvas_client_id, data, updated_at) VALUES ($1, $2, $3, $4, now()) ON CONFLICT (canvas_user_id, canvas_domain, canvas_client_id) DO UPDATE SET data = EXCLUDED.data, updated_at = now()", [
         token.user.id,
         domain,
+        client,
         token
     ]).then((result) => {
         log.info("Access token persisted to db, bound to user id " + token.user.id + " for domain " + domain);
     }).catch((error) => {
-        console.error(error); // throw new Error(error)???
+        log.error(error); // throw new Error(error)???
     });
 }
 
 async function findAccessToken(canvas_user_id) {
     let foundToken;
     let domain = new URL(process.env.AUTH_HOST).hostname;
-    log.info("Locating access token for user " + canvas_user_id + ", domain " + domain);
+    let client = process.env.AUTH_CLIENT_ID;
+
+    log.info("Locating access token for user " + canvas_user_id + ", domain " + domain + ", client " + client);
 
     try {
-        await db.query("SELECT data FROM user_token WHERE canvas_user_id=$1 AND canvas_domain=$2", [
+        await db.query("SELECT data FROM user_token WHERE canvas_user_id=$1 AND canvas_domain=$2 AND canvas_client_id=$3", [
             canvas_user_id,
-            domain
+            domain,
+            client
         ]).then((res) => {
             if (res.rows.length) {
                 log.info(JSON.stringify(res.rows));
@@ -283,7 +289,7 @@ async function findAccessToken(canvas_user_id) {
         });
     }
     catch (error) {
-        console.error(error);
+        log.error(error);
     }
 
     return foundToken;
