@@ -90,8 +90,13 @@
                     <div class="text-small text-muted"><%= slot.reservable_notice %></div>
                     <div class="float-end button-bar">
                         <% if (session.user.isAdministrator || session.user.isInstructor) { %>
-                            <button type="button" title="Redigera" data-bs-toggle="modal" data-bs-target="#editSlot" data-bs-slot-id="<%= slot.id %>" class="btn btn-secondary btn-md"><i class="bi-pencil-fill"></i></button>
-                            <button type="button" title="Radera" data-bs-toggle="modal" data-bs-target="#deleteSlot" data-bs-slot-id="<%= slot.id %>" class="btn btn-secondary btn-md mx-2"><i class="bi-trash-fill"></i></button>
+                            <% if (session.user.isAdministrator || (session.user.isInstructor && session.user.db_id == slot.instructor_id)) { %>
+                                <button type="button" title="Redigera" data-bs-toggle="modal" data-bs-target="#editSlot" data-bs-slot-id="<%= slot.id %>" class="btn btn-secondary btn-md"><i class="bi-pencil-fill"></i></button>
+                                <button type="button" title="Radera" data-bs-toggle="modal" data-bs-target="#deleteSlot" data-bs-slot-id="<%= slot.id %>" class="btn btn-secondary btn-md mx-2"><i class="bi-trash-fill"></i></button>
+                            <% } else { %>
+                                <button disabled type="button" title="Redigera" class="btn btn-secondary btn-md"><i class="bi-pencil-fill"></i></button>
+                                <button disabled type="button" title="Radera" class="btn btn-secondary btn-md mx-2"><i class="bi-trash-fill"></i></button>
+                            <% } %>
                         <% } else { %>
                             <% if (slot.reservable_for_this_user) { %>
                                 <button type="button" title="Boka tillfället" class="btn btn-primary btn-md" data-bs-toggle="modal" data-bs-target="#reserveSlot" data-bs-slot-id="<%= slot.id %>" >Boka</button>
@@ -124,8 +129,13 @@
                 <% if (session.user.isAdministrator || session.user.isInstructor) { %>
                     <td class="d-none d-md-table-cell align-top">
                         <div class="float-end">
-                            <button type="button" title="Redigera" data-bs-toggle="modal" data-bs-target="#editSlot" data-bs-slot-id="<%= slot.id %>" class="btn btn-secondary btn-md"><i class="bi-pencil-fill"></i></button>
-                            <button type="button" title="Radera" data-bs-toggle="modal" data-bs-target="#deleteSlot" data-bs-slot-id="<%= slot.id %>" class="btn btn-secondary btn-md mx-2"><i class="bi-trash-fill"></i></button>    
+                            <% if (session.user.isAdministrator || (session.user.isInstructor && session.user.db_id == slot.instructor_id)) { %>
+                                <button type="button" title="Redigera" data-bs-toggle="modal" data-bs-target="#editSlot" data-bs-slot-id="<%= slot.id %>" class="btn btn-secondary btn-md"><i class="bi-pencil-fill"></i></button>
+                                <button type="button" title="Radera" data-bs-toggle="modal" data-bs-target="#deleteSlot" data-bs-slot-id="<%= slot.id %>" class="btn btn-secondary btn-md mx-2"><i class="bi-trash-fill"></i></button>
+                            <% } else { %>
+                                <button disabled type="button" title="Redigera" class="btn btn-secondary btn-md"><i class="bi-pencil-fill"></i></button>
+                                <button disabled type="button" title="Radera" class="btn btn-secondary btn-md mx-2"><i class="bi-trash-fill"></i></button>
+                            <% } %>
                         </div>
                     </td>
                 <% } else { %>
