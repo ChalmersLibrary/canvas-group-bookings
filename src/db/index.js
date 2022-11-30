@@ -672,6 +672,23 @@ async function getInstructor(id) {
     return data;
 }
 
+/**
+ * Returns local user id for an instructor
+ */
+async function getInstructorWithCanvasUserId(canvas_user_id) {
+    let data;
+
+    await query("SELECT id FROM instructor WHERE canvas_user_id = $1", [ canvas_user_id ]).then((result) => {
+        data = result.rows[0];
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    });
+    
+    return data;
+}
+
+
 async function getInstructorWithStatistics(canvas_course_id, instructor_id) {
     let data;
 
@@ -1153,6 +1170,7 @@ module.exports = {
     getInstructorWithStatistics,
     getInstructorsWithStatistics,
     getInstructor,
+    getInstructorWithCanvasUserId,
     getAllInstructors,
     createInstructor,
     connectInstructor,
