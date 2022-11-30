@@ -187,7 +187,7 @@ async function replaceExistingSegmentInCourses(old_segment_id, new_segment_id, c
 async function getAllSlots(canvas_course_id, date) {
     let data;
     let returnedData = [];
-    const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const dateOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
     const timeOptions = { hour: '2-digit', minute: '2-digit' };
 
     await query("SELECT * FROM slots_view s WHERE s.canvas_course_id = $1 AND s.time_start >= $2", [
@@ -203,7 +203,7 @@ async function getAllSlots(canvas_course_id, date) {
     /* TODO: think about if these additions/conversions should be done outside, and this should be just clean db code? */
     if (data !== undefined && data.length) {
         data.forEach(slot => {
-            slot.time_human_readable_sv = utils.capitalizeFirstLetter(new Date(slot.time_start).toLocaleDateString('sv-SE', dateOptions) + " kl " + new Date(slot.time_start).toLocaleTimeString('sv-SE', timeOptions) + "–" + new Date(slot.time_end).toLocaleTimeString('sv-SE', timeOptions));
+            slot.time_human_readable_sv = utils.capitalizeFirstLetter(new Date(slot.time_start).toLocaleDateString('sv-SE', dateOptions).replace(".", "") + " kl " + new Date(slot.time_start).toLocaleTimeString('sv-SE', timeOptions) + "–" + new Date(slot.time_end).toLocaleTimeString('sv-SE', timeOptions));
             returnedData.push(slot);
         });
     }
@@ -217,7 +217,7 @@ async function getAllSlots(canvas_course_id, date) {
  async function getAllSlotsInSegment(canvas_course_id, segment_id, date) {
     let data;
     let returnedData = [];
-    const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const dateOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
     const timeOptions = { hour: '2-digit', minute: '2-digit' };
 
     await query("SELECT * FROM slots_view s WHERE s.canvas_course_id = $1 AND s.course_segment_id = $2 AND s.time_start >= $3", [
@@ -234,7 +234,7 @@ async function getAllSlots(canvas_course_id, date) {
     /* TODO: think about if these additions/conversions should be done outside, and this should be just clean db code? */
     if (data !== undefined && data.length) {
         data.forEach(slot => {
-            slot.time_human_readable_sv = utils.capitalizeFirstLetter(new Date(slot.time_start).toLocaleDateString('sv-SE', dateOptions) + " kl " + new Date(slot.time_start).toLocaleTimeString('sv-SE', timeOptions) + "–" + new Date(slot.time_end).toLocaleTimeString('sv-SE', timeOptions));
+            slot.time_human_readable_sv = utils.capitalizeFirstLetter(new Date(slot.time_start).toLocaleDateString('sv-SE', dateOptions).replace(".", "") + " kl " + new Date(slot.time_start).toLocaleTimeString('sv-SE', timeOptions) + "–" + new Date(slot.time_end).toLocaleTimeString('sv-SE', timeOptions));
             returnedData.push(slot);
         });
     }
@@ -245,7 +245,7 @@ async function getAllSlots(canvas_course_id, date) {
 async function getSlot(id) {
     let data;
     let returnedData = [];
-    const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const dateOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
     const timeOptions = { hour: '2-digit', minute: '2-digit' };
 
     await query("SELECT * FROM slots_view WHERE id = $1", [ id ]).then((result) => {
@@ -257,7 +257,7 @@ async function getSlot(id) {
     /* TODO: think about if these additions/conversions should be done outside, and this should be just clean db code? */
     if (data !== undefined && data.length) {
         data.forEach(slot => {
-            slot.time_human_readable_sv = utils.capitalizeFirstLetter(new Date(slot.time_start).toLocaleDateString('sv-SE', dateOptions) + " kl " + new Date(slot.time_start).toLocaleTimeString('sv-SE', timeOptions) + "–" + new Date(slot.time_end).toLocaleTimeString('sv-SE', timeOptions));
+            slot.time_human_readable_sv = utils.capitalizeFirstLetter(new Date(slot.time_start).toLocaleDateString('sv-SE', dateOptions).replace(".", "") + " kl " + new Date(slot.time_start).toLocaleTimeString('sv-SE', timeOptions) + "–" + new Date(slot.time_end).toLocaleTimeString('sv-SE', timeOptions));
             returnedData.push(slot);
         });
     }
@@ -307,7 +307,7 @@ async function getExtendedSlotReservations(id) {
 async function getAllSlotsForInstructor(canvas_course_id, instructor_id, date) {
     let data;
     let returnedData = [];
-    const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const dateOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
     const timeOptions = { hour: '2-digit', minute: '2-digit' };
 
     await query("SELECT s.* FROM slots_view s, instructor i WHERE s.canvas_course_id = $1 AND s.time_start >= $3 AND s.instructor_id = i.id AND i.canvas_user_id=$2 ORDER BY s.time_start ASC", [
@@ -324,7 +324,7 @@ async function getAllSlotsForInstructor(canvas_course_id, instructor_id, date) {
     /* TODO: think about if these additions/conversions should be done outside, and this should be just clean db code? */
     if (data !== undefined && data.length) {
         data.forEach(slot => {
-            slot.time_human_readable_sv = utils.capitalizeFirstLetter(new Date(slot.time_start).toLocaleDateString('sv-SE', dateOptions) + " kl " + new Date(slot.time_start).toLocaleTimeString('sv-SE', timeOptions) + "–" + new Date(slot.time_end).toLocaleTimeString('sv-SE', timeOptions));
+            slot.time_human_readable_sv = utils.capitalizeFirstLetter(new Date(slot.time_start).toLocaleDateString('sv-SE', dateOptions).replace(".", "") + " kl " + new Date(slot.time_start).toLocaleTimeString('sv-SE', timeOptions) + "–" + new Date(slot.time_end).toLocaleTimeString('sv-SE', timeOptions));
             returnedData.push(slot);
         });
     }
@@ -335,7 +335,7 @@ async function getAllSlotsForInstructor(canvas_course_id, instructor_id, date) {
 async function getReservationsForUser(canvas_course_id, user_id, groups) {
     let data;
     let returnedData = [];
-    const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const dateOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
     const timeOptions = { hour: '2-digit', minute: '2-digit' };
     
     await query("SELECT * FROM reservations_view WHERE canvas_course_id = $1 AND (canvas_user_id = $2 OR canvas_group_id = ANY ($3)) ORDER BY is_passed, time_start ASC", [ 
@@ -351,8 +351,8 @@ async function getReservationsForUser(canvas_course_id, user_id, groups) {
     
     if (data !== undefined && data.length) {
         data.forEach(reservation => {
-            reservation.created_at_human_readable_sv = utils.capitalizeFirstLetter(new Date(reservation.created_at).toLocaleDateString('sv-SE', dateOptions));
-            reservation.time_human_readable_sv = utils.capitalizeFirstLetter(new Date(reservation.time_start).toLocaleDateString('sv-SE', dateOptions) + " kl " + new Date(reservation.time_start).toLocaleTimeString('sv-SE', timeOptions) + "–" + new Date(reservation.time_end).toLocaleTimeString('sv-SE', timeOptions));
+            reservation.created_at_human_readable_sv = utils.capitalizeFirstLetter(new Date(reservation.created_at).toLocaleDateString('sv-SE', dateOptions).replace(".", ""));
+            reservation.time_human_readable_sv = utils.capitalizeFirstLetter(new Date(reservation.time_start).toLocaleDateString('sv-SE', dateOptions).replace(".", "") + " kl " + new Date(reservation.time_start).toLocaleTimeString('sv-SE', timeOptions) + "–" + new Date(reservation.time_end).toLocaleTimeString('sv-SE', timeOptions));
             
             returnedData.push(reservation);
         });
@@ -365,7 +365,7 @@ async function getReservationsForUser(canvas_course_id, user_id, groups) {
 async function getReservation(user_id, groups, reservation_id) {
     let data;
     let returnedData = [];
-    const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const dateOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
     const timeOptions = { hour: '2-digit', minute: '2-digit' };
     
     await query("SELECT * FROM reservations_view WHERE id=$3 AND (canvas_user_id=$1 OR canvas_group_id=ANY($2)) ORDER BY time_start ASC", [ 
@@ -381,8 +381,8 @@ async function getReservation(user_id, groups, reservation_id) {
     
     if (data !== undefined && data.length) {
         data.forEach(reservation => {
-            reservation.created_at_human_readable_sv = utils.capitalizeFirstLetter(new Date(reservation.created_at).toLocaleDateString('sv-SE', dateOptions));
-            reservation.time_human_readable_sv = utils.capitalizeFirstLetter(new Date(reservation.time_start).toLocaleDateString('sv-SE', dateOptions) + " kl " + new Date(reservation.time_start).toLocaleTimeString('sv-SE', timeOptions) + "–" + new Date(reservation.time_end).toLocaleTimeString('sv-SE', timeOptions));
+            reservation.created_at_human_readable_sv = utils.capitalizeFirstLetter(new Date(reservation.created_at).toLocaleDateString('sv-SE', dateOptions).replace(".", ""));
+            reservation.time_human_readable_sv = utils.capitalizeFirstLetter(new Date(reservation.time_start).toLocaleDateString('sv-SE', dateOptions).replace(".", "") + " kl " + new Date(reservation.time_start).toLocaleTimeString('sv-SE', timeOptions) + "–" + new Date(reservation.time_end).toLocaleTimeString('sv-SE', timeOptions));
             
             returnedData.push(reservation);
         });
