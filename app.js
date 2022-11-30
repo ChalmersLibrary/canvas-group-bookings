@@ -323,7 +323,10 @@ app.get('/instructor/upcoming', async (req, res, next) => {
                 internal: req.session.internal,
                 version: pkg.version,
                 session: req.session,
-                slots: slots
+                slots: slots,
+                courses: await db.getValidCourses(res.locals.courseId),
+                instructors: await db.getValidInstructors(res.locals.courseId),
+                locations: await db.getValidLocations(res.locals.courseId)
             });                    
         }
         catch (error) {

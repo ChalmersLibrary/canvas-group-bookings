@@ -17,6 +17,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
             slotDetailsOffcanvas.querySelector('#offcanvasSlotDetailsLabel').innerHTML = data.course_name
             slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_time').innerHTML = data.time_human_readable_sv
             slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_location').innerHTML = data.location_name
+            slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_type_details').innerHTML = data.type == "group" ? "Grupptillfälle, max " + data.res_max + " grupper" : "Individuellt tillfälle, max " + data.res_max + " personer"
             slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_reservations').replaceChildren()
             if (data.reservations && data.reservations.length) {
                 data.reservations.forEach(reservation => {
@@ -63,30 +64,46 @@ document.addEventListener("DOMContentLoaded", function(event) {
             editSlotModal.querySelector('#e_slot_date').value = data.shortcut.start_date
             editSlotModal.querySelector('#e_slot_time_start').value = data.shortcut.start_time
             editSlotModal.querySelector('#e_slot_time_end').value = data.shortcut.end_time
-            editSlotModal.querySelector('#reservations').replaceChildren()
-            if (data.reservations && data.reservations.length) {
-                data.reservations.forEach(reservation => {
+            if (editSlotModal.querySelector('#reservations')) {
+                editSlotModal.querySelector('#reservations').replaceChildren()
+                if (data.reservations && data.reservations.length) {
+                    data.reservations.forEach(reservation => {
+                        const r = editSlotModal.querySelector('#reservations').appendChild(document.createElement('div'))
+                        if (reservation.is_group) {
+                            r.innerText = reservation.canvas_group_name + " (" + reservation.canvas_user_name + "), " + reservation.created_at.substring(0, 10);
+                        }
+                        else {
+                            r.innerText = reservation.canvas_user_name + ", " + reservation.created_at.substring(0, 10)
+                        }
+                    })
+    
+                    if (editSlotModal.querySelector('#editSlotWarning').classList.contains("d-none")) {
+                        editSlotModal.querySelector('#editSlotWarning').classList.remove("d-none")
+                        editSlotModal.querySelector('#editSlotWarning').classList.add("d-block")
+                    }
+                }
+                else {
                     const r = editSlotModal.querySelector('#reservations').appendChild(document.createElement('div'))
-                    if (reservation.is_group) {
-                        r.innerText = reservation.canvas_group_name + " (" + reservation.canvas_user_name + "), " + reservation.created_at.substring(0, 10);
+                    r.innerText = editSlotModal.querySelector('#reservations').getAttribute("data-default-text")
+    
+                    if (editSlotModal.querySelector('#editSlotWarning').classList.contains("d-block")) {
+                        editSlotModal.querySelector('#editSlotWarning').classList.remove("d-block")
+                        editSlotModal.querySelector('#editSlotWarning').classList.add("d-none")
                     }
-                    else {
-                        r.innerText = reservation.canvas_user_name + ", " + reservation.created_at.substring(0, 10)
-                    }
-                })
-
-                if (editSlotModal.querySelector('#editSlotWarning').classList.contains("d-none")) {
-                    editSlotModal.querySelector('#editSlotWarning').classList.remove("d-none")
-                    editSlotModal.querySelector('#editSlotWarning').classList.add("d-block")
                 }
             }
             else {
-                const r = editSlotModal.querySelector('#reservations').appendChild(document.createElement('div'))
-                r.innerText = editSlotModal.querySelector('#reservations').getAttribute("data-default-text")
-
-                if (editSlotModal.querySelector('#editSlotWarning').classList.contains("d-block")) {
-                    editSlotModal.querySelector('#editSlotWarning').classList.remove("d-block")
-                    editSlotModal.querySelector('#editSlotWarning').classList.add("d-none")
+                if (data.reservations && data.reservations.length) {
+                    if (editSlotModal.querySelector('#editSlotWarning').classList.contains("d-none")) {
+                        editSlotModal.querySelector('#editSlotWarning').classList.remove("d-none")
+                        editSlotModal.querySelector('#editSlotWarning').classList.add("d-block")
+                    }
+                }
+                else {
+                    if (editSlotModal.querySelector('#editSlotWarning').classList.contains("d-block")) {
+                        editSlotModal.querySelector('#editSlotWarning').classList.remove("d-block")
+                        editSlotModal.querySelector('#editSlotWarning').classList.add("d-none")
+                    }
                 }
             }
         })
