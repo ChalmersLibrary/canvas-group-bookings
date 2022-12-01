@@ -211,6 +211,77 @@ async function getAllSlots(canvas_course_id, date) {
     return returnedData;
 }
 
+async function getAllSlotsPaginated(offset, limit, canvas_course_id, segment, course, instructor, location, availability, start_date, end_date) {
+    let data;
+    let returnedData = {
+        records_total: 0,
+        slots: []
+    };
+
+    const dateOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+    const timeOptions = { hour: '2-digit', minute: '2-digit' };
+
+    const this_start_date = start_date !== undefined && start_date != '' ? start_date : new Date().toLocaleDateString('sv-SE');
+
+    let q = {
+        select: "SELECT * FROM slots_view s",
+        count: "SELECT COUNT(*) FROM slots_view s",
+        join: " WHERE s.canvas_course_id=$1 AND s.time_start >= $2",
+        offset: " OFFSET " + offset,
+        limit: " LIMIT " + limit,
+        order: " ORDER BY s.time_start ASC",
+        params: [
+            canvas_course_id, this_start_date
+        ]
+    };
+
+    if (segment !== undefined && !isNaN(segment)) {
+        q.join = q.join + " AND s.course_segment_id=$" + parseInt(q.params.length + 1);
+        q.params.push(segment);
+    }
+    if (course !== undefined && !isNaN(course)) {
+        q.join = q.join + " AND s.course_id=$" + parseInt(q.params.length + 1);
+        q.params.push(course);
+    }
+    if (instructor !== undefined && !isNaN(instructor)) {
+        q.join = q.join + " AND s.instructor_id=$" + parseInt(q.params.length + 1);
+        q.params.push(instructor);
+    }
+    if (location !== undefined && !isNaN(location)) {
+        q.join = q.join + " AND s.location_id=$" + parseInt(q.params.length + 1);
+        q.params.push(location);
+    }
+    if (availability !== undefined && !isNaN(availability) && availability == 1) {
+        q.join = q.join + " AND s.res_now < s.res_max";
+    }
+
+    console.log(q);
+
+    await query(q.count + q.join, q.params).then((result) => {
+        returnedData.records_total = parseInt(result.rows[0].count);
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    });
+    
+    await query(q.select + q.join + q.order + q.offset + q.limit, q.params).then((result) => {
+        data = result.rows;
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    });
+    
+    /* TODO: think about if these additions/conversions should be done outside, and this should be just clean db code? */
+    if (data !== undefined && data.length) {
+        data.forEach(slot => {
+            slot.time_human_readable_sv = utils.capitalizeFirstLetter(new Date(slot.time_start).toLocaleDateString('sv-SE', dateOptions).replace(".", "") + " kl " + new Date(slot.time_start).toLocaleTimeString('sv-SE', timeOptions) + "–" + new Date(slot.time_end).toLocaleTimeString('sv-SE', timeOptions));
+            returnedData.slots.push(slot);
+        });
+    }
+
+    return returnedData;
+}
+
 /**
  * Returns all slots, available or not, for a specific Canvas course and a segment, starting from a specific date
  */
@@ -1150,6 +1221,7 @@ module.exports = {
     getCourseGroupCategoryFilter,
     getAllSlots,
     getAllSlotsInSegment,
+    getAllSlotsPaginated,
     getSlot,
     getSlotReservations,
     getAllSlotsForInstructor,

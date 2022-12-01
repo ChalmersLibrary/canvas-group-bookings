@@ -20,6 +20,8 @@ const port = process.env.PORT || 3000;
 const cookieMaxAge = 3600000 * 24 * 30 * 4; // 4 months
 const fileStoreOptions = { ttl: 3600 * 12, retries: 3 };
 
+const DB_PER_PAGE = 25;
+
 // PostgreSQL Session store
 const sessionOptions = { 
     store: new pgSessionStore({
@@ -141,7 +143,9 @@ app.get('/test', async (req, res, next) => {
 // Main page with available slots for user to reserve */
 app.get('/', async (req, res, next) => {
     let availableSlots;
-
+    const per_page = DB_PER_PAGE ? DB_PER_PAGE : 25;
+    const offset = req.query.page ? Math.max(parseInt(req.query.page) - 1, 0) * per_page : 0;
+    
     const segments = await db.getSegments(res.locals.courseId);
 
     if (segments && segments.length) {
@@ -151,22 +155,18 @@ app.get('/', async (req, res, next) => {
                     segment.active = true;
                 }
             }
-    
-            availableSlots = await db.getAllSlotsInSegment(res.locals.courseId, parseInt(req.query.segment), new Date().toLocaleDateString('sv-SE'));
         }
-        else {
-            segments[0].active = true;
+    }
 
-            availableSlots = await db.getAllSlotsInSegment(res.locals.courseId, parseInt(segments[0].id), new Date().toLocaleDateString('sv-SE'));
-        }    
-    }
-    else {
-        availableSlots = await db.getAllSlots(res.locals.courseId, new Date().toLocaleDateString('sv-SE'));
-    }
+    console.log("req.query.page=" + parseInt(req.query.page) + ", Math.max(parseInt(req.query.page) - 1, 0)=" + Math.max(parseInt(req.query.page) - 1, 0));
+
+    availableSlots = await db.getAllSlotsPaginated(offset, per_page, res.locals.courseId, parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
+
+    //console.log(availableSlots);
 
     /* Calculate if this slot is bookable, based on existing reservations */
     /* TODO: make it more general in utilities or something! */
-    for (const slot of availableSlots) {
+    for (const slot of availableSlots.slots) {
         if (req.session.user.isAdministrator) {
             slot.reservable_for_this_user = false;
             slot.reservable_notice = "Administratör kan inte boka tider.";
@@ -222,27 +222,26 @@ app.get('/', async (req, res, next) => {
         }
     }
 
+    // paginate(total_records, per_page, current_page, segment, course, instructor, location, availability, start_date, end_date)
     /* return res.send({
-        status: 'up',
         internal: req.session.internal,
-        version: pkg.version,
         session: req.session,
         groups: req.session.user.groups,
         segments: segments,
-        slots: availableSlots,
-        courses: await db.getValidCourses(new Date().toLocaleDateString('sv-SE')),
+        navigation: utils.paginate(availableSlots.records_total, per_page, req.query.page ? parseInt(req.query.page) : 1, parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date),
+        slots: availableSlots.slots,
+        courses: await db.getValidCourses(res.locals.courseId),
         instructors: await db.getValidInstructors(),
         locations: await db.getValidLocations()
     }); */
 
     return res.render('pages/index', {
-        status: 'up',
         internal: req.session.internal,
-        version: pkg.version,
         session: req.session,
         groups: req.session.user.groups,
         segments: segments,
-        slots: availableSlots,
+        navigation: utils.paginate(availableSlots.records_total, per_page, req.query.page ? Math.max(parseInt(req.query.page), 1) : 1, parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date),
+        slots: availableSlots.slots,
         courses: await db.getValidCourses(res.locals.courseId),
         instructors: await db.getValidInstructors(res.locals.courseId),
         locations: await db.getValidLocations(res.locals.courseId)
