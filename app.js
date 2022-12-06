@@ -145,24 +145,27 @@ app.get('/', async (req, res, next) => {
     let availableSlots;
     const per_page = DB_PER_PAGE ? DB_PER_PAGE : 25;
     const offset = req.query.page ? Math.max(parseInt(req.query.page) - 1, 0) * per_page : 0;
-    
-    const segments = await db.getSegments(res.locals.courseId);
 
-    if (segments && segments.length) {
-        if (req.query.segment) {
-            for (const segment of segments) {
-                if (segment.id == parseInt(req.query.segment)) {
-                    segment.active = true;
-                }
-            }
-        }
-    }
-
-    console.log("req.query.page=" + parseInt(req.query.page) + ", Math.max(parseInt(req.query.page) - 1, 0)=" + Math.max(parseInt(req.query.page) - 1, 0));
-
+    /* Available slots, with filters applied, paginated */
     availableSlots = await db.getAllSlotsPaginated(offset, per_page, res.locals.courseId, parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
 
-    //console.log(availableSlots);
+    /* Difference between valid courses to use in slots and courses used for filtering */
+    const filter_segments = utils.linkify('segment', await db.getSegments(res.locals.courseId), parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
+    const filter_courses = utils.linkify('course', await db.getValidCourses(res.locals.courseId), parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
+    const filter_instructors = utils.linkify('instructor', await db.getValidInstructors(res.locals.courseId), parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
+    const filter_locations = utils.linkify('location', await db.getValidLocations(res.locals.courseId), parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
+    const filter_availability = utils.linkify('availability', [ { id: 1, name: 'Även fullbokade' } ], parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
+    const filter_date = utils.linkify('date', '', parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
+
+    let this_navigation = utils.paginate(availableSlots.records_total, per_page, req.query.page ? Math.max(parseInt(req.query.page), 1) : 1, parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
+    this_navigation.filters = {
+        segment: filter_segments,
+        course: filter_courses,
+        instructor: filter_instructors,
+        location: filter_locations,
+        availability: filter_availability,
+        date: filter_date
+    };
 
     /* Calculate if this slot is bookable, based on existing reservations */
     /* TODO: make it more general in utilities or something! */
@@ -222,14 +225,13 @@ app.get('/', async (req, res, next) => {
         }
     }
 
-    // paginate(total_records, per_page, current_page, segment, course, instructor, location, availability, start_date, end_date)
     /* return res.send({
         internal: req.session.internal,
         session: req.session,
         groups: req.session.user.groups,
-        segments: segments,
-        navigation: utils.paginate(availableSlots.records_total, per_page, req.query.page ? parseInt(req.query.page) : 1, parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date),
+        navigation: this_navigation,
         slots: availableSlots.slots,
+        segments: await db.getSegments(res.locals.courseId),
         courses: await db.getValidCourses(res.locals.courseId),
         instructors: await db.getValidInstructors(),
         locations: await db.getValidLocations()
@@ -239,9 +241,9 @@ app.get('/', async (req, res, next) => {
         internal: req.session.internal,
         session: req.session,
         groups: req.session.user.groups,
-        segments: segments,
-        navigation: utils.paginate(availableSlots.records_total, per_page, req.query.page ? Math.max(parseInt(req.query.page), 1) : 1, parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date),
+        navigation: this_navigation,
         slots: availableSlots.slots,
+        segments: await db.getSegments(res.locals.courseId),
         courses: await db.getValidCourses(res.locals.courseId),
         instructors: await db.getValidInstructors(res.locals.courseId),
         locations: await db.getValidLocations(res.locals.courseId)

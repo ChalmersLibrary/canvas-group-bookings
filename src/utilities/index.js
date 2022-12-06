@@ -30,16 +30,11 @@ function capitalizeFirstLetter(string) {
 }
 
 function paginate(total_records, per_page, current_page, segment, course, instructor, location, availability, start_date, end_date) {
-    console.log("Total records: " + total_records);
-    console.log("Per page: " + per_page);
-    console.log("Current page: " + current_page);
-
     const total_pages = Math.ceil(total_records / per_page);
     const pages = new Array(total_pages);
 
-    console.log("Number of pages: " + total_pages);
-
     let link_url = "";
+
     segment !== undefined && !isNaN(segment) ? link_url = link_url + "&segment=" + segment : null;
     course !== undefined && !isNaN(course) ? link_url = link_url + "&course=" + course : null;
     instructor !== undefined && !isNaN(instructor) ? link_url = link_url + "&instructor=" + instructor : null;
@@ -73,6 +68,112 @@ function paginate(total_records, per_page, current_page, segment, course, instru
     return pagination;
 }
 
+function linkify(this_filter_name, this_filter_items, segment, course, instructor, location, availability, start_date, end_date) {
+    let link_url = "";
+    let this_list = [];
+
+    this_filter_name != 'segment' && segment !== undefined && !isNaN(segment) ? link_url = link_url + "&segment=" + segment : null;
+    this_filter_name != 'course' && course !== undefined && !isNaN(course) ? link_url = link_url + "&course=" + course : null;
+    this_filter_name != 'instructor' && instructor !== undefined && !isNaN(instructor) ? link_url = link_url + "&instructor=" + instructor : null;
+    this_filter_name != 'location' && location !== undefined && !isNaN(location) ? link_url = link_url + "&location=" + location : null;
+    this_filter_name != 'availability' && availability !== undefined && !isNaN(availability) ? link_url = link_url + "&availability=" + availability : null;
+    this_filter_name != 'date' && start_date !== undefined ? link_url = link_url + "&start_date=" + start_date : null;
+    this_filter_name != 'date' && end_date !== undefined ? link_url = link_url + "&end_date=" + end_date : null;
+
+    if (this_filter_name == 'segment') {
+        this_list.push({
+            id: null,
+            name: 'Visa alla',
+            link: '?segment=' + link_url,
+            active: isNaN(segment)
+        });
+        this_filter_items.forEach(s => {
+            this_list.push({
+                id: s.id,
+                name: s.name,
+                link: '?segment=' + s.id + link_url,
+                active: !isNaN(segment) && parseInt(segment) == s.id
+            });
+        })
+    }
+
+    if (this_filter_name == 'course') {
+        this_list.push({
+            id: null,
+            name: 'Visa alla',
+            link: '?course=' + link_url,
+            active: isNaN(course)
+        });
+        this_filter_items.forEach(s => {
+            this_list.push({
+                id: s.id,
+                name: s.name,
+                link: '?course=' + s.id + link_url,
+                active: !isNaN(course) && parseInt(course) == s.id
+            });
+        })
+    }
+
+    if (this_filter_name == 'instructor') {
+        this_list.push({
+            id: null,
+            name: 'Visa alla',
+            link: '?instructor=' + link_url,
+            active: isNaN(instructor)
+        });
+        this_filter_items.forEach(s => {
+            this_list.push({
+                id: s.id,
+                name: s.name,
+                link: '?instructor=' + s.id + link_url,
+                active: !isNaN(instructor) && parseInt(instructor) == s.id
+            });
+        })
+    }
+
+    if (this_filter_name == 'location') {
+        this_list.push({
+            id: null,
+            name: 'Visa alla',
+            link: '?location=' + link_url,
+            active: isNaN(location)
+        });
+        this_filter_items.forEach(s => {
+            this_list.push({
+                id: s.id,
+                name: s.name,
+                link: '?location=' + s.id + link_url,
+                active: !isNaN(location) && parseInt(location) == s.id
+            });
+        })
+    }
+
+    if (this_filter_name == 'availability') {
+        this_list.push({
+            id: null,
+            name: 'Endast bokningsbara',
+            link: '?availability=' + link_url,
+            active: isNaN(availability)
+        });
+        this_filter_items.forEach(s => {
+            this_list.push({
+                id: s.id,
+                name: s.name,
+                link: '?availability=' + s.id + link_url,
+                active: !isNaN(availability) && parseInt(availability) == s.id
+            });
+        })
+    }
+
+    if (this_filter_name == 'date') {
+        this_list.link = '?d.null=' + link_url;
+        this_list.start_date = start_date;
+        this_list.end_date = end_date;
+    }
+
+    return this_list;
+}
+
 function replaceMessageMagics(body, course_name, reservation_message, cancellation_policy_hours, user_name, time_start, location_name, location_url, instructor_name, instructor_email, group_name, group_names) {
     body = body.replaceAll("{{reservation_course_name}}", course_name);
     body = body.replaceAll("{{reservation_message}}", reservation_message);
@@ -95,5 +196,6 @@ module.exports = {
     getTemplate,
     capitalizeFirstLetter,
     replaceMessageMagics,
-    paginate
+    paginate,
+    linkify
 }

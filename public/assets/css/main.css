@@ -21,3 +21,16 @@ div.reservations,
 div.button-bar {
     margin-bottom: 1em;
 }
+h6 {
+    text-transform: uppercase;
+}
+.card-filter {
+    margin-bottom: 1em;
+}
+.card-filter div.card-header {
+    font-weight: bold;
+    text-transform: uppercase;
+}
+.card.card-slot {
+    margin: 0px 1em 1em 0px;
+}
