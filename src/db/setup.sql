@@ -55,6 +55,8 @@ CREATE TABLE IF NOT EXISTS "segment"
     "id" serial,
     "name" varchar,
     "description" text,
+    "sign" varchar(2),
+    "hex_color" varchar(8),
     "canvas_course_id" integer,
     "created_at" timestamp NOT NULL DEFAULT now(),
     "created_by" integer,
@@ -249,6 +251,18 @@ CREATE VIEW "slots_view" AS SELECT s.id,
     c.message_is_mandatory AS course_message_required,
     c.message_all_when_full AS course_message_all_when_full,
     c.segment_id AS course_segment_id,
+        CASE 
+            WHEN c.segment_id IS NOT NULL THEN
+                (SELECT sign FROM segment WHERE segment.id=c.segment_id)
+            ELSE
+                NULL
+        END AS course_segment_sign,
+        CASE 
+            WHEN c.segment_id IS NOT NULL THEN
+                (SELECT hex_color FROM segment WHERE segment.id=c.segment_id)
+            ELSE
+                NULL
+        END AS course_segment_hex_color,
     s.instructor_id,
     i.name AS instructor_name,
     s.location_id,
