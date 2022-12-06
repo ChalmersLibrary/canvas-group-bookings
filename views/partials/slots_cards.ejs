@@ -226,10 +226,11 @@
                                         <td class="d-none d-md-table-cell align-top">
                                             <div class="float-end">
                                                 <% if (session.user.isAdministrator || (session.user.isInstructor && session.user.db_id == slot.instructor_id)) { %>
-                                                    <button type="button" class="btn btn-secondary btn-md me-2" data-bs-toggle="offcanvas" data-bs-slot-id="<%= slot.id %>" data-bs-target="#offcanvasSlotDetails" aria-controls="offcanvasSlotDetails">Info</button>
+                                                    <button type="button" title="Detaljer och bokningar" class="btn btn-secondary btn-md me-2" data-bs-toggle="offcanvas" data-bs-slot-id="<%= slot.id %>" data-bs-target="#offcanvasSlotDetails" aria-controls="offcanvasSlotDetails"><i class="bi-person-lines-fill"></i></button>
                                                     <button type="button" title="Redigera" data-bs-toggle="modal" data-bs-target="#editSlot" data-bs-slot-id="<%= slot.id %>" class="btn btn-secondary btn-md"><i class="bi-pencil-fill"></i></button>
                                                     <button type="button" title="Radera" data-bs-toggle="modal" data-bs-target="#deleteSlot" data-bs-slot-id="<%= slot.id %>" class="btn btn-secondary btn-md mx-2"><i class="bi-trash-fill"></i></button>
                                                 <% } else { %>
+                                                    <button disabled type="button" title="Detaljer och bokningar" class="btn btn-secondary btn-md me-2" data-bs-toggle="offcanvas" data-bs-slot-id="<%= slot.id %>" data-bs-target="#offcanvasSlotDetails" aria-controls="offcanvasSlotDetails"><i class="bi-person-lines-fill"></i></button>
                                                     <button disabled type="button" title="Redigera" class="btn btn-secondary btn-md"><i class="bi-pencil-fill"></i></button>
                                                     <button disabled type="button" title="Radera" class="btn btn-secondary btn-md mx-2"><i class="bi-trash-fill"></i></button>
                                                 <% } %>
