@@ -254,6 +254,10 @@ async function getAllSlotsPaginated(offset, limit, canvas_course_id, segment, co
     if (availability !== undefined && !isNaN(availability) && availability == 1) {
         q.join = q.join + " AND s.res_now < s.res_max";
     }
+    if (end_date !== undefined && end_date != '') {
+        q.join = q.join + " AND s.time_end <= $" + parseInt(q.params.length + 1);
+        q.params.push(end_date);
+    }
 
     console.log(q);
 
