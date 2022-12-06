@@ -253,7 +253,7 @@ async function getAllSlotsPaginated(offset, limit, canvas_course_id, segment, co
         q.join = q.join + " AND s.location_id=$" + parseInt(q.params.length + 1);
         q.params.push(location);
     }
-    if (availability !== undefined && !isNaN(availability) && availability == 1) {
+    if (availability === undefined || isNaN(availability)) { // Default availability is reservable slots
         q.join = q.join + " AND s.res_now < s.res_max";
     }
     if (end_date !== undefined && end_date != '') {
