@@ -57,7 +57,7 @@ async function getSegment(segment_id) {
 async function getSegments(canvas_course_id) {
     let data;
 
-    await query("SELECT * FROM segment s WHERE s.canvas_course_id=$1 AND deleted_at IS NULL", [
+    await query("SELECT * FROM segment s WHERE s.canvas_course_id=$1 AND deleted_at IS NULL ORDER BY s.name", [
         canvas_course_id
     ]).then((result) => {
         data = result.rows;
@@ -77,7 +77,7 @@ async function getSegments(canvas_course_id) {
 async function getSegmentsWithStatistics(canvas_course_id) {
     let data;
 
-    await query("SELECT s.*,(SELECT count(DISTINCT id)::integer AS courses FROM course WHERE segment_id=s.id) FROM segment s WHERE s.canvas_course_id=$1 AND s.deleted_at IS NULL", [
+    await query("SELECT s.*,(SELECT count(DISTINCT id)::integer AS courses FROM course WHERE segment_id=s.id) FROM segment s WHERE s.canvas_course_id=$1 AND s.deleted_at IS NULL ORDER BY s.name", [
         canvas_course_id
     ]).then((result) => {
         data = result.rows;
@@ -535,7 +535,7 @@ async function getNumberOfReservations(user_id, groups) {
 async function getValidCourses(canvas_course_id) {
     let data;
 
-    await query("SELECT * FROM course WHERE canvas_course_id=$1 AND deleted_at IS NULL", [ canvas_course_id ]).then((result) => {
+    await query("SELECT * FROM course WHERE canvas_course_id=$1 AND deleted_at IS NULL ORDER BY name", [ canvas_course_id ]).then((result) => {
         data = result.rows;
     }).catch((error) => {
         log.error(error);
@@ -724,7 +724,7 @@ async function deleteCourse(course_id, canvas_user_id) {
 async function getValidInstructors(canvas_course_id) {
     let data;
 
-    await query("SELECT DISTINCT i.id, i.name FROM instructor i, canvas_course_instructor_mapping c WHERE i.id=c.instructor_id AND c.canvas_course_id=$1", [ 
+    await query("SELECT DISTINCT i.id, i.name FROM instructor i, canvas_course_instructor_mapping c WHERE i.id=c.instructor_id AND c.canvas_course_id=$1 ORDER BY i.name", [ 
         canvas_course_id 
     ]).then((result) => {
         data = result.rows;
@@ -871,7 +871,7 @@ async function replaceConnectedInstructor(canvas_course_id, instructor_id, new_i
 async function getValidLocations(canvas_course_id) {
     let data;
 
-    await query("SELECT DISTINCT l.id, l.name FROM location l, canvas_course_location_mapping c WHERE l.id=c.location_id AND c.canvas_course_id=$1", [ canvas_course_id ]).then((result) => {
+    await query("SELECT DISTINCT l.id, l.name FROM location l, canvas_course_location_mapping c WHERE l.id=c.location_id AND c.canvas_course_id=$1 ORDER BY l.name", [ canvas_course_id ]).then((result) => {
         data = result.rows;
     }).catch((error) => {
         log.error(error);
