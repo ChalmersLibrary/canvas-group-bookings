@@ -38,6 +38,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 body: JSON.stringify({
                     name: newSegmentForm.querySelector('#n_segment_name').value,
                     sign: newSegmentForm.querySelector('#n_segment_sign').value,
+                    hex_color: newSegmentForm.querySelector('#n_segment_hex_color').value,
                     description: newSegmentForm.querySelector('#n_segment_description').value
                 })
             }
@@ -93,6 +94,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
             editSegmentModal.querySelector('#e_segment_id').value = segment_id
             editSegmentModal.querySelector('#e_segment_name').value = data.segment.name
             editSegmentModal.querySelector('#e_segment_sign').value = data.segment.sign
+            editSegmentModal.querySelector('#e_segment_hex_color').value = data.segment.hex_color
             editSegmentModal.querySelector('#e_segment_description').innerHTML = data.segment.description
         })
         .then(finished => {
@@ -120,6 +122,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 body: JSON.stringify({
                     name: editSegmentForm.querySelector('#e_segment_name').value,
                     sign: editSegmentForm.querySelector('#e_segment_sign').value,
+                    hex_color: editSegmentForm.querySelector('#e_segment_hex_color').value,
                     description: editSegmentForm.querySelector('#e_segment_description').value
                 })
             }

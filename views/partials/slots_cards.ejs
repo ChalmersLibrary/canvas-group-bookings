@@ -161,7 +161,7 @@
                         <tbody class="table-group-divider">
                             <% slots.forEach((slot) => { %>
                                 <tr class="" data-course_id="<%= slot.course_id %>" data-available="<%= slot.reservable_for_this_user %>">
-                                    <td class="text-center align-middle" style="background-color:#<%= slot.course_segment_hex_color %>;"><strong><%= slot.course_segment_sign %></strong></td>
+                                    <td class="text-center align-middle" style="background-color:<%= slot.course_segment_hex_color %>;"><strong><%= slot.course_segment_sign %></strong></td>
                                     <td class="d-md-table-cell d-md-none">
                                         <%= slot.course_name %><br>
                                         <strong><%- slot.time_human_readable_sv %></strong><br>
@@ -253,17 +253,16 @@
             </div>
             <div class="tab-pane" id="slots-grid" role="tabpanel" aria-labelledby="slots-display-grid-tab">
                 <% if (!slots.length) { %>
-                    <div class="alert alert-primary my-3" role="alert">
-                        <h4 class="alert-heading">Hittade inga tider</h4>
-                        <p>Kika in igen senare eller vänta tills en handledare meddelar att nya tider finns att boka.</p>
-                    </div>
+                    <h4 class="alert-heading">Hittade inga tider</h4>
+                    <p>Antingen är inga tider utlagda eller så finns det inga tider som motsvarar de filter du valt.</p>
+                    <p><a href="?">Återställ alla filter</a></p>
                 <% } else { %>
                     <div class="d-flex align-content-start flex-wrap align-items-stretch">
                         <% slots.forEach((slot) => { %>
                             <div class="card card-slot rounded-0" style="min-width: 350px; max-width: 400px;" data-course_id="<%= slot.course_id %>" data-available="<%= slot.reservable_for_this_user %>">
                                 <div class="card-header">
                                     <%= slot.course_name %>
-                                    <span class="badge float-end rounded-0" style="background-color: #<%= slot.course_segment_hex_color %>"><%= slot.course_segment_sign %></span>
+                                    <span class="badge float-end rounded-0" style="background-color: <%= slot.course_segment_hex_color %>"><%= slot.course_segment_sign %></span>
                                 </div>
                                 <div class="card-body">
                                     <div><%- slot.time_human_readable_sv.split("kl")[0] %><br><%- slot.time_human_readable_sv.split("kl")[1] %></div>

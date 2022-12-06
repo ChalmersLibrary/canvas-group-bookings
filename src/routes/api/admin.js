@@ -245,18 +245,18 @@ router.get('/segment/:id', async (req, res, next) => {
  */
 router.post('/segment', async (req, res, next) => {
     try {
-        const { name, sign, description } = req.body;
+        const { name, sign, hex_color, description } = req.body;
         let message;
 
         const existing_segments = await db.getSegmentsWithStatistics(res.locals.courseId);
 
         if (existing_segments.length) {
-            const segment = await db.createSegment(res.locals.courseId, req.session.user.id, name, sign, description);
+            const segment = await db.createSegment(res.locals.courseId, req.session.user.id, name, sign, hex_color, description);
 
             message = "New segment was created.";
         }
         else {
-            const segment = await db.createSegment(res.locals.courseId, req.session.user.id, name, sign, description);
+            const segment = await db.createSegment(res.locals.courseId, req.session.user.id, name, sign, hex_color, description);
             await db.applySegmentToAllCourses(segment.id, res.locals.courseId, req.session.user.id);
 
             message = "New segment was created and applied to existing courses.";
@@ -279,9 +279,9 @@ router.post('/segment', async (req, res, next) => {
 
 router.put('/segment/:id', async (req, res, next) => {
     try {
-        const { name, sign, description } = req.body;
+        const { name, sign, hex_color, description } = req.body;
 
-        const segment = await db.updateSegment(req.params.id, req.session.user.id, name, sign, description);
+        const segment = await db.updateSegment(req.params.id, req.session.user.id, name, sign, hex_color, description);
 
         return res.send({
             success: true,

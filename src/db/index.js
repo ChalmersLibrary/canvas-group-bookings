@@ -110,14 +110,15 @@ async function getSegmentWithStatistics(segment_id) {
 /**
  * Create a new segment
  */
-async function createSegment(canvas_course_id, canvas_user_id, name, sign, description) {
+async function createSegment(canvas_course_id, canvas_user_id, name, sign, hex_color, description) {
     let data;
 
-    await query("INSERT INTO segment (canvas_course_id, created_by, name, sign, description) VALUES ($1, $2, $3, $4, $5) RETURNING id", [
+    await query("INSERT INTO segment (canvas_course_id, created_by, name, sign, hex_color, description) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id", [
         canvas_course_id,
         canvas_user_id,
         name,
         sign,
+        hex_color,
         description
     ]).then((result) => {
         data = result.rows[0];
@@ -129,12 +130,13 @@ async function createSegment(canvas_course_id, canvas_user_id, name, sign, descr
     return data;
 }
 
-async function updateSegment(segment_id, canvas_user_id, name, sign, description) {
-    await query("UPDATE segment SET name=$3, sign=$4, description=$5, updated_at=now(), updated_by=$2 WHERE id=$1", [
+async function updateSegment(segment_id, canvas_user_id, name, sign, hex_color, description) {
+    await query("UPDATE segment SET name=$3, sign=$4, hex_color=$5, description=$6, updated_at=now(), updated_by=$2 WHERE id=$1", [
         segment_id,
         canvas_user_id,
         name,
         sign,
+        hex_color,
         description
     ]).then((result) => {
         log.info(result);

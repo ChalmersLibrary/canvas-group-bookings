@@ -20,8 +20,16 @@
                         <input type="text" class="form-control" id="e_segment_name" value="" required>    
                     </p>
                     <p>
-                        <label for="e_segment_sign">Kod:</label><br>
-                        <input type="text" class="form-control" id="e_segment_sign" value="">    
+                        <div class="d-flex">
+                            <div>
+                                <label for="e_segment_sign">Kod:</label><br>
+                                <input type="text" class="form-control" id="e_segment_sign" maxlength="2" value="">    
+                            </div>
+                            <div class="ms-2">
+                                <label for="e_segment_hex_color">Färg:</label><br>
+                                <input type="color" class="form-control" id="e_segment_hex_color" value=""> 
+                            </div>
+                        </div>
                     </p>
                     <p>
                         <label for="e_segment_description">Beskrivning:</label><br>
