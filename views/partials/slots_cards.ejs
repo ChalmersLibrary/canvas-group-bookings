@@ -62,7 +62,7 @@
                 </div>
                 <div class="list-group list-group-flush">
                     <% navigation.filters.segment.forEach(segment => { %>
-                        <a href="<%= segment.link %>" class="list-group-item list-group-item-action <%= segment.active ? 'active' : '' %>" aria-current="<%= segment.active ? 'true' : 'false' %>"><%= segment.name %></a>
+                        <a href="<%= segment.link %>" class="list-group-item list-group-item-action <%= segment.active ? 'active' : '' %>" aria-current="<%= segment.active ? 'true' : 'false' %>"><%= segment.name %><%- segment.active ? ' <i class="bi-check float-end"></i>' : '' %></a>
                     <% }) %>
                 </div>
             </div>
@@ -74,7 +74,7 @@
                 </div>
                 <div class="list-group list-group-flush">
                     <% navigation.filters.course.forEach(course => { %>
-                        <a href="<%= course.link %>" class="list-group-item list-group-item-action <%= course.active ? 'active' : '' %>" aria-current="<%= course.active ? 'true' : 'false' %>"><%= course.name %></a>
+                        <a href="<%= course.link %>" class="list-group-item list-group-item-action <%= course.active ? 'active' : '' %>" aria-current="<%= course.active ? 'true' : 'false' %>"><%= course.name %><%- course.active ? ' <i class="bi-check float-end"></i>' : '' %></a>
                     <% }) %>
                 </div>
             </div>
@@ -86,7 +86,7 @@
                 </div>
                 <div class="list-group list-group-flush">
                     <% navigation.filters.availability.forEach(availability => { %>
-                        <a href="<%= availability.link %>" class="list-group-item list-group-item-action <%= availability.active ? 'active' : '' %>" aria-current="<%= availability.active ? 'true' : 'false' %>"><%= availability.name %></a>
+                        <a href="<%= availability.link %>" class="list-group-item list-group-item-action <%= availability.active ? 'active' : '' %>" aria-current="<%= availability.active ? 'true' : 'false' %>"><%= availability.name %><%- availability.active ? ' <i class="bi-check float-end"></i>' : '' %></a>
                     <% }) %>
                 </div>
             </div>
@@ -98,7 +98,7 @@
                 </div>
                 <div class="list-group list-group-flush">
                     <% navigation.filters.instructor.forEach(instructor => { %>
-                        <a href="<%= instructor.link %>" class="list-group-item list-group-item-action <%= instructor.active ? 'active' : '' %>" aria-current="<%= instructor.active ? 'true' : 'false' %>"><%= instructor.name %></a>
+                        <a href="<%= instructor.link %>" class="list-group-item list-group-item-action <%= instructor.active ? 'active' : '' %>" aria-current="<%= instructor.active ? 'true' : 'false' %>"><%= instructor.name %><%- instructor.active ? ' <i class="bi-check float-end"></i>' : '' %></a>
                     <% }) %>
                 </div>
             </div>
@@ -110,7 +110,7 @@
                 </div>
                 <div class="list-group list-group-flush">
                     <% navigation.filters.location.forEach(location => { %>
-                        <a href="<%= location.link %>" class="list-group-item list-group-item-action <%= location.active ? 'active' : '' %>" aria-current="<%= location.active ? 'true' : 'false' %>"><%= location.name %></a>
+                        <a href="<%= location.link %>" class="list-group-item list-group-item-action <%= location.active ? 'active' : '' %>" aria-current="<%= location.active ? 'true' : 'false' %>"><%= location.name %><%- location.active ? ' <i class="bi-check float-end"></i>' : '' %></a>
                     <% }) %>
                 </div>
             </div>
