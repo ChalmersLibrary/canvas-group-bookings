@@ -68,17 +68,6 @@
                             </p>
                         </div>
                     </div>
-                    <div class="row" id="reserveSlotWarning" style="display:none;">
-                        <div class="col">
-                            <div class="alert alert-warning" role="alert">
-                                <strong>Det finns redan bokningar gjorda på denna tid!</strong>
-                                <span>
-                                    Här ska det framgå om det är ok eller inte och om det är flera grupper som kan boka,
-                                    vilket i så fall är mycket positivt. Annars är det negativt och de ska inte ens komma in hit.
-                                </span>
-                            </div>    
-                        </div>
-                    </div>
                     <div class="row" id="reserveSlotGroupNotice" style="display:none;">
                         <div class="col">
                             <div class="alert alert-primary" role="alert">
@@ -123,7 +112,7 @@
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
                     <button type="submit" class="btn btn-primary" id="reserveSlotSubmitButton">
                         Boka tiden
-                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                        <span class="spinner-border spinner-border-sm" style="display:none;" role="status" aria-hidden="true"></span>
                     </button>
                 </div>
             </div>
