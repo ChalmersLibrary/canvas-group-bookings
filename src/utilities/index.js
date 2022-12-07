@@ -166,7 +166,16 @@ function linkify(this_filter_name, this_filter_items, segment, course, instructo
     }
 
     if (this_filter_name == 'date') {
-        this_list.link = '?d.null=' + link_url;
+        this_list = {};
+        this_list.params = [];
+        link_url.split("&").forEach(p => {
+            if (p != ''){
+                this_list.params.push({
+                    name: p.split("=")[0],
+                    value: p.split("=")[1]
+                });    
+            }
+        })
         this_list.start_date = start_date;
         this_list.end_date = end_date;
     }

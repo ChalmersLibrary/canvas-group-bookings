@@ -120,7 +120,10 @@
                 Datum
             </div>
             <div class="card-body">
-                <form action="<%= navigation.filters.date.link %>">
+                <form method="get" action="">
+                    <% navigation.filters.date.params.forEach(p => { %>
+                        <input type="hidden" name="<%= p.name %>" value="<%= p.value %>">
+                    <% }) %>
                     <p>
                         <label for="start_date">Från:</label><br>
                         <input id="start_date" name="start_date" type="date" class="form-control" value="<%= navigation.filters.date.start_date %>">    
@@ -264,18 +267,18 @@
                             <div class="card card-slot rounded-0" style="min-width: 350px; max-width: 400px;" data-course_id="<%= slot.course_id %>" data-available="<%= slot.reservable_for_this_user %>">
                                 <div class="card-header">
                                     <%= slot.course_name %>
-                                    <span class="badge float-end rounded-0" style="background-color: <%= slot.course_segment_hex_color %>"><%= slot.course_segment_sign %></span>
+                                    <span class="badge float-end rounded-0 p-2" style="color: black; background-color: <%= slot.course_segment_hex_color %>"><%= slot.course_segment_sign %></span>
                                 </div>
                                 <div class="card-body">
-                                    <div><%- slot.time_human_readable_sv.split("kl")[0] %><br><%- slot.time_human_readable_sv.split("kl")[1] %></div>
-                                    <!--<div class="d-flex">
+                                    <!--<div><%- slot.time_human_readable_sv.split("kl")[0] %><br><%- slot.time_human_readable_sv.split("kl")[1] %></div>-->
+                                    <div class="d-flex">
                                         <div class="flex-shrink-0">
-                                        <i class="bi-calendar-event display-6"></i>
+                                        <i class="bi-calendar-event fs-2"></i>
                                         </div>
                                         <div class="flex-grow-1 ms-3">
                                             <%- slot.time_human_readable_sv.split("kl")[0] %><br><%- slot.time_human_readable_sv.split("kl")[1] %>
                                         </div>
-                                    </div>-->
+                                    </div>
                                     <small class="text-muted"><%= slot.instructor_name %>, <%= slot.location_name %></small>
                                     <div>
                                         <small class="my-2">
@@ -296,15 +299,19 @@
                                             <% } %>
                                         </small>
                                     </div>
-                                    <small class="text-small text-muted"><%= slot.reservable_notice %></small>
+                                    <div>
+                                        <small class="text-small text-muted"><%= slot.reservable_notice %></small>
+                                    </div>
                                 </div>
                                 <div class="card-footer">
                                     <div class="d-flex justify-content-end align-items-start">
                                         <% if (session.user.isAdministrator || session.user.isInstructor) { %>
                                             <% if (session.user.isAdministrator || (session.user.isInstructor && session.user.db_id == slot.instructor_id)) { %>
+                                                <button type="button" title="Detaljer och bokningar" class="btn btn-secondary btn-md me-2" data-bs-toggle="offcanvas" data-bs-slot-id="<%= slot.id %>" data-bs-target="#offcanvasSlotDetails" aria-controls="offcanvasSlotDetails"><i class="bi-person-lines-fill"></i></button>
                                                 <button type="button" title="Redigera" data-bs-toggle="modal" data-bs-target="#editSlot" data-bs-slot-id="<%= slot.id %>" class="btn btn-secondary btn-md"><i class="bi-pencil-fill"></i></button>
                                                 <button type="button" title="Radera" data-bs-toggle="modal" data-bs-target="#deleteSlot" data-bs-slot-id="<%= slot.id %>" class="btn btn-secondary btn-md mx-2"><i class="bi-trash-fill"></i></button>
                                             <% } else { %>
+                                                <button disabled type="button" title="Detaljer och bokningar" class="btn btn-secondary btn-md me-2" data-bs-toggle="offcanvas" data-bs-slot-id="<%= slot.id %>" data-bs-target="#offcanvasSlotDetails" aria-controls="offcanvasSlotDetails"><i class="bi-person-lines-fill"></i></button>
                                                 <button disabled type="button" title="Redigera" class="btn btn-secondary btn-md"><i class="bi-pencil-fill"></i></button>
                                                 <button disabled type="button" title="Radera" class="btn btn-secondary btn-md mx-2"><i class="bi-trash-fill"></i></button>
                                             <% } %>
