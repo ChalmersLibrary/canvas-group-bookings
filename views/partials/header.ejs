@@ -14,16 +14,6 @@
             <a class="nav-link" href="/reservations">Mina bokningar <span id="statsReservationsCount" class="badge badge-pill badge-success"></span></a>
           </li>
         <% } %>
-        <% if (user.isInstructor) { %>
-          <li class="nav-item">
-            <a class="nav-link" href="/instructor/upcoming">Mina tillfällen <span id="statsInstructorSlotCount" class="badge badge-pill badge-success"></span></a>
-          </li>
-        <% } %>
-        <% if (user.isAdministrator) { %>
-          <li class="nav-item">
-            <a class="nav-link" href="/admin">Administration</a>
-          </li>
-        <% } %>
       </ul>
       <div class="d-flex">
         <div class="nav-item">
@@ -49,8 +39,8 @@
               <a class="dropdown-item" href="/reservations">Mina bokningar <span id="statsReservationsCount" class="badge badge-pill badge-success"></span></a>
             <% } %>
             <% if (user.isInstructor) { %>
-              <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#newSlotSeries">Lägg till nya tider</a>
               <a class="dropdown-item" href="/?instructor=<%= user.db_id %>&amp;availability=1">Mina tillfällen <span id="statsInstructorSlotCount" class="badge badge-pill badge-success"></span></a>
+              <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#newSlotSeries">Lägg till nya tider</a>
             <% } %>
             <% if (user.isAdministrator) { %>
               <hr class="dropdown-divider">
