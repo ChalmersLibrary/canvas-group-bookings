@@ -23,6 +23,7 @@
                     <table class="table table-md table-hover">
                         <thead>
                             <tr>
+                                <th>Skylt</th>
                                 <th>Namn</th>
                                 <th class="text-right">Tillfällen</th>
                                 <th></th>
@@ -31,6 +32,7 @@
                         <tbody>
                             <% segments.forEach(segment => { %>
                                 <tr>
+                                    <td class="text-center align-middle" style="color:white; background-color:<%= segment.hex_color %>;"><strong><%= segment.sign %></strong></td>
                                     <td>
                                         <strong><%= segment.name %></strong>
                                     </td>
