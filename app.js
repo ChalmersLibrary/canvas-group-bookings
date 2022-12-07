@@ -170,6 +170,8 @@ app.get('/', async (req, res, next) => {
     /* Calculate if this slot is bookable, based on existing reservations */
     /* TODO: make it more general in utilities or something! */
     for (const slot of availableSlots.slots) {
+        slot.res_percent = Math.round((slot.res_now / slot.res_max) * 100);
+        
         if (req.session.user.isAdministrator) {
             slot.reservable_for_this_user = false;
             slot.reservable_notice = "Administratör kan inte boka tider.";
