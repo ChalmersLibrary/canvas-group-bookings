@@ -174,6 +174,10 @@ app.get('/', async (req, res, next) => {
             slot.reservable_for_this_user = false;
             slot.reservable_notice = "Administratör kan inte boka tider.";
         }
+        else if (req.session.user.isInstructor) {
+            slot.reservable_for_this_user = false;
+            slot.reservable_notice = "Handledare kan inte boka tider.";
+        }
         else {
             slot.reservable_for_this_user = true;
 
