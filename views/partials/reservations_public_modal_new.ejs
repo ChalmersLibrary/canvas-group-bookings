@@ -1,14 +1,22 @@
 <div class="modal modal-lg fade" id="reserveSlot" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="reserveSlotLabel" aria-hidden="true">
     <div class="modal-dialog">
         <form class="needs-validation" id="reserveSlotForm" novalidate>
-            <input type="hidden" id="r_slot_id" name="slot_id" value="" />
-            <input type="hidden" id="r_type" name="type" value="" />
+            <input type="hidden" id="r_slot_id" value="">
+            <input type="hidden" id="r_type" value="">
+            <input type="hidden" id="r_group_string" value="<%= session.user.groups.map(g => g.name).join(',') %>">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="reserveSlotLabel">Boka tillgänglig tid</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Stäng"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body loading-spinner">
+                    <div class="d-flex justify-content-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body loaded-content" style="display:none;">
                     <div class="row">
                         <div class="col-lg-5">
                             <p>
@@ -39,7 +47,7 @@
                                 <div class="invalid-feedback">Please enter a message in the textarea.</div>
                             </p>
                             <p>
-                                <div id="reserveSlotGroupBlock" class="d-block">
+                                <div id="reserveSlotGroupBlock" style="display:block;">
                                     <% if (session.user.groups && session.user.groups.length > 0) { %>
                                         <label for="r_group_id" class="form-label">Bokning för grupp:</label>
                                         <select name="group_id" id="r_group_id" class="form-control">
@@ -49,7 +57,7 @@
                                         </select>
                                     <% } %>
                                 </div>
-                                <div id="reserveSlotIndividualBlock" class="d-none">
+                                <div id="reserveSlotIndividualBlock" style="display:none;">
                                     <% if (session.user.id) { %>
                                         <label for="r_user_id" class="form-label">Bokning för individ:</label>
                                         <select name="user_id" id="r_user_id" class="form-control">
@@ -60,7 +68,7 @@
                             </p>
                         </div>
                     </div>
-                    <div class="row d-none" id="reserveSlotWarning">
+                    <div class="row" id="reserveSlotWarning" style="display:none;">
                         <div class="col">
                             <div class="alert alert-warning" role="alert">
                                 <strong>Det finns redan bokningar gjorda på denna tid!</strong>
@@ -71,17 +79,17 @@
                             </div>    
                         </div>
                     </div>
-                    <div class="row d-none" id="reserveSlotGroupNotice">
+                    <div class="row" id="reserveSlotGroupNotice" style="display:none;">
                         <div class="col">
                             <div class="alert alert-primary" role="alert">
                                 <strong>Detta är en bokning för en hel grupp.</strong>
                                 <span>
                                     När du bokar kommer du och alla medlemmar i din grupp att få en bekräftelse i Canvas Inbox.
                                 </span>
-                            </div>    
+                            </div>
                         </div>
                     </div>
-                    <div class="row d-none" id="reserveSlotGroupConnectNotice">
+                    <div class="row" id="reserveSlotGroupConnectNotice" style="display:none;">
                         <div class="col">
                             <div class="alert alert-primary" role="alert">
                                 <strong>Detta tillfälle är tillsammans med en annan grupp.</strong>
@@ -89,23 +97,21 @@
                                     När du bokar kommer du och alla medlemmar i din grupp att få en bekräftelse i Canvas Inbox.
                                     Båda grupperna kommer även få instruktioner för hur ni tillsammans ska förbereda er inför tillfället.
                                 </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" id="reserveSlotUserNotInGroup" style="display:none;">
+                        <div class="col">
+                            <div class="alert alert-danger" role="alert">
+                                <strong>Du är inte medlem i någon grupp.</strong>
+                                <span>
+                                    För att kunna boka den här tiden måste du vara medlem i en grupp. Kontakta en handledare
+                                    eller examinator för att kontrollera varför du inte är med i en grupp.
+                                </span>
                             </div>    
                         </div>
                     </div>
-                    <% if (session.user.groups && !session.user.groups.length) { %>
-                        <div class="row d-block" id="reserveSlotUserNotInGroup">
-                            <div class="col">
-                                <div class="alert alert-danger" role="alert">
-                                    <strong>Du är inte medlem i någon grupp.</strong>
-                                    <span>
-                                        För att kunna boka den här tiden måste du vara medlem i en grupp. Kontakta en handledare
-                                        eller examinator för att kontrollera varför du inte är med i en grupp.
-                                    </span>
-                                </div>    
-                            </div>
-                        </div>
-                    <% } %>
-                    <div class="row d-none" id="reserveSlotError">
+                    <div class="row" id="reserveSlotError" style="display:none;">
                         <div class="col">
                             <div class="alert alert-danger" role="alert">
                                 <strong>Ett fel uppstod:</strong> <span></span>
