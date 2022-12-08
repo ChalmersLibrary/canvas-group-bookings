@@ -57,7 +57,11 @@ async function addUserFlagsForRoles(req) {
                 if (role === "Examiner" || role === "Account Admin") {
                     if (req.session.lti.custom_canvas_roles.includes("StudentEnrollment")) { // fix for if this user is account admin but enrolled as student in current course
                         req.session.user.isAdministrator = false;
-                        req.session.user.isInstructor = false;    
+                        req.session.user.isInstructor = false;
+                    }
+                    else if (req.session.lti.custom_canvas_roles.includes("TeacherEnrollment")) { // fix for if this user is account admin but enrolled as teacher in current course
+                        req.session.user.isAdministrator = false;
+                        req.session.user.isInstructor = true;
                     }
                     else {
                         req.session.user.isAdministrator = true;
