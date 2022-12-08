@@ -1,163 +1,186 @@
-<% if (session.user.isAdministrator || session.user.isInstructor) { %>
-    <div class="row my-3">
-        <div class="col">
-            <button type="button" class="btn btn-md btn-secondary" data-bs-toggle="modal" data-bs-target="#newSlotSeries">Lägg till nya tider</button>
-        </div>    
-    </div>
-<% } %>
-<!--
-<div class="card slots-filter">
-    <div class="card-header">
-        Filtrera
-    </div>
-    <div class="card-body">
-        <div class="row">
-            <div class="col-md-3">
-                <select id="slotFilterCourse" class="form-select form-select-sm" aria-label="Filtrera på tillfällen">
-                    <option selected value="">Alla tillfällen</option>
-                    <% courses.forEach((course) => { %>
-                        <option value="<%= course.id %>"><%= course.name %></option>                                
-                    <% }); %>
-                </select>
+<div class="row pt-4">
+    <div class="col-md-2" style="border-right: 1px solid lightgrey;">
+        <!-- <% if (navigation.filters.segment && navigation.filters.segment.length) { %>
+            <div class="card card-filter">
+                <div class="card-header">
+                    Segment
+                </div>
+                <div class="list-group list-group-flush">
+                    <% navigation.filters.segment.forEach(segment => { %>
+                        <a href="<%= segment.link %>" class="list-group-item list-group-item-action <%= segment.active ? 'active' : '' %>" aria-current="<%= segment.active ? 'true' : 'false' %>"><%= segment.name %><%- segment.active ? ' <i class="bi-check float-end"></i>' : '' %></a>
+                    <% }) %>
+                </div>
             </div>
-            <div class="col-md-3">
-                <select id="slotFilterInstructor" class="form-select form-select-sm" aria-label="Filtrera på handledare">
-                    <option selected value="">Alla handledare</option>
-                    <% instructors.forEach((instructor) => { %>
-                        <option value="<%= instructor.id %>"><%= instructor.name %></option>                                
-                    <% }); %>
-                </select>
+        <% } %> -->
+        <% if (navigation.filters.course && navigation.filters.course.length) { %>
+            <div class="card card-filter">
+                <div class="card-header">
+                    Tillfälle
+                </div>
+                <div class="list-group list-group-flush">
+                    <% navigation.filters.course.forEach(course => { %>
+                        <a href="<%= course.link %>" class="list-group-item list-group-item-action <%= course.active ? 'active' : '' %>" aria-current="<%= course.active ? 'true' : 'false' %>"><%= course.name %><%- course.active ? ' <i class="bi-check float-end"></i>' : '' %></a>
+                    <% }) %>
+                </div>
             </div>
-            <div class="col-md-3">
-                <select id="slotFilterAvailability" class="form-select form-select-sm" aria-label="Filtrera på tillgänglighet">
-                    <option value="1">Endast lediga tider</option>
-                    <option selected value="2">Visa alla tider</option>
-                </select>
+        <% } %>
+        <% if (navigation.filters.availability && navigation.filters.availability.length) { %>
+            <div class="card card-filter">
+                <div class="card-header">
+                    Tillgänglighet
+                </div>
+                <div class="list-group list-group-flush">
+                    <% navigation.filters.availability.forEach(availability => { %>
+                        <a href="<%= availability.link %>" class="list-group-item list-group-item-action <%= availability.active ? 'active' : '' %>" aria-current="<%= availability.active ? 'true' : 'false' %>"><%= availability.name %><%- availability.active ? ' <i class="bi-check float-end"></i>' : '' %></a>
+                    <% }) %>
+                </div>
+            </div>
+        <% } %>
+        <% if (navigation.filters.instructor && navigation.filters.instructor.length) { %>
+            <div class="card card-filter">
+                <div class="card-header">
+                    Handledare
+                </div>
+                <div class="list-group list-group-flush">
+                    <% navigation.filters.instructor.forEach(instructor => { %>
+                        <a href="<%= instructor.link %>" class="list-group-item list-group-item-action <%= instructor.active ? 'active' : '' %>" aria-current="<%= instructor.active ? 'true' : 'false' %>"><%= instructor.name %><%- instructor.active ? ' <i class="bi-check float-end"></i>' : '' %></a>
+                    <% }) %>
+                </div>
+            </div>
+        <% } %>
+        <% if (navigation.filters.location && navigation.filters.location.length) { %>
+            <div class="card card-filter">
+                <div class="card-header">
+                    Lokal
+                </div>
+                <div class="list-group list-group-flush">
+                    <% navigation.filters.location.forEach(location => { %>
+                        <a href="<%= location.link %>" class="list-group-item list-group-item-action <%= location.active ? 'active' : '' %>" aria-current="<%= location.active ? 'true' : 'false' %>"><%= location.name %><%- location.active ? ' <i class="bi-check float-end"></i>' : '' %></a>
+                    <% }) %>
+                </div>
+            </div>
+        <% } %>
+        <div class="card card-filter">
+            <div class="card-header">
+                Datum
+            </div>
+            <div class="card-body">
+                <form method="get" action="">
+                    <% navigation.filters.date.params.forEach(p => { %>
+                        <input type="hidden" name="<%= p.name %>" value="<%= p.value %>">
+                    <% }) %>
+                    <p>
+                        <label for="start_date">Från:</label><br>
+                        <input id="start_date" name="start_date" type="date" class="form-control" value="<%= navigation.filters.date.start_date %>">    
+                    </p>
+                    <p>
+                        <label for="end_date">Till:</label><br>
+                        <input id="end_date" name="end_date" type="date" class="form-control" value="<%= navigation.filters.date.end_date %>">    
+                    </p>
+                    <p>
+                        <button type="submit" class="btn btn-sm btn-primary float-end">Visa</button>
+                    </p>
+                </form>
             </div>
         </div>
     </div>
+    <div class="col-md-10">
+        <% if (!slots.length) { %>
+            <h4 class="alert-heading">Hittade inga tider</h4>
+            <p>Antingen är inga tider utlagda eller så finns det inga tider som motsvarar de filter du valt.</p>
+            <p><a href="?">Återställ alla filter</a></p>
+        <% } else { %>
+            <table id="slots" class="table table-hover caption-top mb-3">
+                <caption>
+                    Hittade <%= navigation.records_total %> tider:
+                </caption>
+                <thead>
+                    <tr>
+                        <% if (slots.some(s => s.course_segment_id !== null)) { %><th class=""></th> <% } %>
+                        <th class="d-md-table-cell d-md-none">Tillfälle</th>
+                        <th class="d-none d-md-table-cell">Tillfälle och tid</th>
+                        <th class="d-none d-md-table-cell">Handledare och plats</th>
+                        <th class="d-none d-md-table-cell">Tillgänglighet</th>
+                        <th class="d-none d-md-table-cell"></th>
+                    </tr>
+                </thead>
+                <tbody class="table-group-divider">
+                    <% slots.forEach((slot) => { %>
+                        <tr class="" data-course_id="<%= slot.course_id %>" data-available="<%= slot.reservable_for_this_user %>">
+                            <% if (slots.some(s => s.course_segment_id !== null)) { %>
+                                <td class="text-center align-middle" style="color:white; background-color:<%= slot.course_segment_hex_color %>;"><strong><%= slot.course_segment_sign %></strong></td>
+                            <% } %>
+                            <td class="d-md-table-cell d-md-none">
+                                <%= slot.course_name %><br>
+                                <strong><%- slot.time_human_readable_sv %></strong><br>
+                                <%= slot.instructor_name %>, <%= slot.location_name %>
+                                <div><%= slot.availability_notice %></div>
+                                <div class="text-small text-muted"><%= slot.reservable_notice %></div>
+                                <div class="float-end button-bar">
+                                    <% if (session.user.isAdministrator || session.user.isInstructor) { %>
+                                        <% if (session.user.isAdministrator || (session.user.isInstructor && session.user.db_id == slot.instructor_id)) { %>
+                                            <button type="button" title="Redigera" data-bs-toggle="modal" data-bs-target="#editSlot" data-bs-slot-id="<%= slot.id %>" class="btn btn-secondary btn-md"><i class="bi-pencil-fill"></i></button>
+                                            <button type="button" title="Radera" data-bs-toggle="modal" data-bs-target="#deleteSlot" data-bs-slot-id="<%= slot.id %>" class="btn btn-secondary btn-md mx-2"><i class="bi-trash-fill"></i></button>
+                                        <% } else { %>
+                                            <button disabled type="button" title="Redigera" class="btn btn-secondary btn-md"><i class="bi-pencil-fill"></i></button>
+                                            <button disabled type="button" title="Radera" class="btn btn-secondary btn-md mx-2"><i class="bi-trash-fill"></i></button>
+                                        <% } %>
+                                    <% } else { %>
+                                        <% if (slot.reservable_for_this_user) { %>
+                                            <button type="button" title="Boka tillfället" class="btn btn-primary btn-md" data-bs-toggle="modal" data-bs-target="#reserveSlot" data-bs-slot-id="<%= slot.id %>" >Boka</button>
+                                        <% } else { %>
+                                            <button type="button" title="Tillfället är inte bokningsbart" class="btn btn-secondary btn-md" disabled>Boka</button>
+                                        <% } %>
+                                    <% } %>
+                                </div>
+                            </td>
+                            <td class="d-none d-md-table-cell"><div><%= slot.course_name %></div><div><strong><%- slot.time_human_readable_sv %></strong></div></td>
+                            <td class="d-none d-md-table-cell"><%= slot.instructor_name %><br><%= slot.location_name %></td>
+                            <td class="d-none d-md-table-cell"><%= slot.availability_notice %>
+                                <% if (session.user.isAdministrator || session.user.isInstructor) { %>
+                                    <div class="progress" style="height:20px;">
+                                        <div class="progress-bar bg-primary" role="progressbar" style="width: <%= slot.res_percent %>%;" aria-valuenow="<%= slot.res_percent %>" aria-valuemin="0" aria-valuemax="100"><%= slot.res_percent %>%</div>
+                                    </div>
+                                <% } else { %>
+                                    <div class="text-small text-muted"><%= slot.reservable_notice %></div>
+                                <% } %>
+                            </td>
+                            <% if (session.user.isAdministrator || session.user.isInstructor) { %>
+                                <td class="d-none d-md-table-cell align-top">
+                                    <div class="float-end">
+                                        <% if (session.user.isAdministrator || (session.user.isInstructor && session.user.db_id == slot.instructor_id)) { %>
+                                            <button type="button" title="Detaljer och bokningar" class="btn btn-secondary btn-md me-2" data-bs-toggle="offcanvas" data-bs-slot-id="<%= slot.id %>" data-bs-target="#offcanvasSlotDetails" aria-controls="offcanvasSlotDetails"><i class="bi-person-lines-fill"></i></button>
+                                            <button type="button" title="Redigera" data-bs-toggle="modal" data-bs-target="#editSlot" data-bs-slot-id="<%= slot.id %>" class="btn btn-secondary btn-md"><i class="bi-pencil-fill"></i></button>
+                                            <button type="button" title="Radera" data-bs-toggle="modal" data-bs-target="#deleteSlot" data-bs-slot-id="<%= slot.id %>" class="btn btn-secondary btn-md mx-2"><i class="bi-trash-fill"></i></button>
+                                        <% } else { %>
+                                            <button disabled type="button" title="Detaljer och bokningar" class="btn btn-secondary btn-md me-2" data-bs-toggle="offcanvas" data-bs-slot-id="<%= slot.id %>" data-bs-target="#offcanvasSlotDetails" aria-controls="offcanvasSlotDetails"><i class="bi-person-lines-fill"></i></button>
+                                            <button disabled type="button" title="Redigera" class="btn btn-secondary btn-md"><i class="bi-pencil-fill"></i></button>
+                                            <button disabled type="button" title="Radera" class="btn btn-secondary btn-md mx-2"><i class="bi-trash-fill"></i></button>
+                                        <% } %>
+                                    </div>
+                                </td>
+                            <% } else { %>
+                                <td class="d-none d-md-table-cell align-top">
+                                    <div class="float-end">
+                                        <% if (slot.reservable_for_this_user) { %>
+                                            <button type="button" title="Boka tillfället" class="btn btn-primary btn-md" data-bs-toggle="modal" data-bs-target="#reserveSlot" data-bs-slot-id="<%= slot.id %>" >Boka</button>
+                                        <% } else { %>
+                                            <button type="button" title="Tillfället är inte bokningsbart" class="btn btn-secondary btn-md" disabled>Boka</button>
+                                        <% } %>    
+                                    </div>
+                                </td>
+                            <% } %>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        <% } %>
+    </div>        
 </div>
--->
-<% if (segments && segments.length) { %>
-    <ul class="nav nav-pills">
-        <% segments.forEach(segment => { %>
-            <li class="nav-item">
-                <a class="nav-link <%= segment.active ? 'active' : '' %>" href="?segment=<%= segment.id %>"><%= segment.name %></a>
-            </li>      
-        <% }) %>
-    </ul>
-<% } %>
-<% if (!slots.length) { %>
-    <div class="alert alert-primary my-3" role="alert">
-        <h4 class="alert-heading">Det finns inga tider att boka</h4>
-        <p>Kika in igen senare eller vänta tills en handledare meddelar att nya tider finns att boka.</p>
-    </div>
-<% } else { %>
-<table id="slots" class="table table-hover my-3">
-    <thead>
-        <tr>
-            <td class="d-md-table-cell d-md-none">Tillfälle</td>
-            <td class="d-none d-md-table-cell">Tillfälle och tid</td>
-            <td class="d-none d-md-table-cell">Handledare och plats</td>
-            <td class="d-none d-md-table-cell">Tillgänglighet</td>
-            <td class="d-none d-md-table-cell"></td>
-        </tr>
-    </thead>
-    <tbody class="table-group-divider">
-        <% slots.forEach((slot) => { %>
-            <tr class="" data-course_id="<%= slot.course_id %>" data-available="<%= slot.reservable_for_this_user %>">
-                <td class="d-md-table-cell d-md-none">
-                    <%= slot.course_name %><br>
-                    <strong><%- slot.time_human_readable_sv %></strong><br>
-                    <%= slot.instructor_name %>, <%= slot.location_name %>
-                    <div>
-                        <% if (slot.res_max == slot.res_now) { %>
-                            Fullbokad, 
-                        <% } else { %>
-                            Tillgänglig, <%= slot.res_max-slot.res_now %> av 
-                        <% } %>
-                        <%= slot.res_max %>
-                        <% if (slot.type == "group") { %>
-                            <% if (slot.res_max > 1) { %>
-                                grupper
-                            <% } else { %>
-                                grupp
-                            <% } %>
-                        <% } else { %>
-                            personer
-                        <% } %>
-                    </div>
-                    <div class="text-small text-muted"><%= slot.reservable_notice %></div>
-                    <div class="float-end button-bar">
-                        <% if (session.user.isAdministrator || session.user.isInstructor) { %>
-                            <% if (session.user.isAdministrator || (session.user.isInstructor && session.user.db_id == slot.instructor_id)) { %>
-                                <button type="button" title="Redigera" data-bs-toggle="modal" data-bs-target="#editSlot" data-bs-slot-id="<%= slot.id %>" class="btn btn-secondary btn-md"><i class="bi-pencil-fill"></i></button>
-                                <button type="button" title="Radera" data-bs-toggle="modal" data-bs-target="#deleteSlot" data-bs-slot-id="<%= slot.id %>" class="btn btn-secondary btn-md mx-2"><i class="bi-trash-fill"></i></button>
-                            <% } else { %>
-                                <button disabled type="button" title="Redigera" class="btn btn-secondary btn-md"><i class="bi-pencil-fill"></i></button>
-                                <button disabled type="button" title="Radera" class="btn btn-secondary btn-md mx-2"><i class="bi-trash-fill"></i></button>
-                            <% } %>
-                        <% } else { %>
-                            <% if (slot.reservable_for_this_user) { %>
-                                <button type="button" title="Boka tillfället" class="btn btn-primary btn-md" data-bs-toggle="modal" data-bs-target="#reserveSlot" data-bs-slot-id="<%= slot.id %>" >Boka</button>
-                            <% } else { %>
-                                <button type="button" title="Tillfället är inte bokningsbart" class="btn btn-secondary btn-md" disabled>Boka</button>
-                            <% } %>
-                        <% } %>
-                    </div>
-                </td>
-                <td class="d-none d-md-table-cell"><div><%= slot.course_name %></div><div><%- slot.time_human_readable_sv %></div></td>
-                <td class="d-none d-md-table-cell"><%= slot.instructor_name %><br><%= slot.location_name %></td>
-                <td class="d-none d-md-table-cell">
-                    <% if (slot.res_max == slot.res_now) { %>
-                        Fullbokad, 
-                    <% } else { %>
-                        Tillgänglig, <%= slot.res_max-slot.res_now %> av 
-                    <% } %>
-                    <%= slot.res_max %>
-                    <% if (slot.type == "group") { %>
-                        <% if (slot.res_max > 1) { %>
-                            grupper
-                        <% } else { %>
-                            grupp
-                        <% } %>
-                    <% } else { %>
-                        personer
-                    <% } %>
-                    <div class="text-small text-muted"><%= slot.reservable_notice %></div>
-                </td>
-                <% if (session.user.isAdministrator || session.user.isInstructor) { %>
-                    <td class="d-none d-md-table-cell align-top">
-                        <div class="float-end">
-                            <% if (session.user.isAdministrator || (session.user.isInstructor && session.user.db_id == slot.instructor_id)) { %>
-                                <button type="button" title="Redigera" data-bs-toggle="modal" data-bs-target="#editSlot" data-bs-slot-id="<%= slot.id %>" class="btn btn-secondary btn-md"><i class="bi-pencil-fill"></i></button>
-                                <button type="button" title="Radera" data-bs-toggle="modal" data-bs-target="#deleteSlot" data-bs-slot-id="<%= slot.id %>" class="btn btn-secondary btn-md mx-2"><i class="bi-trash-fill"></i></button>
-                            <% } else { %>
-                                <button disabled type="button" title="Redigera" class="btn btn-secondary btn-md"><i class="bi-pencil-fill"></i></button>
-                                <button disabled type="button" title="Radera" class="btn btn-secondary btn-md mx-2"><i class="bi-trash-fill"></i></button>
-                            <% } %>
-                        </div>
-                    </td>
-                <% } else { %>
-                    <td class="d-none d-md-table-cell align-top">
-                        <div class="float-end">
-                            <% if (slot.reservable_for_this_user) { %>
-                                <button type="button" title="Boka tillfället" class="btn btn-primary btn-md" data-bs-toggle="modal" data-bs-target="#reserveSlot" data-bs-slot-id="<%= slot.id %>" >Boka</button>
-                            <% } else { %>
-                                <button type="button" title="Tillfället är inte bokningsbart" class="btn btn-secondary btn-md" disabled>Boka</button>
-                            <% } %>    
-                        </div>
-                    </td>
-                <% } %>
-            </tr>
-        <% }); %>
-    </tbody>
-</table>
-<% } %>
 
 <% if (navigation.pages_total && navigation.pages_total > 1) { %>
-    <nav aria-label="Page navigation">
-        <ul class="pagination flex-wrap">
+    <nav aria-label="Page navigation" style="margin-top: 16px;">
+        <ul class="pagination justify-content-end flex-wrap">
             <% if (navigation.current_page > 1) { %>
                 <li class="page-item"><a class="page-link" href="?<%= navigation.link.previous_page %>">Föregående</a></li>
             <% } else { %>
@@ -183,6 +206,7 @@
     <%- include('slots_admin_modal_new'); %>
     <%- include('slots_admin_modal_edit'); %>
     <%- include('slots_admin_modal_delete'); %>
+    <%- include('instructor_upcoming_slots_offcanvas_details'); %>
 <% } else { %>
     <%- include('reservations_public_modal_new'); %>
     <%- include('reservations_public_modal_delete'); %>
