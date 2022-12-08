@@ -171,7 +171,7 @@ app.get('/', async (req, res, next) => {
     /* TODO: make it more general in utilities or something! */
     for (const slot of availableSlots.slots) {
         slot.res_percent = Math.round((slot.res_now / slot.res_max) * 100);
-        
+
         if (req.session.user.isAdministrator) {
             slot.reservable_for_this_user = false;
             slot.reservable_notice = "Administratör kan inte boka tider.";
@@ -183,48 +183,38 @@ app.get('/', async (req, res, next) => {
         else {
             slot.reservable_for_this_user = true;
 
-            if (slot.res_now == slot.res_max) {
+            if (slot.res_now >= slot.res_max) {
                 slot.reservable_for_this_user = false;
                 slot.reservable_notice = "Tiden är fullbokad.";
             }
     
             if (slot.type == "group") {
-                if (slot.res_group_ids) {
-                    for (const id of slot.res_group_ids) {
-                        for (const group of req.session.user.groups) {
-                            if (group.id === id) {
-                                slot.reservable_for_this_user = false;
-                                slot.reservable_notice = "Din grupp är bokad på denna tid.";
-                            }
-                        }
-                    }
+                // Check if any of this user's groups are reserved on this slot
+                if (slot.res_group_ids && slot.res_group_ids.filter(id => req.session.user.groups.map(g => g.id).includes(id)).length) {
+                    slot.reservable_for_this_user = false;
+                    slot.reservable_notice = "En grupp du tillhör är bokad på denna tid.";
                 }
+
+                // Check how many times this user's groups are reserved on slots with the same course context
                 if (slot.res_course_group_ids && slot.reservable_for_this_user) {
-                    for (const id of slot.res_course_group_ids) {
-                        for (const group of req.session.user.groups) {
-                            if (group.id === id) {
-                                slot.reservable_for_this_user = false;
-                                slot.reservable_notice = "Din grupp är bokad på en annan tid för " + slot.course_name + ".";
-                            }
-                        }
+                    if (slot.res_course_group_ids.filter(id => req.session.user.groups.map(g => g.id).includes(id)).length >= slot.course_max_per_type) {
+                        slot.reservable_for_this_user = false;
+                        slot.reservable_notice = `Max antal bokningar (${slot.course_max_per_type}) för ${slot.course_name}.`;
                     }
                 }
             }
             else {
-                if (slot.res_user_ids) {
-                    for (const id of slot.res_user_ids) {
-                        if (req.session.user.id === id) {
-                            slot.reservable_for_this_user = false;
-                            slot.reservable_notice = "Du är bokad på denna tid.";
-                        }
-                    }
+                // Check if this user is reserved on this slot
+                if (slot.res_user_ids && slot.res_user_ids.includes(req.session.user.id)) {
+                    slot.reservable_for_this_user = false;
+                    slot.reservable_notice = "Du är bokad på denna tid.";
                 }
+
+                // Check how many times this user is reserved on slots with the same course context
                 if (slot.res_course_user_ids && slot.reservable_for_this_user) {
-                    for (const id of slot.res_course_user_ids) {
-                        if (req.session.user.id === id) {
-                            slot.reservable_for_this_user = false;
-                            slot.reservable_notice = "Du är bokad på en annan tid för " + slot.course_name + ".";
-                        }
+                    if (slot.res_course_user_ids.filter(id => req.session.user.id == id).length >= slot.course_max_per_type) {
+                        slot.reservable_for_this_user = false;
+                        slot.reservable_notice = `Max antal bokningar (${slot.course_max_per_type}) för ${slot.course_name}.`;
                     }
                 }
             }
@@ -523,43 +513,35 @@ app.post('/api/reservation', async (req, res, next) => {
     try {
         const slot = await db.getSlot(slot_id);
 
-        if (slot.res_now == slot.res_max) {
-            throw new Error("Max antal bokningar totalt på tillfället har uppnåtts, kan inte boka tiden.");
+        // TODO: Same code as in route for /, try to generalize
+
+        if (slot.res_now >= slot.res_max) {
+            throw new Error("Tiden är fullbokad.");
         }
         else {
             if (slot.type == "group") {
-                if (slot.res_group_ids) {
-                    for (const id of slot.res_group_ids) {
-                        for (const group of req.session.user.groups) {
-                            if (group.id === id) {
-                                throw new Error("Din grupp är redan bokad på tillfället.");
-                            }
-                        }
-                    }
+                // Check if any of this user's groups are reserved on this slot
+                if (slot.res_group_ids && slot.res_group_ids.filter(id => req.session.user.groups.map(g => g.id).includes(id)).length) {
+                    throw new Error("En grupp du tillhör är redan bokad på tillfället.");
                 }
-                if (slot.res_course_group_ids) {
-                    for (const id of slot.res_course_group_ids) {
-                        for (const group of req.session.user.groups) {
-                            if (group.id === id) {
-                                throw new Error("Max antal bokningar på samma typ av tillfälle har uppnåtts, kan inte boka fler tider.");
-                            }
-                        }
+
+                // Check how many times this user's groups are reserved on slots with the same course context
+                if (slot.res_course_group_ids && slot.reservable_for_this_user) {
+                    if (slot.res_course_group_ids.filter(id => req.session.user.groups.map(g => g.id).includes(id)).length >= slot.course_max_per_type) {
+                        throw new Error(`Max antal bokningar (${slot.course_max_per_type}) uppnått för ${slot.course_name}.`);
                     }
                 }
             }
             else {
-                if (slot.res_user_ids) {
-                    for (const id of slot.res_user_ids) {
-                        if (req.session.user.id === id) {
-                            throw new Error("Du är redan bokad på tillfället.");
-                        }
-                    }
+                // Check if this user is reserved on this slot
+                if (slot.res_user_ids && slot.res_user_ids.includes(req.session.user.id)) {
+                    throw new Error("Du är redan bokad på tillfället.");
                 }
-                if (slot.res_course_user_ids) {
-                    for (const id of slot.res_course_user_ids) {
-                        if (req.session.user.id === id) {
-                            throw new Error("Max antal bokningar på samma typ av tillfälle har uppnåtts, kan inte boka fler tider.");
-                        }
+
+                // Check how many times this user is reserved on slots with the same course context
+                if (slot.res_course_user_ids && slot.reservable_for_this_user) {
+                    if (slot.res_course_user_ids.filter(id => req.session.user.id == id).length >= slot.course_max_per_type) {
+                        throw new Error(`Max antal bokningar (${slot.course_max_per_type}) uppnått för ${slot.course_name}.`);
                     }
                 }
             }
