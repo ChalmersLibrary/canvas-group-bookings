@@ -55,6 +55,8 @@
                                                 <option value="<%= group.id %>"><%= group.name %></option>
                                             <% }) %>
                                         </select>
+                                    <% } else { %>
+                                        <input type="hidden" id="r_group_id" value="">
                                     <% } %>
                                 </div>
                                 <div id="reserveSlotIndividualBlock" style="display:none;">
