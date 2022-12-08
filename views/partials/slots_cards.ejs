@@ -129,23 +129,7 @@
                                         <%= slot.course_name %><br>
                                         <strong><%- slot.time_human_readable_sv %></strong><br>
                                         <%= slot.instructor_name %>, <%= slot.location_name %>
-                                        <div>
-                                            <% if (slot.res_max == slot.res_now) { %>
-                                                Fullbokad, 
-                                            <% } else { %>
-                                                Tillgänglig, <%= slot.res_max-slot.res_now %> av 
-                                            <% } %>
-                                            <%= slot.res_max %>
-                                            <% if (slot.type == "group") { %>
-                                                <% if (slot.res_max > 1) { %>
-                                                    grupper
-                                                <% } else { %>
-                                                    grupp
-                                                <% } %>
-                                            <% } else { %>
-                                                personer
-                                            <% } %>
-                                        </div>
+                                        <div><%= slot.availability_notice %></div>
                                         <div class="text-small text-muted"><%= slot.reservable_notice %></div>
                                         <div class="float-end button-bar">
                                             <% if (session.user.isAdministrator || session.user.isInstructor) { %>
@@ -167,22 +151,7 @@
                                     </td>
                                     <td class="d-none d-md-table-cell"><div><%= slot.course_name %></div><div><strong><%- slot.time_human_readable_sv %></strong></div></td>
                                     <td class="d-none d-md-table-cell"><%= slot.instructor_name %><br><%= slot.location_name %></td>
-                                    <td class="d-none d-md-table-cell">
-                                        <% if (slot.res_max == slot.res_now) { %>
-                                            Fullbokad, 
-                                        <% } else { %>
-                                            Tillgänglig, <%= slot.res_max-slot.res_now %> av 
-                                        <% } %>
-                                        <%= slot.res_max %>
-                                        <% if (slot.type == "group") { %>
-                                            <% if (slot.res_max > 1) { %>
-                                                grupper
-                                            <% } else { %>
-                                                grupp
-                                            <% } %>
-                                        <% } else { %>
-                                            personer
-                                        <% } %>
+                                    <td class="d-none d-md-table-cell"><%= slot.availability_notice %>
                                         <% if (session.user.isAdministrator || session.user.isInstructor) { %>
                                             <div class="progress" style="height:20px;">
                                                 <div class="progress-bar bg-primary" role="progressbar" style="width: <%= slot.res_percent %>%;" aria-valuenow="<%= slot.res_percent %>" aria-valuemin="0" aria-valuemax="100"><%= slot.res_percent %>%</div>
@@ -247,23 +216,7 @@
                                     </div>
                                     <small class="text-muted"><%= slot.instructor_name %>, <%= slot.location_name %></small>
                                     <div>
-                                        <small class="my-2">
-                                            <% if (slot.res_max == slot.res_now) { %>
-                                                Fullbokad, 
-                                            <% } else { %>
-                                                Tillgänglig, <%= slot.res_max-slot.res_now %> av 
-                                            <% } %>
-                                            <%= slot.res_max %>
-                                            <% if (slot.type == "group") { %>
-                                                <% if (slot.res_max > 1) { %>
-                                                    grupper
-                                                <% } else { %>
-                                                    grupp
-                                                <% } %>
-                                            <% } else { %>
-                                                personer
-                                            <% } %>
-                                        </small>
+                                        <small class="my-2"><%= slot.availability_notice %></small>
                                     </div>
                                     <% if (session.user.isAdministrator || session.user.isInstructor) { %>
                                         <div class="progress" style="height:20px;">

@@ -167,6 +167,16 @@ app.get('/', async (req, res, next) => {
         date: filter_date
     };
 
+    /* Add contextual availability notice for each slot */
+    for (const slot of availableSlots.slots) {
+        if (req.session.user.isAdministrator || req.session.user.isInstructor) {
+            slot.availability_notice = (slot.res_max == slot.res_now ? "Fullbokad, " + slot.res_now + (slot.type == "group" ? (slot.res_max > 1 ? " grupper" : " grupp") : (" personer")) : slot.res_now + " av " + slot.res_max + (slot.type == "group" ? (slot.res_max > 1 ? " grupper" : " grupp") : (" personer")) + (slot.res_max > 1 ? " bokade" : " bokad"));
+        }
+        else {
+            slot.availability_notice = (slot.res_max == slot.res_now ? "Fullbokad, " + slot.res_now + (slot.type == "group" ? (slot.res_max > 1 ? " grupper" : " grupp") : (" personer")) : "Tillgänglig, " + (slot.res_max - slot.res_now) + " av " + slot.res_max);
+        }
+    }
+
     /* Calculate if this slot is bookable, based on existing reservations */
     /* TODO: make it more general in utilities or something! */
     for (const slot of availableSlots.slots) {
