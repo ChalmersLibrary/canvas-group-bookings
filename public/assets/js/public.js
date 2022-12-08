@@ -12,12 +12,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
         submitButton.disabled = true
         reserveSlotModal.querySelector('div.modal-body.loading-spinner').style.display = "block"
         reserveSlotModal.querySelector('div.modal-body.loaded-content').style.display = "none"
-        console.log("Fetch...")
         fetch(`/api/slot/${slot_id}`)
         .then((response) => response.json())
         .then((data) => {
-            console.log("Done.")
-            console.log(data)
             if (data.success == false) {
                 reserveSlotModal.querySelector('#reserveSlotError div.alert span').innerText = data.message
                 reserveSlotModal.querySelector('div.modal-body.loading-spinner').style.display = "none"
@@ -25,7 +22,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 reserveSlotModal.querySelector('#reserveSlotError').style.display = "block"
             }
             else {
-                console.log("Success.")
                 reserveSlotModal.querySelector('#r_slot_id').value = data.id
                 reserveSlotModal.querySelector('#r_type').value = data.type
                 reserveSlotModal.querySelector('#r_message').value = ""
@@ -47,14 +43,13 @@ document.addEventListener("DOMContentLoaded", function(event) {
                     reserveSlotModal.querySelector('#reserveSlotGroupNotice').style.display = "none"
                     reserveSlotModal.querySelector('#reserveSlotIndividualBlock').style.display = "block"
                     reserveSlotModal.querySelector('#reserveSlotGroupBlock').style.display = "none"
+                    submitButton.disabled = false
                 }
                 else {
-                    console.log("Group")
                     if (reserveSlotModal.querySelector('#r_group_string').value == '') {
                         reserveSlotModal.querySelector('#reserveSlotUserNotInGroup').style.display = "block"
                     }
                     else {
-                        submitButton.disabled = false
                         reserveSlotModal.querySelector('#reservations').replaceChildren()
                         if (data.reservations && data.reservations.length > 0) {
                             data.reservations.forEach(reservation => {
@@ -75,7 +70,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
                             reserveSlotModal.querySelector('#reserveSlotGroupConnectNotice').style.display = "none"
                             reserveSlotModal.querySelector('#reserveSlotGroupNotice').style.display = "block"
                             reserveSlotModal.querySelector('#reservationsContainer').style.display = "none"
-                        }    
+                        }
+                        submitButton.disabled = false
                     }
                 }
 
