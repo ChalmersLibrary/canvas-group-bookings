@@ -53,25 +53,27 @@ async function addUserFlagsForRoles(req) {
             req.session.user.isAdministrator = false;
             req.session.user.isInstructor = false;
 
-            req.session.lti.custom_canvas_roles.split(",").forEach((role) => {
-                if (role === "Examiner" || role === "Account Admin") {
-                    if (req.session.lti.custom_canvas_roles.includes("StudentEnrollment")) { // fix for if this user is account admin but enrolled as student in current course
-                        req.session.user.isAdministrator = false;
-                        req.session.user.isInstructor = false;
+            if (req.session.lti.custom_canvas_roles != "") {
+                req.session.lti.custom_canvas_roles.split(",").forEach((role) => {
+                    if (role === "Examiner" || role === "Account Admin") {
+                        if (req.session.lti.custom_canvas_roles.includes("StudentEnrollment")) { // fix for if this user is account admin but enrolled as student in current course
+                            req.session.user.isAdministrator = false;
+                            req.session.user.isInstructor = false;
+                        }
+                        else if (req.session.lti.custom_canvas_roles.includes("TeacherEnrollment")) { // fix for if this user is account admin but enrolled as teacher in current course
+                            req.session.user.isAdministrator = false;
+                            req.session.user.isInstructor = true;
+                        }
+                        else {
+                            req.session.user.isAdministrator = true;
+                            req.session.user.isInstructor = true;    
+                        }
                     }
-                    else if (req.session.lti.custom_canvas_roles.includes("TeacherEnrollment")) { // fix for if this user is account admin but enrolled as teacher in current course
-                        req.session.user.isAdministrator = false;
+                    if (role === "TeacherEnrollment") {
                         req.session.user.isInstructor = true;
                     }
-                    else {
-                        req.session.user.isAdministrator = true;
-                        req.session.user.isInstructor = true;    
-                    }
-                }
-                if (role === "TeacherEnrollment") {
-                    req.session.user.isInstructor = true;
-                }
-            });
+                });
+            }
         }
 
         req.session.user.isTouchedByTheHandOfGod = true;
