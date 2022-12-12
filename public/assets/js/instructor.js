@@ -46,25 +46,55 @@ document.addEventListener("DOMContentLoaded", function(event) {
         })
     })
 
-    /* The new slot modal is shown, handle add rows for times */
+    /* The new slot modal is shown, handle add/delete rows for times */
     newSlotModal && newSlotModal.addEventListener('show.bs.modal', event => {
+        // var xx = new Date(document.getElementById("slot_date_1").value + "T" + document.getElementById("slot_time_start_1").value)
+        // xx.setMinutes(xx.getMinutes() + 90)
+        // must load default_slot_duration_minutes when course select changes...
+        /* document.getElementById("slot_time_start_" + (slots_current.length + 1)).addEventListener("change", e => {
+        })
+           document.getElementById("slot_time_start_1").addEventListener("change", e => {
+              console.log(e.srcElement.value)
+        }) */
         document.getElementById("slot_new_slot").addEventListener("click", function(event) {
             const slots_container = document.getElementById("slot_times")
             const slots_current = slots_container.querySelectorAll("div.slot")
             const template = document.getElementById("slot_template").cloneNode(true)
             const new_slot = slots_container.appendChild(template)
             new_slot.setAttribute("id", "slot_" + (slots_current.length + 1))
-            new_slot.querySelectorAll("label").forEach((e) => {
+            /* new_slot.querySelectorAll("label").forEach((e) => {
                 e.setAttribute("for", e.getAttribute("for") + (slots_current.length + 1))
-            });
+            }); */
             new_slot.querySelectorAll("input.form-control").forEach((e) => {
                 e.setAttribute("id", e.getAttribute("id") + (slots_current.length + 1))
                 e.setAttribute("name", e.getAttribute("name") + (slots_current.length + 1))
                 e.setAttribute("required", "")
             })
+            new_slot.querySelectorAll("button").forEach((e) => {
+                e.setAttribute("id", e.getAttribute("id") + (slots_current.length + 1))
+                e.setAttribute("data-slot", "slot_" + (slots_current.length + 1))
+                document.getElementById(e.getAttribute("id")).addEventListener("click", function (event) {
+                    if (window.confirm("Vill du verkligen radera tiden?")) {
+                        const removed_slot_e = document.getElementById(document.getElementById(event.srcElement.id).getAttribute("data-slot"))
+                        removed_slot_e.remove()
+                        slots_container.querySelectorAll("div.slot").forEach((slot, index) => {
+                            slot.setAttribute("id", "slot_" + (index + 1))
+                            slot.querySelectorAll("input.form-control").forEach((slot_input) => {
+                                slot_input.setAttribute("id", slot_input.getAttribute("id").substr(0, slot_input.getAttribute("id").length - 1) + (index + 1))
+                                slot_input.setAttribute("name", slot_input.getAttribute("name").substr(0, slot_input.getAttribute("name").length - 1) + (index + 1))
+                            })
+                            slot.querySelectorAll("button").forEach((slot_button) => {
+                                slot_button.setAttribute("id", slot_button.getAttribute("id").substr(0, slot_button.getAttribute("id").length - 1) + (index + 1))
+                                slot_button.setAttribute("data-slot", "slot_" + (index + 1))
+                            })
+                        })
+                    }
+                })
+            })
             new_slot.querySelector("input.form-control[type='date']").setAttribute("value", slots_container.querySelector("#slot_date_" + (slots_current.length)).value)
             new_slot.classList.remove("slot_template")
             new_slot.classList.add("slot")
+            new_slot.classList.add("d-flex")
         })
     })
 

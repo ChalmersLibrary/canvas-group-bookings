@@ -54,33 +54,37 @@
                             <hr>
                         </div>
                     </div>
+                    
                     <div id="slot_times">
-                        <div class="row slot_template py-2" id="slot_template">
-                            <div class="col-sm-4">
-                                <label for="slot_date_" class="form-label d-none">Datum:</label>
+                        <div class="slot_template py-2 justify-content-between" id="slot_template">
+                            <div class="flex-grow-1 pe-4">
                                 <input type="date" class="form-control" id="slot_date_" name="slot_date_">
                             </div>
-                            <div class="col-sm-4">
-                                <label for="slot_time_start_" class="form-label d-none">Startar:</label>
-                                <input type="time" class="form-control" id="slot_time_start_" name="slot_time_start_">
+                            <div class="pe-4">
+                                <input type="time" class="form-control time-start" id="slot_time_start_" name="slot_time_start_">
                             </div>
-                            <div class="col-sm-4">
-                                <label for="slot_time_end_" class="form-label d-none">Slutar:</label>
-                                <input type="time" class="form-control" id="slot_time_end_" name="slot_time_end_">
+                            <div class="pe-4">
+                                <input type="time" class="form-control time-end" id="slot_time_end_" name="slot_time_end_">
+                            </div>
+                            <div class="justify-content-end align-self-end">
+                                <button title="Ta bort denna rad" type="button" id="slot_delete_slot_" class="btn btn-md btn-dark float-end"><i class="pe-none bi-dash-circle-fill"></i></button>
                             </div>
                         </div>
-                        <div class="row slot py-2" id="slot_1">
-                            <div class="col-sm-4">
+                        <div class="slot py-2 d-flex justify-content-between" id="slot_1">
+                            <div class="flex-grow-1 pe-4">
                                 <label for="slot_date_1" class="form-label">Datum:</label>
                                 <input type="date" class="form-control" id="slot_date_1" name="slot_date_1" required>
                             </div>
-                            <div class="col-sm-4">
+                            <div class="pe-4">
                                 <label for="slot_time_start_1" class="form-label">Startar:</label>
-                                <input type="time" class="form-control" id="slot_time_start_1" name="slot_time_start_1" required>
+                                <input type="time" class="form-control time-start" id="slot_time_start_1" name="slot_time_start_1" required>
                             </div>
-                            <div class="col-sm-4">
+                            <div class="pe-4">
                                 <label for="slot_time_end_1" class="form-label">Slutar:</label>
-                                <input type="time" class="form-control" id="slot_time_end_1" name="slot_time_end_1" required>
+                                <input type="time" class="form-control time-end" id="slot_time_end_1" name="slot_time_end_1" required>
+                            </div>
+                            <div class="justify-content-end align-self-end">
+                                <button disabled type="button" id="slot_delete_slot_1" class="btn btn-md btn-dark float-end"><i class="pe-none bi-dash-circle-fill"></i></button>
                             </div>
                         </div>
                     </div>
