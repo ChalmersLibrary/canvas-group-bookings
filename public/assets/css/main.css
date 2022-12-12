@@ -34,3 +34,6 @@ h6 {
 .card.card-slot {
     margin: 0px 1em 1em 0px;
 }
+.progress {
+    background-color: #c9c9c9;
+}
