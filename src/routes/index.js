@@ -43,6 +43,9 @@ router.all(['/', '/debug', '/reservations', '/admin*', '/api/*'], async function
                         req.session.user.groups_ids.push(group.id);
                     }    
                 }
+                else {
+                    req.session.user.groups = [];
+                }
 
                 // Add some debug information
                 req.session.internal = {
