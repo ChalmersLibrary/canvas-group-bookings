@@ -6,7 +6,8 @@ Plats: {{location_name}}
 Handledare: {{instructor_name}}
 Meddelande: {{reservation_message}}
 
-Om du behöver avboka kan du göra det i Bokningsverktyget under länken "Dina bokningar". Notera att du måste avboka {{cancellation_policy_hours}}h innan starttid.
+Om du behöver avboka använder du Bokningsverktyget i kursen {{canvas_course_name}} och klickar på länken "Mina bokningar". 
+Notera att du måste avboka {{cancellation_policy_hours}}h innan starttid.
 
 Om du har andra frågor, kontakta handledaren {{instructor_name}} på {{instructor_email}}.
 
