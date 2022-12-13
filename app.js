@@ -69,7 +69,7 @@ app.use(function (req, res, next) {
 if (process.env.NODE_ENV === "production") {
     app.set('trust proxy', 1);
     sessionOptions.cookie.secure = 'true';
-    sessionOptions.cookie.sameSite = 'none'; 
+    sessionOptions.cookie.sameSite = 'None'; 
 }
 
 // Session options
