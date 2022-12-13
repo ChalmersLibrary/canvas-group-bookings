@@ -71,7 +71,7 @@ router.all(['/', '/debug', '/reservations', '/admin*', '/api/*'], async function
                 try {
                     log.error("Coming from callback, but with no session. Third party cookies problem.");
                 
-                    return res.send({
+                    return res.render("pages/error", {
                         version: pkg.version,
                         internal: {
                             version: pkg.version,
