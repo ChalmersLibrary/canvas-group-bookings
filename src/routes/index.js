@@ -57,7 +57,10 @@ router.all(['/', '/debug', '/reservations', '/admin*', '/api/*'], async function
 
                 return res.render("pages/error", {
                     version: pkg.version,
-                    internal: req.session.internal,
+                    internal: {
+                        version: pkg.version,
+                        db: process.env.PGDATABASE
+                    },
                     error: "Kan inte läsa LTI-information",
                     message: "Bokningsverktyget måste startas som en LTI-applikation inifrån Canvas för att få information om kontexten."
                 });
@@ -68,12 +71,15 @@ router.all(['/', '/debug', '/reservations', '/admin*', '/api/*'], async function
                 try {
                     log.error("Coming from callback, but with no session. Third party cookies problem.");
                 
-                    return res.render("pages/error", {
+                    return res.send({
                         version: pkg.version,
-                        internal: req.session.internal,
+                        internal: {
+                            version: pkg.version,
+                            db: process.env.PGDATABASE
+                        },
                         error: "Kan inte skapa en session",
                         message: "Du måste tillåta cookies från tredje part i din webbläsare. Bokningsverktyget använder cookies för att kunna hantera din identitiet från Canvas."
-                    });                        
+                    });
                 } catch (error) {
                     console.error(error);
                 }

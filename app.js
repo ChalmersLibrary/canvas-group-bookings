@@ -87,7 +87,10 @@ app.use('/', routes);
 app.get('/debug', async (req, res, next) => {
     return res.send({
         version: pkg.version,
-        internal: req.session.internal,
+        internal: {
+            version: pkg.version,
+            db: process.env.PGDATABASE
+        },
         session: req.session
     });
 });
@@ -98,7 +101,10 @@ app.get('/test', async (req, res, next) => {
 
     return res.render("pages/error", {
         version: pkg.version,
-        internal: req.session.internal,
+        internal: {
+            version: pkg.version,
+            db: process.env.PGDATABASE
+        },
         error: "Kan inte skapa en session",
         message: "Du måste tillåta cookies från tredje part i din webbläsare. Bokningsverktyget använder cookies för att kunna hantera din identitiet från Canvas."
     });
