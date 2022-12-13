@@ -22,7 +22,6 @@ auth.setupAuthEndpoints(router, process.env.AUTH_REDIRECT_CALLBACK);
  * Also populates session object with user information like id, name, groups.
  */
 router.all(['/', '/debug', '/reservations', '/admin*', '/api/*'], async function (req, res, next) {
-    console.log("---- ROUTER PRE-CHECK OF ACCESS TOKEN -----");
     await auth.checkAccessToken(req).then(async (token) => {
         if (token !== undefined && token.success === true) {
             await user.mockLtiSession(req);
@@ -32,15 +31,17 @@ router.all(['/', '/debug', '/reservations', '/admin*', '/api/*'], async function
                 res.locals.token = token;
                 res.locals.courseId = req.session.lti.custom_canvas_course_id ? req.session.lti.custom_canvas_course_id : "lti_context_id:" + req.session.lti.context_id;
                 
-                // Add the groups from Canvas for this user
-                let canvasGroupCategoryFilter = await db.getCourseGroupCategoryFilter(res.locals.courseId);
-                req.session.user.groups = await canvasApi.getCourseGroups(res.locals.courseId, canvasGroupCategoryFilter, token);
-                req.session.user.groups_ids = new Array();
-                req.session.user.groups_human_readable = new Array();
-            
-                for (const group of req.session.user.groups) {
-                    req.session.user.groups_human_readable.push(group.name);
-                    req.session.user.groups_ids.push(group.id);
+                // Add the groups from Canvas for this user, only if active enrollment
+                if (req.session.lti.custom_canvas_enrollment_state && req.session.lti.custom_canvas_enrollment_state == "active") {
+                    let canvasGroupCategoryFilter = await db.getCourseGroupCategoryFilter(res.locals.courseId);
+                    req.session.user.groups = await canvasApi.getCourseGroups(res.locals.courseId, canvasGroupCategoryFilter, token);
+                    req.session.user.groups_ids = new Array();
+                    req.session.user.groups_human_readable = new Array();
+                
+                    for (const group of req.session.user.groups) {
+                        req.session.user.groups_human_readable.push(group.name);
+                        req.session.user.groups_ids.push(group.id);
+                    }    
                 }
 
                 // Add some debug information
