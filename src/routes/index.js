@@ -21,7 +21,8 @@ auth.setupAuthEndpoints(router, process.env.AUTH_REDIRECT_CALLBACK);
  * General middleware that runs first, checking access token and LTI session.
  * Also populates session object with user information like id, name, groups.
  */
-router.use(['/', '/debug', '/reservations', '/admin*', '/api/*'], async function (req, res, next) {
+router.all(['/', '/debug', '/reservations', '/admin*', '/api/*'], async function (req, res, next) {
+    console.log("---- ROUTER PRE-CHECK OF ACCESS TOKEN -----");
     await auth.checkAccessToken(req).then(async (token) => {
         if (token !== undefined && token.success === true) {
             await user.mockLtiSession(req);
@@ -64,14 +65,18 @@ router.use(['/', '/debug', '/reservations', '/admin*', '/api/*'], async function
         }
         else {
             if (req.query.from == "callback") {
-                log.error("Coming from callback, but with no session. Third party cookies problem.");
+                try {
+                    log.error("Coming from callback, but with no session. Third party cookies problem.");
                 
-                return res.render("pages/error", {
-                    version: pkg.version,
-                    internal: req.session.internal,
-                    error: "Kan inte skapa en session",
-                    message: "Du måste tillåta cookies från tredje part i din webbläsare. Bokningsverktyget använder cookies för att kunna hantera din identitiet från Canvas."
-                });
+                    return res.render("pages/error", {
+                        version: pkg.version,
+                        internal: req.session.internal,
+                        error: "Kan inte skapa en session",
+                        message: "Du måste tillåta cookies från tredje part i din webbläsare. Bokningsverktyget använder cookies för att kunna hantera din identitiet från Canvas."
+                    });                        
+                } catch (error) {
+                    console.error(error);
+                }
             }
             else {
                 log.error("Access token is not valid or not found, redirecting to auth flow...");
