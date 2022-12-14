@@ -21,6 +21,9 @@ div.reservations,
 div.button-bar {
     margin-bottom: 1em;
 }
+div.filters {
+    border-left: 1px solid lightgrey;
+}
 h6 {
     text-transform: uppercase;
 }
@@ -46,6 +49,9 @@ nav.navbar-top h5 i.bi {
     font-size: 1.5rem;
     margin-left: 0.6rem;
     transform: rotate(-10deg);
+}
+nav.navbar-top span.text-muted {
+    color: #9c9c9c!important
 }
 nav.navbar-main-navigation {
     border-bottom: 1px solid lightgray;
