@@ -22,7 +22,7 @@ div.button-bar {
     margin-bottom: 1em;
 }
 div.filters {
-    border-left: 1px solid lightgrey;
+    border-left: 0px solid lightgrey;
 }
 h6 {
     text-transform: uppercase;
