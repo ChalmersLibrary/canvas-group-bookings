@@ -55,6 +55,7 @@ nav.navbar-main-navigation {
 nav.navbar-main-navigation li.nav-item {
     margin-right: 1.4rem;
     padding-bottom: 0.5rem;
+    text-transform: uppercase;
 }
 nav.navbar-main-navigation li.nav-item a.nav-link {
     padding: 0px;
