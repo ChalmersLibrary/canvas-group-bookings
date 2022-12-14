@@ -180,7 +180,7 @@
 
 <% if (navigation.pages_total && navigation.pages_total > 1) { %>
     <nav aria-label="Page navigation" style="margin-top: 16px;">
-        <ul class="pagination justify-content-end flex-wrap">
+        <ul class="pagination justify-content-start flex-wrap">
             <% if (navigation.current_page > 1) { %>
                 <li class="page-item"><a class="page-link" href="?<%= navigation.link.previous_page %>">Föregående</a></li>
             <% } else { %>
