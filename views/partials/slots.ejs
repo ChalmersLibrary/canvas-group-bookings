@@ -24,18 +24,6 @@
                 </div>
             </div>
         <% } %>
-        <% if (navigation.filters.availability && navigation.filters.availability.length) { %>
-            <div class="card card-filter">
-                <div class="card-header">
-                    Tillgänglighet
-                </div>
-                <div class="list-group list-group-flush">
-                    <% navigation.filters.availability.forEach(availability => { %>
-                        <a href="<%= availability.link %>" class="list-group-item list-group-item-action <%= availability.active ? 'active' : '' %>" aria-current="<%= availability.active ? 'true' : 'false' %>"><%= availability.name %><%- availability.active ? ' <i class="bi-check float-end"></i>' : '' %></a>
-                    <% }) %>
-                </div>
-            </div>
-        <% } %>
         <% if (navigation.filters.instructor && navigation.filters.instructor.length) { %>
             <div class="card card-filter">
                 <div class="card-header">
@@ -51,11 +39,23 @@
         <% if (navigation.filters.location && navigation.filters.location.length) { %>
             <div class="card card-filter">
                 <div class="card-header">
-                    Lokal
+                    Plats
                 </div>
                 <div class="list-group list-group-flush">
                     <% navigation.filters.location.forEach(location => { %>
                         <a href="<%= location.link %>" class="list-group-item list-group-item-action <%= location.active ? 'active' : '' %>" aria-current="<%= location.active ? 'true' : 'false' %>"><%= location.name %><%- location.active ? ' <i class="bi-check float-end"></i>' : '' %></a>
+                    <% }) %>
+                </div>
+            </div>
+        <% } %>
+        <% if (navigation.filters.availability && navigation.filters.availability.length) { %>
+            <div class="card card-filter">
+                <div class="card-header">
+                    Tillgänglighet
+                </div>
+                <div class="list-group list-group-flush">
+                    <% navigation.filters.availability.forEach(availability => { %>
+                        <a href="<%= availability.link %>" class="list-group-item list-group-item-action <%= availability.active ? 'active' : '' %>" aria-current="<%= availability.active ? 'true' : 'false' %>"><%= availability.name %><%- availability.active ? ' <i class="bi-check float-end"></i>' : '' %></a>
                     <% }) %>
                 </div>
             </div>
@@ -90,10 +90,8 @@
             <p>Antingen är inga tider utlagda eller så finns det inga tider som motsvarar de filter du valt.</p>
             <p><a href="?">Återställ alla filter</a></p>
         <% } else { %>
+            <h4 class="alert-heading">Visar <%= navigation.records_total %> tider <%= navigation.current_page_is_instructor_slots ? 'med dig som handledare' : '' %></h4>
             <table id="slots" class="table table-hover caption-top mb-3">
-                <caption>
-                    Hittade <%= navigation.records_total %> tider:
-                </caption>
                 <thead>
                     <tr>
                         <% if (slots.some(s => s.course_segment_id !== null)) { %><th class=""></th> <% } %>

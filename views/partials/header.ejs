@@ -1,58 +1,52 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-dark navbar-top bg-dark">
   <div class="container-fluid">
-    <a class="navbar-brand" href="/">BOKNINGSVERKTYG</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarText">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <a class="nav-link" href="/">Tillgängliga tider</a>
-        </li>
-        <% if (!user.isAdministrator && !user.isInstructor) { %>
-          <li class="nav-item">
-            <a class="nav-link" href="/reservations">Mina bokningar <span id="statsReservationsCount" class="badge badge-pill badge-success"></span></a>
-          </li>
-        <% } %>
-      </ul>
-      <div class="d-flex">
-        <div class="nav-item">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <%= user.name %>
-          </a>
-          <div class="dropdown-menu dropdown-menu-lg-end">
-            <div class="dropdown-item disabled">
-              <% if (user.isAdministrator) { %>
-                <span>Administratör</span>
-              <% } else if (user.isInstructor) { %>
-                <span>Handledare</span>
-              <% } else { %>
-                <% if (user.groups_human_readable && user.groups_human_readable.length) { %>
-                  <span><%= user.groups_human_readable.join(", ") %></span>
-                <% } else { %>
-                  <span>Inte medlem i någon grupp</span>
-                <% } %>
-              <% } %>
-            </div>
-            <hr class="dropdown-divider">
-            <% if (!user.isAdministrator && !user.isInstructor) { %>
-              <a class="dropdown-item" href="/reservations">Mina bokningar <span id="statsReservationsCount" class="badge badge-pill badge-success"></span></a>
-            <% } %>
-            <% if (user.isInstructor) { %>
-              <a class="dropdown-item" href="/?instructor=<%= user.db_id %>&amp;availability=1">Mina tillfällen <span id="statsInstructorSlotCount" class="badge badge-pill badge-success"></span></a>
-              <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#newSlotSeries">Lägg till nya tider</a>
-            <% } %>
-            <% if (user.isAdministrator) { %>
-              <hr class="dropdown-divider">
-              <a class="dropdown-item" href="/admin">Administration</a>
-            <% } %>
-          </div>
-        </div>
-      </div>
-      <!-- <span class="navbar-text">
-        <%= user.name %>
-        
-      </span> -->
+    <div class="bg-dark py-3">
+      <h5 class="text-white h4">BOKNINGSVERKTYG <i class="bi bi-calendar2-check-fill"></i></h5>
+      <span class="text-muted">Boka tider för workshops, handledningstillfällen, föreläsningar mm.</span>
     </div>
+  </div>
+</nav>
+
+<nav class="navbar navbar-main-navigation">
+  <div class="container-fluid mt-2">
+    <ul class="nav">
+      <li class="nav-item <%= navigation.active == 'index' ? 'active' : '' %>">
+        <a class="nav-link" href="/">Boka tid</a>
+      </li>
+      <% if (!user.isAdministrator && !user.isInstructor) { %>
+        <li class="nav-item <%= navigation.active == 'reservations' ? 'active' : '' %>">
+          <a class="nav-link" href="/reservations">Mina bokningar <span id="statsReservationsCount" class="badge badge-pill badge-success"></span></a>
+        </li>
+      <% } %>
+      <% if (user.isInstructor) { %>
+        <li class="nav-item <%= navigation.active == 'instructor-slots' ? 'active' : '' %>">
+          <a class="nav-link" href="/?instructor=<%= user.db_id %>&amp;availability=1">Mina tillfällen <span id="statsInstructorSlotCount" class="badge badge-pill badge-success"></span></a>
+        </li>
+      <% } %>
+      <% if (user.isAdministrator) { %>
+        <li class="nav-item <%= navigation.active == 'admin' ? 'active' : '' %>">
+          <a class="nav-link" href="/admin">Administration</a>
+        </li>
+      <% } %>
+      <% if (user.isAdministrator || user.isInstructor) { %>
+        <li class="nav-item">
+          <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#newSlotSeries">Lägg till nya tider</a>
+        </li>
+      <% } %>
+    </ul>
+    <span class="navbar-text">
+      <%= user.name %>
+      <% if (user.isAdministrator) { %>
+        (administratör)
+      <% } else if (user.isInstructor) { %>
+        (handledare)
+      <% } else { %>
+        <% if (user.groups_human_readable && user.groups_human_readable.length) { %>
+          (<%= user.groups_human_readable.join(", ") %>)
+        <% } else { %>
+          (ej medlem i någon grupp)
+        <% } %>
+      <% } %>
+    </span>  
   </div>
 </nav>

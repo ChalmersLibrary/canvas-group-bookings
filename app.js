@@ -173,6 +173,13 @@ app.get('/', async (req, res, next) => {
         date: filter_date
     };
 
+    if (req.session.user.db_id != null && !isNaN(parseInt(req.query.instructor)) && parseInt(req.query.instructor) == req.session.user.db_id) {
+        this_navigation.current_page_is_instructor_slots = true;
+    }
+    else {
+        this_navigation.current_page_is_instructor_slots = false;
+    }
+
     /* Add contextual availability notice for each slot */
     for (const slot of availableSlots.slots) {
         if (req.session.user.isAdministrator || req.session.user.isInstructor) {

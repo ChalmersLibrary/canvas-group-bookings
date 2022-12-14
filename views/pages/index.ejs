@@ -6,7 +6,7 @@
 <body>
 
 <header>
-  <%- include('../partials/header', { user: session.user }); %>
+  <%- include('../partials/header', { user: session.user, navigation: { active: navigation.current_page_is_instructor_slots ? 'instructor-slots' : 'index' }}); %>
 </header>
 
 <!--
@@ -23,7 +23,6 @@
 -->
 
 <main class="container-fluid py-2">
-  <h1>Tillgängliga tider för bokning</h1>
   <%- include('../partials/slots'); %>
 </main>
 
