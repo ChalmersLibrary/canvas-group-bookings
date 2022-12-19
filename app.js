@@ -202,7 +202,8 @@ app.get('/', async (req, res, next) => {
             slot.availability_notice = (slot.res_max == slot.res_now ? "Fullbokad, " + slot.res_now + (slot.type == "group" ? (slot.res_max > 1 ? " grupper" : " grupp") : (" personer")) : slot.res_now + " av " + slot.res_max + (slot.type == "group" ? (slot.res_max > 1 ? " grupper" : " grupp") : (" personer")) + (slot.res_max > 1 ? " bokade" : " bokad"));
         }
         else {
-            slot.availability_notice = (slot.res_max == slot.res_now ? "Fullbokad, " + slot.res_now + (slot.type == "group" ? (slot.res_max > 1 ? " grupper" : " grupp") : (" personer")) : "Tillgänglig, " + (slot.res_max - slot.res_now) + " av " + slot.res_max);
+            slot.availability_notice = (slot.res_max == slot.res_now ? "Fullbokad, " + slot.res_now + (slot.type == "group" ? (slot.res_max > 1 ? " grupper" : " grupp") : (" personer")) : slot.res_now + " av " + slot.res_max + (slot.type == "group" ? (slot.res_max > 1 ? " grupper" : " grupp") : (" personer")) + (slot.res_max > 1 ? " bokade" : " bokad"));
+            // slot.availability_notice = (slot.res_max == slot.res_now ? "Fullbokad, " + slot.res_now + (slot.type == "group" ? (slot.res_max > 1 ? " grupper" : " grupp") : (" personer")) : "Tillgänglig, " + (slot.res_max - slot.res_now) + " av " + slot.res_max);
         }
     }
 
@@ -843,11 +844,12 @@ app.delete('/api/reservation/:id', async (req, res) => {
  */
 app.get('/api/statistics', async (req, res, next) => {
     try {
-        const counter_res = await db.getNumberOfReservations(req.session.user.id, res.locals.groups_ids);
+        const reservations = await db.getReservationsForUser(res.locals.courseId, req.session.user.id, req.session.user.groups_ids);
 
         return res.send({
             counters: {
-                reservations: counter_res
+                reservations_upcoming: reservations.filter(x => !x.is_passed).length,
+                reservations_total: reservations.length
             }
         });
     }

@@ -516,6 +516,9 @@ async function createSlotReservation(slot_id, user_id, user_name, group_id, grou
     return data;
 }
 
+/**
+ * BUG: this will collect ALL reservations among all Canvas courses!
+ */
 async function getNumberOfReservations(user_id, groups) {
     let data;
     

@@ -1,5 +1,8 @@
 document.addEventListener("DOMContentLoaded", function(event) {
-    
+    /* Counters */
+    const reservationsCounter = document.getElementById('statsReservationsCount');
+    reservationsCounter && fetch('/api/statistics').then((response) => response.json()).then((data) => { reservationsCounter.innerHTML = `(${data.counters.reservations_upcoming})` })
+
     /* Reserve Slot constants */
     const reserveSlotModal = document.getElementById('reserveSlot')
     const reserveSlotForm = document.getElementById("reserveSlotForm")

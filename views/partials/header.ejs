@@ -15,7 +15,7 @@
       </li>
       <% if (!user.isAdministrator && !user.isInstructor) { %>
         <li class="nav-item <%= navigation.active == 'reservations' ? 'active' : '' %>">
-          <a class="nav-link" href="/reservations">Mina bokningar <span id="statsReservationsCount" class="badge badge-pill badge-success"></span></a>
+          <a class="nav-link" href="/reservations">Mina bokningar <span id="statsReservationsCount" class="text-muted">(<div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Loading...</span></div>)</span></a>
         </li>
       <% } %>
       <% if (user.isInstructor) { %>
