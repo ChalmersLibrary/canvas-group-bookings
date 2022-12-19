@@ -43,6 +43,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
                     reserveSlotModal.querySelector('#reserveSlotGroupNotice').style.display = "none"
                     reserveSlotModal.querySelector('#reserveSlotIndividualBlock').style.display = "block"
                     reserveSlotModal.querySelector('#reserveSlotGroupBlock').style.display = "none"
+                    reserveSlotModal.querySelector('#reserveSlotUserNotInGroup').style.display = "none"
                     submitButton.disabled = false
                 }
                 else {
