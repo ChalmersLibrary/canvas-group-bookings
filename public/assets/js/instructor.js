@@ -56,6 +56,48 @@ document.addEventListener("DOMContentLoaded", function(event) {
            document.getElementById("slot_time_start_1").addEventListener("change", e => {
               console.log(e.srcElement.value)
         }) */
+        document.getElementById("course_id").addEventListener("change", function(event) {
+            console.log(event.srcElement.value)
+            fetch(`/api/instructor/course/${event.srcElement.value}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data)
+                if (data.success) {
+                    document.getElementById("course_id").setAttribute("data-course-type", data.course.is_group ? "group" : "individual")
+                    document.getElementById("course_id").setAttribute("data-course-max-individuals", data.course.is_individual ? data.course.max_individuals : "")
+                }
+                newSlotModal.querySelector('#slot_status_message .status_course').innerHTML = data.course.is_group ? "Gruppbokning, max " + data.course.max_groups + " st" : "Individuell bokning, max " + data.course.max_individuals + " personer"
+                if (document.getElementById("course_id").getAttribute("data-course-type") == "individual" &&
+                    document.getElementById("location_id").getAttribute("data-location-max-individuals") != "" &&
+                    document.getElementById("location_id").getAttribute("data-location-max-individuals") != null &&
+                    parseInt(document.getElementById("location_id").getAttribute("data-location-max-individuals")) < parseInt(document.getElementById("course_id").getAttribute("data-course-max-individuals"))) {
+                    newSlotModal.querySelector('#slot_status_message .status_location').innerHTML = ", lokalen medger max " + document.getElementById("location_id").getAttribute("data-location-max-individuals") + " personer"
+                }
+                else {
+                    newSlotModal.querySelector('#slot_status_message .status_location').innerHTML = ""
+                }
+            })
+        })
+        document.getElementById("location_id").addEventListener("change", function(event) {
+            console.log(event.srcElement.value)
+            fetch(`/api/instructor/location/${event.srcElement.value}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data)
+                if (data.success) {
+                    document.getElementById("location_id").setAttribute("data-location-max-individuals", data.location.max_individuals ? data.location.max_individuals : "")
+                }
+                if (document.getElementById("course_id").getAttribute("data-course-type") == "individual" &&
+                    document.getElementById("location_id").getAttribute("data-location-max-individuals") != "" &&
+                    document.getElementById("location_id").getAttribute("data-location-max-individuals") != null &&
+                    parseInt(document.getElementById("location_id").getAttribute("data-location-max-individuals")) < parseInt(document.getElementById("course_id").getAttribute("data-course-max-individuals"))) {
+                        newSlotModal.querySelector('#slot_status_message .status_location').innerHTML = ", lokalen medger max " + document.getElementById("location_id").getAttribute("data-location-max-individuals") + " personer"
+                }
+                else {
+                    newSlotModal.querySelector('#slot_status_message .status_location').innerHTML = ""
+                }
+            })
+        })
         document.getElementById("slot_new_slot").addEventListener("click", function(event) {
             const slots_container = document.getElementById("slot_times")
             const slots_current = slots_container.querySelectorAll("div.slot")

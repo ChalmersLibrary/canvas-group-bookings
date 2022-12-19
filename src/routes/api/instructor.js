@@ -138,4 +138,48 @@ router.post('/slot', async (req, res) => {
     }
 });
 
+/**
+ * Get information about a specific location, used for getting data on select change in new slot dialog
+ */
+router.get('/location/:id', async (req, res, next) => {
+    try {
+        const location = await db.getLocation(req.params.id);
+
+        return res.send({
+            success: true,
+            location: location
+        });
+    }
+    catch (error) {
+        log.error(error);
+
+        return res.send({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
+/**
+ * Get information about a specific course, used for getting data on select change in new slots dialog
+ */
+router.get('/course/:id', async (req, res, next) => {
+    try {
+        const course = await db.getCourse(req.params.id);
+
+        return res.send({
+            success: true,
+            course: course
+        });
+    }
+    catch (error) {
+        log.error(error);
+
+        return res.send({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
 module.exports = router;

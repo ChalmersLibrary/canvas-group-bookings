@@ -10,7 +10,7 @@
                     <div class="row">
                         <div class="col-sm-4">
                             <label for="course_id" class="form-label">Tillfälle:</label>
-                            <select required id="course_id" name="course_id" class="form-select" aria-label="Välj ett tillfälle">
+                            <select required id="course_id" name="course_id" class="form-select" aria-label="Välj ett tillfälle" data-course-type="" data-course-max-individuals="">
                                 <option value="" selected disabled>Välj...</option>
                                 <% courses.forEach((course) => { %>
                                     <option value="<%= course.id %>"><%= course.name %></option>                                
@@ -22,7 +22,7 @@
                         </div>
                         <div class="col-sm-4">
                             <label for="instructor_id" class="form-label">Handledare:</label>
-                            <select required id="instructor_id" name="instructor_id" class="form-select" aria-label="Välj en handledare">
+                            <select required id="instructor_id" name="instructor_id" class="form-select" aria-label="Välj en handledare" data-location-max-individuals="">
                                 <option value="" <%= session.user.db_id != null ? '' : 'selected' %> disabled>Välj...</option>
                                 <% instructors.forEach((instructor) => { %>
                                     <% if (instructor.id == session.user.db_id) { %>
@@ -54,7 +54,17 @@
                             <hr>
                         </div>
                     </div>
-                    
+                    <div class="row" id="slot_status_message">
+                        <div class="col-12">
+                            <strong>Begränsningar: </strong>
+                            <span class="status_course"></span><span class="status_location"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <hr>
+                        </div>
+                    </div>                    
                     <div id="slot_times">
                         <div class="slot_template py-2 justify-content-between" id="slot_template">
                             <div class="flex-grow-1 pe-4">
