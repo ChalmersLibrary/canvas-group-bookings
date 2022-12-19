@@ -47,6 +47,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
                     submitButton.disabled = false
                 }
                 else {
+                    reserveSlotModal.querySelector('#reserveSlotIndividualBlock').style.display = "none"
+                    reserveSlotModal.querySelector('#reserveSlotGroupBlock').style.display = "block"
+                    
                     if (reserveSlotModal.querySelector('#r_group_string').value == '') {
                         reserveSlotModal.querySelector('#reserveSlotUserNotInGroup').style.display = "block"
                     }

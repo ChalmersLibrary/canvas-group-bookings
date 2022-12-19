@@ -56,7 +56,10 @@
                                             <% }) %>
                                         </select>
                                     <% } else { %>
-                                        <input type="hidden" id="r_group_id" value="">
+                                        <label for="r_group_id" class="form-label">Bokning för grupp:</label>
+                                        <select name="group_id" id="r_group_id" class="form-control">
+                                            <option value="">Ej medlem i någon grupp</option>
+                                        </select>
                                     <% } %>
                                 </div>
                                 <div id="reserveSlotIndividualBlock" style="display:none;">
