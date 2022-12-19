@@ -180,6 +180,22 @@ app.get('/', async (req, res, next) => {
         this_navigation.current_page_is_instructor_slots = false;
     }
 
+    let this_start_date_string = "idag";
+    let this_end_date_string = "och framåt";
+
+    if (Date.parse(req.query.start_date)) {
+         if (new Date().toLocaleDateString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric' }) != new Date(req.query.start_date).toLocaleDateString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric' })) {
+            this_start_date_string = new Date(req.query.start_date).toLocaleDateString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric' });
+        }
+    }
+    if (Date.parse(req.query.end_date)) {
+        if (new Date().toLocaleDateString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric' }) != new Date(req.query.end_date).toLocaleDateString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric' })) {
+           this_end_date_string = "till " + new Date(req.query.end_date).toLocaleDateString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric' });
+       }
+   }
+
+    this_navigation.title = `${this_navigation.records_total} tider ${this_navigation.current_page_is_instructor_slots ? 'med dig som handledare' : ''} från ${this_start_date_string} ${this_end_date_string}`;
+
     /* Add contextual availability notice for each slot */
     for (const slot of availableSlots.slots) {
         if (req.session.user.isAdministrator || req.session.user.isInstructor) {
