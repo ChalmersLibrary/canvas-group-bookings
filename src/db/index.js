@@ -939,14 +939,15 @@ async function getLocation(location_id) {
     return data;
 }
 
-async function createLocation(name, description, external_url, campus_maps_id) {
+async function createLocation(name, description, external_url, campus_maps_id, max_individuals) {
     let data;
 
-    await query("INSERT INTO location (name, description, external_url, campus_maps_id) VALUES ($1, $2, $3, $4) RETURNING id", [
+    await query("INSERT INTO location (name, description, external_url, campus_maps_id, max_individuals) VALUES ($1, $2, $3, $4, $5) RETURNING id", [
         name,
         description,
         external_url,
-        campus_maps_id
+        campus_maps_id,
+        max_individuals
     ]).then((result) => {
         data = result.rows[0];
     }).catch((error) => {
@@ -957,15 +958,16 @@ async function createLocation(name, description, external_url, campus_maps_id) {
     return data;
 }
 
-async function updateLocation(id, name, description, external_url, campus_maps_id) {
+async function updateLocation(id, name, description, external_url, campus_maps_id, max_individuals) {
     let data;
 
-    await query("UPDATE location SET name=$2, description=$3, external_url=$4, campus_maps_id=$5 WHERE id=$1", [
+    await query("UPDATE location SET name=$2, description=$3, external_url=$4, campus_maps_id=$5, max_individuals=$6 WHERE id=$1", [
         id,
         name,
         description,
         external_url,
-        campus_maps_id
+        campus_maps_id,
+        max_individuals
     ]).then((result) => {
         data = result.rows[0];
     }).catch((error) => {

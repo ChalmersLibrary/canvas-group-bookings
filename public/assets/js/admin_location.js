@@ -88,7 +88,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
                     name: newLocationForm.querySelector('#n_location_name').value,
                     description: newLocationForm.querySelector('#n_location_description').value,
                     external_url: newLocationForm.querySelector('#n_location_external_url').value,
-                    campus_maps_id: newLocationForm.querySelector('#n_location_campus_maps_id').value
+                    campus_maps_id: newLocationForm.querySelector('#n_location_campus_maps_id').value,
+                    max_individuals: newLocationForm.querySelector('#n_location_max_individuals').value
                 })
             }
 
@@ -145,6 +146,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
             editLocationForm.querySelector('#e_location_description').innerHTML = data.location.description
             editLocationForm.querySelector('#e_location_external_url').value = data.location.external_url
             editLocationForm.querySelector('#e_location_campus_maps_id').value = data.location.campus_maps_id
+            editLocationForm.querySelector('#e_location_max_individuals').value = data.location.max_individuals
 
             document.getElementById('e_location_campus_maps_id').addEventListener("input", function(event) {
                 if (event.target.value.includes("https://maps.chalmers.se/#")) {
@@ -184,7 +186,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
                     name: editLocationForm.querySelector('#e_location_name').value,
                     description: editLocationForm.querySelector('#e_location_description').value,
                     external_url: editLocationForm.querySelector('#e_location_external_url').value,
-                    campus_maps_id: editLocationForm.querySelector('#e_location_campus_maps_id').value
+                    campus_maps_id: editLocationForm.querySelector('#e_location_campus_maps_id').value,
+                    max_individuals: editLocationForm.querySelector('#e_location_max_individuals').value
                 })
             }
     

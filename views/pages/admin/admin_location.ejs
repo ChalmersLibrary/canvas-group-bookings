@@ -24,6 +24,7 @@
                         <thead>
                             <tr>
                                 <th>Namn</th>
+                                <th class="text-right">Max</th>
                                 <th class="text-right">Tider</th>
                                 <th></th>
                             </tr>
@@ -48,6 +49,7 @@
                                             <small><%= location.description ? location.description.substring(0, Math.min(80, location.description.length)) : null %></small>
                                         </div>
                                     </td>
+                                    <td><%= location.max_individuals %></td>
                                     <td><%= location.slots %></td>
                                     <td>
                                         <div class="float-end">

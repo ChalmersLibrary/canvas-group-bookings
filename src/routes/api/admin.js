@@ -533,11 +533,11 @@ router.get('/location/:id', async (req, res, next) => {
  */
 router.put('/location/:id', async (req, res, next) => {
     try {
-        const { name, description, external_url, campus_maps_id } = req.body;
+        const { name, description, external_url, campus_maps_id, max_individuals } = req.body;
         const existing_location = await db.getLocation(req.params.id);
         
         if (existing_location) {
-            await db.updateLocation(existing_location.id, name, description, external_url, campus_maps_id);
+            await db.updateLocation(existing_location.id, name, description, external_url, campus_maps_id, max_individuals);
         }
 
         return res.send({
@@ -561,7 +561,7 @@ router.put('/location/:id', async (req, res, next) => {
  router.post('/location', async (req, res, next) => {
     try {
         console.log(req.body)
-        const { existing_location_id, name, description, external_url, campus_maps_id } = req.body;
+        const { existing_location_id, name, description, external_url, campus_maps_id, max_individuals } = req.body;
 
         if (existing_location_id) {
             const existing_location = await db.getLocation(existing_location_id);
@@ -571,7 +571,7 @@ router.put('/location/:id', async (req, res, next) => {
             }
         }
         else {
-            const created_location = await db.createLocation(name, description, external_url, campus_maps_id);
+            const created_location = await db.createLocation(name, description, external_url, campus_maps_id, max_individuals);
 
             if (created_location) {
                 await db.connectLocation(res.locals.courseId, created_location.id);
