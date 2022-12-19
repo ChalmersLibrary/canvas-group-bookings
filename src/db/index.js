@@ -899,7 +899,7 @@ async function getLocationWithStatistics(canvas_course_id, location_id) {
 async function getLocationsWithStatistics(canvas_course_id) {
     let data;
 
-    await query("SELECT DISTINCT l.*,(SELECT count(DISTINCT s.id)::integer AS slots FROM slot s, course c2 WHERE s.location_id=l.id AND s.course_id=c2.id AND c2.canvas_course_id=$1) FROM location l, canvas_course_location_mapping c WHERE l.id=c.location_id AND c.canvas_course_id=$1", [ 
+    await query("SELECT DISTINCT l.*,(SELECT count(DISTINCT s.id)::integer AS slots FROM slot s, course c2 WHERE s.location_id=l.id AND s.course_id=c2.id AND c2.canvas_course_id=$1) FROM location l, canvas_course_location_mapping c WHERE l.id=c.location_id AND c.canvas_course_id=$1 ORDER BY l.name", [ 
         canvas_course_id 
     ]).then((result) => {
         data = result.rows;
