@@ -89,6 +89,8 @@ CREATE TABLE IF NOT EXISTS "location"
     "description" text,
     "external_url" varchar,
     "campus_maps_id" varchar,
+    "max_groups" integer,
+    "max_individuals" integer,
     "created_at" timestamp NOT NULL DEFAULT now(),
     "created_by" integer,
     "updated_at" timestamp,
@@ -270,6 +272,8 @@ CREATE VIEW "slots_view" AS SELECT s.id,
     l.description AS location_description,
     l.external_url AS location_url,
     l.campus_maps_id AS location_cmap_id,
+    l.max_groups AS location_max_groups,
+    l.max_individuals AS location_max_individuals,
     s.time_start,
     s.time_end,
         CASE
@@ -277,8 +281,20 @@ CREATE VIEW "slots_view" AS SELECT s.id,
             ELSE 'individual'::text
         END AS type,
         CASE
-            WHEN c.is_group THEN c.max_groups::integer
-            ELSE c.max_individuals::integer
+            WHEN c.is_group THEN 
+                CASE
+                    WHEN l.max_groups IS NOT NULL AND l.max_groups::integer < c.max_groups::integer THEN
+                        l.max_groups::integer
+                    ELSE
+                        c.max_groups::integer
+                END
+            ELSE
+                CASE
+                    WHEN l.max_individuals IS NOT NULL AND l.max_individuals::integer < c.max_individuals::integer THEN
+                        l.max_individuals::integer
+                    ELSE
+                        c.max_individuals::integer
+                END
         END AS res_max,
     ( SELECT count(re.canvas_user_id) AS reserved
            FROM reservation re
