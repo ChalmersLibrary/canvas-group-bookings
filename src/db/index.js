@@ -945,6 +945,10 @@ async function getLocation(location_id) {
 async function createLocation(name, description, external_url, campus_maps_id, max_individuals) {
     let data;
 
+    if (max_individuals === undefined || max_individuals == '' || max_individuals == 0) {
+        max_individuals = null;
+    }
+
     await query("INSERT INTO location (name, description, external_url, campus_maps_id, max_individuals) VALUES ($1, $2, $3, $4, $5) RETURNING id", [
         name,
         description,
@@ -963,6 +967,10 @@ async function createLocation(name, description, external_url, campus_maps_id, m
 
 async function updateLocation(id, name, description, external_url, campus_maps_id, max_individuals) {
     let data;
+
+    if (max_individuals === undefined || max_individuals == '' || max_individuals == 0) {
+        max_individuals = null;
+    }
 
     await query("UPDATE location SET name=$2, description=$3, external_url=$4, campus_maps_id=$5, max_individuals=$6 WHERE id=$1", [
         id,
