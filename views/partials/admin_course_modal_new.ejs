@@ -71,7 +71,7 @@
                                 <input type="number" class="form-control" min="1" max="120" value="24" id="n_cancellation_policy_hours">
                             </p>
                             <p>
-                                <label for="n_default_slot_duration_minutes">Förvald längd i minuter på utlagd tid (stödfunktion):</label><br>
+                                <label for="n_default_slot_duration_minutes">Förvald längd i minuter på utlagd tid (stödfunktion, beta):</label><br>
                                 <input type="number" class="form-control" min="0" max="1440" value="90" id="n_default_slot_duration_minutes">
                             </p>
                         </div>
@@ -99,15 +99,15 @@
                         </div>
                         <div class="tab-pane fade" id="new-tab-messages" role="tabpanel" aria-labelledby="new-messages-tab">                            
                             <div class="form-floating my-3">
-                                <textarea class="form-control" id="n_message_confirmation_body" style="height: 200px;" placeholder=""></textarea>    
+                                <textarea class="form-control" id="n_message_confirmation_body" style="height: 200px;" placeholder="" data-is-changed="false"></textarea>
                                 <label for="n_message_confirmation_body">Meddelande för bekräftelse av bokning</label>
                             </div>
                             <div class="form-floating my-3">
-                                <textarea class="form-control" id="n_message_cancelled_body" style="height: 200px;" placeholder=""></textarea>    
+                                <textarea class="form-control" id="n_message_cancelled_body" style="height: 200px;" placeholder="" data-is-changed="false"></textarea>
                                 <label for="n_message_cancelled_body">Meddelande för bekräftelse av avbokning</label>
                             </div>
                             <div class="form-floating my-3" id="n_message_full_bodyPart" style="display:none;">
-                                <textarea class="form-control" id="n_message_full_body" style="height: 200px;" placeholder=""></textarea>    
+                                <textarea class="form-control" id="n_message_full_body" style="height: 200px;" placeholder="" data-is-changed="false"></textarea>
                                 <label for="n_message_full_body">Meddelande för ihopkoppling av alla bokade</label>
                             </div>
                             <div class="card">

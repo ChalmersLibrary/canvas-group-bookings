@@ -125,6 +125,7 @@ router.get('/course', async (req, res, next) => {
                 { name: "cancellation_policy_hours", description: "Avbokningspolicy i antal timmar" },
                 { name: "instructor_name", description: "Handledarens namn" },
                 { name: "instructor_email", description: "Handledarens e-postadress" },
+                { name: "canvas_course_name", description: "Namn på Canvaskurs där Bokningsverktyget används"},
                 { name: "CONVERSATION_ROBOT_NAME", description: "Namn på roboten, för signatur" }
             ]
         });

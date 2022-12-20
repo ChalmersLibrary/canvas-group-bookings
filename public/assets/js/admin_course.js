@@ -18,6 +18,50 @@ document.addEventListener("DOMContentLoaded", function(event) {
             newCourseModal.querySelector('#n_message_all_when_full').addEventListener('change', e => {
                 e.target.checked == true ? newCourseModal.querySelector('#n_message_full_bodyPart').style.display = 'block' : newCourseModal.querySelector('#n_message_full_bodyPart').style.display = 'none'
             })
+
+            newCourseModal.querySelector('#n_message_confirmation_body').innerHTML = data.templates.group.done
+            newCourseModal.querySelector('#n_message_confirmation_body').addEventListener('change', e => {
+                newCourseModal.querySelector('#n_message_confirmation_body').setAttribute("data-is-changed", "true")
+            })
+
+            newCourseModal.querySelector('#n_message_cancelled_body').innerHTML = data.templates.group.cancel
+            newCourseModal.querySelector('#n_message_cancelled_body').addEventListener('change', e => {
+                newCourseModal.querySelector('#n_message_cancelled_body').setAttribute("data-is-changed", "true")
+            })
+
+            newCourseModal.querySelector('#n_message_full_body').innerHTML = data.templates.group.full
+            newCourseModal.querySelector('#n_message_full_body').addEventListener('change', e => {
+                newCourseModal.querySelector('#n_message_full_body').setAttribute("data-is-changed", "true")
+            })
+
+            newCourseModal.querySelector('#n_type_is_group').addEventListener('change', e => {
+                if (e.target.checked == true) {
+                    if (newCourseModal.querySelector('#n_message_confirmation_body').getAttribute("data-is-changed") == "false") {
+                        newCourseModal.querySelector('#n_message_confirmation_body').innerHTML = data.templates.group.done
+                    }
+                    if (newCourseModal.querySelector('#n_message_cancelled_body').getAttribute("data-is-changed") == "false") {
+                        newCourseModal.querySelector('#n_message_cancelled_body').innerHTML = data.templates.group.cancel
+                    }
+                    if (newCourseModal.querySelector('#n_message_full_body').getAttribute("data-is-changed") == "false") {
+                        newCourseModal.querySelector('#n_message_full_body').innerHTML = data.templates.group.full
+                    }                
+                }
+            })
+
+            newCourseModal.querySelector('#n_type_is_individual').addEventListener('change', e => {
+                if (e.target.checked == true) {
+                    if (newCourseModal.querySelector('#n_message_confirmation_body').getAttribute("data-is-changed") == "false") {
+                        newCourseModal.querySelector('#n_message_confirmation_body').innerHTML = data.templates.individual.done
+                    }
+                    if (newCourseModal.querySelector('#n_message_cancelled_body').getAttribute("data-is-changed") == "false") {
+                        newCourseModal.querySelector('#n_message_cancelled_body').innerHTML = data.templates.individual.cancel
+                    }
+                    if (newCourseModal.querySelector('#n_message_full_body').getAttribute("data-is-changed") == "false") {
+                        newCourseModal.querySelector('#n_message_full_body').innerHTML = ""
+                    }                
+                }
+            })
+
             newCourseModal.querySelector('#n_message_template_vars').replaceChildren()
             data.template_vars.forEach(v => {
                 this_row = document.getElementById('n_message_template_vars').insertRow()
@@ -147,10 +191,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
             editCourseModal.querySelector('#e_message_all_when_full').checked = data.course.message_all_when_full ? true : null
             editCourseModal.querySelector('#e_message_all_when_full').checked == true ? editCourseModal.querySelector('#e_message_full_bodyPart').style.display = 'block' : editCourseModal.querySelector('#e_message_full_bodyPart').style.display = 'none'
             editCourseModal.querySelector('#e_message_cc_instructor').checked = data.course.message_cc_instructor ? true : null
-            /* these parts should copy from template or not if empty in db, that is a question */
-            editCourseModal.querySelector('#e_message_confirmation_body').innerHTML = data.course.message_confirmation_body != null ? data.course.message_confirmation_body : null
-            editCourseModal.querySelector('#e_message_cancelled_body').innerHTML = data.course.message_cancelled_body != null ? data.course.message_cancelled_body : null
-            editCourseModal.querySelector('#e_message_full_body').innerHTML = data.course.message_full_body != null ? data.course.message_full_body : null
+            editCourseModal.querySelector('#e_message_confirmation_body').innerHTML = data.course.message_confirmation_body
+            editCourseModal.querySelector('#e_message_cancelled_body').innerHTML = data.course.message_cancelled_body
+            editCourseModal.querySelector('#e_message_full_body').innerHTML = data.course.message_full_body
             if (data.segments && data.segments.length) {
                 editCourseModal.querySelector('#e_segment').replaceChildren()
                 data.segments.forEach((s, key) => {
