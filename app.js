@@ -336,49 +336,6 @@ app.get('/reservations', async (req, res, next) => {
 });
 
 /**
- * Show the instructor a list of upcoming events, with reservation details
- */
-app.get('/instructor/upcoming', async (req, res, next) => {
-    if (req.session.user.isInstructor) {
-        try {
-            const slots = await db.getAllSlotsForInstructor(res.locals.courseId, req.session.user.id, new Date().toLocaleDateString('sv-SE'));
-
-            for (const slot of slots) {
-                slot.reservations = await db.getExtendedSlotReservations(slot.id);
-                slot.res_percent = Math.round((slot.res_now / slot.res_max) * 100);
-            }
-        
-            /* return res.send({
-                status: 'up',
-                version: pkg.version,
-                session: req.session,
-                slots: slots
-            }); */
-        
-            return res.render('pages/instructor/upcoming_slots', {
-                status: 'up',
-                internal: req.session.internal,
-                version: pkg.version,
-                session: req.session,
-                slots: slots,
-                courses: await db.getValidCourses(res.locals.courseId),
-                instructors: await db.getValidInstructors(res.locals.courseId),
-                locations: await db.getValidLocations(res.locals.courseId)
-            });                    
-        }
-        catch (error) {
-            return res.send({
-                status: 'error',
-                message: error.message
-            });  
-        }
-    }
-    else {
-        next(new Error("You must have instructor privileges to access this page."));    
-    }
-});
-
-/**
  * Admin: start page
  */
 app.get('/admin', async (req, res, next) => {
