@@ -209,9 +209,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
     /* The Cancel Reservation Form is submitted */
     if (deleteReservationForm) {
         deleteReservationForm.addEventListener("submit", function(event) {
-            console.log(event);
-            console.log("Time to submit the form: deleteReservationForm");
-    
             const requestOptions = {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' }
@@ -235,7 +232,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
             .then(data => { 
                 const responseBody = JSON.parse(data)
                 if (responseBody.success === false) {
-                    console.error(JSON.parse(data).message)
                     deleteReservationModal.querySelector('#deleteReservationError .alert span').innerText = JSON.parse(data).message
                     deleteReservationModal.querySelector('#deleteReservationError').classList.remove("d-none")
                     deleteReservationModal.querySelector('#deleteReservationError').classList.add("d-block")

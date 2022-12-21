@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "nodemon --trace-warnings app.js",
     "debug": "set DEBUG=* && nodemon --trace-warnings app.js",
-    "build": "git rev-parse HEAD | cut -c1-7 > views/partials/git_latest_commit_hash.ejs"
+    "build": "git rev-parse HEAD | cut -c1-7 > views/partials/git_latest_commit_hash.ejs",
+    "minifyjs": "uglifyjs public/assets/js/public.js --compress --mangle --warn --output public/assets/js/public.min.js"
   },
   "nodemonConfig": {
     "ignore": [
@@ -46,6 +47,7 @@
     "pg": "^8.8.0",
     "session-file-store": "^1.5.0",
     "simple-oauth2": "^4.3.0",
+    "uglify-js": "^3.17.4",
     "winston": "^3.8.1"
   }
 }
