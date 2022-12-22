@@ -227,6 +227,11 @@ app.get('/', async (req, res, next) => {
                 slot.reservable_for_this_user = false;
                 slot.reservable_notice = "Tiden är fullbokad.";
             }
+
+            if (new Date().toLocaleDateString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric' }) > new Date(slot.time_start).toLocaleDateString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric' })) {
+                slot.reservable_for_this_user = false;
+                slot.reservable_notice = "Tiden har passerats.";
+            }
     
             if (slot.type == "group") {
                 // Check if any of this user's groups are reserved on this slot
