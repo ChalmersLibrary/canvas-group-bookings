@@ -17,6 +17,15 @@ const logger = winston.createLogger({
     transports: [fileRotateTransport]
 });
 
+// fired when a log file is created
+// fileRotateTransport.on('new', (filename) => {});
+// fired when a log file is rotated
+// fileRotateTransport.on('rotate', (oldFilename, newFilename) => {});
+// fired when a log file is archived
+// fileRotateTransport.on('archive', (zipFilename) => {});
+// fired when a log file is deleted
+// fileRotateTransport.on('logRemoved', (removedFilename) => {});
+
 if (process.env.NODE_ENV !== 'production') {
     logger.add(new winston.transports.Console({
       format: winston.format.combine(
