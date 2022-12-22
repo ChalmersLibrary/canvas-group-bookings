@@ -820,17 +820,6 @@ app.get('/api/statistics', async (req, res, next) => {
     }
 });
 
-/* app._router.stack.forEach(function(middleware){
-    if(middleware.route){ // routes registered directly on the app
-        console.log(middleware.route);
-    } else if(middleware.name === 'router'){ // router middleware 
-        middleware.handle.stack.forEach(function(handler){
-            let route = handler.route;
-            route && console.log(route);
-        });
-    }
-}) */
-
 /* Set server to listen and start working! */
 app.listen(port, () => log.info(`Application listening on port ${port}.`));
 

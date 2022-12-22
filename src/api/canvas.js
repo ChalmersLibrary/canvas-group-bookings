@@ -149,7 +149,7 @@ const API_MAX_ERROR_COUNT = 1;
         }
     }
     catch (error) {
-        console.log(error);
+        log.error(error);
 
         return new Promise((reject) => {
             reject(error);
@@ -355,7 +355,7 @@ async function getCourseGroupCategories(courseId, token) {
         }
     }
     catch (error) {
-        console.log(error);
+        log.error(error);
 
         return new Promise((reject) => {
             reject(error);
@@ -470,7 +470,7 @@ async function getCourseTeacherEnrollments(courseId, token) {
         }
     }
     catch (error) {
-        console.log(error);
+        log.error(error);
 
         return new Promise((reject) => {
             reject(error);

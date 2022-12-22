@@ -67,11 +67,11 @@ function setupAuthEndpoints(app, callbackUrl) {
                         return res.status(500).json(err);
                     }
 
-                    console.log(req.session);
+                    log.info(req.session);
                     log.info("Session saved with user object from OAuth2 callback.");
                 });
             }).catch((error) => {
-                console.error(error);
+                log.error(error);
                 return res.status(500).json(error);
             });
         }

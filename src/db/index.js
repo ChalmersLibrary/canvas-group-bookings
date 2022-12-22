@@ -261,7 +261,7 @@ async function getAllSlotsPaginated(offset, limit, canvas_course_id, segment, co
         q.params.push(end_date);
     }
 
-    console.log(q);
+    log.info(q);
 
     await query(q.count + q.join, q.params).then((result) => {
         returnedData.records_total = parseInt(result.rows[0].count);
@@ -475,7 +475,7 @@ async function deleteReservation(user_id, groups, reservation_id) {
         groups,
         reservation_id
     ]).then((result) => {
-        console.log(result);
+        log.info(result);
     }).catch((error) => {
         log.error(error);
         throw new Error(error);
@@ -1034,7 +1034,7 @@ async function createSlots(data) {
     const { course_id, instructor_id, location_id, slots } = data;
 
     for (const slot of slots) {
-        console.log(slot);
+        log.info(slot);
         await query("INSERT INTO slot (course_id, instructor_id, location_id, time_start, time_end) VALUES ($1, $2, $3, $4, $5)", [
             course_id,
             instructor_id,
@@ -1173,10 +1173,10 @@ async function checkDatabaseVersion() {
         await query("SELECT db_version FROM version ORDER BY applied_at DESC LIMIT 1").then(async (result) => {
             if (result.rows.length > 0) {
                 current_version = result.rows[0].db_version;
-                console.log("Current db_version is " + current_version);
+                log.info("Current db_version is " + current_version);
 
                 if (current_version < latest_applied_version) {
-                    console.error("Db version mismatch!");
+                    log.error("Db version mismatch!");
                     check_new_version = false;
                 }
                 else {
@@ -1186,8 +1186,8 @@ async function checkDatabaseVersion() {
                         let sql = fs.readFileSync(file).toString();
             
                         await query(sql).then((result) => {
-                            console.log(result);
-                            console.log("Database updated from " + file);
+                            log.info(result);
+                            log.info("Database updated from " + file);
                             latest_applied_version = (current_version + 1);
                         }).catch((error) => {
                             log.error(error);

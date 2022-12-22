@@ -145,7 +145,6 @@ router.get('/course', async (req, res, next) => {
  */
 router.post('/course', async (req, res, next) => {
     try {
-        console.log(req.body)
         const created_id = await db.createCourse(res.locals.courseId, req.session.user.id, req.body);
 
         return res.send({
@@ -169,7 +168,6 @@ router.post('/course', async (req, res, next) => {
  */
 router.put('/course/:id', async (req, res, next) => {
     try {
-        console.log(req.body)
         await db.updateCourse(req.params.id, req.session.user.id, req.body);
 
         return res.send({
@@ -395,7 +393,6 @@ router.get('/instructor/:id', async (req, res, next) => {
  */
 router.put('/instructor/:id', async (req, res, next) => {
     try {
-        console.log(req.body)
         await db.updateInstructor(req.params.id, req.body);
 
         return res.send({
@@ -446,7 +443,6 @@ router.delete('/instructor/:id', async (req, res, next) => {
  */
 router.post('/instructor', async (req, res, next) => {
     try {
-        console.log(req.body)
         const { existing_user_id, canvas_user_id, name, email } = req.body;
 
         if (existing_user_id) {
@@ -561,7 +557,6 @@ router.put('/location/:id', async (req, res, next) => {
  */
  router.post('/location', async (req, res, next) => {
     try {
-        console.log(req.body)
         const { existing_location_id, name, description, external_url, campus_maps_id, max_individuals } = req.body;
 
         if (existing_location_id) {
