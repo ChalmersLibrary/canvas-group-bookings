@@ -26,6 +26,4 @@ create index canvas_course_group_category_mapping_idx_canvas_group_category_id o
 
 insert into version(db_version) values (4);
 
-vacuum analyze; -- superuser should vacuum too
-
 COMMIT;
