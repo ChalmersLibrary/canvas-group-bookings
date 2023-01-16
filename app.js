@@ -84,68 +84,6 @@ db.checkDatabaseVersion();
 // Setup all routes
 app.use('/', routes);
 
-app.get('/debug', async (req, res, next) => {
-    return res.send({
-        version: pkg.version,
-        internal: {
-            version: pkg.version,
-            db: process.env.PGDATABASE
-        },
-        session: req.session
-    });
-});
-
-// Test
-app.get('/test', async (req, res, next) => {
-    await log.info("Testing endpoint requested.");
-
-    return res.render("pages/error", {
-        version: pkg.version,
-        internal: {
-            version: pkg.version,
-            db: process.env.PGDATABASE
-        },
-        error: "Kan inte skapa en session",
-        message: "Du måste tillåta cookies från tredje part i din webbläsare. Bokningsverktyget använder cookies för att kunna hantera din identitiet från Canvas."
-    });
-
-    // Two groups (works for user in same course, in one group but not in second group)
-    // let conversation_result = await canvasApi.createConversation(new Array("group_128953", "group_128954"), "Test conversation from nodejs", "This is a test conversation for two groups, created programmatically from Canvas API.", req.session.user.id);
-
-    // One group
-    // let conversation_result = await canvasApi.createConversation(new Array("group_128953"), "Test conversation from nodejs", "This is a test conversation for two groups, created programmatically from Canvas API.", req.session.user.id);
-    
-    // One or two or three user
-    /* let conversation_result = await canvasApi.createConversation(
-        [ req.session.user.id, 973 ],
-        "Another test conversation", 
-        "This is a test conversation.\nIt's created programmatically in Canvas API using nodejs.\n\nAll the best,\nChalmers Canvas Conversation Robot", 
-        { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN }); */
-
-    // let conversation_result = {};
-
-    /* let result = await db.query("SELECT version()")
-    .then((result) => {
-            return res.send({
-                status: 'up',
-                session: req.session,
-                result: result.rows,
-                conversation: conversation_result
-            });
-        })
-        .catch((error) => {
-            log.error(error);
-            
-            return res.send({
-                status: 'up',
-                session: req.session,
-                result: error
-            });
-    });
-
-    await log.info("Db query done."); */
-});
-
 // Main page with available slots for user to reserve */
 app.get('/', async (req, res, next) => {
     let availableSlots;
