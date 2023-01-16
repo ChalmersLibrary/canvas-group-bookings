@@ -20,7 +20,7 @@ const port = process.env.PORT || 3000;
 const cookieMaxAge = 3600000 * 24 * 30 * 4; // 4 months
 const fileStoreOptions = { ttl: 3600 * 12, retries: 3 };
 
-const DB_PER_PAGE = 25;
+const DB_PER_PAGE = 50;
 
 // PostgreSQL Session store
 const sessionOptions = { 
