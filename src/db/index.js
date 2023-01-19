@@ -576,7 +576,8 @@ async function getAllCoursesWithStatistics(canvas_course_id) {
                 "(SELECT COUNT(rv.*)::integer AS reservations FROM reservations_view rv, slot s WHERE rv.slot_id=s.id AND s.course_id=c.id), " +
                 "(SELECT COUNT(r.*)::integer AS deleted FROM reservation r, slot s WHERE r.deleted_at IS NOT NULL AND r.slot_id=s.id AND s.course_id=c.id) " +
                 "FROM course c " + 
-                "WHERE c.deleted_at IS NULL AND c.canvas_course_id=$1", [ canvas_course_id ]).then((result) => {
+                "WHERE c.deleted_at IS NULL AND c.canvas_course_id=$1 " + 
+                "ORDER BY c.name", [ canvas_course_id ]).then((result) => {
         data = result.rows;
     }).catch((error) => {
         log.error(error);
