@@ -21,7 +21,7 @@ auth.setupAuthEndpoints(router, process.env.AUTH_REDIRECT_CALLBACK);
  * General middleware that runs first, checking access token and LTI session.
  * Also populates session object with user information like id, name, groups.
  */
-router.all(['/', '/debug', '/reservations', '/admin*', '/api/*'], async function (req, res, next) {
+router.all(['/', '/reservations', '/privacy', '/admin*', '/api/*'], async function (req, res, next) {
     await auth.checkAccessToken(req).then(async (token) => {
         if (token !== undefined && token.success === true) {
             await user.mockLtiSession(req);
