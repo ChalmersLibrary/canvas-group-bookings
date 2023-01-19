@@ -69,26 +69,23 @@ exports.handleLaunch = (page) => function(req, res) {
             if (isValid) {
                 log.info("Request is valid, LTI Data:" + JSON.stringify(provider.body));
 
-                /**
-                 * Variables to save in LTI object:
-                        req.session.lti = {
-                            context_id: provider.body.context_id,
-                            context_title: provider.body.context_title,
-                            custom_canvas_course_id: provider.body.custom_canvas_course_id,
-                            custom_canvas_enrollment_state: provider.body.custom_canvas_enrollment_state,
-                            custom_canvas_roles: provider.body.custom_canvas_roles,
-                            custom_canvas_user_id: provider.body.custom_canvas_user_id,
-                            lti_message_type: provider.body.lti_message_type,
-                            lti_version: provider.body.lti_version,
-                            resource_link_id: provider.body.resource_link_id,
-                            resource_link_title: provider.body.resource_link_title,
-                            tool_consumer_info_product_family_code: provider.body.tool_consumer_info_product_family_code,
-                            tool_consumer_info_version: provider.body.tool_consumer_info_version,
-                            tool_consumer_instance_guid: provider.body.tool_consumer_instance_guid,
-                            tool_consumer_instance_name: provider.body.tool_consumer_instance_name
-                        }
-                 */
-                req.session.lti = provider.body; // TODO: Should be replaced with only relevant properties!
+                // Only save relevant LTI information in session LTI object
+                req.session.lti = {
+                    context_id: provider.body.context_id,
+                    context_title: provider.body.context_title,
+                    custom_canvas_course_id: provider.body.custom_canvas_course_id,
+                    custom_canvas_enrollment_state: provider.body.custom_canvas_enrollment_state,
+                    custom_canvas_roles: provider.body.custom_canvas_roles,
+                    custom_canvas_user_id: provider.body.custom_canvas_user_id,
+                    lti_message_type: provider.body.lti_message_type,
+                    lti_version: provider.body.lti_version,
+                    resource_link_id: provider.body.resource_link_id,
+                    resource_link_title: provider.body.resource_link_title,
+                    tool_consumer_info_product_family_code: provider.body.tool_consumer_info_product_family_code,
+                    tool_consumer_info_version: provider.body.tool_consumer_info_version,
+                    tool_consumer_instance_guid: provider.body.tool_consumer_instance_guid,
+                    tool_consumer_instance_name: provider.body.tool_consumer_instance_name
+                };
 
                 req.session.save(function(err) {
                     if (err) {
