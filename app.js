@@ -279,6 +279,18 @@ app.get('/reservations', async (req, res, next) => {
 });
 
 /**
+ * Privay Policy, linked from footer
+ */
+app.get('/privacy', async (req, res, next) => {
+    log.info("GET /privacy");
+
+    return res.render('pages/privacy', {
+        internal: req.session.internal,
+        session: req.session
+    });
+});
+
+/**
  * Admin: start page
  */
 app.get('/admin', async (req, res, next) => {
@@ -513,15 +525,15 @@ app.post('/api/reservation', async (req, res, next) => {
                     const recipient = "group_" + group_id;
                     const template_type = "reservation_group_done";
 
-                    let body = utils.getTemplate(template_type);
+                    let body = course.message_confirmation_body;
 
-                    if (body === 'undefined') {
-                        body = course.message_confirmation_body;
+                    if (body === 'undefined' || body == '') {
+                        body = utils.getTemplate(template_type);
                     }
 
                     if (body !== 'undefined' && body != '') {
                         body = utils.replaceMessageMagics(body, course.name, message, course.cancellation_policy_hours, req.session.user.name, slot.time_human_readable_sv, slot.location_name, slot.location_url, instructor.name, instructor.email, group_name, req.session.lti.context_title);
-        
+
                         let conversation_result_group = await canvasApi.createConversation(recipient, subject, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
                         let log_id = await db.addCanvasConversationLog(slot_id, reservation.id, slot.canvas_course_id, recipient, subject, body);
 
@@ -540,10 +552,10 @@ app.post('/api/reservation', async (req, res, next) => {
                         // Slot is full and there should be a message to all groups reserved
                         if (course.message_all_when_full && slot_now.res_now == slot_now.res_max) {
                             let recipients = new Array();
-                            let body_all = utils.getTemplate("reservation_group_full");
+                            let body_all = course.message_full_body;
 
-                            if (body_all === 'undefined') {
-                                body_all = course.message_full_body;
+                            if (body_all === 'undefined' || body_all == '') {
+                                body_all = utils.getTemplate("reservation_group_full");
                             }
 
                             if (body_all !== 'undefined' && body_all != '') {
@@ -574,10 +586,10 @@ app.post('/api/reservation', async (req, res, next) => {
                     const subject_cc = "(Kopia) Bekräftad bokning: " + course.name + ", " + req.session.user.name;
                     const template_type = "reservation_individual_done";
 
-                    let body = utils.getTemplate(template_type);
+                    let body = course.message_confirmation_body;
 
-                    if (body === 'undefined') {
-                        body = course.message_confirmation_body;
+                    if (body === 'undefined' || body == '') {
+                        body = utils.getTemplate(template_type);
                     }
 
                     if (body !== 'undefined' && body != '') {
@@ -662,10 +674,10 @@ app.delete('/api/reservation/:id', async (req, res) => {
                     const recipient = "group_" + reservation.canvas_group_id;
                     const template_type = "reservation_group_canceled";
 
-                    let body = utils.getTemplate(template_type);
+                    let body = course.message_cancelled_body;
 
-                    if (body === 'undefined') {
-                        body = course.message_cancelled_body;
+                    if (body === 'undefined' || body == '') {
+                        body = utils.getTemplate(template_type);
                     }
 
                     if (body !== 'undefined' && body != '') {
@@ -692,10 +704,10 @@ app.delete('/api/reservation/:id', async (req, res) => {
                     const subject_cc = "(Kopia) Bekräftad avbokning: " + course.name + ", " + req.session.user.name;
                     const template_type = "reservation_individual_canceled";
 
-                    let body = utils.getTemplate(template_type);
+                    let body = course.message_confirmation_body;
 
-                    if (body === 'undefined') {
-                        body = course.message_confirmation_body;
+                    if (body === 'undefined' || body == '') {
+                        body = utils.getTemplate(template_type);
                     }
 
                     if (body !== 'undefined' && body != '') {
