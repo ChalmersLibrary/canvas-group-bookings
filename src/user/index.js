@@ -79,19 +79,3 @@ async function addUserFlagsForRoles(req) {
         req.session.user.isTouchedByTheHandOfGod = true;
     }
 }
-
-// Get primary email from LTI object
-function getPrimaryEmail(req) {
-    if (req.session.user && req.session.lti) {
-        if (req.session.lti.lis_person_contact_email_primary) {
-            return req.session.lti.lis_person_contact_email_primary;
-        }
-    }
-}
-
-module.exports = {
-    mockLtiSession,
-    createSessionUserdataFromToken,
-    addUserFlagsForRoles,
-    getPrimaryEmail
-}
