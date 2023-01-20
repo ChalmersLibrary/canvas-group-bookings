@@ -566,11 +566,19 @@ app.post('/api/reservation', async (req, res, next) => {
                                 }
 
                                 const subject_all = "Fullbokat tillfälle: " + course.name;
+                                const subject_all_cc = "(Kopia) Fullbokat tillfälle: " + course.name + " (" + slot_now.res_group_names.join(", ") + ")";
 
                                 let conversation_result_all = await canvasApi.createConversation(recipients, subject_all, body_all, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
                                 let log_id_all = await db.addCanvasConversationLog(slot_id, null, slot_now.canvas_course_id, recipients, subject_all, body_all);
 
-                                log.info("Sent connection message to: " + recipients.join(", ") + ", id " + log_id_all.id);        
+                                log.info("Sent connection message to: " + recipients.join(", ") + ", id " + log_id_all.id);
+
+                                if (course.message_cc_instructor) {
+                                    let conversation_result_all_cc = await canvasApi.createConversation(instructor.canvas_user_id, subject_all_cc, body_all, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
+                                    let log_id_all_cc = await db.addCanvasConversationLog(slot_id, null, slot.canvas_course_id, instructor.canvas_user_id, subject_all_cc, body_all);
+        
+                                    log.info("Sent a copy of connection message to the instructor, id " + log_id_all_cc.id);
+                                }
                             }
                             else {
                                 log.error("Flag 'message_all_when_full' is true, but could not find message body neither in template file 'reservation_group_full' or in db for courseId " + slot_now.course_id);
