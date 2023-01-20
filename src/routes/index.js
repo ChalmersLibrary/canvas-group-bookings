@@ -82,7 +82,7 @@ router.all(['/', '/reservations', '/privacy', '/admin*', '/api/*'], async functi
                             db: process.env.PGDATABASE
                         },
                         error: "Kan inte skapa en session",
-                        message: "Du måste tillåta cookies från tredje part i din webbläsare. Bokningsverktyget använder cookies för att kunna hantera din identitiet från Canvas."
+                        message: "Du måste tillåta cookies från tredje part i din webbläsare. Bokningsverktyget använder cookies för att kunna hantera din identitiet från Canvas. Om du inte kan eller vill tillåta tredjepartscookies, finns alternativet att öppna Bokningsverktyget i ett nytt fönster. Länken hittar du sist i listan över kursens moduler."
                     });
                 } catch (error) {
                     console.error(error);
