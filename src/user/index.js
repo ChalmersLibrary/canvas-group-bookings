@@ -79,3 +79,9 @@ async function addUserFlagsForRoles(req) {
         req.session.user.isTouchedByTheHandOfGod = true;
     }
 }
+
+module.exports = {
+    mockLtiSession,
+    createSessionUserdataFromToken,
+    addUserFlagsForRoles
+}
