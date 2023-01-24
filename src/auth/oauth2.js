@@ -158,7 +158,7 @@ async function checkAccessToken(req) {
                         tokenResult.user_id = newAccessTokenWithRefreshToken.user.id;
                     }
                     catch (error) {
-                        if (error.data.payload) {
+                        if (error.data && error.data.payload) {
                             log.error(error.data.payload);
 
                             if (error.data.payload.error == 'invalid_grant') {
