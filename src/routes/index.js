@@ -40,7 +40,7 @@ router.all(['/', '/reservations', '/privacy', '/debug', '/admin*', '/api/*'], as
                 
                     for (const group of req.session.user.groups) {
                         req.session.user.groups_human_readable.push(group.name);
-                        req.session.user.groups_ids.push(group.id);
+                        req.session.user.groups_ids.push(group.id.toString());
                     }    
                 }
                 else {
