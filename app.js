@@ -84,6 +84,18 @@ db.checkDatabaseVersion();
 // Setup all routes
 app.use('/', routes);
 
+// Debug route that will dump session, should only be possible in development
+app.get('/debug', async (req, res, next) => {
+    if (process.env.NODE_ENV !== "production") {
+        return res.send({
+            session: req.session
+        });
+    }
+    else {
+        return res.sendStatus(404);
+    }
+});
+
 // Main page with available slots for user to reserve */
 app.get('/', async (req, res, next) => {
     let availableSlots;
