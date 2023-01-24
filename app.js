@@ -185,14 +185,14 @@ app.get('/', async (req, res, next) => {
     
             if (slot.type == "group") {
                 // Check if any of this user's groups are reserved on this slot
-                if (slot.res_group_ids && slot.res_group_ids.filter(id => req.session.user.groups.map(g => g.id).includes(id)).length) {
+                if (slot.res_group_ids && slot.res_group_ids.filter(id => req.session.user.groups_ids.includes(id)).length) {
                     slot.reservable_for_this_user = false;
                     slot.reservable_notice = "En grupp du tillhör är bokad på denna tid.";
                 }
 
                 // Check how many times this user's groups are reserved on slots with the same course context
                 if (slot.res_course_group_ids && slot.reservable_for_this_user) {
-                    if (slot.res_course_group_ids.filter(id => req.session.user.groups.map(g => g.id).includes(id)).length >= slot.course_max_per_type) {
+                    if (slot.res_course_group_ids.filter(id => req.session.user.groups_ids.includes(id)).length >= slot.course_max_per_type) {
                         slot.reservable_for_this_user = false;
                         slot.reservable_notice = `Max antal bokningar (${slot.course_max_per_type}) för ${slot.course_name}.`;
                     }
@@ -485,13 +485,13 @@ app.post('/api/reservation', async (req, res, next) => {
         else {
             if (slot.type == "group") {
                 // Check if any of this user's groups are reserved on this slot
-                if (slot.res_group_ids && slot.res_group_ids.filter(id => req.session.user.groups.map(g => g.id).includes(id)).length) {
+                if (slot.res_group_ids && slot.res_group_ids.filter(id => req.session.user.groups_ids.includes(id)).length) {
                     throw new Error("En grupp du tillhör är redan bokad på tillfället.");
                 }
 
                 // Check how many times this user's groups are reserved on slots with the same course context
                 if (slot.res_course_group_ids && slot.reservable_for_this_user) {
-                    if (slot.res_course_group_ids.filter(id => req.session.user.groups.map(g => g.id).includes(id)).length >= slot.course_max_per_type) {
+                    if (slot.res_course_group_ids.filter(id => req.session.user.groups_ids.includes(id)).length >= slot.course_max_per_type) {
                         throw new Error(`Max antal bokningar (${slot.course_max_per_type}) uppnått för ${slot.course_name}.`);
                     }
                 }
