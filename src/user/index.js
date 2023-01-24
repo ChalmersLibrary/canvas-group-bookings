@@ -31,7 +31,7 @@ async function createSessionUserdataFromToken(req, token) {
             const local_user = await db.getInstructorWithCanvasUserId(token.user.id);
 
             req.session.user = { 
-                id: token.user.id, 
+                id: token.user.id.toString(),
                 db_id: local_user ? local_user.id : null,
                 name: token.user.name, 
                 locale: token.user.effective_locale.substr(0,2) 
