@@ -544,7 +544,7 @@ app.post('/api/reservation', async (req, res, next) => {
                     }
 
                     if (body !== 'undefined' && body != '') {
-                        body = utils.replaceMessageMagics(body, course.name, message, course.cancellation_policy_hours, req.session.user.name, slot.time_human_readable_sv, slot.location_name, slot.location_url, instructor.name, instructor.email, group_name, req.session.lti.context_title);
+                        body = utils.replaceMessageMagics(body, course.name, message, course.cancellation_policy_hours, req.session.user.name, slot.time_human_readable_sv, slot.location_name, slot.location_url, instructor.name, instructor.email, group_name, "", req.session.lti.context_title);
 
                         let conversation_result_group = await canvasApi.createConversation(recipient, subject, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
                         let log_id = await db.addCanvasConversationLog(slot_id, reservation.id, slot.canvas_course_id, recipient, subject, body);
