@@ -181,7 +181,7 @@ function linkify(this_filter_name, this_filter_items, segment, course, instructo
     return this_list;
 }
 
-function replaceMessageMagics(body, course_name, reservation_message, cancellation_policy_hours, user_name, time_start, location_name, location_url, instructor_name, instructor_email, group_name, group_names, canvas_course_name) {
+function replaceMessageMagics(body, course_name, reservation_message, cancellation_policy_hours, user_name, time_start, location_name, location_url, location_description, instructor_name, instructor_email, group_name, group_names, canvas_course_name) {
     body = body.replaceAll("{{reservation_course_name}}", course_name);
     body = body.replaceAll("{{reservation_message}}", reservation_message);
     body = body.replaceAll("{{reservation_group_name}}", group_name);
@@ -189,7 +189,7 @@ function replaceMessageMagics(body, course_name, reservation_message, cancellati
     body = body.replaceAll("{{cancellation_policy_hours}}", cancellation_policy_hours);
     body = body.replaceAll("{{canvas_user_name}}", user_name);
     body = body.replaceAll("{{reservation_slot_time}}", time_start);
-    body = body.replaceAll("{{location_name}}", location_name + (location_url ? ", " + location_url : ""));
+    body = body.replaceAll("{{location_name}}", location_name + (location_url ? ", " + location_url : "") + (location_description ? " (" + location_description + ")" : ""));
     body = body.replaceAll("{{instructor_name}}", instructor_name);
     body = body.replaceAll("{{instructor_email}}", instructor_email);
     body = body.replaceAll("{{canvas_course_name}}", canvas_course_name);
