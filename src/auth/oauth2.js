@@ -106,11 +106,11 @@ async function checkAccessToken(req) {
 
     if (req.session.lti && req.session.lti.custom_canvas_user_id) {
         userId = req.session.lti.custom_canvas_user_id;
-        log.info("UserId found in LTI session object.");
+        log.info("UserId found in LTI session object: " + req.session.lti.custom_canvas_user_id);
     }
     else if (req.session.user && req.session.user.id) {
         userId = req.session.user.id;
-        log.info("UserId found in user session object.");
+        log.info("UserId found in user session object: " + req.session.user.id);
     }
     else {
         log.error("No user object in session or in LTI, seems like we have no session!");
@@ -122,8 +122,8 @@ async function checkAccessToken(req) {
         await findAccessToken(userId).then(async (token) => {
             if (token !== undefined) {
                 let accessToken = await client.createToken(token);
-                await log.info("Token from findAccessToken: ", token);
-                await log.info("client.createToken: ", accessToken);
+                /* await log.info("Token from findAccessToken: ", token);
+                await log.info("client.createToken: ", accessToken); */
     
                 if (accessToken.expired()) {
                     log.error("Access token has expired, refreshing.", { service: 'oauth2'});
@@ -253,7 +253,7 @@ async function refreshAccessToken(canvas_user_id) {
 async function persistAccessToken(token) {
     let domain = new URL(process.env.AUTH_HOST).hostname;
     let client = process.env.AUTH_CLIENT_ID;
-    let userId = token.user.global_id && token.user.global_id.startsWith("12237") ? parseInt(token.user.global_id) : token.user.id;
+    let userId = token.user.global_id && process.env.USERID_PREFIX_FORCE_GLOBAL_ID && token.user.global_id.startsWith(process.env.USERID_PREFIX_FORCE_GLOBAL_ID) ? token.user.global_id : token.user.id;
 
     log.info("Persisting access token for user " + userId + ", domain " + domain + ", client " + client);
     log.info(token);

@@ -29,7 +29,7 @@ async function createSessionUserdataFromToken(req, token) {
     if (req.session) {
         if (token !== undefined) {
             const local_user = await db.getInstructorWithCanvasUserId(token.user.id);
-            const userId = token.user.global_id && token.user.global_id.startsWith("12237") ? parseInt(token.user.global_id) : token.user.id;
+            const userId = token.user.global_id && process.env.USERID_PREFIX_FORCE_GLOBAL_ID && token.user.global_id.startsWith(process.env.USERID_PREFIX_FORCE_GLOBAL_ID) ? token.user.global_id : token.user.id;
 
             req.session.user = { 
                 id: userId.toString(),
