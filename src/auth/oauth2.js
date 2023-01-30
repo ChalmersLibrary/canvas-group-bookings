@@ -52,7 +52,9 @@ function setupAuthEndpoints(app, callbackUrl) {
     
         try {
             const accessToken = await client.getToken(options);
-            log.info('The resulting token: ', accessToken.token);
+            log.info("The resulting token from client.getToken(): " + JSON.stringify(accessToken.token));
+
+            // Fix for JSON error in number to string, copy global_id to id
 
             // Persist the access token to db
             await persistAccessToken(accessToken.token).then(async (result) => {
@@ -255,8 +257,12 @@ async function persistAccessToken(token) {
     let client = process.env.AUTH_CLIENT_ID;
     let userId = token.user.global_id && process.env.USERID_PREFIX_FORCE_GLOBAL_ID && token.user.global_id.startsWith(process.env.USERID_PREFIX_FORCE_GLOBAL_ID) ? token.user.global_id : token.user.id;
 
-    log.info("Persisting access token for user " + userId + ", domain " + domain + ", client " + client);
-    log.info(token);
+    log.info("Persisting access token for user " + userId + ", domain " + domain + ", client " + client + ": " + JSON.stringify(token));
+
+    if (token.user.global_id.startsWith(process.env.USERID_PREFIX_FORCE_GLOBAL_ID)) {
+        token.user.id = token.user.global_id;
+        log.info("Fixed user.id in token, copied from user.global_id: " + JSON.stringify(token));
+    }
 
     await db.query("INSERT INTO user_token (canvas_user_id, canvas_domain, canvas_client_id, data, updated_at) VALUES ($1, $2, $3, $4, now()) ON CONFLICT (canvas_user_id, canvas_domain, canvas_client_id) DO UPDATE SET data = EXCLUDED.data, updated_at = now()", [
         userId,
