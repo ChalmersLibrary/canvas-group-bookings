@@ -155,7 +155,7 @@ async function checkAccessToken(req) {
                         tokenResult.message = "Refreshed expired token.";
                         tokenResult.access_token = newAccessTokenWithRefreshToken.access_token;
                         tokenResult.token_type = newAccessTokenWithRefreshToken.token_type;
-                        tokenResult.user_id = newAccessTokenWithRefreshToken.user.id;
+                        tokenResult.user_id = userId;
                     }
                     catch (error) {
                         if (error.data && error.data.payload) {
@@ -188,7 +188,7 @@ async function checkAccessToken(req) {
                     tokenResult.message = "Access token is ok, not expired.";
                     tokenResult.access_token = token.access_token;
                     tokenResult.token_type = token.token_type;
-                    tokenResult.user_id = token.user.id;
+                    tokenResult.user_id = userId;
 
                 }
             }
@@ -253,17 +253,18 @@ async function refreshAccessToken(canvas_user_id) {
 async function persistAccessToken(token) {
     let domain = new URL(process.env.AUTH_HOST).hostname;
     let client = process.env.AUTH_CLIENT_ID;
+    let userId = token.user.global_id && token.user.global_id.startsWith("12237") ? parseInt(token.user.global_id) : token.user.id;
 
-    log.info("Persisting access token for user " + token.user.id + ", domain " + domain + ", client " + client);
+    log.info("Persisting access token for user " + userId + ", domain " + domain + ", client " + client);
     log.info(token);
 
     await db.query("INSERT INTO user_token (canvas_user_id, canvas_domain, canvas_client_id, data, updated_at) VALUES ($1, $2, $3, $4, now()) ON CONFLICT (canvas_user_id, canvas_domain, canvas_client_id) DO UPDATE SET data = EXCLUDED.data, updated_at = now()", [
-        token.user.id,
+        userId,
         domain,
         client,
         token
     ]).then((result) => {
-        log.info("Access token persisted to db, bound to user id " + token.user.id + " for domain " + domain);
+        log.info("Access token persisted to db, bound to user id " + userId + " for domain " + domain);
     }).catch((error) => {
         log.error(error); // throw new Error(error)???
     });
