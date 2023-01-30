@@ -18,7 +18,114 @@ const API_GROUPS_ONLY_OWN_GROUPS = true;
 const API_MAX_ERROR_COUNT = 1;
 
 /**
- * Get information about groups in a given course the user belongs to
+ * Get information about groups based on LTI context_ids, using System Account Access Token for API call.
+ * This is used when the logged in user might not have access to Canvas API (ie trust user from other school).
+ * 
+ * @param {contextIds} String Comma-separated list of context_ids
+ * @param {groupCategoryFilter} Array Group category ids to filter
+ * @param {token} Object Token object
+ * @returns JSON data from Canvas API
+ */
+async function getGroupDetailsByContextId(contextIds, groupCategoryFilter, token) {
+    try {
+        let apiData = new Array();
+        let returnedApiData = new Array();
+
+        if (typeof contextIds === 'string') {
+            for (const id of contextIds.split(",")) {
+                let thisApiPath = API_HOST + API_PATH + "/groups/lti_context_id:" + id;
+                let errorCount = 0;
+    
+                while (errorCount < API_MAX_ERROR_COUNT && thisApiPath && token) {
+                    log.info("GET " + thisApiPath);
+                
+                    try {
+                        const response = await axios.get(thisApiPath, {
+                            headers: {
+                                "User-Agent": "Chalmers/Azure/Request",
+                                "Authorization": token.token_type + " " + token.access_token
+                            }
+                        });
+            
+                        apiData.push(response.data);
+    
+                        if (response.headers["X-Request-Cost"]) {
+                            log.info("Request cost: " + response.headers["X-Request-Cost"]);
+                        }
+            
+                        if (response.headers["link"]) {
+                            let link = LinkHeader.parse(response.headers["link"]);
+                    
+                            if (link.has("rel", "next")) {
+                                thisApiPath = link.get("rel", "next")[0].uri;
+                            }
+                            else {
+                                thisApiPath = false;
+                            }
+                        }
+                        else {
+                            thisApiPath = false;
+                        }
+                    }
+                    catch (error) {
+                        errorCount++;
+                    
+                        if (error.response.status == 401 && error.response.headers['www-authenticate']) { // refresh token, then try again
+                            log.info("401, with www-authenticate header.");
+    
+                            await auth.refreshAccessToken(token.user_id).then((result) => {
+                                log.info(result);
+                                if (result.success) {
+                                    log.info("Refreshed access token in 401, with www-authenticate header.");
+                                }
+                                else {
+                                    log.error(result);
+                                }
+                            })
+                            .catch(error => {
+                                log.error(error);
+                            });
+                        }
+                        else if (error.response.status == 401 && !error.response.headers['www-authenticate']) { // no access, redirect to auth
+                            log.error("Not authorized in Canvas for use of this API endpoint.");
+                            return(error);
+                        }
+                        else {
+                            log.error(error);
+                            return(error);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Compile all ids
+        apiData.forEach((record) => {
+            if (groupCategoryFilter && groupCategoryFilter.length) {
+                if (groupCategoryFilter.includes(record.group_category_id)) {
+                    returnedApiData.push(record);
+                }
+            }
+            else {
+                returnedApiData.push(record);
+            }
+        });
+
+        return new Promise((resolve) => {
+            resolve(returnedApiData);
+        })
+    }
+    catch (error) {
+        log.error(error);
+
+        return new Promise((reject) => {
+            reject(error);
+        });   
+    }
+}
+
+/**
+ * Get information about groups in a given course the user belongs to, using user's access token for API call.
  * 
  * @param {courseId} Numerical Course id in Canvas
  * @param {groupCategoryFilter} Array Group category ids to filter
@@ -480,6 +587,7 @@ async function getCourseTeacherEnrollments(courseId, token) {
 
 module.exports = {
     createConversation,
+    getGroupDetailsByContextId,
     getCourseGroups,
     getCourseGroupCategories,
     getCourseTeacherEnrollments

@@ -76,6 +76,7 @@ exports.handleLaunch = (page) => function(req, res) {
                     custom_canvas_course_id: provider.body.custom_canvas_course_id,
                     custom_canvas_enrollment_state: provider.body.custom_canvas_enrollment_state,
                     custom_canvas_roles: provider.body.custom_canvas_roles,
+                    custom_canvas_groups_context: provider.body.custom_canvas_groups_context,
                     custom_canvas_user_id: provider.body.custom_canvas_user_id,
                     lti_message_type: provider.body.lti_message_type,
                     lti_version: provider.body.lti_version,
