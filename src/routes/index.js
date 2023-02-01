@@ -52,6 +52,7 @@ router.all(['/', '/reservations', '/privacy', '/debug', '/admin*', '/api/*'], as
                 // Add some debug information
                 req.session.internal = {
                     version: pkg.version,
+                    node_version: process.version,
                     db: process.env.PGDATABASE
                 };
 
@@ -65,6 +66,7 @@ router.all(['/', '/reservations', '/privacy', '/debug', '/admin*', '/api/*'], as
                     version: pkg.version,
                     internal: {
                         version: pkg.version,
+                        node_version: process.version,
                         db: process.env.PGDATABASE
                     },
                     error: "Kan inte läsa LTI-information",
@@ -81,6 +83,7 @@ router.all(['/', '/reservations', '/privacy', '/debug', '/admin*', '/api/*'], as
                         version: pkg.version,
                         internal: {
                             version: pkg.version,
+                            node_version: process.version,
                             db: process.env.PGDATABASE
                         },
                         error: "Kan inte skapa en session",
