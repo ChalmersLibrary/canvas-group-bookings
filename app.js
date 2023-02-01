@@ -60,7 +60,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Request logging
-const accessFileRotateTransport = new winston.transports.DailyRotateFile({
+/* const accessFileRotateTransport = new winston.transports.DailyRotateFile({
     filename: './logs/requests-%DATE%.log',
     datePattern: 'YYYY-MM-DD',
     maxFiles: '14d',
@@ -69,7 +69,7 @@ app.use(expressWinston.logger({
     transports: [accessFileRotateTransport],
     msg: "{{req.method}} {{req.url}} {{res.statusCode}} {{req.session.user.id}} {{res.responseTime}}", // optional: customize the default logging message. E.g. "{{res.statusCode}} {{req.method}} {{res.responseTime}}ms {{req.url}}"
     ignoreRoute: function (req, res) { return false; } // optional: allows to skip some log messages based on request and/or response
-}));
+})); */
 
 // Content Security Policy
 app.use(function (req, res, next) {
