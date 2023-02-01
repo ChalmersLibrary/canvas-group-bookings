@@ -4,6 +4,7 @@ const pkg = require('./package.json');
 const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
+const expressWinston = require('express-winston');
 const log = require('./src/logging/');
 const pg = require('pg');
 const fileStore = require('session-file-store')(session);
@@ -15,6 +16,8 @@ const db = require('./src/db');
 const utils = require('./src/utilities');
 const cache = require('./src/cache');
 const routes = require('./src/routes');
+const winston = require('winston');
+require('winston-daily-rotate-file');
 
 const port = process.env.PORT || 3000;
 const cookieMaxAge = 3600000 * 24 * 30 * 4; // 4 months
@@ -55,6 +58,18 @@ app.use(helmet({
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Request logging
+const accessFileRotateTransport = new winston.transports.DailyRotateFile({
+    filename: './logs/requests-%DATE%.log',
+    datePattern: 'YYYY-MM-DD',
+    maxFiles: '14d',
+});
+app.use(expressWinston.logger({
+    transports: [accessFileRotateTransport],
+    msg: "{{req.method}} {{req.url}} {{res.statusCode}} {{req.session.user.id}} {{res.responseTime}}", // optional: customize the default logging message. E.g. "{{res.statusCode}} {{req.method}} {{res.responseTime}}ms {{req.url}}"
+    ignoreRoute: function (req, res) { return false; } // optional: allows to skip some log messages based on request and/or response
+}));
 
 // Content Security Policy
 app.use(function (req, res, next) {
