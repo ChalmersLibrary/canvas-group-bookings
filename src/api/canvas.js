@@ -265,6 +265,135 @@ async function getGroupDetailsByContextId(contextIds, groupCategoryFilter, token
 }
 
 /**
+ * Get information about groups in a given course the user belongs to, using user's access token for API call.
+ * This method uses GET /api/v1/users/self/groups and manually filters out group category and course id.
+ * It seems to work better for all students.
+ * 
+ * @param {courseId} Numerical Course id in Canvas
+ * @param {groupCategoryFilter} Array Group category ids to filter
+ * @param {token} Object Token object
+ * @returns JSON data from Canvas API
+ */
+async function getCourseGroupsSelfReference(courseId, groupCategoryFilter, token) {
+    let md5key = crypto.createHash('md5').update(token.access_token).digest("hex");
+    const cacheKey = `${courseId}:${md5key}`;
+
+    try {
+        const cachedData = await cache.getCache('courseGroupsCache', cacheKey);
+
+        if (cachedData !== undefined) {
+            log.info("[Cache] Using found NodeCache entry for key " + cacheKey);
+            log.info("[Cache] Cache value: " + typeof(cachedData) === 'Object' ? JSON.stringify(cachedData) : cachedData);
+            log.info("[Cache] Statistics: " + JSON.stringify(await cache.getCacheStats('courseGroupsCache')));
+        
+            await cache.addCacheRead('courseGroupsCache');
+    
+            return new Promise((resolve) => {
+                resolve(cachedData);
+            });    
+        }
+        else {
+            let thisApiPath = API_HOST + API_PATH + "/users/self/groups?context_type=Course&per_page=200";
+            let apiData = new Array();
+            let returnedApiData = new Array();
+            let errorCount = 0;
+
+            while (errorCount < API_MAX_ERROR_COUNT && thisApiPath && token) {
+                log.info("GET " + thisApiPath);
+            
+                try {
+                    const response = await axios.get(thisApiPath, {
+                        headers: {
+                            "User-Agent": "Chalmers/Azure/Request",
+                            "Authorization": token.token_type + " " + token.access_token
+                        }
+                    });
+        
+                    apiData.push(response.data);
+
+                    if (response.headers["X-Request-Cost"]) {
+                        log.info("Request cost: " + response.headers["X-Request-Cost"]);
+                    }
+        
+                    if (response.headers["link"]) {
+                        let link = LinkHeader.parse(response.headers["link"]);
+                
+                        if (link.has("rel", "next")) {
+                            thisApiPath = link.get("rel", "next")[0].uri;
+                        }
+                        else {
+                            thisApiPath = false;
+                        }
+                    }
+                    else {
+                        thisApiPath = false;
+                    }
+                }
+                catch (error) {
+                    errorCount++;
+                
+                    if (error.response.status == 401 && error.response.headers['www-authenticate']) { // refresh token, then try again
+                        log.info("401, with www-authenticate header.");
+
+                        await auth.refreshAccessToken(token.user_id).then((result) => {
+                            log.info(result);
+                            if (result.success) {
+                                log.info("Refreshed access token in 401, with www-authenticate header.");
+                            }
+                            else {
+                                log.error(result);
+                            }
+                        })
+                        .catch(error => {
+                            log.error(error);
+                        });
+                    }
+                    else if (error.response.status == 401 && !error.response.headers['www-authenticate']) { // no access, redirect to auth
+                        log.error("Not authorized in Canvas for use of this API endpoint.");
+                        return(error);
+                    }
+                    else {
+                        log.error(error);
+                        return(error);
+                    }
+                }
+            }
+
+            // Compile new object from all pages.
+            apiData.forEach((page) => {
+                page.forEach((record) => {
+                    if (groupCategoryFilter && groupCategoryFilter.length) {
+                        if (groupCategoryFilter.includes(record.group_category_id)) {
+                            returnedApiData.push(record);
+                        }
+                    }
+                    else {
+                        if (record.course_id == courseId) {
+                            returnedApiData.push(record);
+                        }
+                    }
+                });
+            });
+
+            /* Save to cache */
+            await cache.setCache('courseGroupsCache', cacheKey, returnedApiData);
+            await cache.addCacheWrite('courseGroupsCache');
+
+            return new Promise((resolve) => {
+                resolve(returnedApiData);
+            })
+        }
+    }
+    catch (error) {
+        log.error(error);
+
+        return new Promise((reject) => {
+            reject(error);
+        });
+    }
+}
+
+/**
  * Post a message in Conversations (Inbox) for specific group(s) or user.
  * The posting account is supposed to have an API token created manually by an administrator in Canvas,
  * we use "Canvas Conversation Robot": login and create an access token, then use this in CONVERSATION_ROBOT_API_TOKEN.
@@ -589,6 +718,7 @@ module.exports = {
     createConversation,
     getGroupDetailsByContextId,
     getCourseGroups,
+    getCourseGroupsSelfReference,
     getCourseGroupCategories,
     getCourseTeacherEnrollments
 }

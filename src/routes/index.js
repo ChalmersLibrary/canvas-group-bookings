@@ -34,13 +34,7 @@ router.all(['/', '/reservations', '/privacy', '/debug', '/admin*', '/api/*'], as
                 // Add the groups from Canvas for this user, only if active enrollment
                 if (req.session.lti.custom_canvas_enrollment_state && req.session.lti.custom_canvas_enrollment_state == "active") {
                     let canvasGroupCategoryFilter = await db.getCourseGroupCategoryFilter(res.locals.courseId);
-                    req.session.user.groups = await canvasApi.getCourseGroups(res.locals.courseId, canvasGroupCategoryFilter, token);
-
-                    // If no groups, check if we have some context ids for group memberships in LTI data
-                    if (req.session.user.groups.length == 0 && req.session.lti.custom_canvas_groups_context) {
-                        req.session.user.groups = await canvasApi.getGroupDetailsByContextId(req.session.lti.custom_canvas_groups_context, canvasGroupCategoryFilter, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
-                        log.info(req.session.user.id, req.session.user.name, req.session.user.groups); // Debug for user error case 2023-01-30
-                    }
+                    req.session.user.groups = await canvasApi.getCourseGroupsSelfReference(res.locals.courseId, canvasGroupCategoryFilter, token);
 
                     // Create arrays in user object for easy access and correct type mapping against db
                     req.session.user.groups_ids = new Array();
