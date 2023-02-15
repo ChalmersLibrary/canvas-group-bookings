@@ -27,6 +27,8 @@ const logger = winston.createLogger({
 // fileRotateTransport.on('logRemoved', (removedFilename) => {});
 
 if (process.env.NODE_ENV !== 'production') {
+    logger.level = 'debug';
+    
     logger.add(new winston.transports.Console({
       format: winston.format.combine(
         winston.format.colorize({ all: true }),

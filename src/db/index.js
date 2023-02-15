@@ -10,11 +10,10 @@ const pool = new Pool();
 
 pool.connect();
 
-// log.info(pool);
-
 pool.on('connect', client => {
     log.info("Pool connected.");
 });
+
 pool.on('error', (error, client) => {
     log.info("Pool error!");
     log.info(error);
@@ -25,7 +24,7 @@ async function query(text, params) {
     const start = Date.now();
     const res = await pool.query(text, params);
     const duration = Date.now() - start;
-    log.info('Executed query', { text, duration, rows: res.rowCount });
+    log.debug('Executed query', { text, duration, rows: res.rowCount });
     return res;
 }
 
@@ -139,7 +138,7 @@ async function updateSegment(segment_id, canvas_user_id, name, sign, hex_color, 
         hex_color,
         description
     ]).then((result) => {
-        log.info(result);
+        log.debug(result);
     }).catch((error) => {
         log.error(error);
         throw new Error(error);
@@ -150,7 +149,7 @@ async function deleteSegment(segment_id, canvas_user_id) {
         canvas_user_id,
         segment_id
     ]).then((result) => {
-        log.info(result);
+        log.debug(result);
     }).catch((error) => {
         log.error(error);
         throw new Error(error);
@@ -163,7 +162,7 @@ async function applySegmentToAllCourses(segment_id, canvas_course_id, canvas_use
         canvas_user_id,
         canvas_course_id
     ]).then((result) => {
-        log.info(result);
+        log.debug(result);
     }).catch((error) => {
         log.error(error);
         throw new Error(error);
@@ -176,7 +175,7 @@ async function replaceExistingSegmentInCourses(old_segment_id, new_segment_id, c
         new_segment_id,
         canvas_user_id
     ]).then((result) => {
-        log.info(result);
+        log.debug(result);
     }).catch((error) => {
         log.error(error);
         throw new Error(error);
@@ -261,7 +260,7 @@ async function getAllSlotsPaginated(offset, limit, canvas_course_id, segment, co
         q.params.push(end_date);
     }
 
-    log.info(q);
+    log.debug(q);
 
     await query(q.count + q.join, q.params).then((result) => {
         returnedData.records_total = parseInt(result.rows[0].count);
@@ -475,7 +474,7 @@ async function deleteReservation(user_id, groups, reservation_id) {
         groups,
         reservation_id
     ]).then((result) => {
-        log.info(result);
+        log.debug(result);
     }).catch((error) => {
         log.error(error);
         throw new Error(error);
@@ -706,7 +705,7 @@ async function updateCourse(course_id, canvas_user_id, parameters) {
         canvas_user_id,
         course_id
     ]).then((result) => {
-        log.info(result);
+        log.debug(result);
     }).catch((error) => {
         log.error(error);
         throw new Error(error);
@@ -718,7 +717,7 @@ async function deleteCourse(course_id, canvas_user_id) {
         canvas_user_id,
         course_id
     ]).then((result) => {
-        log.info(result);
+        log.debug(result);
     }).catch((error) => {
         log.error(error);
         throw new Error(error);
@@ -852,7 +851,7 @@ async function disconnectInstructor(canvas_course_id, instructor_id) {
         canvas_course_id,
         instructor_id
     ]).then((result) => {
-        log.info(result);
+        log.debug(result);
     }).catch((error) => {
         log.error(error);
         throw new Error(error);
@@ -865,7 +864,7 @@ async function replaceConnectedInstructor(canvas_course_id, instructor_id, new_i
         instructor_id,
         new_instructor_id
     ]).then((result) => {
-        log.info(result);
+        log.debug(result);
     }).catch((error) => {
         log.error(error);
         throw new Error(error);
@@ -1011,7 +1010,7 @@ async function disconnectLocation(canvas_course_id, location_id) {
         canvas_course_id,
         location_id
     ]).then((result) => {
-        log.info(result);
+        log.debug(result);
     }).catch((error) => {
         log.error(error);
         throw new Error(error);
@@ -1024,7 +1023,7 @@ async function replaceConnectedLocation(canvas_course_id, location_id, new_locat
         location_id,
         new_location_id
     ]).then((result) => {
-        log.info(result);
+        log.debug(result);
     }).catch((error) => {
         log.error(error);
         throw new Error(error);
@@ -1035,7 +1034,7 @@ async function createSlots(data) {
     const { course_id, instructor_id, location_id, slots } = data;
 
     for (const slot of slots) {
-        log.info(slot);
+        log.debug(slot);
         await query("INSERT INTO slot (course_id, instructor_id, location_id, time_start, time_end) VALUES ($1, $2, $3, $4, $5)", [
             course_id,
             instructor_id,
@@ -1043,7 +1042,7 @@ async function createSlots(data) {
             slot.start,
             slot.end
         ]).then((result) => {
-            log.info(result);
+            log.debug(result);
         }).catch((error) => {
             log.error(error);
             throw new Error(error);
@@ -1060,7 +1059,7 @@ async function updateSlot(id, course_id, instructor_id, location_id, time_start,
         time_start,
         time_end
     ]).then((result) => {
-        log.info(result);
+        log.debug(result);
     }).catch((error) => {
         log.error(error);
         throw new Error(error);
@@ -1069,7 +1068,7 @@ async function updateSlot(id, course_id, instructor_id, location_id, time_start,
 
 async function deleteSlot(id) {
     await query("UPDATE slot SET deleted_at=now() WHERE id=$1", [ id ]).then((result) => {
-        log.info(result);
+        log.debug(result);
     }).catch((error) => {
         log.error(error);
         throw new Error(error);
