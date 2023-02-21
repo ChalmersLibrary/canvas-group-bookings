@@ -413,7 +413,8 @@ async function createConversation(recipients, subject, body, token) {
 
         while (errorCount < API_MAX_ERROR_COUNT && thisApiPath && token) {
             log.info("POST " + thisApiPath);
-
+            log.info("Subject: " + subject);
+            
             try {
                 let bodyFormData = new FormData();
 
@@ -461,14 +462,20 @@ async function createConversation(recipients, subject, body, token) {
             catch (error) {
                 errorCount++;
 
-                log.error(error);
-
-                if (error.response.status == 401 && error.response.headers['www-authenticate']) { // refresh token, then try again
-                    log.error("401, with www-authenticate header.");
-                    log.error("Can't refresh this token, must be done manually for integration account.");
+                // Refresh token, then try again
+                if (error.response.status == 401 && error.response.headers['www-authenticate']) {
+                    log.error("401, with www-authenticate header. Can't refresh this token, must be done manually for integration account.");
                 }
-                else if (error.response.status == 401 && !error.response.headers['www-authenticate']) { // no access, redirect to auth
-                    log.error("Integration account not authorized in Canvas for use of this API endpoint.");
+                // No access, redirect to auth (www-authenticate)
+                else if (error.response.status == 401 && !error.response.headers['www-authenticate']) {
+                    log.error("401, without www-authenticate header. Integration account not authorized in Canvas for use of this API endpoint.");
+                }
+                // Bad Request, often this means attribute "recipients" is invalid because integration account is not added so it has access to the recipients
+                else if (error.response.status == 400) {
+                    log.error("400, Bad Request. Integration account most likely not added to Canvas course, can't send message to recipients.");
+                }
+                else {
+                    log.error(error.code, error.message);
                 }
 
                 throw new Error(error);
