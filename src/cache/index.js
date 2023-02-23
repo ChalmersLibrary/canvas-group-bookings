@@ -39,24 +39,24 @@ let caches = [
 
 /* Log when caches expire */
 courseGroupsCache.on('expired', function(key) {
-    log.info("[Cache] Expired NodeCache entry for courseGroupsCache key '" + key + "'.");
+    log.debug("[Cache] Expired NodeCache entry for courseGroupsCache key '" + key + "'.");
 });
 courseGroupCategoriesCache.on('expired', function(key) {
-    log.info("[Cache] Expired NodeCache entry for courseGroupCategoriesCache key '" + key + "'.");
+    log.debug("[Cache] Expired NodeCache entry for courseGroupCategoriesCache key '" + key + "'.");
 });
 courseTeacherEnrollmentsCache.on('expired', function(key) {
-    log.info("[Cache] Expired NodeCache entry for courseTeacherEnrollmentsCache key '" + key + "'.");
+    log.debug("[Cache] Expired NodeCache entry for courseTeacherEnrollmentsCache key '" + key + "'.");
 });
 
 /* Debug log when cache is set */
 courseGroupsCache.on('set', function(key, value) {
-    log.info("[Cache] Set entry for courseGroupsCache key '" + key + "': " + typeof(value) === 'Object' ? JSON.stringify(value) : value);
+    log.debug("[Cache] Set entry for courseGroupsCache key '" + key + "': " + typeof(value) === 'Object' ? JSON.stringify(value) : value);
 });
 courseGroupCategoriesCache.on('set', function(key, value) {
-    log.info("[Cache] Set entry for courseGroupCategoriesCache key '" + key + "': " + typeof(value) === 'Object' ? JSON.stringify(value) : value);
+    log.debug("[Cache] Set entry for courseGroupCategoriesCache key '" + key + "': " + typeof(value) === 'Object' ? JSON.stringify(value) : value);
 });
 courseTeacherEnrollmentsCache.on('set', function(key, value) {
-    log.info("[Cache] Set entry for courseTeacherEnrollmentsCache key '" + key + "': " + typeof(value) === 'Object' ? JSON.stringify(value) : value);
+    log.debug("[Cache] Set entry for courseTeacherEnrollmentsCache key '" + key + "': " + typeof(value) === 'Object' ? JSON.stringify(value) : value);
 });
 
 /* Cache statistics */

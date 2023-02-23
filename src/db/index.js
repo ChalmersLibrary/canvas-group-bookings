@@ -12,12 +12,12 @@ pool.connect();
 
 pool.on('connect', client => {
     log.info("Pool connected.");
+    log.debug(client);
 });
 
 pool.on('error', (error, client) => {
-    log.info("Pool error!");
-    log.info(error);
-    log.info(client);
+    log.error("Pool error!", error);
+    log.debug(client);
 });
 
 async function query(text, params) {

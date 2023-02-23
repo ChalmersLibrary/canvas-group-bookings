@@ -37,7 +37,7 @@ async function getGroupDetailsByContextId(contextIds, groupCategoryFilter, token
                 let errorCount = 0;
     
                 while (errorCount < API_MAX_ERROR_COUNT && thisApiPath && token) {
-                    log.info("GET " + thisApiPath);
+                    log.debug("GET " + thisApiPath);
                 
                     try {
                         const response = await axios.get(thisApiPath, {
@@ -50,7 +50,7 @@ async function getGroupDetailsByContextId(contextIds, groupCategoryFilter, token
                         apiData.push(response.data);
     
                         if (response.headers["X-Request-Cost"]) {
-                            log.info("Request cost: " + response.headers["X-Request-Cost"]);
+                            log.debug("Request cost: " + response.headers["X-Request-Cost"]);
                         }
             
                         if (response.headers["link"]) {
@@ -71,19 +71,19 @@ async function getGroupDetailsByContextId(contextIds, groupCategoryFilter, token
                         errorCount++;
                     
                         if (error.response.status == 401 && error.response.headers['www-authenticate']) { // refresh token, then try again
-                            log.info("401, with www-authenticate header.");
+                            log.debug("401, with www-authenticate header.");
     
                             await auth.refreshAccessToken(token.user_id).then((result) => {
-                                log.info(result);
+                                log.debug(result);
                                 if (result.success) {
-                                    log.info("Refreshed access token in 401, with www-authenticate header.");
+                                    log.debug("Refreshed access token in 401, with www-authenticate header.");
                                 }
                                 else {
                                     log.error(result);
                                 }
                             })
                             .catch(error => {
-                                log.error(error);
+                                log.error("When refreshing access token after 401 from API", error);
                             });
                         }
                         else if (error.response.status == 401 && !error.response.headers['www-authenticate']) { // no access, redirect to auth
@@ -140,9 +140,9 @@ async function getGroupDetailsByContextId(contextIds, groupCategoryFilter, token
         const cachedData = await cache.getCache('courseGroupsCache', cacheKey);
 
         if (cachedData !== undefined) {
-            log.info("[Cache] Using found NodeCache entry for key " + cacheKey);
-            log.info("[Cache] Cache value: " + typeof(cachedData) === 'Object' ? JSON.stringify(cachedData) : cachedData);
-            log.info("[Cache] Statistics: " + JSON.stringify(await cache.getCacheStats('courseGroupsCache')));
+            log.debug("Using found NodeCache entry for key " + cacheKey);
+            log.debug("Cache value: " + typeof(cachedData) === 'Object' ? JSON.stringify(cachedData) : cachedData);
+            log.debug("Cache statistics: " + JSON.stringify(await cache.getCacheStats('courseGroupsCache')));
         
             await cache.addCacheRead('courseGroupsCache');
     
@@ -161,7 +161,7 @@ async function getGroupDetailsByContextId(contextIds, groupCategoryFilter, token
             }
 
             while (errorCount < API_MAX_ERROR_COUNT && thisApiPath && token) {
-                log.info("GET " + thisApiPath);
+                log.debug("GET " + thisApiPath);
             
                 try {
                     const response = await axios.get(thisApiPath, {
@@ -174,7 +174,7 @@ async function getGroupDetailsByContextId(contextIds, groupCategoryFilter, token
                     apiData.push(response.data);
 
                     if (response.headers["X-Request-Cost"]) {
-                        log.info("Request cost: " + response.headers["X-Request-Cost"]);
+                        log.debug("Request cost: " + response.headers["X-Request-Cost"]);
                     }
         
                     if (response.headers["link"]) {
@@ -195,12 +195,12 @@ async function getGroupDetailsByContextId(contextIds, groupCategoryFilter, token
                     errorCount++;
                 
                     if (error.response.status == 401 && error.response.headers['www-authenticate']) { // refresh token, then try again
-                        log.info("401, with www-authenticate header.");
+                        log.debug("401, with www-authenticate header.");
 
                         await auth.refreshAccessToken(token.user_id).then((result) => {
-                            log.info(result);
+                            log.debug(result);
                             if (result.success) {
-                                log.info("Refreshed access token in 401, with www-authenticate header.");
+                                log.debug("Refreshed access token in 401, with www-authenticate header.");
                             }
                             else {
                                 log.error(result);
@@ -282,9 +282,9 @@ async function getCourseGroupsSelfReference(courseId, groupCategoryFilter, token
         const cachedData = await cache.getCache('courseGroupsCache', cacheKey);
 
         if (cachedData !== undefined) {
-            log.info("[Cache] Using found NodeCache entry for key " + cacheKey);
-            log.info("[Cache] Cache value: " + typeof(cachedData) === 'Object' ? JSON.stringify(cachedData) : cachedData);
-            log.info("[Cache] Statistics: " + JSON.stringify(await cache.getCacheStats('courseGroupsCache')));
+            log.debug("Using found NodeCache entry for key " + cacheKey);
+            log.debug("Cache value: " + typeof(cachedData) === 'Object' ? JSON.stringify(cachedData) : cachedData);
+            log.debug("Cache statistics: " + JSON.stringify(await cache.getCacheStats('courseGroupsCache')));
         
             await cache.addCacheRead('courseGroupsCache');
     
@@ -299,7 +299,7 @@ async function getCourseGroupsSelfReference(courseId, groupCategoryFilter, token
             let errorCount = 0;
 
             while (errorCount < API_MAX_ERROR_COUNT && thisApiPath && token) {
-                log.info("GET " + thisApiPath);
+                log.debug("GET " + thisApiPath);
             
                 try {
                     const response = await axios.get(thisApiPath, {
@@ -312,7 +312,7 @@ async function getCourseGroupsSelfReference(courseId, groupCategoryFilter, token
                     apiData.push(response.data);
 
                     if (response.headers["X-Request-Cost"]) {
-                        log.info("Request cost: " + response.headers["X-Request-Cost"]);
+                        log.debug("Request cost: " + response.headers["X-Request-Cost"]);
                     }
         
                     if (response.headers["link"]) {
@@ -333,12 +333,12 @@ async function getCourseGroupsSelfReference(courseId, groupCategoryFilter, token
                     errorCount++;
                 
                     if (error.response.status == 401 && error.response.headers['www-authenticate']) { // refresh token, then try again
-                        log.info("401, with www-authenticate header.");
+                        log.debug("401, with www-authenticate header.");
 
                         await auth.refreshAccessToken(token.user_id).then((result) => {
-                            log.info(result);
+                            log.debug(result);
                             if (result.success) {
-                                log.info("Refreshed access token in 401, with www-authenticate header.");
+                                log.debug("Refreshed access token in 401, with www-authenticate header.");
                             }
                             else {
                                 log.error(result);
@@ -412,8 +412,8 @@ async function createConversation(recipients, subject, body, token) {
         let errorCount = 0;
 
         while (errorCount < API_MAX_ERROR_COUNT && thisApiPath && token) {
-            log.info("POST " + thisApiPath);
-            log.info("Subject: " + subject);
+            log.debug("POST " + thisApiPath);
+            log.debug("Subject: " + subject);
             
             try {
                 let bodyFormData = new FormData();
@@ -454,7 +454,7 @@ async function createConversation(recipients, subject, body, token) {
                 apiData = response.data;
     
                 if (response.headers["X-Request-Cost"]) {
-                    log.info("Request cost: " + response.headers["X-Request-Cost"]);
+                    log.debug("Request cost: " + response.headers["X-Request-Cost"]);
                 }
     
                 thisApiPath = false;
@@ -501,9 +501,9 @@ async function getCourseGroupCategories(courseId, token) {
         const cachedData = await cache.getCache('courseGroupCategoriesCache', courseId);
 
         if (cachedData !== undefined) {
-            log.info("[Cache] Using found NodeCache entry for key " + courseId);
-            log.info("[Cache] Cache value: " + typeof(cachedData) === 'Object' ? JSON.stringify(cachedData) : cachedData);
-            log.info("[Cache] Statistics: " + JSON.stringify(await cache.getCacheStats('courseGroupsCache')));
+            log.debug("Using found NodeCache entry for key " + courseId);
+            log.debug("Cache value: " + typeof(cachedData) === 'Object' ? JSON.stringify(cachedData) : cachedData);
+            log.debug("Cache statistics: " + JSON.stringify(await cache.getCacheStats('courseGroupsCache')));
         
             await cache.addCacheRead('courseGroupCategoriesCache');
     
@@ -518,7 +518,7 @@ async function getCourseGroupCategories(courseId, token) {
             let errorCount = 0;
 
             while (errorCount < API_MAX_ERROR_COUNT && thisApiPath && token) {
-                log.info("GET " + thisApiPath);
+                log.debug("GET " + thisApiPath);
             
                 try {
                     const response = await axios.get(thisApiPath, {
@@ -531,7 +531,7 @@ async function getCourseGroupCategories(courseId, token) {
                     apiData.push(response.data);
 
                     if (response.headers["X-Request-Cost"]) {
-                        log.info("Request cost: " + response.headers["X-Request-Cost"]);
+                        log.debug("Request cost: " + response.headers["X-Request-Cost"]);
                     }
         
                     if (response.headers["link"]) {
@@ -552,12 +552,12 @@ async function getCourseGroupCategories(courseId, token) {
                     errorCount++;
                 
                     if (error.response.status == 401 && error.response.headers['www-authenticate']) { // refresh token, then try again
-                        log.info("401, with www-authenticate header.");
+                        log.debug("401, with www-authenticate header.");
 
                         await auth.refreshAccessToken(token.user_id).then((result) => {
-                            log.info(result);
+                            log.debug(result);
                             if (result.success) {
-                                log.info("Refreshed access token in 401, with www-authenticate header.");
+                                log.debug("Refreshed access token in 401, with www-authenticate header.");
                             }
                             else {
                                 log.error(result);
@@ -614,9 +614,9 @@ async function getCourseTeacherEnrollments(courseId, token) {
         const cachedData = await cache.getCache('courseTeacherEnrollmentsCache', courseId);
 
         if (cachedData !== undefined) {
-            log.info("[Cache] Using found NodeCache entry for key " + courseId);
-            log.info("[Cache] Cache value: " + typeof(cachedData) === 'Object' ? JSON.stringify(cachedData) : cachedData);
-            log.info("[Cache] Statistics: " + JSON.stringify(await cache.getCacheStats('courseTeacherEnrollmentsCache')));
+            log.debug("Using found NodeCache entry for key " + courseId);
+            log.debug("Cache value: " + typeof(cachedData) === 'Object' ? JSON.stringify(cachedData) : cachedData);
+            log.debug("Cache statistics: " + JSON.stringify(await cache.getCacheStats('courseTeacherEnrollmentsCache')));
         
             await cache.addCacheRead('courseTeacherEnrollmentsCache');
     
@@ -631,7 +631,7 @@ async function getCourseTeacherEnrollments(courseId, token) {
             let errorCount = 0;
 
             while (errorCount < API_MAX_ERROR_COUNT && thisApiPath && token) {
-                log.info("GET " + thisApiPath);
+                log.debug("GET " + thisApiPath);
             
                 try {
                     const response = await axios.get(thisApiPath, {
@@ -644,7 +644,7 @@ async function getCourseTeacherEnrollments(courseId, token) {
                     apiData.push(response.data);
 
                     if (response.headers["X-Request-Cost"]) {
-                        log.info("Request cost: " + response.headers["X-Request-Cost"]);
+                        log.debug("Request cost: " + response.headers["X-Request-Cost"]);
                     }
         
                     if (response.headers["link"]) {
@@ -665,12 +665,12 @@ async function getCourseTeacherEnrollments(courseId, token) {
                     errorCount++;
                 
                     if (error.response.status == 401 && error.response.headers['www-authenticate']) { // refresh token, then try again
-                        log.info("401, with www-authenticate header.");
+                        log.debug("401, with www-authenticate header.");
 
                         await auth.refreshAccessToken(token.user_id).then((result) => {
-                            log.info(result);
+                            log.debug(result);
                             if (result.success) {
-                                log.info("Refreshed access token in 401, with www-authenticate header.");
+                                log.debug("Refreshed access token in 401, with www-authenticate header.");
                             }
                             else {
                                 log.error(result);

@@ -810,11 +810,14 @@ app.get('/api/statistics', async (req, res, next) => {
     }
 });
 
+// This will only be logged in non-production
+log.debug("This is not a production environment.");
+
 /* Set server to listen and start working! */
 app.listen(port, () => log.info(`Application listening on port ${port}.`));
 
 /* Catch uncaught exceptions */
 process.on('uncaughtException', (err) => {
-    console.error("There was an uncaught error", err);
+    log.error("There was an uncaught error", err);
     process.exit(1); //mandatory (as per the Node docs)
 });

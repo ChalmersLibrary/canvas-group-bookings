@@ -21,7 +21,7 @@ const getSecret = (consumerKey, callback) => {
                 "secret": key.split(':')[1]
             });
 
-            log.info("Added consumer key for '" + key.split(':')[0] + "'.");
+            log.debug("Added consumer key for '" + key.split(':')[0] + "'.");
         }
     }
 
@@ -38,14 +38,14 @@ const getSecret = (consumerKey, callback) => {
 };
 
 exports.handleLaunch = (page) => function(req, res) {
-    log.info("LTI Launch start.");
+    log.debug("LTI Launch start.");
 
     if (!req.body) {
         log.error("No request body.");
         return res.status(400).json('No request body.')
     }
 
-    log.info("Request body: " + JSON.stringify(req.body));
+    log.debug("Request body: " + JSON.stringify(req.body));
 
     const consumerKey = req.body.oauth_consumer_key;
 
@@ -60,14 +60,12 @@ exports.handleLaunch = (page) => function(req, res) {
 
         const provider = new lti.Provider(consumerKey, consumerSecret); // Include nonceStore for custom store, default memory store
 
-        log.info(provider);
-
         provider.valid_request(req, (err, isValid) => {
             if (err) {
                 log.error(err);
             }
             if (isValid) {
-                log.info("Request is valid, LTI Data:" + JSON.stringify(provider.body));
+                log.debug("Request is valid, LTI Data:" + JSON.stringify(provider.body));
 
                 // Only save relevant LTI information in session LTI object
                 req.session.lti = {
@@ -90,21 +88,20 @@ exports.handleLaunch = (page) => function(req, res) {
 
                 req.session.save(function(err) {
                     if (err) {
-                        log.error(err);
+                        log.error("Saving session after LTI launch", err);
                     }
 
-                    log.info(req.session);
-                    log.info("Session saved with LTI object.");
+                    log.debug("Session saved with LTI object.", req.session);
                 });
             }
             else {
-                log.error("The request is NOT valid.");
+                log.error("The request is NOT valid.", req);
                 return res.status(500).json('LTI request is not valid.')
             }
         });
     });
 
-    log.info("LTI Launch done.");
+    log.debug("LTI Launch done.");
 
     return res.redirect("/");
 }

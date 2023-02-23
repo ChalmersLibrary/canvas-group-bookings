@@ -37,7 +37,6 @@ function setupAuthEndpoints(app, callbackUrl) {
     
     // Initial page redirecting to Canvas
     app.get('/auth', (req, res) => {
-        log.info(authorizationUri);
         return res.redirect(authorizationUri);
     });
     
@@ -52,15 +51,13 @@ function setupAuthEndpoints(app, callbackUrl) {
     
         try {
             const accessToken = await client.getToken(options);
-            log.info("The resulting token from client.getToken(): " + JSON.stringify(accessToken.token));
-
-            // Fix for JSON error in number to string, copy global_id to id
+            log.debug("The resulting token from client.getToken(): " + JSON.stringify(accessToken.token));
 
             // Persist the access token to db
             await persistAccessToken(accessToken.token).then(async (result) => {
                 // Save the user object to session for faster access
                 let userData = await user.createSessionUserdataFromToken(req, accessToken.token);
-                log.info(userData);
+                log.debug(userData);
 
                 // If we set it before redirect we must persist it with session.save()
                 await req.session.save(function(err) {
@@ -69,8 +66,7 @@ function setupAuthEndpoints(app, callbackUrl) {
                         return res.status(500).json(err);
                     }
 
-                    log.info(req.session);
-                    log.info("Session saved with user object from OAuth2 callback.");
+                    log.debug("Session saved with user object from OAuth2 callback.", req.session);
                 });
             }).catch((error) => {
                 log.error(error);
@@ -82,7 +78,7 @@ function setupAuthEndpoints(app, callbackUrl) {
             return res.status(500).json(error);
         }
 
-        log.info("Callback finished, redirecting to root app.");
+        log.info("OAuth callback finished, redirecting to root app.");
 
         res.location("/?from=callback");
         return res.redirect("/?from=callback");
@@ -108,11 +104,11 @@ async function checkAccessToken(req) {
 
     if (req.session.lti && req.session.lti.custom_canvas_user_id) {
         userId = req.session.lti.custom_canvas_user_id;
-        log.info("UserId found in LTI session object: " + req.session.lti.custom_canvas_user_id);
+        log.debug("UserId found in LTI session object: " + req.session.lti.custom_canvas_user_id);
     }
     else if (req.session.user && req.session.user.id) {
         userId = req.session.user.id;
-        log.info("UserId found in user session object: " + req.session.user.id);
+        log.debug("UserId found in user session object: " + req.session.user.id);
     }
     else {
         log.error("No user object in session or in LTI, seems like we have no session!");
@@ -124,15 +120,13 @@ async function checkAccessToken(req) {
         await findAccessToken(userId).then(async (token) => {
             if (token !== undefined) {
                 let accessToken = await client.createToken(token);
-                /* await log.info("Token from findAccessToken: ", token);
-                await log.info("client.createToken: ", accessToken); */
     
                 if (accessToken.expired()) {
-                    log.error("Access token has expired, refreshing.", { service: 'oauth2'});
+                    log.debug("Access token has expired, refreshing.", { service: 'oauth2'});
 
                     try {
                         let newAccessToken = await accessToken.refresh();
-                        await log.info("accessToken.refresh: ", newAccessToken);
+                        await log.debug("accessToken.refresh: ", newAccessToken);
 
                         const newAccessTokenWithRefreshToken = JSON.parse(JSON.stringify(newAccessToken));
                         newAccessTokenWithRefreshToken.refresh_token = accessToken.token.refresh_token; // https://canvas.instructure.com/doc/api/file.oauth.html#using-refresh-tokens
@@ -141,7 +135,7 @@ async function checkAccessToken(req) {
     
                         // Save the user object to session for faster access
                         let userData = await user.createSessionUserdataFromToken(req, newAccessTokenWithRefreshToken).then((result) => {
-                            log.info(result);
+                            log.debug(result);
                         });
 
                         req.session.save(function(err) {
@@ -150,7 +144,7 @@ async function checkAccessToken(req) {
                                 throw new Error("Saving session.", { cause: err });
                             }
         
-                            log.info("Access token refreshed, session saved.");
+                            log.debug("Access token refreshed, session saved.");
                         });
     
                         tokenResult.success = true;
@@ -161,20 +155,20 @@ async function checkAccessToken(req) {
                     }
                     catch (error) {
                         if (error.data && error.data.payload) {
-                            log.error(error.data.payload);
+                            log.error("Refreshing access token", error.data.payload);
 
                             if (error.data.payload.error == 'invalid_grant') {
                                 throw new Error("invalid_grant");
                             }
                         }
                         else {
-                            log.error(error);
+                            log.error("Refreshing access token", error);
                             throw new Error(error);
                         }
                     }
                 }
                 else {
-                    log.info("Access token is ok, not expired.");
+                    log.debug("Access token is ok, not expired.");
 
                     // Save the user object to session for faster access
                     await user.createSessionUserdataFromToken(req, token);
@@ -257,11 +251,11 @@ async function persistAccessToken(token) {
     let client = process.env.AUTH_CLIENT_ID;
     let userId = token.user.global_id && process.env.USERID_PREFIX_FORCE_GLOBAL_ID && token.user.global_id.startsWith(process.env.USERID_PREFIX_FORCE_GLOBAL_ID) ? token.user.global_id : token.user.id;
 
-    log.info("Persisting access token for user " + userId + ", domain " + domain + ", client " + client + ": " + JSON.stringify(token));
+    log.debug("Persisting access token for user " + userId + ", domain " + domain + ", client " + client + ": " + JSON.stringify(token));
 
     if (token.user.global_id.startsWith(process.env.USERID_PREFIX_FORCE_GLOBAL_ID)) {
         token.user.id = token.user.global_id;
-        log.info("Fixed user.id in token, copied from user.global_id: " + JSON.stringify(token));
+        log.debug("Fixed user.id in token, copied from user.global_id: " + JSON.stringify(token));
     }
 
     await db.query("INSERT INTO user_token (canvas_user_id, canvas_domain, canvas_client_id, data, updated_at) VALUES ($1, $2, $3, $4, now()) ON CONFLICT (canvas_user_id, canvas_domain, canvas_client_id) DO UPDATE SET data = EXCLUDED.data, updated_at = now()", [
@@ -270,9 +264,9 @@ async function persistAccessToken(token) {
         client,
         token
     ]).then((result) => {
-        log.info("Access token persisted to db, bound to user id " + userId + " for domain " + domain);
+        log.debug("Access token persisted to db, bound to user id " + userId + " for domain " + domain);
     }).catch((error) => {
-        log.error(error); // throw new Error(error)???
+        log.error("Persisting access token", token, error);
     });
 }
 
@@ -281,7 +275,7 @@ async function findAccessToken(canvas_user_id) {
     let domain = new URL(process.env.AUTH_HOST).hostname;
     let client = process.env.AUTH_CLIENT_ID;
 
-    log.info("Locating access token for user " + canvas_user_id + ", domain " + domain + ", client " + client);
+    log.debug("Locating access token for user " + canvas_user_id + ", domain " + domain + ", client " + client);
 
     try {
         await db.query("SELECT data FROM user_token WHERE canvas_user_id=$1 AND canvas_domain=$2 AND canvas_client_id=$3", [
@@ -290,13 +284,15 @@ async function findAccessToken(canvas_user_id) {
             client
         ]).then((res) => {
             if (res.rows.length) {
-                log.info(JSON.stringify(res.rows));
                 foundToken = res.rows[0].data;
+            }
+            else {
+                log.debug(`No access token found for Canvas user id [${canvas_user_id}]`);
             }
         });
     }
     catch (error) {
-        log.error(error);
+        log.error("Finding access token", canvas_user_id, error);
     }
 
     return foundToken;
