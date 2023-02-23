@@ -4,7 +4,6 @@ const pkg = require('./package.json');
 const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
-const expressWinston = require('express-winston');
 const log = require('./src/logging/');
 const pg = require('pg');
 const fileStore = require('session-file-store')(session);
@@ -16,8 +15,9 @@ const db = require('./src/db');
 const utils = require('./src/utilities');
 const cache = require('./src/cache');
 const routes = require('./src/routes');
-const winston = require('winston');
-require('winston-daily-rotate-file');
+const morgan = require('morgan');
+const rfs = require('rotating-file-stream');
+const path = require('path');
 
 const port = process.env.PORT || 3000;
 const cookieMaxAge = 3600000 * 24 * 30 * 4; // 4 months
@@ -59,17 +59,25 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Request logging
-/* const accessFileRotateTransport = new winston.transports.DailyRotateFile({
-    filename: './logs/requests-%DATE%.log',
-    datePattern: 'YYYY-MM-DD',
-    maxFiles: '14d',
+// Create a rotating write stream for request access logging
+var accessLogStream = rfs.createStream('access.log', {
+    interval: '1d', // rotate daily
+    path: path.join(__dirname, 'logs')
 });
-app.use(expressWinston.logger({
-    transports: [accessFileRotateTransport],
-    msg: "{{req.method}} {{req.url}} {{res.statusCode}} {{req.session.user.id}} {{res.responseTime}}", // optional: customize the default logging message. E.g. "{{res.statusCode}} {{req.method}} {{res.responseTime}}ms {{req.url}}"
-    ignoreRoute: function (req, res) { return false; } // optional: allows to skip some log messages based on request and/or response
-})); */
+
+// Setup special Morgan tokens
+morgan.token('course-id', function getCourseId (req, res) {
+    return res.locals.courseId ? res.locals.courseId : "-";
+});
+morgan.token('user-id', function getUserId (req) {
+    return req.session.user.id ? req.session.user.id : "-";
+});
+morgan.token('user-groups', function getUserGroups (req) {
+    return req.session.user.groups_human_readable ? req.session.user.groups_human_readable : "-";
+});
+
+// Setup https request logging
+app.use(morgan(':remote-addr [:date[clf]] :method :url :status :res[content-length] - :course-id :user-id ":user-groups" ":response-time ms" ":referrer" ":user-agent"', { stream: accessLogStream }))
 
 // Content Security Policy
 app.use(function (req, res, next) {
