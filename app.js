@@ -318,8 +318,6 @@ app.get('/reservations', async (req, res, next) => {
  * Privay Policy, linked from footer
  */
 app.get('/privacy', async (req, res, next) => {
-    log.info("GET /privacy");
-
     return res.render('pages/privacy', {
         internal: req.session.internal,
         session: req.session
@@ -549,7 +547,7 @@ app.post('/api/reservation', async (req, res, next) => {
         const reservation = await db.createSlotReservation(slot_id, req.session.user.id, req.session.user.name, group_id, group_name, message);
 
         // Send confirmation messages with Canvas Conversation Robot to Inbox
-        log.info("CONVERSATION_ROBOT_SEND_MESSAGES=" + process.env.CONVERSATION_ROBOT_SEND_MESSAGES);
+        log.debug("CONVERSATION_ROBOT_SEND_MESSAGES=" + process.env.CONVERSATION_ROBOT_SEND_MESSAGES);
         if (process.env.CONVERSATION_ROBOT_API_TOKEN && process.env.CONVERSATION_ROBOT_SEND_MESSAGES == "true") {
             try {
                 const course = await db.getCourse(slot.course_id);
@@ -573,13 +571,13 @@ app.post('/api/reservation', async (req, res, next) => {
                         let conversation_result_group = await canvasApi.createConversation(recipient, subject, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
                         let log_id = await db.addCanvasConversationLog(slot_id, reservation.id, slot.canvas_course_id, recipient, subject, body);
 
-                        log.info("Sent confirmation message to the group, id " + log_id.id);
+                        log.info(`Sent confirmation message to [${recipient}] log id [${log_id.id}]`);
 
                         if (course.message_cc_instructor) {
                             let conversation_result_cc = await canvasApi.createConversation(instructor.canvas_user_id, subject_cc, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
                             let log_id_cc = await db.addCanvasConversationLog(slot_id, reservation.id, slot.canvas_course_id, instructor.canvas_user_id, subject_cc, body);
 
-                            log.info("Sent a copy of confirmation message to the instructor, id " + log_id_cc.id);
+                            log.info(`Sent a copy of confirmation message to the instructor, log id [${log_id_cc.id}]`);
                         }
 
                         // Get the updated slot with all reservations
@@ -607,13 +605,13 @@ app.post('/api/reservation', async (req, res, next) => {
                                 let conversation_result_all = await canvasApi.createConversation(recipients, subject_all, body_all, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
                                 let log_id_all = await db.addCanvasConversationLog(slot_id, null, slot_now.canvas_course_id, recipients, subject_all, body_all);
 
-                                log.info("Sent connection message to: " + recipients.join(", ") + ", id " + log_id_all.id);
+                                log.info(`Sent connection message to [${recipients.join(", ")}] log id [${log_id_all.id}]`);
 
                                 if (course.message_cc_instructor) {
                                     let conversation_result_all_cc = await canvasApi.createConversation(instructor.canvas_user_id, subject_all_cc, body_all, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
                                     let log_id_all_cc = await db.addCanvasConversationLog(slot_id, null, slot.canvas_course_id, instructor.canvas_user_id, subject_all_cc, body_all);
         
-                                    log.info("Sent a copy of connection message to the instructor, id " + log_id_all_cc.id);
+                                    log.info(`Sent a copy of connection message to the instructor, log id [${log_id_all_cc.id}]`);
                                 }
                             }
                             else {
@@ -706,7 +704,7 @@ app.delete('/api/reservation/:id', async (req, res) => {
         await db.deleteReservation(req.session.user.id, req.session.user.groups_ids, req.params.id);
 
         // Send confirmation messages with Canvas Conversation Robot to Inbox
-        log.info("CONVERSATION_ROBOT_SEND_MESSAGES=" + process.env.CONVERSATION_ROBOT_SEND_MESSAGES);
+        log.debug("CONVERSATION_ROBOT_SEND_MESSAGES=" + process.env.CONVERSATION_ROBOT_SEND_MESSAGES);
         if (process.env.CONVERSATION_ROBOT_API_TOKEN && process.env.CONVERSATION_ROBOT_SEND_MESSAGES == "true") {
             try {
                 const course = await db.getCourse(reservation.course_id);
