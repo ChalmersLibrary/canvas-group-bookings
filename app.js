@@ -77,7 +77,7 @@ morgan.token('user-groups', function getUserGroups (req) {
 });
 
 // Setup https request logging
-app.use(morgan(':remote-addr [:date[clf]] :method :url :status :res[content-length] - :course-id :user-id ":user-groups" ":response-time ms" ":referrer" ":user-agent"', { stream: accessLogStream }))
+app.use(morgan(':remote-addr [:date[clf]] ":method :url" :status :res[content-length] - :course-id :user-id ":user-groups" ":response-time ms" ":referrer" ":user-agent"', { stream: accessLogStream }))
 
 // Content Security Policy
 app.use(function (req, res, next) {
