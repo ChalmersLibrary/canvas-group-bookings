@@ -827,6 +827,6 @@ app.listen(port, () => log.info(`Application listening on port ${port}.`));
 
 /* Catch uncaught exceptions */
 process.on('uncaughtException', (err) => {
-    log.error(err);
+    console.error(err);
     process.exit(1); //mandatory (as per the Node docs)
 });
