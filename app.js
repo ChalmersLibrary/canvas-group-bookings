@@ -70,13 +70,13 @@ var accessLogStream = rfs.createStream('access.log', {
 
 // Setup special Morgan tokens
 morgan.token('course-id', function getCourseId (req, res) {
-    return res.locals.courseId ? res.locals.courseId : "-";
+    return res.locals?.courseId ? res.locals.courseId : "-";
 });
 morgan.token('user-id', function getUserId (req) {
-    return req.session.user.id ? req.session.user.id : "-";
+    return req.session?.user?.id ? req.session.user.id : "-";
 });
 morgan.token('user-groups', function getUserGroups (req) {
-    return req.session.user.groups_human_readable ? req.session.user.groups_human_readable : "-";
+    return req.session?.user?.groups_human_readable ? req.session.user.groups_human_readable : "-";
 });
 
 // Setup https request logging
