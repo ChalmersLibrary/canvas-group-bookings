@@ -1,5 +1,7 @@
 'use strict';
 
+require('dotenv').config();
+
 const pkg = require('./package.json');
 const bodyParser = require('body-parser');
 const express = require('express');
@@ -825,6 +827,6 @@ app.listen(port, () => log.info(`Application listening on port ${port}.`));
 
 /* Catch uncaught exceptions */
 process.on('uncaughtException', (err) => {
-    log.error("There was an uncaught error", err);
+    log.error(err);
     process.exit(1); //mandatory (as per the Node docs)
 });
