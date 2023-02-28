@@ -3,6 +3,7 @@
 const winston = require('winston');
 const { combine, timestamp, json, errors } = winston.format;
 require('winston-daily-rotate-file');
+require('dotenv').config();
 
 const fileRotateTransport = new winston.transports.DailyRotateFile({
     filename: './logs/combined-%DATE%.log',
@@ -28,6 +29,7 @@ const logger = winston.createLogger({
 
 if (process.env.NODE_ENV !== 'production') {
     logger.level = 'debug';
+    console.log("setting logger.level to debug because process.env.NODE_ENV=" + process.env.NODE_ENV)
     
     logger.add(new winston.transports.Console({
       format: winston.format.combine(

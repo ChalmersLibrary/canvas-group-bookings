@@ -12,7 +12,7 @@ pool.connect();
 
 pool.on('connect', client => {
     log.info("Pool connected.");
-    log.debug(client);
+    // log.debug(client);
 });
 
 pool.on('error', (error, client) => {
