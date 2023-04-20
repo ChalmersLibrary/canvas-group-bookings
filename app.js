@@ -469,7 +469,19 @@ app.get('/admin', async (req, res, next) => {
 app.get('/api/slot/:id', async (req, res, next) => {
     try {
         const slot = await db.getSlot(req.params.id)
-        slot.reservations = await db.getSimpleSlotReservations(req.params.id);
+
+        // add info about reserved groups, needed for UI
+        // don't leak user information on individuals, not used
+        if (slot.type != 'individual') {
+            slot.reservations = await db.getSimpleSlotReservations(req.params.id);
+        }
+        else {
+            delete slot.res_user_ids;
+            delete slot.res_course_user_ids;
+            delete slot.res_group_ids;
+            delete slot.res_group_names;
+            delete slot.res_course_group_ids;
+        }
 
         slot.shortcut = {
             start_date: utils.getDatePart(slot.time_start),
