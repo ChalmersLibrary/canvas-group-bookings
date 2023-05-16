@@ -27,6 +27,11 @@ This application requires PostgreSQL (12) as a database backend for storing time
 All other requirements are Node-related modules specified in ```packages.json```.
 
 
+## A note on language
+
+The interface and some API text is in Swedish. This was a requirement from the product owners when developing the application. However, language handling is in the todo list and might be available in the future. The exact method is not yet decided, however some solution with folders for view files named according to the locale sounds reasonable.
+
+
 ## Deployment notes for Chalmers
 
 For our Chalmers environment, the development branch is automatically built and deployed to the development slot in the Azure Webapp.
