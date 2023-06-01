@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         fetch(`/api/slot/${slot_id}`)
         .then((response) => response.json())
         .then((data) => {
-            if (data.success == false) {
+            if (data.success === false) {
                 reserveSlotModal.querySelector('#reserveSlotError div.alert span').innerText = data.message
                 reserveSlotModal.querySelector('div.modal-body.loading-spinner').style.display = "none"
                 reserveSlotModal.querySelector('div.modal-body.loaded-content').style.display = "block"
@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 reserveSlotModal.querySelector('#r_location_name').innerText = data.location_name
                 reserveSlotModal.querySelector('#r_slot_time').innerText = data.time_human_readable_sv
 
-                if (data.course_message_required == false) {
+                if (data.course_message_required === false) {
                     reserveSlotModal.querySelector("#r_message").removeAttribute("required")
                 }
                 if (data.course_description !== '') {
@@ -88,8 +88,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
             }
         })
         .catch((error) => {
-            reserveSlotModal.querySelector('#reserveSlotError').innerText = error.message
-            reserveSlotModal.querySelector('#reserveSlotError').style.display = "block"
+            reserveSlotModal.querySelector('div.modal-body.loading-spinner').style.display = "none"
+            reserveSlotModal.querySelector('div.modal-body.loaded-content').style.display = "none"
+            reserveSlotModal.querySelector('div.modal-body.loading-error').style.display = "block"
         })
     })
     
