@@ -15,6 +15,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         submitButton.disabled = true
         reserveSlotModal.querySelector('div.modal-body.loading-spinner').style.display = "block"
         reserveSlotModal.querySelector('div.modal-body.loaded-content').style.display = "none"
+        reserveSlotModal.querySelector('div.modal-body.loading-error').style.display = "none"
         fetch(`/api/slot/${slot_id}`)
         .then((response) => response.json())
         .then((data) => {
