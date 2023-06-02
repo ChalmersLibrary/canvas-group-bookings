@@ -8,21 +8,24 @@
     http://www.imsglobal.org/xsd/imsbasiclti_v1p0 http://www.imsglobal.org/xsd/lti/ltiv1p0/imsbasiclti_v1p0.xsd
     http://www.imsglobal.org/xsd/imslticm_v1p0 http://www.imsglobal.org/xsd/lti/ltiv1p0/imslticm_v1p0.xsd
     http://www.imsglobal.org/xsd/imslticp_v1p0 http://www.imsglobal.org/xsd/lti/ltiv1p0/imslticp_v1p0.xsd">
-    <blti:launch_url>http://localhost:3000/lti</blti:launch_url>
-    <blti:title>Group Reservation</blti:title>
+    <blti:launch_url>https://HOSTNAME/lti</blti:launch_url>
+    <blti:title>Bokningsverktyg</blti:title>
     <blti:description>Provides an interactive booking tool for course groups.</blti:description>
     <blti:extensions platform="canvas.instructure.com">
       <lticm:property name="tool_id">canvas-group-bookings</lticm:property>
       <lticm:property name="privacy_level">public</lticm:property>
+      <lticm:options name="custom_fields">
+        <lticm:property name="custom_canvas_roles">$Canvas.membership.roles</lticm:property>
+      </lticm:options>
       <lticm:options name="course_navigation">
-        <lticm:property name="url">http://localhost:3000/lti</lticm:property>
-        <lticm:property name="text">Group Reservation</lticm:property>
+        <lticm:property name="url">https://HOSTNAME/lti</lticm:property>
+        <lticm:property name="text">Bokningsverktyg</lticm:property>
         <lticm:property name="visibility">public</lticm:property>
         <lticm:property name="default">enabled</lticm:property>
         <lticm:property name="enabled">true</lticm:property>
         <lticm:options name="labels">
-          <lticm:property name="en">Group Reservation</lticm:property>
-          <lticm:property name="sv">Gruppbokning</lticm:property>
+          <lticm:property name="en">Bokningsverktyg</lticm:property>
+          <lticm:property name="sv">Bokningsverktyg</lticm:property>
         </lticm:options>
       </lticm:options>
     </blti:extensions>
