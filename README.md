@@ -19,8 +19,13 @@ For all this to work, these steps are required:
 
 4. Important: when adding the tool as an External Application, make sure that ```Privacy Level``` is set to ```Public``` and ```Custom Fields``` includes ```custom_canvas_roles=$Canvas.membership.roles```. This is to make sure the user gets the correct enrolled role for the course.
 
-5. (Optional) If you want the system to send confirmation messages in Canvas (via Inbox) you need to setup a user account in Canvas with Administrative privileges, to be able to send messages via the Conversations API. On this account, generate an Access Token and use this token in the environment variable ```CONVERSATION_ROBOT_API_TOKEN```.
+5. (Optional) If you want the system to send confirmation messages in Canvas (via Inbox) you need to setup a user account in Canvas, to be able to send messages via the Conversations API. On this account, generate an Access Token and use this token in the environment variable ```CONVERSATION_ROBOT_API_TOKEN```.
 
+    1. If you are using an account that is NOT an Account Admin, you must add this user account to the course where the tool is being used, with Administrator role. This will make sure the account has access to sending messages to people in the course roster.
+
+    2. If your course has visibility "institution", that means any user that can log in to Canvas can access the course and use the tool. In this case, adding the user account to the course roster has no effect, since it needs to send messages to any user in the Canvas account. In this case, the user account MUST be an Account Admin, so that it has access to sending messages to any user.
+
+    3. If you have installed the tool for the whole account so course administrators can activate it via Course Navigation, it's probably impossible to add the user account to each course. In this case, you will have to make the account an Account Admin.
 
 
 ## Requirements
