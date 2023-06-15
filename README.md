@@ -63,6 +63,11 @@ debug: Executed query {"0":{"duration":45,"rows":3,"text":"DELETE FROM \"user_se
 ```
 
 
+## Student preview in the tool
+
+Canvas built-in "Student view" will not work, as the tool uses the provided custom roles. However, if you are an administrator or teacher in the Canvas course or an Account Admin, you can change your role in the course roster to "Student" to view the tool as a student will see it. The tool will always look at the most local role first, provided that you have added ```custom_canvas_roles=$Canvas.membership.roles``` to the LTI configuration.
+
+
 ## A note on language
 
 The interface and some API text is in Swedish. This was a requirement from the product owners when developing the application. However, language handling is in the todo list and might be available in the future. The exact method is not yet decided, however some solution with folders for view files named according to the locale sounds reasonable.
