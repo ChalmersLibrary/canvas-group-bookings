@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
                         document.getElementById('n_instructor_canvas_id')[key] = new Option(i.name, i.id)
                     })
                     document.getElementById('n_instructor_canvas_id').addEventListener("change", function(event) {
-                        if (api_data.all_instructors.map(x => x.canvas_user_id).includes(parseInt(event.target.selectedOptions[0].value))) {
+                        if (api_data.all_instructors.map(x => x.canvas_user_id).includes(event.target.selectedOptions[0].value)) {
                             newInstructorForm.querySelector('#n_instructor_existing_id').value = api_data.all_instructors.filter(x => x.canvas_user_id == event.target.selectedOptions[0].value)[0].id
                         }
                         else {
@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
                     })
                     newInstructorForm.querySelector('#n_instructor_name').value = api_data.canvas_instructors.filter(x => x.id == document.getElementById('n_instructor_canvas_id').value)[0].name
                     newInstructorForm.querySelector('#n_instructor_email').value = api_data.canvas_instructors.filter(x => x.id == document.getElementById('n_instructor_canvas_id').value)[0].email
-                    if (api_data.all_instructors.map(i => i.canvas_user_id).includes(parseInt(document.getElementById('n_instructor_canvas_id').value))) {
+                    if (api_data.all_instructors.map(i => i.canvas_user_id).includes(document.getElementById('n_instructor_canvas_id').value)) {
                         newInstructorForm.querySelector('#n_instructor_existing_id').value = api_data.all_instructors.filter(x => x.canvas_user_id == document.getElementById('n_instructor_canvas_id').value)[0].id
                     }
                 }

@@ -339,7 +339,7 @@ router.get('/instructor', async (req, res, next) => {
         let canvas_instructors = await canvasApi.getCourseTeacherEnrollments(res.locals.courseId, res.locals.token);
 
         for (const i of canvas_instructors) {
-            if (course_instructors.map(instructor => instructor.canvas_user_id).includes(i.id)) {
+            if (course_instructors.map(instructor => instructor.canvas_user_id.toString()).includes(i.id.toString())) {
                 i.mapped_to_canvas_course = true
             }
             else {
