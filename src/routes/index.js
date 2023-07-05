@@ -10,6 +10,7 @@ const db = require('../db');
 const canvasApi = require('../api/canvas');
 const pkg = require('../../package.json');
 const routesApi = require('./api');
+const i18n = require('../lang/i18n.config');
 
 // Handle LTI Launch
 router.post('/lti', lti.handleLaunch('/'));
@@ -48,6 +49,9 @@ router.all(['/', '/reservations', '/privacy', '/debug', '/admin*', '/api/*'], as
                 else {
                     req.session.user.groups = [];
                 }
+
+                // Add language strings
+                i18n.setLocale(req.session.user.locale);
 
                 // Add some debug information
                 req.session.internal = {

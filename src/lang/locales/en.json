@@ -1,0 +1,14 @@
+{
+	"Hello": "Hello in English!",
+	"You have %s message": {
+		"one": "You have just one message",
+		"other": "You have many messages, they are in fact %s"
+	},
+	"Slots": {
+		"one": "One slot from %%s %%s",
+		"other": "%d slots from %%s %%s"
+	},
+	"today": "today",
+	"until": "until",
+	"and forward": "and forward"
+}

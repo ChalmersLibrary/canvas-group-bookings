@@ -1,0 +1,7 @@
+{
+    "Hello": "Hej på svenska!",
+    "You have %s message": {
+       "one": "Du har ett meddelande",
+       "other": "Du har %s meddelanden"
+    }
+ }
