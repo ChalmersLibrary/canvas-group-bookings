@@ -102,12 +102,12 @@ if (process.env.NODE_ENV === "production") {
 // Session options
 app.use(session(sessionOptions));
 
+// set the view engine to ejs
+app.set('view engine', 'ejs');
+
 // Language with i18n
 // Default: using 'accept-language' header to guess language settings
 app.use(i18n.init);
-
-// set the view engine to ejs
-app.set('view engine', 'ejs');
 
 // Check database version
 db.checkDatabaseVersion();
@@ -161,14 +161,15 @@ app.get('/', async (req, res, next) => {
         this_navigation.current_page_is_instructor_slots = false;
     }
 
-    let this_start_date_string = i18n.__("today");
-    let this_end_date_string = i18n.__("and forward");
+    let this_start_date_string = res.__("today");
+    let this_end_date_string = res.__("and forward");
 
-    /* 
-    console.log(i18n.getLocale());
-    console.log(i18n.__('Hello')); // 'Hello'
-    console.log(i18n.__n('You have %s message', 100)); // 'You have 5 messages' 
-    */
+    res.setLocale('sv');
+    console.log(res.getLocale());
+    console.log(res.__('Hello')); // 'Hello'
+    console.log(res.__n('You have %s message', 100)); // 'You have 5 messages' 
+    console.log(res.__('NoTimeSlots'));
+
 
     if (Date.parse(req.query.start_date)) {
          if (new Date().toLocaleDateString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric' }) != new Date(req.query.start_date).toLocaleDateString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric' })) {
@@ -182,7 +183,7 @@ app.get('/', async (req, res, next) => {
     }
 
     this_navigation.title = `${this_navigation.records_total} tider ${this_navigation.current_page_is_instructor_slots ? 'med dig som handledare' : ''} från ${this_start_date_string} ${this_end_date_string}`;
-    console.log(i18n.__n("Slots", this_navigation.records_total, this_start_date_string, this_end_date_string));
+    // console.log(i18n.__n("Slots", this_navigation.records_total, this_start_date_string, this_end_date_string));
 
     /* Add contextual availability notice for each slot */
     for (const slot of availableSlots.slots) {

@@ -51,7 +51,7 @@ router.all(['/', '/reservations', '/privacy', '/debug', '/admin*', '/api/*'], as
                 }
 
                 // Add language strings
-                i18n.setLocale(req.session.user.locale);
+                //i18n.setLocale(req.session.user.locale);
 
                 // Add some debug information
                 req.session.internal = {

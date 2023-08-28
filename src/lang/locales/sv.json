@@ -1,7 +1,16 @@
 {
-    "Hello": "Hej på svenska!",
-    "You have %s message": {
-       "one": "Du har ett meddelande",
-       "other": "Du har %s meddelanden"
-    }
- }
+   "Hello": "Hej på svenska!",
+   "You have %s message": {
+      "one": "Du har ett meddelande",
+      "other": "Du har %s meddelanden"
+   },
+   "Slots": {
+      "one": "Slots",
+      "other": "Slots"
+   },
+   "NoTimeSlots": "Hittade inga tider",
+   "NoTimeSlotsDescription": "Antingen är inga tider utlagda eller så finns det inga tider som motsvarar de filter du valt.",
+   "NoTimeSlotsResetFilters": "Återställ alla filter",
+   "today": "today",
+   "and forward": "and forward"
+}

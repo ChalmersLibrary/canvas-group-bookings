@@ -1,9 +1,14 @@
+
+<section>
+    <pre><%= __('Hello') %></pre>
+</section>
+    
 <div class="row pt-4">
     <div class="col-md-9">
         <% if (!slots.length) { %>
-            <h4 class="alert-heading">Hittade inga tider</h4>
-            <p>Antingen är inga tider utlagda eller så finns det inga tider som motsvarar de filter du valt.</p>
-            <p><a href="?">Återställ alla filter</a></p>
+            <h4 class="alert-heading"><%= __('NoTimeSlots') %></h4>
+            <p><%= __('NoTimeSlotsDescription') %></p>
+            <p><a href="?"><%= __('NoTimeSlotsResetFilters') %></a></p>
         <% } else { %>
             <h4 class="alert-heading"><%= navigation.title %></h4>
             <table id="slots" class="table table-hover caption-top mb-3">

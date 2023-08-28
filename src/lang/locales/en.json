@@ -10,5 +10,8 @@
 	},
 	"today": "today",
 	"until": "until",
-	"and forward": "and forward"
+	"and forward": "and forward",
+	"NoTimeSlots": "No time slots",
+	"NoTimeSlotsDescription": "There are no slots published or you have active filters that prevent some from showing.",
+	"NoTimeSlotsResetFilters": "Reset all filters"
 }
