@@ -204,7 +204,10 @@ app.get('/', async (req, res, next) => {
                 slot.reservable_notice = "Tiden är fullbokad.";
             }
 
-            if (new Date().toLocaleDateString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric' }) > new Date(slot.time_start).toLocaleDateString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric' })) {
+            const t_time_now = new Date().getTime();
+            const t_time_slot = new Date(slot.time_start).getTime();
+
+            if (t_time_slot <= t_time_now) {
                 slot.reservable_for_this_user = false;
                 slot.reservable_notice = "Tiden har passerats.";
             }
@@ -513,10 +516,16 @@ app.post('/api/reservation', async (req, res, next) => {
     try {
         const slot = await db.getSlot(slot_id);
 
+        const t_time_now = new Date().getTime();
+        const t_time_slot = new Date(slot.time_start).getTime();
+
         // TODO: Same code as in route for /, try to generalize
 
         if (slot.res_now >= slot.res_max) {
             throw new Error("Tiden är fullbokad.");
+        }
+        else if (t_time_slot <= t_time_now) {
+            throw new Error("Tiden har passerats.");
         }
         else {
             if (slot.type == "group") {
