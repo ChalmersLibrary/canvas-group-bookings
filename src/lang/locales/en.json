@@ -1,17 +1,53 @@
 {
-	"Hello": "Hello in English!",
-	"You have %s message": {
-		"one": "You have just one message",
-		"other": "You have many messages, they are in fact %s"
+	"ApplicationName": "Booking Tool",
+	"Hello": "Hello",
+	"NoTimeSlots": "No time slots available",
+	"NoTimeSlotsDescription": "Antingen är inga tider utlagda eller så finns det inga tider som motsvarar de filter du valt.",
+	"NoTimeSlotsResetFilters": "Reset all filters",
+	"DatePhraseToday": "today",
+	"DatePhraseUntil": "until",
+	"DatePhraseAndForward": "and in the future",
+	"SlotListingHeaderNormal": "Listing {{slots}} slots from {{from}} {{to}}:",
+	"SlotListingHeaderInstructor": "Listing {{slots}} slots with you as instructor from {{from}} {{to}}:",
+	"SlotListingPhraseGroup": {
+		"one": "group",
+		"other": "groups"
 	},
-	"Slots": {
-		"one": "One slot from %%s %%s",
-		"other": "%d slots from %%s %%s"
+	"SlotListingPhraseIndividual": {
+		"one": "individual",
+		"other": "individuals"
 	},
-	"today": "today",
-	"until": "until",
-	"and forward": "and forward",
-	"NoTimeSlots": "No time slots",
-	"NoTimeSlotsDescription": "There are no slots published or you have active filters that prevent some from showing.",
-	"NoTimeSlotsResetFilters": "Reset all filters"
+	"SlotListingHeaderTimeTitle": "Course and time",
+	"SlotListingHeaderInstructorPlaceTitle": "Instructor and location",
+	"SlotListingHeaderAvailabilityTitle": "Availability",
+	"SlotListingFilterShowAll": "Show all",
+	"SlotListingFilterSegmentTitle": "Segment",
+	"SlotListingFilterCourseTitle": "Course",
+	"SlotListingFilterInstructorTitle": "Instructor",
+	"SlotListingFilterLocationTitle": "Location",
+	"SlotListingFilterAvailabilityTitle": "Availability",
+	"SlotListingFilterAvailabilityAll": "Show all",
+	"SlotListingFilterAvailabilityOnlyAvailable": "Only available",
+	"SlotListingFilterDateTitle": "Date",
+	"SlotListingFilterDateFrom": "From",
+	"SlotListingFilterDateTo": "To",
+	"SlotListingFilterDateSubmit": "Show",
+	"SlotReservationNoAdministrator": "Administratör kan inte boka tider.",
+	"SlotReservationNoInstructor": "Handledare kan inte boka tider.",
+	"SlotReservationFull": "Slot is reserved.",
+	"SlotReservationTimeInPast": "Time for this slot has passed.",
+	"SlotReservationGroupIsReserved": "You are a member of a group that is already reserved.",
+	"SlotReservationGroupMaxReservations": "Max reservations {{max}} for {{name}}.",
+	"SlotReservationIndividualIsReserved": "You are reserved on this slot.",
+	"SlotReservationIndividualMaxReservations": "Max reservations {{max}} for {{name}}.",
+	"SlotReservationReserveButtonTitle": "Reserve",
+	"ReserveSlotModalTitle": "Reserve available timeslot",
+	"ReserveSlotModalLabelDateTime": "Date and time:",
+	"ReserveSlotModalLabelLocation": "Location:",
+	"ReserveSlotModalLabelInstructor": "Instructor:",
+	"ReserveSlotModalLabelMessage": "Questions or feedback to the instructor:",
+	"ReserveSlotModalLabelMessageInvalidFeedback": "Please enter a message in the text area.",
+	"ReserveSlotModalLabelReservationGroup": "Reservation for group:",
+	"ReserveSlotModalLabelReservationGroupNoMembership": "Not a member of a group",
+	"ReserveSlotModalLabelReservationIndividual": "Reservation for individual:"
 }

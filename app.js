@@ -133,16 +133,20 @@ app.get('/', async (req, res, next) => {
     const per_page = DB_PER_PAGE ? DB_PER_PAGE : 25;
     const offset = req.query.page ? Math.max(parseInt(req.query.page) - 1, 0) * per_page : 0;
 
+    /* Language debug, should be set in first request handler */
+    res.setLocale('en');
+    console.log(res.getLocale());
+
     /* Available slots, with filters applied, paginated */
     availableSlots = await db.getAllSlotsPaginated(offset, per_page, res.locals.courseId, parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
 
     /* Difference between valid courses to use in slots and courses used for filtering */
-    const filter_segments = utils.linkify('segment', await db.getSegments(res.locals.courseId), parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
-    const filter_courses = utils.linkify('course', await db.getValidCourses(res.locals.courseId), parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
-    const filter_instructors = utils.linkify('instructor', await db.getValidInstructors(res.locals.courseId), parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
-    const filter_locations = utils.linkify('location', await db.getValidLocations(res.locals.courseId), parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
-    const filter_availability = utils.linkify('availability', [ { id: 1, name: 'Även fullbokade' } ], parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
-    const filter_date = utils.linkify('date', '', parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
+    const filter_segments = utils.linkify(res, 'segment', await db.getSegments(res.locals.courseId), parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
+    const filter_courses = utils.linkify(res, 'course', await db.getValidCourses(res.locals.courseId), parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
+    const filter_instructors = utils.linkify(res, 'instructor', await db.getValidInstructors(res.locals.courseId), parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
+    const filter_locations = utils.linkify(res, 'location', await db.getValidLocations(res.locals.courseId), parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
+    const filter_availability = utils.linkify(res, 'availability', [ { id: 1, name: res.__('SlotListingFilterAvailabilityAll') } ], parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
+    const filter_date = utils.linkify(res, 'date', '', parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
 
     let this_navigation = utils.paginate(availableSlots.records_total, per_page, req.query.page ? Math.max(parseInt(req.query.page), 1) : 1, parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
     this_navigation.filters = {
@@ -161,15 +165,16 @@ app.get('/', async (req, res, next) => {
         this_navigation.current_page_is_instructor_slots = false;
     }
 
-    let this_start_date_string = res.__("today");
-    let this_end_date_string = res.__("and forward");
+    let this_start_date_string = res.__('DatePhraseToday');
+    let this_end_date_string = res.__('DatePhraseAndForward');
 
-    res.setLocale('sv');
-    console.log(res.getLocale());
-    console.log(res.__('Hello')); // 'Hello'
-    console.log(res.__n('You have %s message', 100)); // 'You have 5 messages' 
     console.log(res.__('NoTimeSlots'));
-
+    console.log(res.__('SlotListingHeaderNormal', { slots: 2, from: res.__('DatePhraseToday'), to: res.__('DatePhraseUntil') + ' 2023-08-31' }));
+    console.log(res.__('SlotListingHeaderInstructor', { slots: 2, from: res.__('DatePhraseToday'), to: res.__('DatePhraseAndForward') }));
+    console.log(res.__('SlotListingPhraseGroup'));
+    console.log(res.__n('SlotListingPhraseGroup'));
+    console.log(res.__('SlotListingPhraseIndividual'));
+    console.log(res.__n('SlotListingPhraseIndividual'));
 
     if (Date.parse(req.query.start_date)) {
          if (new Date().toLocaleDateString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric' }) != new Date(req.query.start_date).toLocaleDateString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric' })) {
@@ -178,12 +183,16 @@ app.get('/', async (req, res, next) => {
     }
     if (Date.parse(req.query.end_date)) {
         if (new Date().toLocaleDateString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric' }) != new Date(req.query.end_date).toLocaleDateString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric' })) {
-           this_end_date_string = i18n.__("until") + new Date(req.query.end_date).toLocaleDateString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric' });
+           this_end_date_string = res.__('DatePhraseUntil') + " " + new Date(req.query.end_date).toLocaleDateString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric' });
        }
     }
 
-    this_navigation.title = `${this_navigation.records_total} tider ${this_navigation.current_page_is_instructor_slots ? 'med dig som handledare' : ''} från ${this_start_date_string} ${this_end_date_string}`;
-    // console.log(i18n.__n("Slots", this_navigation.records_total, this_start_date_string, this_end_date_string));
+    if (this_navigation.current_page_is_instructor_slots) {
+        this_navigation.title = res.__('SlotListingHeaderInstructor', { slots: this_navigation.records_total, from: this_start_date_string, to: this_end_date_string });
+    }
+    else {
+        this_navigation.title = res.__('SlotListingHeaderNormal', { slots: this_navigation.records_total, from: this_start_date_string, to: this_end_date_string });
+    }
 
     /* Add contextual availability notice for each slot */
     for (const slot of availableSlots.slots) {
@@ -203,18 +212,18 @@ app.get('/', async (req, res, next) => {
 
         if (req.session.user.isAdministrator) {
             slot.reservable_for_this_user = false;
-            slot.reservable_notice = "Administratör kan inte boka tider.";
+            slot.reservable_notice = res.__('SlotReservationNoAdministrator');
         }
         else if (req.session.user.isInstructor) {
             slot.reservable_for_this_user = false;
-            slot.reservable_notice = "Handledare kan inte boka tider.";
+            slot.reservable_notice = res.__('SlotReservationNoInstructor');
         }
         else {
             slot.reservable_for_this_user = true;
 
             if (slot.res_now >= slot.res_max) {
                 slot.reservable_for_this_user = false;
-                slot.reservable_notice = "Tiden är fullbokad.";
+                slot.reservable_notice = res.__('SlotReservationFull');
             }
 
             const t_time_now = new Date().getTime();
@@ -222,21 +231,21 @@ app.get('/', async (req, res, next) => {
 
             if (t_time_slot <= t_time_now) {
                 slot.reservable_for_this_user = false;
-                slot.reservable_notice = "Tiden har passerats.";
+                slot.reservable_notice = res.__('SlotReservationTimeInPast');
             }
     
             if (slot.type == "group") {
                 // Check if any of this user's groups are reserved on this slot
                 if (slot.res_group_ids && slot.res_group_ids.filter(id => req.session.user.groups_ids?.includes(id)).length) {
                     slot.reservable_for_this_user = false;
-                    slot.reservable_notice = "En grupp du tillhör är bokad på denna tid.";
+                    slot.reservable_notice = res.__('SlotReservationGroupIsReserved');
                 }
 
                 // Check how many times this user's groups are reserved on slots with the same course context
                 if (slot.res_course_group_ids && slot.reservable_for_this_user) {
                     if (slot.res_course_group_ids.filter(id => req.session.user.groups_ids?.includes(id)).length >= slot.course_max_per_type) {
                         slot.reservable_for_this_user = false;
-                        slot.reservable_notice = `Max antal bokningar (${slot.course_max_per_type}) för ${slot.course_name}.`;
+                        slot.reservable_notice = res.__('SlotReservationGroupMaxReservations', { max: slot.course_max_per_type, name: slot.course_name });
                     }
                 }
             }
@@ -244,14 +253,14 @@ app.get('/', async (req, res, next) => {
                 // Check if this user is reserved on this slot
                 if (slot.res_user_ids && slot.res_user_ids.includes(req.session.user.id)) {
                     slot.reservable_for_this_user = false;
-                    slot.reservable_notice = "Du är bokad på denna tid.";
+                    slot.reservable_notice = res.__('SlotReservationIndividualIsReserved');
                 }
 
                 // Check how many times this user is reserved on slots with the same course context
                 if (slot.res_course_user_ids && slot.reservable_for_this_user) {
                     if (slot.res_course_user_ids.filter(id => req.session.user.id == id).length >= slot.course_max_per_type) {
                         slot.reservable_for_this_user = false;
-                        slot.reservable_notice = `Max antal bokningar (${slot.course_max_per_type}) för ${slot.course_name}.`;
+                        slot.reservable_notice = res.__('SlotReservationIndividualMaxReservations', { max: slot.course_max_per_type, name: slot.course_name });
                     }
                 }
             }

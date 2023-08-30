@@ -2,6 +2,7 @@
 
 require('dotenv').config();
 const fs = require('fs');
+const i18n = require('../lang/i18n.config');
 
 function getDatePart(date) {
     const dateOptions = { year: 'numeric', month: 'numeric', day: 'numeric' };
@@ -66,7 +67,7 @@ function paginate(total_records, per_page, current_page, segment, course, instru
     return pagination;
 }
 
-function linkify(this_filter_name, this_filter_items, segment, course, instructor, location, availability, start_date, end_date) {
+function linkify(res, this_filter_name, this_filter_items, segment, course, instructor, location, availability, start_date, end_date) {
     let link_url = "";
     let this_list = [];
 
@@ -81,7 +82,7 @@ function linkify(this_filter_name, this_filter_items, segment, course, instructo
     if (this_filter_name == 'segment') {
         this_list.push({
             id: null,
-            name: 'Visa alla',
+            name: res.__('SlotListingFilterShowAll'),
             link: '?segment=' + link_url,
             active: isNaN(segment)
         });
@@ -98,7 +99,7 @@ function linkify(this_filter_name, this_filter_items, segment, course, instructo
     if (this_filter_name == 'course') {
         this_list.push({
             id: null,
-            name: 'Visa alla',
+            name: res.__('SlotListingFilterShowAll'),
             link: '?course=' + link_url,
             active: isNaN(course)
         });
@@ -115,7 +116,7 @@ function linkify(this_filter_name, this_filter_items, segment, course, instructo
     if (this_filter_name == 'instructor') {
         this_list.push({
             id: null,
-            name: 'Visa alla',
+            name: res.__('SlotListingFilterShowAll'),
             link: '?instructor=' + link_url,
             active: isNaN(instructor)
         });
@@ -132,7 +133,7 @@ function linkify(this_filter_name, this_filter_items, segment, course, instructo
     if (this_filter_name == 'location') {
         this_list.push({
             id: null,
-            name: 'Visa alla',
+            name: res.__('SlotListingFilterShowAll'),
             link: '?location=' + link_url,
             active: isNaN(location)
         });
@@ -149,7 +150,7 @@ function linkify(this_filter_name, this_filter_items, segment, course, instructo
     if (this_filter_name == 'availability') {
         this_list.push({
             id: null,
-            name: 'Endast bokningsbara',
+            name: res.__('SlotListingFilterAvailabilityOnlyAvailable'),
             link: '?availability=' + link_url,
             active: isNaN(availability)
         });

@@ -6,7 +6,7 @@
             <input type="hidden" id="r_group_string" value="<%= session.user.groups.map(g => g.name).join(',') %>">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="reserveSlotLabel">Boka tillgänglig tid</h5>
+                    <h5 class="modal-title" id="reserveSlotLabel"><%= __('ReserveSlotModalTitle') %></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Stäng"></button>
                 </div>
                 <div class="modal-body loading-spinner">
@@ -24,15 +24,15 @@
                             </p>
                             <p class="d-none" id="r_course_description"></p>
                             <p>
-                                <label>Datum och tid:</label><br>
+                                <label><%= __('ReserveSlotModalLabelDateTime') %></label><br>
                                 <span id="r_slot_time"></span>
                             </p>
                             <p>
-                                <label>Lokal:</label><br>
+                                <label><%= __('ReserveSlotModalLabelLocation') %></label><br>
                                 <span id="r_location_name"></span>
                             </p>
                             <p>
-                                <label>Handledare:</label><br>
+                                <label><%= __('ReserveSlotModalLabelInstructor') %></label><br>
                                 <span id="r_instructor_name"></span>
                             </p>
                             <div class="row d-none" id="reservationsContainer">
@@ -42,29 +42,29 @@
                         </div>
                         <div class="col-lg-7">
                             <p>
-                                <label for="r_message" class="form-label">Frågor eller meddelande till handledaren:</label>
+                                <label for="r_message" class="form-label"><%= __('ReserveSlotModalLabelMessage') %></label>
                                 <textarea required id="r_message" name="message" class="form-control" rows="4"></textarea>
-                                <div class="invalid-feedback">Please enter a message in the textarea.</div>
+                                <div class="invalid-feedback"><%= __('ReserveSlotModalLabelMessageInvalidFeedback') %></div>
                             </p>
                             <p>
                                 <div id="reserveSlotGroupBlock" style="display:block;">
                                     <% if (session.user.groups && session.user.groups.length > 0) { %>
-                                        <label for="r_group_id" class="form-label">Bokning för grupp:</label>
+                                        <label for="r_group_id" class="form-label"><%= __('ReserveSlotModalLabelReservationGroup') %></label>
                                         <select name="group_id" id="r_group_id" class="form-control">
                                             <% session.user.groups.forEach(group => { %>
                                                 <option value="<%= group.id %>"><%= group.name %></option>
                                             <% }) %>
                                         </select>
                                     <% } else { %>
-                                        <label for="r_group_id" class="form-label">Bokning för grupp:</label>
+                                        <label for="r_group_id" class="form-label"><%= __('ReserveSlotModalLabelReservationGroup') %></label>
                                         <select name="group_id" id="r_group_id" class="form-control">
-                                            <option value="">Ej medlem i någon grupp</option>
+                                            <option value=""><%= __('ReserveSlotModalLabelReservationGroupNoMembership') %></option>
                                         </select>
                                     <% } %>
                                 </div>
                                 <div id="reserveSlotIndividualBlock" style="display:none;">
                                     <% if (session.user.id) { %>
-                                        <label for="r_user_id" class="form-label">Bokning för individ:</label>
+                                        <label for="r_user_id" class="form-label"><%= __('ReserveSlotModalLabelReservationIndividual') %></label>
                                         <select name="user_id" id="r_user_id" class="form-control">
                                             <option value="<%= session.user.id %>"><%= session.user.name %></option>
                                         </select>

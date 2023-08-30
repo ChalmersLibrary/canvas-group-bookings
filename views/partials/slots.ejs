@@ -15,10 +15,10 @@
                 <thead>
                     <tr>
                         <% if (slots.some(s => s.course_segment_id !== null)) { %><th class=""></th> <% } %>
-                        <th class="d-md-table-cell d-md-none">Tillfälle</th>
-                        <th class="d-none d-md-table-cell">Tillfälle och tid</th>
-                        <th class="d-none d-md-table-cell">Handledare och plats</th>
-                        <th class="d-none d-md-table-cell">Tillgänglighet</th>
+                        <th class="d-md-table-cell d-md-none"><%= __('SlotListingHeaderTimeTitle') %></th>
+                        <th class="d-none d-md-table-cell"><%= __('SlotListingHeaderTimeTitle') %></th>
+                        <th class="d-none d-md-table-cell"><%= __('SlotListingHeaderInstructorPlaceTitle') %></th>
+                        <th class="d-none d-md-table-cell"><%= __('SlotListingHeaderAvailabilityTitle') %></th>
                         <th class="d-none d-md-table-cell"></th>
                     </tr>
                 </thead>
@@ -47,9 +47,9 @@
                                         <% } %>
                                     <% } else { %>
                                         <% if (slot.reservable_for_this_user) { %>
-                                            <button type="button" title="Boka tillfället" class="btn btn-primary btn-md" data-bs-toggle="modal" data-bs-target="#reserveSlot" data-bs-slot-id="<%= slot.id %>" >Boka</button>
+                                            <button type="button" title="Boka tillfället" class="btn btn-primary btn-md" data-bs-toggle="modal" data-bs-target="#reserveSlot" data-bs-slot-id="<%= slot.id %>"><%= __('SlotReservationReserveButtonTitle') %></button>
                                         <% } else { %>
-                                            <button type="button" title="Tillfället är inte bokningsbart" class="btn btn-secondary btn-md" disabled>Boka</button>
+                                            <button type="button" title="Tillfället är inte bokningsbart" class="btn btn-secondary btn-md" disabled><%= __('SlotReservationReserveButtonTitle') %></button>
                                         <% } %>
                                     <% } %>
                                 </div>
@@ -83,9 +83,9 @@
                                 <td class="d-none d-md-table-cell align-top">
                                     <div class="float-end">
                                         <% if (slot.reservable_for_this_user) { %>
-                                            <button type="button" title="Boka tillfället" class="btn btn-primary btn-md" data-bs-toggle="modal" data-bs-target="#reserveSlot" data-bs-slot-id="<%= slot.id %>" >Boka</button>
+                                            <button type="button" title="Boka tillfället" class="btn btn-primary btn-md" data-bs-toggle="modal" data-bs-target="#reserveSlot" data-bs-slot-id="<%= slot.id %>"><%= __('SlotReservationReserveButtonTitle') %></button>
                                         <% } else { %>
-                                            <button type="button" title="Tillfället är inte bokningsbart" class="btn btn-secondary btn-md" disabled>Boka</button>
+                                            <button type="button" title="Tillfället är inte bokningsbart" class="btn btn-secondary btn-md" disabled><%= __('SlotReservationReserveButtonTitle') %></button>
                                         <% } %>    
                                     </div>
                                 </td>
@@ -112,7 +112,7 @@
         <% if (navigation.filters.course && navigation.filters.course.length) { %>
             <div class="card card-filter">
                 <div class="card-header">
-                    Tillfälle
+                    <%= __('SlotListingFilterCourseTitle') %>
                 </div>
                 <div class="list-group list-group-flush">
                     <% navigation.filters.course.forEach(course => { %>
@@ -124,7 +124,7 @@
         <% if (navigation.filters.instructor && navigation.filters.instructor.length) { %>
             <div class="card card-filter">
                 <div class="card-header">
-                    Handledare
+                    <%= __('SlotListingFilterInstructorTitle') %>
                 </div>
                 <div class="list-group list-group-flush">
                     <% navigation.filters.instructor.forEach(instructor => { %>
@@ -136,7 +136,7 @@
         <% if (navigation.filters.location && navigation.filters.location.length) { %>
             <div class="card card-filter">
                 <div class="card-header">
-                    Plats
+                    <%= __('SlotListingFilterLocationTitle') %>
                 </div>
                 <div class="list-group list-group-flush">
                     <% navigation.filters.location.forEach(location => { %>
@@ -148,7 +148,7 @@
         <% if (navigation.filters.availability && navigation.filters.availability.length) { %>
             <div class="card card-filter">
                 <div class="card-header">
-                    Tillgänglighet
+                    <%= __('SlotListingFilterAvailabilityTitle') %>
                 </div>
                 <div class="list-group list-group-flush">
                     <% navigation.filters.availability.forEach(availability => { %>
@@ -159,7 +159,7 @@
         <% } %>
         <div class="card card-filter">
             <div class="card-header">
-                Datum
+                <%= __('SlotListingFilterDateTitle') %>
             </div>
             <div class="card-body">
                 <form method="get" action="">
@@ -167,15 +167,15 @@
                         <input type="hidden" name="<%= p.name %>" value="<%= p.value %>">
                     <% }) %>
                     <p>
-                        <label for="start_date">Från:</label><br>
+                        <label for="start_date"><%= __('SlotListingFilterDateFrom') %>:</label><br>
                         <input id="start_date" name="start_date" type="date" class="form-control" value="<%= navigation.filters.date.start_date %>">    
                     </p>
                     <p>
-                        <label for="end_date">Till:</label><br>
+                        <label for="end_date"><%= __('SlotListingFilterDateTo') %>:</label><br>
                         <input id="end_date" name="end_date" type="date" class="form-control" value="<%= navigation.filters.date.end_date %>">    
                     </p>
                     <p>
-                        <button type="submit" class="btn btn-sm btn-primary float-end">Visa</button>
+                        <button type="submit" class="btn btn-sm btn-primary float-end"><%= __('SlotListingFilterDateSubmit') %></button>
                     </p>
                 </form>
             </div>
