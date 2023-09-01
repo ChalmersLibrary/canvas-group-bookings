@@ -49,5 +49,15 @@
 	"ReserveSlotModalLabelMessageInvalidFeedback": "Fältet för meddelande är obligatoriskt.",
 	"ReserveSlotModalLabelReservationGroup": "Bokning för grupp:",
 	"ReserveSlotModalLabelReservationGroupNoMembership": "Ej medlem i någon grupp",
-	"ReserveSlotModalLabelReservationIndividual": "Bokning för individ:"
+	"ReserveSlotModalLabelReservationIndividual": "Bokning för individ:",
+	"ReserveSlotModalMsgGroupNoticeTitle": "Detta är en bokning för en hel grupp.",
+	"ReserveSlotModalMsgGroupNoticeText": "När du bokar kommer du och alla medlemmar i din grupp att få en bekräftelse i Canvas Inbox.",
+	"ReserveSlotModalMsgGroupConnectNoticeTitle": "Detta tillfälle är tillsammans med en annan grupp.",
+	"ReserveSlotModalMsgGroupConnectNoticeText": "När du bokar kommer du och alla medlemmar i din grupp att få en bekräftelse i Canvas Inbox. Båda grupperna kommer även få instruktioner för hur ni tillsammans ska förbereda er inför tillfället.",
+	"ReserveSlotModalMsgUserNotInGroupTitle": "Du är inte medlem i någon grupp.",
+	"ReserveSlotModalMsgUserNotInGroupText": "För att kunna boka den här tiden måste du vara medlem i en grupp. Kontakta en handledare eller examinator för att kontrollera varför du inte är med i en grupp.",
+	"ReserveSlotModalMsgErrorTitle": "Ett fel uppstod:",
+	"ReserveSlotModalMsgErrorLoadingText": "Servern svarade inte, kan inte ladda information.",
+	"ReserveSlotModalCancelButtonLabel": "Avbryt",
+	"ReserveSlotModalSubmitButtonLabel": "Boka tiden"
 }

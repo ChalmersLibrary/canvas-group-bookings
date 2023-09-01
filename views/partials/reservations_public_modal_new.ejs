@@ -76,9 +76,9 @@
                     <div class="row" id="reserveSlotGroupNotice" style="display:none;">
                         <div class="col">
                             <div class="alert alert-primary" role="alert">
-                                <strong>Detta är en bokning för en hel grupp.</strong>
+                                <strong><%= __('ReserveSlotModalMsgGroupNoticeTitle') %></strong>
                                 <span>
-                                    När du bokar kommer du och alla medlemmar i din grupp att få en bekräftelse i Canvas Inbox.
+                                    <%= __('ReserveSlotModalMsgGroupNoticeText') %>
                                 </span>
                             </div>
                         </div>
@@ -86,10 +86,9 @@
                     <div class="row" id="reserveSlotGroupConnectNotice" style="display:none;">
                         <div class="col">
                             <div class="alert alert-primary" role="alert">
-                                <strong>Detta tillfälle är tillsammans med en annan grupp.</strong>
+                                <strong><%= __('ReserveSlotModalMsgGroupConnectNoticeTitle') %></strong>
                                 <span>
-                                    När du bokar kommer du och alla medlemmar i din grupp att få en bekräftelse i Canvas Inbox.
-                                    Båda grupperna kommer även få instruktioner för hur ni tillsammans ska förbereda er inför tillfället.
+                                    <%= __('ReserveSlotModalMsgGroupConnectNoticeText') %>
                                 </span>
                             </div>
                         </div>
@@ -97,10 +96,9 @@
                     <div class="row" id="reserveSlotUserNotInGroup" style="display:none;">
                         <div class="col">
                             <div class="alert alert-danger" role="alert">
-                                <strong>Du är inte medlem i någon grupp.</strong>
+                                <strong><%= __('ReserveSlotModalMsgUserNotInGroupTitle') %></strong>
                                 <span>
-                                    För att kunna boka den här tiden måste du vara medlem i en grupp. Kontakta en handledare
-                                    eller examinator för att kontrollera varför du inte är med i en grupp.
+                                    <%= __('ReserveSlotModalMsgUserNotInGroupText') %>
                                 </span>
                             </div>    
                         </div>
@@ -108,7 +106,7 @@
                     <div class="row" id="reserveSlotError" style="display:none;">
                         <div class="col">
                             <div class="alert alert-danger" role="alert">
-                                <strong>Ett fel uppstod:</strong> <span></span>
+                                <strong><%= __('ReserveSlotModalMsgErrorTitle') %></strong> <span></span>
                             </div>
                         </div>
                     </div>
@@ -117,16 +115,16 @@
                     <div class="row" id="reserveSlotLoadingError">
                         <div class="col">
                             <div class="alert alert-danger" role="alert">
-                                <strong>Ett fel uppstod:</strong>
-                                <span>Servern svarade inte, kan inte ladda information.</span>
+                                <strong><%= __('ReserveSlotModalMsgErrorTitle') %></strong>
+                                <span><%= __('ReserveSlotModalMsgErrorLoadingText') %></span>
                             </div>
                         </div>
                     </div>    
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><%= __('ReserveSlotModalCancelButtonLabel') %></button>
                     <button type="submit" class="btn btn-primary" id="reserveSlotSubmitButton">
-                        Boka tiden
+                        <%= __('ReserveSlotModalSubmitButtonLabel') %>
                         <span class="spinner-border spinner-border-sm" style="display:none;" role="status" aria-hidden="true"></span>
                     </button>
                 </div>

@@ -32,8 +32,8 @@
 	"SlotListingFilterDateFrom": "From",
 	"SlotListingFilterDateTo": "To",
 	"SlotListingFilterDateSubmit": "Show",
-	"SlotReservationNoAdministrator": "Administratör kan inte boka tider.",
-	"SlotReservationNoInstructor": "Handledare kan inte boka tider.",
+	"SlotReservationNoAdministrator": "Administrator can not reserve times.",
+	"SlotReservationNoInstructor": "Instructor can not reserve times.",
 	"SlotReservationFull": "Slot is reserved.",
 	"SlotReservationTimeInPast": "Time for this slot has passed.",
 	"SlotReservationGroupIsReserved": "You are a member of a group that is already reserved.",
@@ -49,5 +49,15 @@
 	"ReserveSlotModalLabelMessageInvalidFeedback": "Please enter a message in the text area.",
 	"ReserveSlotModalLabelReservationGroup": "Reservation for group:",
 	"ReserveSlotModalLabelReservationGroupNoMembership": "Not a member of a group",
-	"ReserveSlotModalLabelReservationIndividual": "Reservation for individual:"
+	"ReserveSlotModalLabelReservationIndividual": "Reservation for individual:",
+	"ReserveSlotModalMsgGroupNoticeTitle": "This is a reservation for a whole group.",
+	"ReserveSlotModalMsgGroupNoticeText": "When you reserve this time, you and all the members of the group will get a confirmation sent to your Canvas Inbox.",
+	"ReserveSlotModalMsgGroupConnectNoticeTitle": "This time slot is reserved with another group.",
+	"ReserveSlotModalMsgGroupConnectNoticeText": "When you reserve this time, you and all the members of the group will get a confirmation sent to your Canvas Inbox. Both groups will also get instructions on how to prepare for the meeting.",
+	"ReserveSlotModalMsgUserNotInGroupTitle": "You are not a member of a group.",
+	"ReserveSlotModalMsgUserNotInGroupText": "To reserve this time slot you must be a member of a group. Please contact an instructor or examiner to find out why this is not the case.",
+	"ReserveSlotModalMsgErrorTitle": "An error occured:",
+	"ReserveSlotModalMsgErrorLoadingText": "The server did not respond. Please try again later.",
+	"ReserveSlotModalCancelButtonLabel": "Cancel",
+	"ReserveSlotModalSubmitButtonLabel": "Reserve"
 }
