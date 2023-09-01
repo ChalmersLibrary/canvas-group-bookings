@@ -68,5 +68,6 @@
 	"ReserveSlotModalMsgErrorTitle": "Ett fel uppstod:",
 	"ReserveSlotModalMsgErrorLoadingText": "Servern svarade inte, kan inte ladda information.",
 	"ReserveSlotModalCancelButtonLabel": "Avbryt",
-	"ReserveSlotModalSubmitButtonLabel": "Boka tiden"
+	"ReserveSlotModalSubmitButtonLabel": "Boka tiden",
+	"ReservationsHeader": "Mina bokningar"
 }

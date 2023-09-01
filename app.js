@@ -328,7 +328,11 @@ app.get('/reservations', async (req, res, next) => {
         reservations: reservations
     }); */
 
-    return res.render('pages/reservations/reservations', {
+    res.setLocale('en');
+    console.log(res.getLocale());
+    const lang = res.getLocale() !== 'undefined' ? res.getLocale() + "/" : "";
+    
+    return res.render(lang + 'pages/reservations/reservations', {
         status: 'up',
         internal: req.session.internal,
         version: pkg.version,
@@ -345,7 +349,10 @@ app.get('/reservations', async (req, res, next) => {
  * Privay Policy, linked from footer
  */
 app.get('/privacy', async (req, res, next) => {
-    return res.render('pages/privacy', {
+    res.setLocale('en');
+    console.log(res.getLocale());
+    const lang = res.getLocale() !== 'undefined' ? res.getLocale() + "/" : "";
+    return res.render(lang + 'pages/privacy/privacy', {
         internal: req.session.internal,
         session: req.session
     });

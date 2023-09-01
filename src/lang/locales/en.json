@@ -68,5 +68,6 @@
 	"ReserveSlotModalMsgErrorTitle": "An error occured:",
 	"ReserveSlotModalMsgErrorLoadingText": "The server did not respond. Please try again later.",
 	"ReserveSlotModalCancelButtonLabel": "Cancel",
-	"ReserveSlotModalSubmitButtonLabel": "Reserve"
+	"ReserveSlotModalSubmitButtonLabel": "Reserve",
+	"ReservationsHeader": "My reservations"
 }

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../../../partials/head'); %>
+</head>
+<body>
+
+<header>
+  <%- include('../../../partials/header', { user: session.user, navigation: { active: 'privacy' }}); %>
+</header>
+
+<main class="container-fluid py-2">
+  <div class="row">
+    <div class="col-lg-8">
+      <h2>Integritetspolicy</h2>
+      <p class="lead">
+          Här beskrivs hur Bokningsverktyg (kallad tjänsten) behandlar personuppgifter och uppgifter som berör dig.
+      </p>
+      <h3>Cookies</h3>
+      <p>
+        Tjänsten använder cookies för att kunna säkerställa din identitiet från Canvas. Denna cookie innehåller ett så kallat sessions-id, som matchas mot tjänsten för att säkerställa
+        att rätt person är inloggad i tjänsten, vilken kurs i Canvas som tjänsten används för och ditt godkännande att använda Canvas API med din användaridentitet. 
+        Canvas API används för att få information om vilka grupper du tillhör i kursen i Canvas.
+      </p>
+      <p>
+        För att kunna använda tjänsten behöver du acceptera så kallade tredjepartscookies. Detta eftersom tjänsten bäddas in i Canvas gränssnitt. Om du inte vill detta, eller har problem med att
+        acceptera tredjepartscookies, finns det ett alternativt sätt att ladda tjänsten i ett nytt fönster, via kursens Moduler i Canvas.
+      </p>
+      <h3>Behandling av personuppgifter</h3>
+      <p>
+        Tjänsten behandlar och lagrar data om dig i enlighet med EU:s dataskyddsförordning (GDPR), för i huvudsak följande syften:
+      </p>
+      <ul>
+        <li>för att kunna veta vilka grupper du tillhör i Canvaskursen</li>
+        <li>för att kunna veta vilka bokningar du eller någon i de grupper du tillhör har gjort</li>
+        <li>för att handledare ska kunna veta vem och/eller vilken grupp som bokat sig på en tid</li>
+        <li>för att kunna ge dig korrekt behörighet i tjänsten</li>
+      </ul>
+      <p>
+        Följande personuppgifter behandlas och lagras:
+      </p>
+      <ul>
+        <li>Ditt namn</li>
+        <li>Ditt interna Canvas-id</li>
+        <li>Din roll i Canvaskursen</li>
+        <li>En så kallad Access Token för att hämta data via Canvas API</li>
+        <li>Namn och interna id för grupper du tillhör i Canvaskursen</li>
+      </ul>
+      <p>
+        Om du har rollen handledare lagras även:
+      </p>
+      <ul>
+        <li>Din e-postadress</li>
+      </ul>
+      <p>
+        Vi behandlar inga så kallade känsliga personuppgifter.
+      </p>
+      <p>
+        <a href="https://www.chalmers.se/om-chalmers/om-webbplatsen/hantering-av-personuppgifter/" target="_blank">Läs mer om hantering av personuppgifter på Chalmers webbplats</a>
+      </p>
+    </div>
+    <div class="col-lg-4"></div>
+  </div>
+</main>
+
+<footer>
+  <%- include('../../../partials/footer'); %>
+</footer>
+
+</body>
+</html>
