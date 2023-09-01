@@ -5,58 +5,58 @@
             <input type="hidden" id="d_reservation_type" name="reservation_type" value="" />
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="deleteReservationLabel">Avboka bokad tid</h5>
+                    <h5 class="modal-title" id="deleteReservationLabel"><%= __('CancelSlotReservationModalTitle') %></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Stäng"></button>
                 </div>
                 <div class="modal-body">
                     <p>
-                        <strong>Tillfälle:</strong><br>
+                        <strong><%= __('CancelSlotReservationModalLabelCourse') %></strong><br>
                         <span id="d_course_name"></span>
                     </p>
                     <p>
-                        <strong>Datum och tid:</strong><br>
+                        <strong><%= __('CancelSlotReservationModalLabelDateTime') %></strong><br>
                         <span id="d_slot_time"></span>
                     </p>
                     <p>
-                        <strong>Lokal:</strong><br>
+                        <strong><%= __('CancelSlotReservationModalLabelLocation') %></strong><br>
                         <span id="d_location_name"></span>
                     </p>
                     <p>
-                        <strong>Handledare:</strong><br>
+                        <strong><%= __('CancelSlotReservationModalLabelInstructor') %></strong><br>
                         <span id="d_instructor_name"></span>
                     </p>
                     <div class="row d-none" id="deleteReservationNotCancelable">
                         <div class="col">
                             <div class="alert alert-warning" role="alert">
-                                <strong>Tiden för avbokning har passerats.</strong>
+                                <strong><%= __('CancelSlotReservationModalMsgNotCancelableTitle') %></strong>
                                 <span>
-                                    Det går inte längre att avboka tillfället. Kontakta handledaren vid akuta frågor.
+                                    <%= __('CancelSlotReservationModalMsgNotCancelableText') %>
                                 </span>
-                            </div>    
+                            </div>
                         </div>
                     </div>
                     <div class="row d-none" id="deleteReservationWarning">
                         <div class="col">
                             <div class="alert alert-warning" role="alert">
-                                <strong>Detta är en bokning för en hel grupp.</strong>
+                                <strong><%= __('CancelSlotReservationModalMsgGroupNoticeTitle') %></strong>
                                 <span>
-                                    När du avbokar, avbokas hela gruppen från tillfället. En bekräftelse skickas till Canvas Inbox.
+                                    <%= __('CancelSlotReservationModalMsgGroupNoticeText') %>
                                 </span>
-                            </div>    
+                            </div>
                         </div>
                     </div>
                     <div class="row d-none" id="deleteReservationError">
                         <div class="col">
                             <div class="alert alert-danger" role="alert">
-                                <strong>Ett fel uppstod:</strong> <span></span>
+                                <strong><%= __('CancelSlotReservationModalMsgErrorTitle') %></strong> <span></span>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><%= __('CancelSlotReservationModalCancelButtonLabel') %></button>
                     <button type="submit" class="btn btn-primary" id="deleteReservationSubmitButton">
-                        Avboka
+                        <%= __('CancelSlotReservationModalSubmitButtonLabel') %>
                         <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
                     </button>
                 </div>

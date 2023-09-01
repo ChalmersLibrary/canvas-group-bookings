@@ -69,5 +69,17 @@
 	"ReserveSlotModalMsgErrorLoadingText": "Servern svarade inte, kan inte ladda information.",
 	"ReserveSlotModalCancelButtonLabel": "Avbryt",
 	"ReserveSlotModalSubmitButtonLabel": "Boka tiden",
-	"ReservationsHeader": "Mina bokningar"
+	"ReservationsHeader": "Mina bokningar",
+	"CancelSlotReservationModalTitle": "Avboka bokad tid",
+	"CancelSlotReservationModalLabelCourse": "Tillfälle:",
+	"CancelSlotReservationModalLabelDateTime": "Datum och tid:",
+	"CancelSlotReservationModalLabelLocation": "Lokal:",
+	"CancelSlotReservationModalLabelInstructor": "Handledare:",
+	"CancelSlotReservationModalMsgNotCancelableTitle": "Tiden för avbokning har passerats.",
+	"CancelSlotReservationModalMsgNotCancelableText": "Det går inte längre att avboka tillfället. Kontakta handledaren vid akuta frågor.",
+	"CancelSlotReservationModalMsgGroupNoticeTitle": "Detta är en bokning för en hel grupp.",
+	"CancelSlotReservationModalMsgGroupNoticeText": "När du avbokar, avbokas hela gruppen från tillfället. En bekräftelse skickas till Canvas Inbox.",
+	"CancelSlotReservationModalMsgErrorTitle": "Ett fel uppstod:",
+	"CancelSlotReservationModalCancelButtonLabel": "Stäng",
+	"CancelSlotReservationModalSubmitButtonLabel": "Avboka"
 }

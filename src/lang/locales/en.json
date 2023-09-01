@@ -69,5 +69,17 @@
 	"ReserveSlotModalMsgErrorLoadingText": "The server did not respond. Please try again later.",
 	"ReserveSlotModalCancelButtonLabel": "Cancel",
 	"ReserveSlotModalSubmitButtonLabel": "Reserve",
-	"ReservationsHeader": "My reservations"
+	"ReservationsHeader": "My reservations",
+	"CancelSlotReservationModalTitle": "Cancel reservation",
+	"CancelSlotReservationModalLabelCourse": "Course:",
+	"CancelSlotReservationModalLabelDateTime": "Date and time:",
+	"CancelSlotReservationModalLabelLocation": "Location:",
+	"CancelSlotReservationModalLabelInstructor": "Instructor:",
+	"CancelSlotReservationModalMsgNotCancelableTitle": "Cancellation time has passed.",
+	"CancelSlotReservationModalMsgNotCancelableText": "You can no longer cancel this reservation. Please contact the instructor for urgent matters.",
+	"CancelSlotReservationModalMsgGroupNoticeTitle": "This is a reservation for a whole group.",
+	"CancelSlotReservationModalMsgGroupNoticeText": "When you cancel the reservation, the whole group is affected. A confirmation message will be sent to the group in Canvas Inbox.",
+	"CancelSlotReservationModalMsgErrorTitle": "An error occured:",
+	"CancelSlotReservationModalCancelButtonLabel": "Close",
+	"CancelSlotReservationModalSubmitButtonLabel": "Cancel reservation"
 }
