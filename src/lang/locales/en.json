@@ -81,5 +81,6 @@
 	"CancelSlotReservationModalMsgGroupNoticeText": "When you cancel the reservation, the whole group is affected. A confirmation message will be sent to the group in Canvas Inbox.",
 	"CancelSlotReservationModalMsgErrorTitle": "An error occured:",
 	"CancelSlotReservationModalCancelButtonLabel": "Close",
-	"CancelSlotReservationModalSubmitButtonLabel": "Cancel reservation"
+	"CancelSlotReservationModalSubmitButtonLabel": "Cancel reservation",
+	"FooterPrivacyLinkLabel": "Privacy policy"
 }

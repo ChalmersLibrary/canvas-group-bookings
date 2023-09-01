@@ -81,5 +81,6 @@
 	"CancelSlotReservationModalMsgGroupNoticeText": "När du avbokar, avbokas hela gruppen från tillfället. En bekräftelse skickas till Canvas Inbox.",
 	"CancelSlotReservationModalMsgErrorTitle": "Ett fel uppstod:",
 	"CancelSlotReservationModalCancelButtonLabel": "Stäng",
-	"CancelSlotReservationModalSubmitButtonLabel": "Avboka"
+	"CancelSlotReservationModalSubmitButtonLabel": "Avboka",
+	"FooterPrivacyLinkLabel": "Personuppgifter och cookies"
 }
