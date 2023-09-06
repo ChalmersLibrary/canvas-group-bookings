@@ -83,7 +83,8 @@ exports.handleLaunch = (page) => function(req, res) {
                     tool_consumer_info_product_family_code: provider.body.tool_consumer_info_product_family_code,
                     tool_consumer_info_version: provider.body.tool_consumer_info_version,
                     tool_consumer_instance_guid: provider.body.tool_consumer_instance_guid,
-                    tool_consumer_instance_name: provider.body.tool_consumer_instance_name
+                    tool_consumer_instance_name: provider.body.tool_consumer_instance_name,
+                    launch_presentation_locale: provider.body.launch_presentation_locale
                 };
 
                 req.session.save(function(err) {

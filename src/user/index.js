@@ -35,7 +35,7 @@ async function createSessionUserdataFromToken(req, token) {
                 id: userId.toString(),
                 db_id: local_user ? local_user.id : null,
                 name: token.user.name, 
-                locale: token.user.effective_locale 
+                locale: token.user.effective_locale.toString().slice(0, 2) 
             };
         }
     }

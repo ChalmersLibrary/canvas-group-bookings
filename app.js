@@ -133,10 +133,6 @@ app.get('/', async (req, res, next) => {
     const per_page = DB_PER_PAGE ? DB_PER_PAGE : 25;
     const offset = req.query.page ? Math.max(parseInt(req.query.page) - 1, 0) * per_page : 0;
 
-    /* Language debug, should be set in first request handler */
-    res.setLocale('en');
-    console.log(res.getLocale());
-
     /* Available slots, with filters applied, paginated */
     availableSlots = await db.getAllSlotsPaginated(offset, per_page, res.locals.courseId, parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
 
@@ -168,13 +164,15 @@ app.get('/', async (req, res, next) => {
     let this_start_date_string = res.__('DatePhraseToday');
     let this_end_date_string = res.__('DatePhraseAndForward');
 
+    console.log("Locale: " + res.getLocale());
+
     console.log(res.__('NoTimeSlots'));
     console.log(res.__('SlotListingHeaderNormal', { slots: 2, from: res.__('DatePhraseToday'), to: res.__('DatePhraseUntil') + ' 2023-08-31' }));
     console.log(res.__('SlotListingHeaderInstructor', { slots: 2, from: res.__('DatePhraseToday'), to: res.__('DatePhraseAndForward') }));
-    console.log(res.__('SlotListingPhraseGroup'));
+    /* console.log(res.__('SlotListingPhraseGroup'));
     console.log(res.__n('SlotListingPhraseGroup'));
     console.log(res.__('SlotListingPhraseIndividual'));
-    console.log(res.__n('SlotListingPhraseIndividual'));
+    console.log(res.__n('SlotListingPhraseIndividual')); */
 
     if (Date.parse(req.query.start_date)) {
          if (new Date().toLocaleDateString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric' }) != new Date(req.query.start_date).toLocaleDateString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric' })) {
@@ -328,11 +326,7 @@ app.get('/reservations', async (req, res, next) => {
         reservations: reservations
     }); */
 
-    res.setLocale('en');
-    console.log(res.getLocale());
-    const lang = res.getLocale() !== 'undefined' ? res.getLocale() + "/" : "";
-    
-    return res.render(lang + 'pages/reservations/reservations', {
+    return res.render(res.getLocale() + '/pages/reservations/reservations', {
         status: 'up',
         internal: req.session.internal,
         version: pkg.version,
@@ -349,10 +343,7 @@ app.get('/reservations', async (req, res, next) => {
  * Privay Policy, linked from footer
  */
 app.get('/privacy', async (req, res, next) => {
-    res.setLocale('en');
-    console.log(res.getLocale());
-    const lang = res.getLocale() !== 'undefined' ? res.getLocale() + "/" : "";
-    return res.render(lang + 'pages/privacy/privacy', {
+    return res.render(res.getLocale() + '/pages/privacy/privacy', {
         internal: req.session.internal,
         session: req.session
     });
