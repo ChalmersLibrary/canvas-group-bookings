@@ -182,9 +182,9 @@
     <nav aria-label="Page navigation" style="margin-top: 16px;">
         <ul class="pagination justify-content-start flex-wrap">
             <% if (navigation.current_page > 1) { %>
-                <li class="page-item"><a class="page-link" href="?<%= navigation.link.previous_page %>">Föregående</a></li>
+                <li class="page-item"><a class="page-link" href="?<%= navigation.link.previous_page %>"><%= __('SlotListingPaginationPrevious') %></a></li>
             <% } else { %>
-                <li class="page-item disabled"><span class="page-link">Föregående</span></li>
+                <li class="page-item disabled"><span class="page-link"><%= __('SlotListingPaginationPrevious') %></span></li>
             <% } %>
             <% navigation.pages.forEach(p => { %>
                 <% if (p.current) { %>
@@ -194,9 +194,9 @@
                 <% } %>
             <% }) %>
             <% if (navigation.current_page < navigation.pages_total) { %>
-                <li class="page-item"><a class="page-link" href="?<%= navigation.link.next_page %>">Nästa</a></li>
+                <li class="page-item"><a class="page-link" href="?<%= navigation.link.next_page %>"><%= __('SlotListingPaginationNext') %></a></li>
             <% } else { %>
-                <li class="page-item disabled"><span class="page-link">Nästa</span></li>
+                <li class="page-item disabled"><span class="page-link"><%= __('SlotListingPaginationNext') %></span></li>
             <% } %>
         </ul>
     </nav>

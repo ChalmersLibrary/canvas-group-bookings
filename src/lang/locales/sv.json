@@ -41,6 +41,8 @@
 	"SlotListingFilterDateFrom": "Från",
 	"SlotListingFilterDateTo": "Till",
 	"SlotListingFilterDateSubmit": "Visa",
+	"SlotListingPaginationPrevious": "Föregående",
+	"SlotListingPaginationNext": "Nästa",
 	"SlotReservationNoAdministrator": "Administratör kan inte boka tider.",
 	"SlotReservationNoInstructor": "Handledare kan inte boka tider.",
 	"SlotReservationFull": "Tiden är fullbokad.",

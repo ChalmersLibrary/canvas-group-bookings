@@ -47,6 +47,8 @@
 	"SlotListingFilterDateFrom": "From",
 	"SlotListingFilterDateTo": "To",
 	"SlotListingFilterDateSubmit": "Show",
+	"SlotListingPaginationPrevious": "Previous",
+	"SlotListingPaginationNext": "Next",
 	"SlotReservationNoAdministrator": "Administrator can not reserve times.",
 	"SlotReservationNoInstructor": "Instructor can not reserve times.",
 	"SlotReservationFull": "Slot is reserved.",
