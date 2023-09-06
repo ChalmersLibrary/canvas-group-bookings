@@ -52,7 +52,9 @@ router.all(['/', '/reservations', '/privacy', '/debug', '/admin*', '/api/*'], as
 
                 // Set the language based on lti launch presentation locale if different from oauth locale 
                 res.setLocale(req.session.user.locale !== req.session.lti.launch_presentation_locale.toString().slice(0, 2) ? req.session.lti.launch_presentation_locale.toString().slice(0, 2) : req.session.user.locale);
-                log.debug("Language set to: " + res.getLocale() + " (based on req.session.user.locale: " + req.session.user.locale + ")");
+                log.debug("req.session.user.locale: " + req.session.user.locale);
+                log.debug("req.session.lti.launch_presentation_locale: " + req.session.lti.launch_presentation_locale);
+                log.debug("Language set to: " + res.getLocale());
 
                 // Add some debug information
                 req.session.internal = {
