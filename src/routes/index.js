@@ -50,11 +50,9 @@ router.all(['/', '/reservations', '/privacy', '/debug', '/admin*', '/api/*'], as
                     req.session.user.groups = [];
                 }
 
-                // Set the language based on lti launch presentation locale if different from oauth locale 
+                // Set the language based on lti launch presentation locale if different from oauth locale
                 res.setLocale(req.session.user.locale !== req.session.lti.launch_presentation_locale.toString().slice(0, 2) ? req.session.lti.launch_presentation_locale.toString().slice(0, 2) : req.session.user.locale);
-                log.info("req.session.user.locale: " + req.session.user.locale);
-                log.info("req.session.lti.launch_presentation_locale: " + req.session.lti.launch_presentation_locale);
-                log.info("Language set to: " + res.getLocale());
+                log.debug("Language set to: " + res.getLocale() + ", req.session.user.locale: " + req.session.user.locale + ", req.session.lti.launch_presentation_locale: " + req.session.lti.launch_presentation_locale);
 
                 // Add some debug information
                 req.session.internal = {
