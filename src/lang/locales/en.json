@@ -19,8 +19,14 @@
 	"SlotListingHeaderNormal": "Listing {{slots}} slots from {{from}} {{to}}:",
 	"SlotListingHeaderInstructor": "Listing {{slots}} slots with you as instructor from {{from}} {{to}}:",
 	"SlotListingPhraseGroup": {
-		"one": "group",
-		"other": "groups"
+		"full": {
+			"one": "Fully booked, {{reservations}} of {{slots}} group reserved",
+			"other": "Fully booked, {{reservations}} of {{slots}} groups reserved"	
+		},
+		"available": {
+			"one": "Available, {{reservations}} of {{slots}} group reserved",
+			"other": "Available, {{reservations}} of {{slots}} groups reserved"	
+		}
 	},
 	"SlotListingPhraseIndividual": {
 		"one": "individual",
