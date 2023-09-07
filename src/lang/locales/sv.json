@@ -84,5 +84,9 @@
 	"CancelSlotReservationModalMsgErrorTitle": "Ett fel uppstod:",
 	"CancelSlotReservationModalCancelButtonLabel": "Stäng",
 	"CancelSlotReservationModalSubmitButtonLabel": "Avboka",
-	"FooterPrivacyLinkLabel": "Personuppgifter och cookies"
+	"FooterPrivacyLinkLabel": "Personuppgifter och cookies",
+	"ConversationRobotReservationSubjectPrefix": "Bekräftad bokning: ",
+	"ConversationRobotReservationCcSubjectPrefix": "(Kopia) Bekräftad bokning: ",
+	"ConversationRobotReservationFullSubjectPrefix": "Fullbokat tillfälle: ",
+	"ConversationRobotReservationFullCcSubjectPrefix": "(Kopia) Fullbokat tillfälle: "
 }

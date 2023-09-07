@@ -542,35 +542,35 @@ app.post('/api/reservation', async (req, res, next) => {
         // TODO: Same code as in route for /, try to generalize
 
         if (slot.res_now >= slot.res_max) {
-            throw new Error("Tiden är fullbokad.");
+            throw new Error(res.__('SlotReservationFull'));
         }
         else if (t_time_slot <= t_time_now) {
-            throw new Error("Tiden har passerats.");
+            throw new Error(res.__('SlotReservationTimeInPast'));
         }
         else {
             if (slot.type == "group") {
                 // Check if any of this user's groups are reserved on this slot
                 if (slot.res_group_ids && slot.res_group_ids.filter(id => req.session.user.groups_ids?.includes(id)).length) {
-                    throw new Error("En grupp du tillhör är redan bokad på tillfället.");
+                    throw new Error(res.__('SlotReservationGroupIsReserved'));
                 }
 
                 // Check how many times this user's groups are reserved on slots with the same course context
                 if (slot.res_course_group_ids && slot.reservable_for_this_user) {
                     if (slot.res_course_group_ids.filter(id => req.session.user.groups_ids?.includes(id)).length >= slot.course_max_per_type) {
-                        throw new Error(`Max antal bokningar (${slot.course_max_per_type}) uppnått för ${slot.course_name}.`);
+                        throw new Error(res.__('SlotReservationIndividualMaxReservations', { max: slot.course_max_per_type, name: slot.course_name }));
                     }
                 }
             }
             else {
                 // Check if this user is reserved on this slot
                 if (slot.res_user_ids && slot.res_user_ids.includes(req.session.user.id)) {
-                    throw new Error("Du är redan bokad på tillfället.");
+                    throw new Error(res.__('SlotReservationIndividualIsReserved'));
                 }
 
                 // Check how many times this user is reserved on slots with the same course context
                 if (slot.res_course_user_ids && slot.reservable_for_this_user) {
                     if (slot.res_course_user_ids.filter(id => req.session.user.id == id).length >= slot.course_max_per_type) {
-                        throw new Error(`Max antal bokningar (${slot.course_max_per_type}) uppnått för ${slot.course_name}.`);
+                        throw new Error(res.__('SlotReservationIndividualMaxReservations', { max: slot.course_max_per_type, name: slot.course_name }));
                     }
                 }
             }
@@ -597,8 +597,8 @@ app.post('/api/reservation', async (req, res, next) => {
                 const instructor = await db.getInstructor(slot.instructor_id);
 
                 if (slot.type == "group") {
-                    const subject = "Bekräftad bokning: " + group_name + ", " + course.name;
-                    const subject_cc = "(Kopia) Bekräftad bokning: " + group_name + ", " + course.name + " (" + req.session.user.name + ")";
+                    const subject = res.__('ConversationRobotReservationSubjectPrefix') + group_name + ", " + course.name;
+                    const subject_cc = res.__('ConversationRobotReservationCcSubjectPrefix')  + group_name + ", " + course.name + " (" + req.session.user.name + ")";
                     const recipient = "group_" + group_id;
                     const template_type = "reservation_group_done";
 
@@ -642,8 +642,8 @@ app.post('/api/reservation', async (req, res, next) => {
                                     recipients.push("group_" + id);
                                 }
 
-                                const subject_all = "Fullbokat tillfälle: " + course.name;
-                                const subject_all_cc = "(Kopia) Fullbokat tillfälle: " + course.name + " (" + slot_now.res_group_names.join(", ") + ")";
+                                const subject_all = res.__('ConversationRobotReservationFullSubjectPrefix') + course.name;
+                                const subject_all_cc = res.__('ConversationRobotReservationFullCcSubjectPrefix') + course.name + " (" + slot_now.res_group_names.join(", ") + ")";
 
                                 let conversation_result_all = await canvasApi.createConversation(recipients, subject_all, body_all, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
                                 let log_id_all = await db.addCanvasConversationLog(slot_id, null, slot_now.canvas_course_id, recipients, subject_all, body_all);

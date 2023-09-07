@@ -90,5 +90,9 @@
 	"CancelSlotReservationModalMsgErrorTitle": "An error occured:",
 	"CancelSlotReservationModalCancelButtonLabel": "Close",
 	"CancelSlotReservationModalSubmitButtonLabel": "Cancel reservation",
-	"FooterPrivacyLinkLabel": "Privacy policy"
+	"FooterPrivacyLinkLabel": "Privacy policy",
+	"ConversationRobotReservationSubjectPrefix": "Confirmed reservation: ",
+	"ConversationRobotReservationCcSubjectPrefix": "(Copy) Confirmed reservation: ",
+	"ConversationRobotReservationFullSubjectPrefix": "Fully reserved timeslot: ",
+	"ConversationRobotReservationFullCcSubjectPrefix": "(Copy) Fully reserved timeslot: "
 }
