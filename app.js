@@ -667,8 +667,8 @@ app.post('/api/reservation', async (req, res, next) => {
                     }
                 }
                 else {
-                    const subject = "Bekräftad bokning: " + course.name;
-                    const subject_cc = "(Kopia) Bekräftad bokning: " + course.name + ", " + req.session.user.name;
+                    const subject = res.__('ConversationRobotReservationSubjectPrefix') + course.name;
+                    const subject_cc = res.__('ConversationRobotReservationCcSubjectPrefix') + course.name + ", " + req.session.user.name;
                     const template_type = "reservation_individual_done";
 
                     let body = course.message_confirmation_body;
@@ -741,7 +741,7 @@ app.delete('/api/reservation/:id', async (req, res) => {
         const reservation = await db.getReservation(req.session.user.id, req.session.user.groups_ids, req.params.id);
 
         if (reservation.is_cancelable == false) {
-            throw new Error("Tiden för avbokning har passerats, kan ej avboka.");
+            throw new Error(res.__('CancelSlotReservationApiResponseNotCancellable'));
         }
 
         await db.deleteReservation(req.session.user.id, req.session.user.groups_ids, req.params.id);
@@ -754,8 +754,8 @@ app.delete('/api/reservation/:id', async (req, res) => {
                 const instructor = await db.getInstructor(reservation.instructor_id);
 
                 if (reservation.type == "group") {
-                    const subject = "Bekräftad avbokning: " + reservation.canvas_group_name + ", " + course.name;
-                    const subject_cc = "(Kopia) Bekräftad avbokning: " + reservation.canvas_group_name + ", " + course.name + " (" + req.session.user.name + ")";
+                    const subject = res.__('ConversationRobotCancelReservationSubjectPrefix') + reservation.canvas_group_name + ", " + course.name;
+                    const subject_cc = res.__('ConversationRobotCancelReservationCcSubjectPrefix') + reservation.canvas_group_name + ", " + course.name + " (" + req.session.user.name + ")";
                     const recipient = "group_" + reservation.canvas_group_id;
                     const template_type = "reservation_group_canceled";
 
@@ -785,8 +785,8 @@ app.delete('/api/reservation/:id', async (req, res) => {
                     }
                 }
                 else {
-                    const subject = "Bekräftad avbokning: " + course.name;
-                    const subject_cc = "(Kopia) Bekräftad avbokning: " + course.name + ", " + req.session.user.name;
+                    const subject = res.__('ConversationRobotCancelReservationSubjectPrefix') + course.name;
+                    const subject_cc = res.__('ConversationRobotCancelReservationCcSubjectPrefix') + course.name + ", " + req.session.user.name;
                     const template_type = "reservation_individual_canceled";
 
                     let body = course.message_confirmation_body;

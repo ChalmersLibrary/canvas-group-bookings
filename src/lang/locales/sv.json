@@ -84,9 +84,13 @@
 	"CancelSlotReservationModalMsgErrorTitle": "Ett fel uppstod:",
 	"CancelSlotReservationModalCancelButtonLabel": "Stäng",
 	"CancelSlotReservationModalSubmitButtonLabel": "Avboka",
+	"CancelSlotReservationApiResponseNotCancellable": "Tiden för avbokning har passerats, kan inte avboka.",
 	"FooterPrivacyLinkLabel": "Personuppgifter och cookies",
 	"ConversationRobotReservationSubjectPrefix": "Bekräftad bokning: ",
 	"ConversationRobotReservationCcSubjectPrefix": "(Kopia) Bekräftad bokning: ",
 	"ConversationRobotReservationFullSubjectPrefix": "Fullbokat tillfälle: ",
-	"ConversationRobotReservationFullCcSubjectPrefix": "(Kopia) Fullbokat tillfälle: "
+	"ConversationRobotReservationFullCcSubjectPrefix": "(Kopia) Fullbokat tillfälle: ",
+	"ConversationRobotCancelReservationSubjectPrefix": "Bekräftad avbokning: ",
+	"ConversationRobotCancelReservationCcSubjectPrefix": "(Kopia) Bekräftad avbokning: "
+	
 }
