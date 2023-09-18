@@ -276,7 +276,7 @@ app.get('/', async (req, res, next) => {
         }
     }
 
-    /* return res.send({
+    return res.send({
         internal: req.session.internal,
         session: req.session,
         groups: req.session.user.groups,
@@ -286,7 +286,7 @@ app.get('/', async (req, res, next) => {
         courses: await db.getValidCourses(res.locals.courseId),
         instructors: await db.getValidInstructors(),
         locations: await db.getValidLocations()
-    }); */
+    });
 
     return res.render('pages/index', {
         internal: req.session.internal,
@@ -337,7 +337,7 @@ app.get('/reservations', async (req, res, next) => {
         reservations: reservations
     }); */
 
-    return res.render(res.getLocale() + '/pages/reservations/reservations', {
+    return res.render(res.getLocale().toString().slice(0, 2) + '/pages/reservations/reservations', {
         status: 'up',
         internal: req.session.internal,
         version: pkg.version,
@@ -354,7 +354,7 @@ app.get('/reservations', async (req, res, next) => {
  * Privay Policy, linked from footer
  */
 app.get('/privacy', async (req, res, next) => {
-    return res.render(res.getLocale() + '/pages/privacy/privacy', {
+    return res.render(res.getLocale().toString().slice(0, 2) + '/pages/privacy/privacy', {
         internal: req.session.internal,
         session: req.session
     });

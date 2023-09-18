@@ -1,0 +1,123 @@
+{
+	"ApplicationName": "Bokningsverktyg",
+	"ApplicationDescription": "Boka tider för handledningstillfällen, föreläsningar och workshops.",
+	"NavigationReserveTimeSlots": "Boka tid",
+	"NavigationReservations": "Mina bokningar",
+	"NavigationInstructorSlots": "Mina tillfällen",
+	"NavigationAdministration": "Administration",
+	"NavigationNewSlots": "Lägg till nya tider",
+	"HeaderLabelRoleAdministrator": "administratör",
+	"HeaderLabelRoleInstructor": "handledare",
+	"HeaderLabelNoGroupMembership": "ej medlem i någon grupp",
+	"Hello": "Hej",
+	"NoTimeSlots": "Hittade inga tider",
+	"NoTimeSlotsDescription": "Antingen är inga tider utlagda eller så finns det inga tider som motsvarar de filter du valt.",
+	"NoTimeSlotsResetFilters": "Återställ alla filter",
+	"DatePhraseToday": "idag",
+	"DatePhraseUntil": "till",
+	"DatePhraseAndForward": "och framåt",
+	"SlotListingHeaderNormal": "Visar {{slots}} tider från {{from}} {{to}}:",
+	"SlotListingHeaderInstructor": "Visar {{slots}} tider med dig som handledare från {{from}} {{to}}:",
+	"SlotListingAvailabilityPhrase": {
+		"Group": {
+			"Full": {
+				"one": "Fully booked, {{reservations}} of {{slots}} group reserved",
+				"other": "Fully booked, {{reservations}} of {{slots}} groups reserved"
+			},
+			"Available": {
+				"one": "Available, {{reservations}} of {{slots}} group reserved",
+				"other": "Available, {{reservations}} of {{slots}} groups reserved"
+			}
+		},
+		"Individual": {
+			"Full": {
+				"one": "Fully booked, {{reservations}} of {{slots}} person reserved",
+				"other": "Fully booked, {{reservations}} of {{slots}} persons reserved"
+			},
+			"Available": {
+				"one": "Available, {{reservations}} of {{slots}} person reserved",
+				"other": "Available, {{reservations}} of {{slots}} persons reserved"
+			}
+		}
+	},
+	"SlotListingHeaderTimeTitle": "Tillfälle och tid",
+	"SlotListingHeaderInstructorPlaceTitle": "Handledare och plats",
+	"SlotListingHeaderAvailabilityTitle": "Tillgänglighet",
+	"SlotListingFilterShowAll": "Visa alla",
+	"SlotListingFilterSegmentTitle": "Segment",
+	"SlotListingFilterCourseTitle": "Tillfälle",
+	"SlotListingFilterInstructorTitle": "Handledare",
+	"SlotListingFilterLocationTitle": "Plats",
+	"SlotListingFilterAvailabilityTitle": "Tillgänglighet",
+	"SlotListingFilterAvailabilityAll": "Även fullbokade",
+	"SlotListingFilterAvailabilityOnlyAvailable": "Endast bokningsbara",
+	"SlotListingFilterDateTitle": "Datum",
+	"SlotListingFilterDateFrom": "Från",
+	"SlotListingFilterDateTo": "Till",
+	"SlotListingFilterDateSubmit": "Visa",
+	"SlotListingPaginationPrevious": "Föregående",
+	"SlotListingPaginationNext": "Nästa",
+	"SlotReservationNoAdministrator": "Administratör kan inte boka tider.",
+	"SlotReservationNoInstructor": "Handledare kan inte boka tider.",
+	"SlotReservationFull": "Tiden är fullbokad.",
+	"SlotReservationTimeInPast": "Tiden har passerats.",
+	"SlotReservationGroupIsReserved": "En grupp du tillhör är bokad på denna tid.",
+	"SlotReservationGroupMaxReservations": "Max antal bokningar {{max}} för {{name}}.",
+	"SlotReservationIndividualIsReserved": "Du är bokad på denna tid.",
+	"SlotReservationIndividualMaxReservations": "Max antal bokningar {{max}} för {{name}}.",
+	"SlotReservationReserveButtonTitle": "Boka",
+	"ReserveSlotModalTitle": "Boka tillgänglig tid",
+	"ReserveSlotModalLabelDateTime": "Datum och tid:",
+	"ReserveSlotModalLabelLocation": "Plats:",
+	"ReserveSlotModalLabelInstructor": "Handledare:",
+	"ReserveSlotModalLabelMessage": "Frågor eller meddelande till handledaren:",
+	"ReserveSlotModalLabelMessageInvalidFeedback": "Fältet för meddelande är obligatoriskt.",
+	"ReserveSlotModalLabelReservationGroup": "Bokning för grupp:",
+	"ReserveSlotModalLabelReservationGroupNoMembership": "Ej medlem i någon grupp",
+	"ReserveSlotModalLabelReservationIndividual": "Bokning för individ:",
+	"ReserveSlotModalMsgGroupNoticeTitle": "Detta är en bokning för en hel grupp.",
+	"ReserveSlotModalMsgGroupNoticeText": "När du bokar kommer du och alla medlemmar i din grupp att få en bekräftelse i Canvas Inbox.",
+	"ReserveSlotModalMsgGroupConnectNoticeTitle": "Detta tillfälle är tillsammans med en annan grupp.",
+	"ReserveSlotModalMsgGroupConnectNoticeText": "När du bokar kommer du och alla medlemmar i din grupp att få en bekräftelse i Canvas Inbox. Båda grupperna kommer även få instruktioner för hur ni tillsammans ska förbereda er inför tillfället.",
+	"ReserveSlotModalMsgUserNotInGroupTitle": "Du är inte medlem i någon grupp.",
+	"ReserveSlotModalMsgUserNotInGroupText": "För att kunna boka den här tiden måste du vara medlem i en grupp. Kontakta en handledare eller examinator för att kontrollera varför du inte är med i en grupp.",
+	"ReserveSlotModalMsgErrorTitle": "Ett fel uppstod:",
+	"ReserveSlotModalMsgErrorLoadingText": "Servern svarade inte, kan inte ladda information.",
+	"ReserveSlotModalCancelButtonLabel": "Avbryt",
+	"ReserveSlotModalSubmitButtonLabel": "Boka tiden",
+	"ReservationsHeader": "Mina bokningar",
+	"CancelSlotReservationModalTitle": "Avboka bokad tid",
+	"CancelSlotReservationModalLabelCourse": "Tillfälle:",
+	"CancelSlotReservationModalLabelDateTime": "Datum och tid:",
+	"CancelSlotReservationModalLabelLocation": "Lokal:",
+	"CancelSlotReservationModalLabelInstructor": "Handledare:",
+	"CancelSlotReservationModalMsgNotCancelableTitle": "Tiden för avbokning har passerats.",
+	"CancelSlotReservationModalMsgNotCancelableText": "Det går inte längre att avboka tillfället. Kontakta handledaren vid akuta frågor.",
+	"CancelSlotReservationModalMsgGroupNoticeTitle": "Detta är en bokning för en hel grupp.",
+	"CancelSlotReservationModalMsgGroupNoticeText": "När du avbokar, avbokas hela gruppen från tillfället. En bekräftelse skickas till Canvas Inbox.",
+	"CancelSlotReservationModalMsgErrorTitle": "Ett fel uppstod:",
+	"CancelSlotReservationModalCancelButtonLabel": "Stäng",
+	"CancelSlotReservationModalSubmitButtonLabel": "Avboka",
+	"CancelSlotReservationApiResponseNotCancellable": "Tiden för avbokning har passerats, kan inte avboka.",
+	"FooterPrivacyLinkLabel": "Personuppgifter och cookies",
+	"ConversationRobotReservationSubjectPrefix": "Bekräftad bokning: ",
+	"ConversationRobotReservationCcSubjectPrefix": "(Kopia) Bekräftad bokning: ",
+	"ConversationRobotReservationFullSubjectPrefix": "Fullbokat tillfälle: ",
+	"ConversationRobotReservationFullCcSubjectPrefix": "(Kopia) Fullbokat tillfälle: ",
+	"ConversationRobotCancelReservationSubjectPrefix": "Bekräftad avbokning: ",
+	"ConversationRobotCancelReservationCcSubjectPrefix": "(Kopia) Bekräftad avbokning: ",
+	"SlotListingAvailabilityPhrase.Group.Full": {
+		"one": "SlotListingAvailabilityPhrase.Group.Full",
+		"other": {
+			"slots": 1,
+			"reservations": 1
+		}
+	},
+	"SlotListingAvailabilityPhrase.Group.Available": {
+		"one": "SlotListingAvailabilityPhrase.Group.Available",
+		"other": {
+			"slots": 10,
+			"reservations": 4
+		}
+	}
+}

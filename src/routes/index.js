@@ -50,8 +50,8 @@ router.all(['/', '/reservations', '/privacy', '/debug', '/admin*', '/api/*'], as
                     req.session.user.groups = [];
                 }
 
-                // Set the language based on lti launch presentation locale
-                res.setLocale(req.session.lti.launch_presentation_locale.toString().slice(0, 2));
+                // Set the language based on lti launch presentation locale first, second API effective locale for user
+                res.setLocale(req.session.lti.launch_presentation_locale ? req.session.lti.launch_presentation_locale : req.session.user.locale);
                 log.debug("Language set to: " + res.getLocale() + ", req.session.user.locale: " + req.session.user.locale + ", req.session.lti.launch_presentation_locale: " + req.session.lti.launch_presentation_locale);
 
                 // Add some debug information
