@@ -18,13 +18,27 @@
 	"DatePhraseAndForward": "och framåt",
 	"SlotListingHeaderNormal": "Visar {{slots}} tider från {{from}} {{to}}:",
 	"SlotListingHeaderInstructor": "Visar {{slots}} tider med dig som handledare från {{from}} {{to}}:",
-	"SlotListingPhraseGroup": {
-		"one": "grupp",
-		"other": "grupper"
-	},
-	"SlotListingPhraseIndividual": {
-		"one": "person",
-		"other": "personer"
+	"SlotListingAvailabilityPhrase": {
+		"Group": {
+			"Full": {
+				"one": "Fully booked, {{reservations}} of {{slots}} group reserved",
+				"other": "Fully booked, {{reservations}} of {{slots}} groups reserved"
+			},
+			"Available": {
+				"one": "Available, {{reservations}} of {{slots}} group reserved",
+				"other": "Available, {{reservations}} of {{slots}} groups reserved"
+			}
+		},
+		"Individual": {
+			"Full": {
+				"one": "Fully booked, {{reservations}} of {{slots}} person reserved",
+				"other": "Fully booked, {{reservations}} of {{slots}} persons reserved"
+			},
+			"Available": {
+				"one": "Available, {{reservations}} of {{slots}} person reserved",
+				"other": "Available, {{reservations}} of {{slots}} persons reserved"
+			}
+		}
 	},
 	"SlotListingHeaderTimeTitle": "Tillfälle och tid",
 	"SlotListingHeaderInstructorPlaceTitle": "Handledare och plats",
@@ -91,6 +105,19 @@
 	"ConversationRobotReservationFullSubjectPrefix": "Fullbokat tillfälle: ",
 	"ConversationRobotReservationFullCcSubjectPrefix": "(Kopia) Fullbokat tillfälle: ",
 	"ConversationRobotCancelReservationSubjectPrefix": "Bekräftad avbokning: ",
-	"ConversationRobotCancelReservationCcSubjectPrefix": "(Kopia) Bekräftad avbokning: "
-	
+	"ConversationRobotCancelReservationCcSubjectPrefix": "(Kopia) Bekräftad avbokning: ",
+	"SlotListingAvailabilityPhrase.Group.Full": {
+		"one": "SlotListingAvailabilityPhrase.Group.Full",
+		"other": {
+			"slots": 1,
+			"reservations": 1
+		}
+	},
+	"SlotListingAvailabilityPhrase.Group.Available": {
+		"one": "SlotListingAvailabilityPhrase.Group.Available",
+		"other": {
+			"slots": 10,
+			"reservations": 4
+		}
+	}
 }

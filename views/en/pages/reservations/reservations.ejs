@@ -45,7 +45,7 @@
       </div>
       <div class="card-body">
         <h5 class="card-title"><%= reservation.course_name %></h5>
-        <h6 class="card-subtitle mb-2 text-muted"><%- reservation.time_human_readable_sv %></h6>
+        <h6 class="card-subtitle mb-2 text-muted"><%- reservation.time_human_readable %></h6>
         <p class="card-text">
           Instructor: <%= reservation.instructor_name %><br>
           Location: <%= reservation.location_name %>
@@ -112,7 +112,7 @@
         </div>
         <div class="card-body">
           <h5 class="card-title"><%= reservation.course_name %></h5>
-          <h6 class="card-subtitle mb-2 text-muted"><%- reservation.time_human_readable_sv %></h6>
+          <h6 class="card-subtitle mb-2 text-muted"><%- reservation.time_human_readable %></h6>
           <p class="card-text">
             Instructor: <%= reservation.instructor_name %>, location: <%= reservation.location_name %>
             <% if (reservation.location_cmap_id) { %>

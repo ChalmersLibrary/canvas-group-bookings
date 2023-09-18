@@ -25,7 +25,7 @@
                             <% } %>
                             <td class="d-md-table-cell d-md-none">
                                 <%= slot.course_name %><br>
-                                <strong><%- slot.time_human_readable_sv %></strong><br>
+                                <strong><%- slot.time_human_readable %></strong><br>
                                 <%= slot.instructor_name %>, <%= slot.location_name %>
                                 <div><%= slot.availability_notice %></div>
                                 <div class="text-small text-muted"><%= slot.reservable_notice %></div>
@@ -49,7 +49,7 @@
                                     <% } %>
                                 </div>
                             </td>
-                            <td class="d-none d-md-table-cell"><div><%= slot.course_name %></div><div><strong><%- slot.time_human_readable_sv %></strong></div></td>
+                            <td class="d-none d-md-table-cell"><div><%= slot.course_name %></div><div><strong><%- slot.time_human_readable %></strong></div></td>
                             <td class="d-none d-md-table-cell"><%= slot.instructor_name %><br><%= slot.location_name %></td>
                             <td class="d-none d-md-table-cell"><%= slot.availability_notice %>
                                 <% if (session.user.isAdministrator || session.user.isInstructor) { %>

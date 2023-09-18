@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 reserveSlotModal.querySelector('#r_course_name').innerText = data.course_name
                 reserveSlotModal.querySelector('#r_instructor_name').innerText = data.instructor_name
                 reserveSlotModal.querySelector('#r_location_name').innerText = data.location_name
-                reserveSlotModal.querySelector('#r_slot_time').innerText = data.time_human_readable_sv
+                reserveSlotModal.querySelector('#r_slot_time').innerText = data.time_human_readable
 
                 if (data.course_message_required === false) {
                     reserveSlotModal.querySelector("#r_message").removeAttribute("required")
@@ -185,7 +185,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 deleteReservationModal.querySelector('#d_course_name').innerText = data.course_name
                 deleteReservationModal.querySelector('#d_instructor_name').innerText = data.instructor_name
                 deleteReservationModal.querySelector('#d_location_name').innerText = data.location_name
-                deleteReservationModal.querySelector('#d_slot_time').innerText = data.time_human_readable_sv
+                deleteReservationModal.querySelector('#d_slot_time').innerText = data.time_human_readable
 
                 submitButton.disabled = false;
 

@@ -133,8 +133,12 @@ app.get('/', async (req, res, next) => {
     const per_page = DB_PER_PAGE ? DB_PER_PAGE : 25;
     const offset = req.query.page ? Math.max(parseInt(req.query.page) - 1, 0) * per_page : 0;
 
+    /* Date and time handling */
+    const dateOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+    const timeOptions = { hour: '2-digit', minute: '2-digit' };
+
     /* Available slots, with filters applied, paginated */
-    availableSlots = await db.getAllSlotsPaginated(offset, per_page, res.locals.courseId, parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
+    availableSlots = await db.getAllSlotsPaginated(res, offset, per_page, res.locals.courseId, parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
 
     /* Difference between valid courses to use in slots and courses used for filtering */
     const filter_segments = utils.linkify(res, 'segment', await db.getSegments(res.locals.courseId), parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
@@ -169,6 +173,10 @@ app.get('/', async (req, res, next) => {
     console.log(res.__('NoTimeSlots'));
     console.log(res.__('SlotListingHeaderNormal', { slots: 2, from: res.__('DatePhraseToday'), to: res.__('DatePhraseUntil') + ' 2023-08-31' }));
     console.log(res.__('SlotListingHeaderInstructor', { slots: 2, from: res.__('DatePhraseToday'), to: res.__('DatePhraseAndForward') }));
+
+    console.log(res.__n('SlotListingAvailabilityPhrase.Group.Full', { slots: 1, reservations: 1 }));
+    console.log(res.__n('SlotListingAvailabilityPhrase.Group.Available', { slots: 10, reservations: 4 }));
+        
     /* console.log(res.__('SlotListingPhraseGroup'));
     console.log(res.__n('SlotListingPhraseGroup'));
     console.log(res.__('SlotListingPhraseIndividual'));
@@ -224,8 +232,11 @@ app.get('/', async (req, res, next) => {
                 slot.reservable_notice = res.__('SlotReservationFull');
             }
 
-            const t_time_now = new Date().getTime();
+            // DEBUG FOR AZURE AND UTC, should be removed
+            const t_time = new Date();
+            const t_time_now = t_time.getTime();
             const t_time_slot = new Date(slot.time_start).getTime();
+            log.info("t_time: " + t_time + " t_time_now: " + t_time_now + " slot.time_start: " + slot.time_start.toString() + " t_time_slot: " + t_time_slot + " reservable: " + !(t_time_slot <= t_time_now));
 
             if (t_time_slot <= t_time_now) {
                 slot.reservable_for_this_user = false;
@@ -294,7 +305,7 @@ app.get('/', async (req, res, next) => {
  * Show the user a list of reservations done, both for this user or a group the user is member of.
  */
 app.get('/reservations', async (req, res, next) => {
-    const reservations = await db.getReservationsForUser(res.locals.courseId, req.session.user.id, req.session.user.groups_ids);
+    const reservations = await db.getReservationsForUser(res, res.locals.courseId, req.session.user.id, req.session.user.groups_ids);
 
     // Populate with information from Canvas API about reserving user and group.
     // NOTE: The only user and group information available is the ones that the calling user belongs to!
@@ -491,7 +502,7 @@ app.get('/admin', async (req, res, next) => {
 /* Get one slot */
 app.get('/api/slot/:id', async (req, res, next) => {
     try {
-        const slot = await db.getSlot(req.params.id)
+        const slot = await db.getSlot(res, req.params.id)
 
         // add info about reserved groups, needed for UI
         // don't leak user information on individuals, not used
@@ -534,7 +545,7 @@ app.post('/api/reservation', async (req, res, next) => {
     const { slot_id, group_id, user_id, message } = req.body;
     
     try {
-        const slot = await db.getSlot(slot_id);
+        const slot = await db.getSlot(res, slot_id);
 
         const t_time_now = new Date().getTime();
         const t_time_slot = new Date(slot.time_start).getTime();
@@ -587,7 +598,7 @@ app.post('/api/reservation', async (req, res, next) => {
             }
         }
 
-        const reservation = await db.createSlotReservation(slot_id, req.session.user.id, req.session.user.name, group_id, group_name, message);
+        const reservation = await db.createSlotReservation(res, slot_id, req.session.user.id, req.session.user.name, group_id, group_name, message);
 
         // Send confirmation messages with Canvas Conversation Robot to Inbox
         log.debug("CONVERSATION_ROBOT_SEND_MESSAGES=" + process.env.CONVERSATION_ROBOT_SEND_MESSAGES);
@@ -609,7 +620,7 @@ app.post('/api/reservation', async (req, res, next) => {
                     }
 
                     if (body !== 'undefined' && body != '') {
-                        body = utils.replaceMessageMagics(body, course.name, message, course.cancellation_policy_hours, req.session.user.name, slot.time_human_readable_sv, slot.location_name, slot.location_url, slot.location_description, instructor.name, instructor.email, group_name, "", req.session.lti.context_title);
+                        body = utils.replaceMessageMagics(body, course.name, message, course.cancellation_policy_hours, req.session.user.name, slot.time_human_readable, slot.location_name, slot.location_url, slot.location_description, instructor.name, instructor.email, group_name, "", req.session.lti.context_title);
 
                         let conversation_result_group = await canvasApi.createConversation(recipient, subject, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
                         let log_id = await db.addCanvasConversationLog(slot_id, reservation.id, slot.canvas_course_id, recipient, subject, body);
@@ -636,7 +647,7 @@ app.post('/api/reservation', async (req, res, next) => {
                             }
 
                             if (body_all !== 'undefined' && body_all != '') {
-                                body_all = utils.replaceMessageMagics(body_all, course.name, message, course.cancellation_policy_hours, req.session.user.name, slot_now.time_human_readable_sv, slot_now.location_name, slot_now.location_url, slot_now.location_description, instructor.name, instructor.email, group_name, slot_now.res_group_names.join(", "), req.session.lti.context_title);
+                                body_all = utils.replaceMessageMagics(body_all, course.name, message, course.cancellation_policy_hours, req.session.user.name, slot_now.time_human_readable, slot_now.location_name, slot_now.location_url, slot_now.location_description, instructor.name, instructor.email, group_name, slot_now.res_group_names.join(", "), req.session.lti.context_title);
 
                                 for (const id of slot_now.res_group_ids) {
                                     recipients.push("group_" + id);
@@ -678,7 +689,7 @@ app.post('/api/reservation', async (req, res, next) => {
                     }
 
                     if (body !== 'undefined' && body != '') {
-                        body = utils.replaceMessageMagics(body, course.name, message, course.cancellation_policy_hours, req.session.user.name, slot.time_human_readable_sv, slot.location_name, slot.location_url, slot.location_description, instructor.name, instructor.email, "", "", req.session.lti.context_title);
+                        body = utils.replaceMessageMagics(body, course.name, message, course.cancellation_policy_hours, req.session.user.name, slot.time_human_readable, slot.location_name, slot.location_url, slot.location_description, instructor.name, instructor.email, "", "", req.session.lti.context_title);
 
                         let conversation_result_user = await canvasApi.createConversation(req.session.user.id, subject, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
                         let log_id = await db.addCanvasConversationLog(slot_id, reservation.id, slot.canvas_course_id, req.session.user.id, subject, body);
@@ -721,7 +732,7 @@ app.post('/api/reservation', async (req, res, next) => {
 /* Get one reservation */
 app.get('/api/reservation/:id', async (req, res, next) => {
     try {
-        const reservation = await db.getReservation(req.session.user.id, req.session.user.groups_ids, req.params.id);
+        const reservation = await db.getReservation(res, req.session.user.id, req.session.user.groups_ids, req.params.id);
         return res.send(reservation);
     }
     catch (error) {
@@ -738,7 +749,7 @@ app.get('/api/reservation/:id', async (req, res, next) => {
 app.delete('/api/reservation/:id', async (req, res) => { 
     try {
         // Load reservation first to get attributes like is_cancelable
-        const reservation = await db.getReservation(req.session.user.id, req.session.user.groups_ids, req.params.id);
+        const reservation = await db.getReservation(res, req.session.user.id, req.session.user.groups_ids, req.params.id);
 
         if (reservation.is_cancelable == false) {
             throw new Error(res.__('CancelSlotReservationApiResponseNotCancellable'));
@@ -766,7 +777,7 @@ app.delete('/api/reservation/:id', async (req, res) => {
                     }
 
                     if (body !== 'undefined' && body != '') {
-                        body = utils.replaceMessageMagics(body, course.name, "", course.cancellation_policy_hours, req.session.user.name, reservation.time_human_readable_sv, reservation.location_name, "", "", instructor.name, instructor.email, reservation.canvas_group_name, "", req.session.lti.context_title);
+                        body = utils.replaceMessageMagics(body, course.name, "", course.cancellation_policy_hours, req.session.user.name, reservation.time_human_readable, reservation.location_name, "", "", instructor.name, instructor.email, reservation.canvas_group_name, "", req.session.lti.context_title);
         
                         let conversation_result_group = await canvasApi.createConversation(recipient, subject, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
                         let log_id = await db.addCanvasConversationLog(reservation.slot_id, reservation.id, reservation.canvas_course_id, recipient, subject, body);
@@ -796,7 +807,7 @@ app.delete('/api/reservation/:id', async (req, res) => {
                     }
 
                     if (body !== 'undefined' && body != '') {
-                        body = utils.replaceMessageMagics(body, course.name, "", course.cancellation_policy_hours, req.session.user.name, reservation.time_human_readable_sv, reservation.location_name, "", "", instructor.name, instructor.email, "", "", req.session.lti.context_title);
+                        body = utils.replaceMessageMagics(body, course.name, "", course.cancellation_policy_hours, req.session.user.name, reservation.time_human_readable, reservation.location_name, "", "", instructor.name, instructor.email, "", "", req.session.lti.context_title);
 
                         let conversation_result_user = await canvasApi.createConversation(req.session.user.id, subject, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
                         let log_id = await db.addCanvasConversationLog(reservation.slot_id, reservation.id, reservation.canvas_course_id, req.session.user.id, subject, body);
@@ -841,7 +852,7 @@ app.delete('/api/reservation/:id', async (req, res) => {
  */
 app.get('/api/statistics', async (req, res, next) => {
     try {
-        const reservations = await db.getReservationsForUser(res.locals.courseId, req.session.user.id, req.session.user.groups_ids);
+        const reservations = await db.getReservationsForUser(res, res.locals.courseId, req.session.user.id, req.session.user.groups_ids);
 
         return res.send({
             counters: {

@@ -18,26 +18,38 @@
 	"DatePhraseAndForward": "and in the future",
 	"SlotListingHeaderNormal": "Listing {{slots}} slots from {{from}} {{to}}:",
 	"SlotListingHeaderInstructor": "Listing {{slots}} slots with you as instructor from {{from}} {{to}}:",
-	"SlotListingPhraseGroup": {
-		"full": {
-			"one": "Fully booked, {{reservations}} of {{slots}} group reserved",
-			"other": "Fully booked, {{reservations}} of {{slots}} groups reserved"	
+	"SlotListingAvailabilityPhraseGroupAvailable": "Tillgänglig, {{available}} grupper kvar",
+	"SlotListingAvailabilityPhraseGroupFull": "Fullbokad, {{reservations}} grupper",
+	"SlotListingAvailabilityPhraseIndividualAvailable": "Tillgänglig, {{available}} plats kvar",
+	"SlotListingAvailabilityPhraseIndividualFull": "Fullbokad",
+	"SlotListingAvailabilityPhrase": {
+		"Group": {
+			"Full": {
+				"one": "Fully booked, {{reservations}} of {{slots}} group reserved",
+				"other": "Fully booked, {{reservations}} of {{slots}} groups reserved"
+			},
+			"Available": {
+				"one": "Available, {{reservations}} of {{slots}} group reserved",
+				"other": "Available, {{reservations}} of {{slots}} groups reserved"
+			}
 		},
-		"available": {
-			"one": "Available, {{reservations}} of {{slots}} group reserved",
-			"other": "Available, {{reservations}} of {{slots}} groups reserved"	
+		"Individual": {
+			"Full": {
+				"one": "Fully booked, {{reservations}} of {{slots}} person reserved",
+				"other": "Fully booked, {{reservations}} of {{slots}} persons reserved"
+			},
+			"Available": {
+				"one": "Available, {{reservations}} of {{slots}} person reserved",
+				"other": "Available, {{reservations}} of {{slots}} persons reserved"
+			}
 		}
 	},
-	"SlotListingPhraseIndividual": {
-		"one": "individual",
-		"other": "individuals"
-	},
-	"SlotListingHeaderTimeTitle": "Course and time",
+	"SlotListingHeaderTimeTitle": "Type and time",
 	"SlotListingHeaderInstructorPlaceTitle": "Instructor and location",
 	"SlotListingHeaderAvailabilityTitle": "Availability",
 	"SlotListingFilterShowAll": "Show all",
 	"SlotListingFilterSegmentTitle": "Segment",
-	"SlotListingFilterCourseTitle": "Course",
+	"SlotListingFilterCourseTitle": "Type",
 	"SlotListingFilterInstructorTitle": "Instructor",
 	"SlotListingFilterLocationTitle": "Location",
 	"SlotListingFilterAvailabilityTitle": "Availability",
@@ -79,7 +91,7 @@
 	"ReserveSlotModalSubmitButtonLabel": "Reserve",
 	"ReservationsHeader": "My reservations",
 	"CancelSlotReservationModalTitle": "Cancel reservation",
-	"CancelSlotReservationModalLabelCourse": "Course:",
+	"CancelSlotReservationModalLabelCourse": "Type:",
 	"CancelSlotReservationModalLabelDateTime": "Date and time:",
 	"CancelSlotReservationModalLabelLocation": "Location:",
 	"CancelSlotReservationModalLabelInstructor": "Instructor:",
@@ -97,5 +109,7 @@
 	"ConversationRobotReservationFullSubjectPrefix": "Fully reserved timeslot: ",
 	"ConversationRobotReservationFullCcSubjectPrefix": "(Copy) Fully reserved timeslot: ",
 	"ConversationRobotCancelReservationSubjectPrefix": "Confirmed cancellation: ",
-	"ConversationRobotCancelReservationCcSubjectPrefix": "(Copy) Confirmed cancellation: "
+	"ConversationRobotCancelReservationCcSubjectPrefix": "(Copy) Confirmed cancellation: ",
+	"SlotListingAvailabilityPhrase.Group.Full": "SlotListingAvailabilityPhrase.Group.Full",
+	"SlotListingAvailabilityPhrase.Group.Available": "SlotListingAvailabilityPhrase.Group.Available"
 }
