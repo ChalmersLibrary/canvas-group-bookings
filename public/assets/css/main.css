@@ -75,6 +75,9 @@ nav.navbar-main-navigation li.nav-item:not(.active):hover {
 nav.navbar-main-navigation .navbar-text {
     padding-top: 0px;
 }
+.application-logo {
+    text-transform: uppercase;
+}
 p.lead {
     font-weight: 400;
 }
