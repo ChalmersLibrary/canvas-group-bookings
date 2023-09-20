@@ -9,7 +9,6 @@
 	"HeaderLabelRoleAdministrator": "Administrator",
 	"HeaderLabelRoleInstructor": "Instructor",
 	"HeaderLabelNoGroupMembership": "Not a member of any group",
-	"Hello": "Hello",
 	"NoTimeSlots": "No time slots available",
 	"NoTimeSlotsDescription": "There are no available slots published with the selected filters.",
 	"NoTimeSlotsResetFilters": "Reset all filters",

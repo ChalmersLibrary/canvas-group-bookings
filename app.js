@@ -168,17 +168,6 @@ app.get('/', async (req, res, next) => {
     let this_start_date_string = res.__('DatePhraseToday');
     let this_end_date_string = res.__('DatePhraseAndForward');
 
-    console.log("Locale: " + res.getLocale());
-
-    console.log(res.__('SlotAvailabilityPhraseOneGroupFull'));
-    console.log(res.__('SlotAvailabilityPhraseOneIndividualFull'));
-    console.log(res.__('SlotAvailabilityPhraseGroupFull'));
-    console.log(res.__n('SlotAvailabilityPhraseGroupAvailable', 1, { available: 1 }));
-    console.log(res.__n('SlotAvailabilityPhraseGroupAvailable', 3, { available: 3 })); 
-    console.log(res.__('SlotAvailabilityPhraseIndividualFull'));
-    console.log(res.__n('SlotAvailabilityPhraseIndividualAvailable', 1, { available: 1, slots: 100 }));
-    console.log(res.__n('SlotAvailabilityPhraseIndividualAvailable', 23, { available: 23, slots: 100 }));
-
     if (Date.parse(req.query.start_date)) {
          if (new Date().toLocaleDateString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric' }) != new Date(req.query.start_date).toLocaleDateString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric' })) {
             this_start_date_string = new Date(req.query.start_date).toLocaleDateString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric' });

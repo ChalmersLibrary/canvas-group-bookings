@@ -9,7 +9,6 @@
 	"HeaderLabelRoleAdministrator": "administratör",
 	"HeaderLabelRoleInstructor": "handledare",
 	"HeaderLabelNoGroupMembership": "ej medlem i någon grupp",
-	"Hello": "Hej",
 	"NoTimeSlots": "Hittade inga tider",
 	"NoTimeSlotsDescription": "Antingen är inga tider utlagda eller så finns det inga tider som motsvarar de filter du valt.",
 	"NoTimeSlotsResetFilters": "Återställ alla filter",
