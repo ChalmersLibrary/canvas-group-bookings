@@ -119,5 +119,6 @@
 			"slots": 10,
 			"reservations": 4
 		}
-	}
+	},
+	"GeneralErrorMessageMissingAdminAccess": "Du måste ha administratörsrättigheter för att se denna sida."
 }

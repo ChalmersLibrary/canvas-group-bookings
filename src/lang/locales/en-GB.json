@@ -111,5 +111,6 @@
 	"ConversationRobotCancelReservationSubjectPrefix": "Confirmed cancellation: ",
 	"ConversationRobotCancelReservationCcSubjectPrefix": "(Copy) Confirmed cancellation: ",
 	"SlotListingAvailabilityPhrase.Group.Full": "SlotListingAvailabilityPhrase.Group.Full",
-	"SlotListingAvailabilityPhrase.Group.Available": "SlotListingAvailabilityPhrase.Group.Available"
+	"SlotListingAvailabilityPhrase.Group.Available": "SlotListingAvailabilityPhrase.Group.Available",
+	"GeneralErrorMessageMissingAdminAccess": "You must have administrator privileges to access this page."
 }

@@ -373,7 +373,7 @@ app.get('/admin', async (req, res, next) => {
         });
     }
     else {
-        next(new Error("You must have administrator privileges to access this page."));
+        next(new Error(res.__('GeneralErrorMessageMissingAdminAccess')));
     }
 });
 
@@ -423,7 +423,7 @@ app.get('/admin', async (req, res, next) => {
         }
     }
     else {
-        next(new Error("You must have administrator privileges to access this page."));
+        next(new Error(res.__('GeneralErrorMessageMissingAdminAccess')));
     }
 });
 
@@ -439,7 +439,7 @@ app.get('/admin', async (req, res, next) => {
         });
     }
     else {
-        next(new Error("You must have administrator privileges to access this page."));
+        next(new Error(res.__('GeneralErrorMessageMissingAdminAccess')));
     }
 });
 
@@ -455,7 +455,7 @@ app.get('/admin', async (req, res, next) => {
         });
     }
     else {
-        next(new Error("You must have administrator privileges to access this page."));
+        next(new Error(res.__('GeneralErrorMessageMissingAdminAccess')));
     }
 });
 
@@ -473,7 +473,7 @@ app.get('/admin', async (req, res, next) => {
         });
     }
     else {
-        next(new Error("You must have administrator privileges to access this page."));
+        next(new Error(res.__('GeneralErrorMessageMissingAdminAccess')));
     }
 });
 
@@ -489,7 +489,7 @@ app.get('/admin', async (req, res, next) => {
         });
     }
     else {
-        next(new Error("You must have administrator privileges to access this page."));
+        next(new Error(res.__('GeneralErrorMessageMissingAdminAccess')));
     }
 });
 
