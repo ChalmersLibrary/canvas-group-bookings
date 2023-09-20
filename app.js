@@ -170,17 +170,14 @@ app.get('/', async (req, res, next) => {
 
     console.log("Locale: " + res.getLocale());
 
-    console.log(res.__('NoTimeSlots'));
-    console.log(res.__('SlotListingHeaderNormal', { slots: 2, from: res.__('DatePhraseToday'), to: res.__('DatePhraseUntil') + ' 2023-08-31' }));
-    console.log(res.__('SlotListingHeaderInstructor', { slots: 2, from: res.__('DatePhraseToday'), to: res.__('DatePhraseAndForward') }));
-
-    console.log(res.__n('SlotListingAvailabilityPhrase.Group.Full', { slots: 1, reservations: 1 }));
-    console.log(res.__n('SlotListingAvailabilityPhrase.Group.Available', { slots: 10, reservations: 4 }));
-        
-    /* console.log(res.__('SlotListingPhraseGroup'));
-    console.log(res.__n('SlotListingPhraseGroup'));
-    console.log(res.__('SlotListingPhraseIndividual'));
-    console.log(res.__n('SlotListingPhraseIndividual')); */
+    console.log(res.__('SlotAvailabilityPhraseOneGroupFull'));
+    console.log(res.__('SlotAvailabilityPhraseOneIndividualFull'));
+    console.log(res.__('SlotAvailabilityPhraseGroupFull'));
+    console.log(res.__n('SlotAvailabilityPhraseGroupAvailable', 1, { available: 1 }));
+    console.log(res.__n('SlotAvailabilityPhraseGroupAvailable', 3, { available: 3 })); 
+    console.log(res.__('SlotAvailabilityPhraseIndividualFull'));
+    console.log(res.__n('SlotAvailabilityPhraseIndividualAvailable', 1, { available: 1, slots: 100 }));
+    console.log(res.__n('SlotAvailabilityPhraseIndividualAvailable', 23, { available: 23, slots: 100 }));
 
     if (Date.parse(req.query.start_date)) {
          if (new Date().toLocaleDateString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric' }) != new Date(req.query.start_date).toLocaleDateString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric' })) {
@@ -202,12 +199,41 @@ app.get('/', async (req, res, next) => {
 
     /* Add contextual availability notice for each slot */
     for (const slot of availableSlots.slots) {
-        if (req.session.user.isAdministrator || req.session.user.isInstructor) {
-            slot.availability_notice = (slot.res_max == slot.res_now ? "Fullbokad, " + slot.res_now + (slot.type == "group" ? (slot.res_max > 1 ? " grupper" : " grupp") : (" personer")) : slot.res_now + " av " + slot.res_max + (slot.type == "group" ? (slot.res_max > 1 ? " grupper" : " grupp") : (" personer")) + (slot.res_max > 1 ? " bokade" : " bokad"));
+        if (slot.res_max == 1) {
+            if (slot.res_max == slot.res_now) {
+                if (slot.type == "group") {
+                    slot.availability_notice = res.__('SlotAvailabilityPhraseOneGroupFull');
+                }
+                else {
+                    slot.availability_notice = res.__('SlotAvailabilityPhraseOneIndividualFull');
+                }
+            }
+            else {
+                if (slot.type == "group") {
+                    slot.availability_notice = res.__('SlotAvailabilityPhraseOneGroupAvailable');
+                }
+                else {
+                    slot.availability_notice = res.__('SlotAvailabilityPhraseOneIndividualAvailable');
+                }
+            }
         }
         else {
-            slot.availability_notice = (slot.res_max == slot.res_now ? "Fullbokad, " + slot.res_now + (slot.type == "group" ? (slot.res_max > 1 ? " grupper" : " grupp") : (" personer")) : slot.res_now + " av " + slot.res_max + (slot.type == "group" ? (slot.res_max > 1 ? " grupper" : " grupp") : (" personer")) + (slot.res_max > 1 ? " bokade" : " bokad"));
-            // slot.availability_notice = (slot.res_max == slot.res_now ? "Fullbokad, " + slot.res_now + (slot.type == "group" ? (slot.res_max > 1 ? " grupper" : " grupp") : (" personer")) : "Tillgänglig, " + (slot.res_max - slot.res_now) + " av " + slot.res_max);
+            if (slot.res_max == slot.res_now) {
+                if (slot.type == "group") {
+                    slot.availability_notice = res.__('SlotAvailabilityPhraseGroupFull');
+                }
+                else {
+                    slot.availability_notice = res.__('SlotAvailabilityPhraseIndividualFull');
+                }
+            }
+            else {
+                if (slot.type == "group") {
+                    slot.availability_notice = res.__n('SlotAvailabilityPhraseGroupAvailable', (slot.res_max - slot.res_now), { reservations: slot.res_now, available: (slot.res_max - slot.res_now), slots: slot.res_max });
+                }
+                else {
+                    slot.availability_notice = res.__n('SlotAvailabilityPhraseIndividualAvailable', (slot.res_max - slot.res_now), { reservations: slot.res_now, available: slot.res_max - slot.res_now, slots: slot.res_max });
+                }
+            }
         }
     }
 
@@ -276,7 +302,7 @@ app.get('/', async (req, res, next) => {
         }
     }
 
-    return res.send({
+    /* return res.send({
         internal: req.session.internal,
         session: req.session,
         groups: req.session.user.groups,
@@ -286,7 +312,7 @@ app.get('/', async (req, res, next) => {
         courses: await db.getValidCourses(res.locals.courseId),
         instructors: await db.getValidInstructors(),
         locations: await db.getValidLocations()
-    });
+    }); */
 
     return res.render('pages/index', {
         internal: req.session.internal,

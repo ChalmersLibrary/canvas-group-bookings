@@ -18,32 +18,6 @@
 	"DatePhraseAndForward": "and in the future",
 	"SlotListingHeaderNormal": "Listing {{slots}} slots from {{from}} {{to}}:",
 	"SlotListingHeaderInstructor": "Listing {{slots}} slots with you as instructor from {{from}} {{to}}:",
-	"SlotListingAvailabilityPhraseGroupAvailable": "Tillgänglig, {{available}} grupper kvar",
-	"SlotListingAvailabilityPhraseGroupFull": "Fullbokad, {{reservations}} grupper",
-	"SlotListingAvailabilityPhraseIndividualAvailable": "Tillgänglig, {{available}} plats kvar",
-	"SlotListingAvailabilityPhraseIndividualFull": "Fullbokad",
-	"SlotListingAvailabilityPhrase": {
-		"Group": {
-			"Full": {
-				"one": "Fully booked, {{reservations}} of {{slots}} group reserved",
-				"other": "Fully booked, {{reservations}} of {{slots}} groups reserved"
-			},
-			"Available": {
-				"one": "Available, {{reservations}} of {{slots}} group reserved",
-				"other": "Available, {{reservations}} of {{slots}} groups reserved"
-			}
-		},
-		"Individual": {
-			"Full": {
-				"one": "Fully booked, {{reservations}} of {{slots}} person reserved",
-				"other": "Fully booked, {{reservations}} of {{slots}} persons reserved"
-			},
-			"Available": {
-				"one": "Available, {{reservations}} of {{slots}} person reserved",
-				"other": "Available, {{reservations}} of {{slots}} persons reserved"
-			}
-		}
-	},
 	"SlotListingHeaderTimeTitle": "Type and time",
 	"SlotListingHeaderInstructorPlaceTitle": "Instructor and location",
 	"SlotListingHeaderAvailabilityTitle": "Availability",
@@ -61,14 +35,28 @@
 	"SlotListingFilterDateSubmit": "Show",
 	"SlotListingPaginationPrevious": "Previous",
 	"SlotListingPaginationNext": "Next",
+	"SlotAvailabilityPhraseOneGroupFull": "Fully reserved",
+	"SlotAvailabilityPhraseOneGroupAvailable": "Available, one group",
+	"SlotAvailabilityPhraseGroupFull": "Fully reserved",
+	"SlotAvailabilityPhraseGroupAvailable":  {
+		"one": "Available, one group of {{slots}}",
+		"other": "Available, {{available}} groups of {{slots}}"
+	},
+	"SlotAvailabilityPhraseOneIndividualFull": "Fully reserved",
+	"SlotAvailabilityPhraseOneIndividualAvailable": "Available, one person",
+	"SlotAvailabilityPhraseIndividualFull": "Fully reserved",
+	"SlotAvailabilityPhraseIndividualAvailable": {
+		"one": "Available, one person of {{slots}}",
+		"other": "Available, {{available}} persons of {{slots}}"
+	},
 	"SlotReservationNoAdministrator": "Administrator can not reserve times.",
 	"SlotReservationNoInstructor": "Instructor can not reserve times.",
 	"SlotReservationFull": "Slot is reserved.",
 	"SlotReservationTimeInPast": "Time for this slot has passed.",
-	"SlotReservationGroupIsReserved": "You are a member of a group that is already reserved.",
-	"SlotReservationGroupMaxReservations": "Max reservations {{max}} for {{name}}.",
-	"SlotReservationIndividualIsReserved": "You are reserved on this slot.",
-	"SlotReservationIndividualMaxReservations": "Max reservations {{max}} for {{name}}.",
+	"SlotReservationGroupIsReserved": "Your group is reserved for this slot.",
+	"SlotReservationGroupMaxReservations": "Max reservations ({{max}}) for {{name}}.",
+	"SlotReservationIndividualIsReserved": "You are reserved for this slot.",
+	"SlotReservationIndividualMaxReservations": "Max reservations ({{max}}) for {{name}}.",
 	"SlotReservationReserveButtonTitle": "Reserve",
 	"ReserveSlotModalTitle": "Reserve available timeslot",
 	"ReserveSlotModalLabelDateTime": "Date and time:",
@@ -110,7 +98,5 @@
 	"ConversationRobotReservationFullCcSubjectPrefix": "(Copy) Fully reserved timeslot: ",
 	"ConversationRobotCancelReservationSubjectPrefix": "Confirmed cancellation: ",
 	"ConversationRobotCancelReservationCcSubjectPrefix": "(Copy) Confirmed cancellation: ",
-	"SlotListingAvailabilityPhrase.Group.Full": "SlotListingAvailabilityPhrase.Group.Full",
-	"SlotListingAvailabilityPhrase.Group.Available": "SlotListingAvailabilityPhrase.Group.Available",
 	"GeneralErrorMessageMissingAdminAccess": "You must have administrator privileges to access this page."
 }
