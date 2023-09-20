@@ -14,7 +14,7 @@ const utils = require('../../utilities');
 router.get('/slot/:id', async (req, res) => {
     if (req.session.user.isInstructor) {
         try {
-            const slot = await db.getSlot(req.params.id)
+            const slot = await db.getSlot(res, req.params.id)
             const reservations = await db.getSlotReservations(req.params.id);
             slot.reservations = reservations;
             slot.shortcut = {

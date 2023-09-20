@@ -91,6 +91,14 @@
 	"CancelSlotReservationModalCancelButtonLabel": "Close",
 	"CancelSlotReservationModalSubmitButtonLabel": "Cancel reservation",
 	"CancelSlotReservationApiResponseNotCancellable": "Cancellation time has passed, not possible to cancel.",
+	"OffCanvasSlotReservationDetailsTypeGroupPhrase": {
+		"one": "Group reservation, one group",
+		"other": "Group reservation, max {{max}} groups"
+	},
+	"OffCanvasSlotReservationDetailsTypeIndividualPhrase": {
+		"one": "Individual reservation, one person",
+		"other": "Individual reservation, max {{max}} persons"
+	},
 	"FooterPrivacyLinkLabel": "Privacy policy",
 	"ConversationRobotReservationSubjectPrefix": "Confirmed reservation: ",
 	"ConversationRobotReservationCcSubjectPrefix": "(Copy) Confirmed reservation: ",

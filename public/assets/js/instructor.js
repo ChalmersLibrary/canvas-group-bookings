@@ -20,9 +20,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
         .then(data => {
             console.log(data)
             slotDetailsOffcanvas.querySelector('#offcanvasSlotDetailsLabel').innerHTML = data.course_name
-            slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_time').innerHTML = data.time_human_readable_sv
+            slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_time').innerHTML = data.time_human_readable
             slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_location').innerHTML = data.location_name
-            slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_type_details').innerHTML = data.type == "group" ? "Grupptillfälle, max " + data.res_max + " grupper" : "Individuellt tillfälle, max " + data.res_max + " personer"
+            slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_type_details').innerHTML = data.type_details_human_readable
             slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_reservations').replaceChildren()
             if (data.reservations && data.reservations.length) {
                 data.reservations.forEach(reservation => {

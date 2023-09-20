@@ -334,6 +334,8 @@ async function getSlot(res, id) {
     if (data !== undefined && data.length) {
         data.forEach(slot => {
             slot.time_human_readable = utils.capitalizeFirstLetter(new Date(slot.time_start).toLocaleDateString(res.getLocale(), dateOptions) + ", " + new Date(slot.time_start).toLocaleTimeString(res.getLocale(), timeOptions) + "–" + new Date(slot.time_end).toLocaleTimeString(res.getLocale(), timeOptions));
+            slot.type_details_human_readable = slot.type == "group" ? res.__n('OffCanvasSlotReservationDetailsTypeGroupPhrase', slot.res_max, { max: slot.res_max }) : res.__n('OffCanvasSlotReservationDetailsTypeIndividualPhrase', slot.res_max, { max: slot.res_max });
+            
             returnedData.push(slot);
         });
     }
