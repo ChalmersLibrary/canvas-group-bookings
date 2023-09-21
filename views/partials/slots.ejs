@@ -95,7 +95,7 @@
         <% if (navigation.filters.segment && navigation.filters.segment.length && !configuration.map(c => c.key).includes('FACETS_HIDE_SEGMENT')) { %>
             <div class="card card-filter">
                 <div class="card-header">
-                    Segment
+                    <%= __('SlotListingFilterSegmentTitle') %>
                 </div>
                 <div class="list-group list-group-flush">
                     <% navigation.filters.segment.forEach(segment => { %>
