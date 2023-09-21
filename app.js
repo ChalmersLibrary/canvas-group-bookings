@@ -322,10 +322,6 @@ app.get('/', async (req, res, next) => {
 app.get('/reservations', async (req, res, next) => {
     const reservations = await db.getReservationsForUser(res, res.locals.courseId, req.session.user.id, req.session.user.groups_ids);
 
-    // Populate with information from Canvas API about reserving user and group.
-    // NOTE: The only user and group information available is the ones that the calling user belongs to!
-    // The API does not allow for fetching info about other groups, even if the user is in the same course.
-    // TODO: This information should therefore be in the db, both canvas_user_name and canvas_group_name (done). 
     for (const reservation of reservations) {
         // Get other reservations if this is a group and there are other groups reserved.
         // For now, we store the information in database when a user for a group makes the reservation.
@@ -352,7 +348,7 @@ app.get('/reservations', async (req, res, next) => {
         reservations: reservations
     }); */
 
-    return res.render(res.getLocale().toString().slice(0, 2) + '/pages/reservations/reservations', {
+    return res.render(res.locals.lang + '/pages/reservations/reservations', {
         status: 'up',
         internal: req.session.internal,
         version: pkg.version,
@@ -369,7 +365,7 @@ app.get('/reservations', async (req, res, next) => {
  * Privay Policy, linked from footer
  */
 app.get('/privacy', async (req, res, next) => {
-    return res.render(res.getLocale().toString().slice(0, 2) + '/pages/privacy/privacy', {
+    return res.render(res.locals.lang + '/pages/privacy/privacy', {
         internal: req.session.internal,
         session: req.session
     });
