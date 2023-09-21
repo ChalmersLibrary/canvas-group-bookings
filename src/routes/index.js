@@ -55,6 +55,10 @@ router.all(['/', '/reservations', '/privacy', '/debug', '/admin*', '/api/*'], as
                 res.locals.lang = res.getLocale().toString().slice(0, 2);
                 log.debug("Language set to: " + res.getLocale() + ", res.locals.lang: " + res.locals.lang + ", req.session.user.locale: " + req.session.user.locale + ", req.session.lti.launch_presentation_locale: " + req.session.lti.launch_presentation_locale);
 
+                // Read configuration keys and values for the course
+                res.locals.configuration = await db.getCanvasCourseConfiguration(res.locals.courseId);
+                console.log(res.locals.configuration);
+
                 // Add some debug information
                 req.session.internal = {
                     version: pkg.version,

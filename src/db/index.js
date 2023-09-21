@@ -1143,7 +1143,30 @@ async function updateCanvasConnection(canvas_course_id, group_category_mappings)
     });
 }
 
+/**
+ * Retrieve configuration keys and values for a specific course
+ */
+async function getCanvasCourseConfiguration(canvas_course_id) {
+    let data;
+    let returnedData = [];
 
+    await query("SELECT DISTINCT config_key, config_value FROM canvas_course_configuration c WHERE c.canvas_course_id=$1", [
+        canvas_course_id
+    ]).then((result) => {
+        data = result.rows;
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    });
+
+    if (data !== undefined && data.length) {
+        data.forEach(c => {
+            returnedData.push({ key: c.config_key, value: c.config_value });
+        });
+    }
+
+    return returnedData;
+}
 
 async function checkDatabaseVersion() {
     let run_setup = false;
@@ -1284,4 +1307,5 @@ module.exports = {
     addCanvasConversationLog,
     updateCanvasConnection,
     checkDatabaseVersion,
+    getCanvasCourseConfiguration,
 }

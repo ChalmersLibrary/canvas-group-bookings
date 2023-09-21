@@ -92,7 +92,7 @@
         <% } %>
     </div>
     <div class="col-md-3 filters">
-        <!-- <% if (navigation.filters.segment && navigation.filters.segment.length) { %>
+        <% if (navigation.filters.segment && navigation.filters.segment.length && !configuration.map(c => c.key).includes('FACETS_HIDE_SEGMENT')) { %>
             <div class="card card-filter">
                 <div class="card-header">
                     Segment
@@ -103,8 +103,8 @@
                     <% }) %>
                 </div>
             </div>
-        <% } %> -->
-        <% if (navigation.filters.course && navigation.filters.course.length) { %>
+        <% } %>
+        <% if (navigation.filters.course && navigation.filters.course.length && !configuration.map(c => c.key).includes('FACETS_HIDE_COURSE')) { %>
             <div class="card card-filter">
                 <div class="card-header">
                     <%= __('SlotListingFilterCourseTitle') %>
@@ -116,7 +116,7 @@
                 </div>
             </div>
         <% } %>
-        <% if (navigation.filters.instructor && navigation.filters.instructor.length) { %>
+        <% if (navigation.filters.instructor && navigation.filters.instructor.length && !configuration.map(c => c.key).includes('FACETS_HIDE_INSTRUCTOR')) { %>
             <div class="card card-filter">
                 <div class="card-header">
                     <%= __('SlotListingFilterInstructorTitle') %>
@@ -128,7 +128,7 @@
                 </div>
             </div>
         <% } %>
-        <% if (navigation.filters.location && navigation.filters.location.length) { %>
+        <% if (navigation.filters.location && navigation.filters.location.length && !configuration.map(c => c.key).includes('FACETS_HIDE_LOCATION')) { %>
             <div class="card card-filter">
                 <div class="card-header">
                     <%= __('SlotListingFilterLocationTitle') %>
@@ -140,7 +140,7 @@
                 </div>
             </div>
         <% } %>
-        <% if (navigation.filters.availability && navigation.filters.availability.length) { %>
+        <% if (navigation.filters.availability && navigation.filters.availability.length && !configuration.map(c => c.key).includes('FACETS_HIDE_AVAILABILITY')) { %>
             <div class="card card-filter">
                 <div class="card-header">
                     <%= __('SlotListingFilterAvailabilityTitle') %>

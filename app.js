@@ -309,6 +309,7 @@ app.get('/', async (req, res, next) => {
         groups: req.session.user.groups,
         navigation: this_navigation,
         slots: availableSlots.slots,
+        configuration: res.locals.configuration,
         segments: await db.getSegments(res.locals.courseId),
         courses: await db.getValidCourses(res.locals.courseId),
         instructors: await db.getValidInstructors(res.locals.courseId),
