@@ -119,6 +119,8 @@
 	"AdminCourseCreateNewButtonTitle": "Skapa nytt tillfälle",
 	"AdminCourseModalNewLabel": "Skapa nytt tillfälle",
 	"AdminCourseModalEditLabel": "Redigera tillfälle",
+	"AdminCourseModalDeleteLabel": "Radera tillfälle",
+	"AdminCourseModalDeleteNotDeletableText": "Tillfället är kopplat till tider i denna kurs, därför kan det inte tas bort.",
 	"AdminCourseModalTabBasicLabel": "Grundläggande",
 	"AdminCourseModalTabValuesLabel": "Begränsningar och förval",
 	"AdminCourseModalTabFlagsLabel": "Flaggor",
@@ -141,5 +143,7 @@
 	"AdminCourseModalNewButtonCloseLabel": "Stäng",
 	"AdminCourseModalNewButtonSubmitLabel": "Skapa tillfälle",
 	"AdminCourseModalEditButtonCloseLabel": "Stäng",
-	"AdminCourseModalEditButtonSubmitLabel": "Uppdatera"
+	"AdminCourseModalEditButtonSubmitLabel": "Uppdatera",
+	"AdminCourseModalDeleteButtonCloseLabel": "Stäng",
+	"AdminCourseModalDeleteButtonSubmitLabel": "Radera"
 }
