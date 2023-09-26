@@ -100,7 +100,9 @@
 	"GeneralErrorMessageMissingAdminAccess": "You must have administrator privileges to access this page.",
 
 	"AdminHeader": "Administration",
-	
+	"AdminHelpPaneTitle": "Help",
+	"AdminHelpPaneDescription": "This page is intentionally left blank for the moment.",
+
 	"AdminNavigationStart": "Administration",
 	"AdminNavigationCanvas": "Canvas",
 	"AdminNavigationCourse": "Types",

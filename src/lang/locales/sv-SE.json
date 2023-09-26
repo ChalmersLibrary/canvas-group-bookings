@@ -100,6 +100,8 @@
 	"GeneralErrorMessageMissingAdminAccess": "Du måste ha administratörsrättigheter för att se denna sida.",
 
 	"AdminHeader": "Administration",
+	"AdminHelpPaneTitle": "Hjälp",
+	"AdminHelpPaneDescription": "Denna sida är medvetet lämnad tom för tillfället.",
 	
 	"AdminNavigationStart": "Administration",
 	"AdminNavigationCanvas": "Canvas",
