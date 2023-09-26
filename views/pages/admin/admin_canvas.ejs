@@ -12,7 +12,7 @@
 <main class="container-fluid py-2">
     <div class="row">
         <div class="col-12">
-            <h1>Administration</h1>
+            <h1><%= __('AdminHeader') %></h1>
             <%- include('../../partials/admin_navigation', { current_page: 'canvas' }) %>        
         </div>
     </div>
@@ -20,20 +20,20 @@
         <div class="col-md-9">
             <div class="card">
                 <div class="card-header">
-                    Canvaskoppling
+                    <%= __('AdminCanvasDescription') %>
                 </div>
                 <div class="card-body">
                     <form id="editSettingsCanvas">
                         <input type="hidden" name="canvas_course_id" id="e_canvas_course_id" value="<%= data.canvas_course_id %>">
                         <p>
-                            <label for="canvas_course_name">Kursnamn:</label><br>
+                            <label for="canvas_course_name"><%= __('AdminCanvasCourseNameLabel') %></label><br>
                             <%= data.canvas_course_name %>
                         </p>
                         <p>
                             <table class="table table-sm">
                                 <thead>
-                                    <th>Nyckel</th>
-                                    <th>Värde</th>
+                                    <th><%= __('AdminCanvasConfigTableKeyLabel') %></th>
+                                    <th><%= __('AdminCanvasConfigTableValueLabel') %></th>
                                 </thead>
                                 <tbody>
                                     <% data.config_keys.forEach(k => { %>
@@ -50,7 +50,7 @@
                             </table>
                         </p>
                         <p>
-                            <label for="group_category_mapping">Giltiga gruppuppsättningar:</label><br>
+                            <label for="group_category_mapping"><%= __('AdminCanvasGroupCategoryMappingLabel') %></label><br>
                             <select id="e_group_category_mapping" name="group_category_mapping" class="form-select" multiple size="<%= Math.max(data.canvas_group_categories.length, 6) %>">
                                 <% data.canvas_group_categories.forEach(c => { %>
                                     <option <%= c.filtered_in_db ? 'selected' : null %> value="<%= c.id %>"><%= c.name %></option>
@@ -58,7 +58,7 @@
                             </select>
                         </p>
                         <div class="button-bar">
-                            <button type="submit" class="btn btn-md btn-primary">Spara ändringar</button>
+                            <button type="submit" class="btn btn-md btn-primary"><%= __('AdminCanvasButtonSubmitLabel') %></button>
                         </div>
                         <div id="editFormCanvasError" class="alert alert-danger d-none" role="alert">
                             <strong>Ett fel uppstod: </strong><span></span>
@@ -70,19 +70,10 @@
         <div class="col-md-3">
             <div class="card">
                 <div class="card-header">
-                    Hjälp
+                    <%= __('AdminCanvasHelpPaneTitle') %>
                 </div>
                 <div class="card-body text-muted">
-                    <p>
-                        Grundkopplingar till den kurs i Canvas som verktyget används för.
-                    </p>
-                    <p>
-                        Om det finns många grupper i kursen och en student kan tänkas vara kopplad till flera olika, 
-                        kan du välja att filtrera vilka gruppuppsättningar som är giltiga.
-                    </p>
-                    <p>
-                        Om inget är markerat så är alla giltiga.
-                    </p>
+                    <%- __('AdminCanvasHelpPaneDescription') %>
                 </div>
             </div>
         </div>

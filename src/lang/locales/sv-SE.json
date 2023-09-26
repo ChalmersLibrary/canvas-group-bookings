@@ -98,12 +98,25 @@
 	"ConversationRobotCancelReservationSubjectPrefix": "Bekräftad avbokning: ",
 	"ConversationRobotCancelReservationCcSubjectPrefix": "(Kopia) Bekräftad avbokning: ",
 	"GeneralErrorMessageMissingAdminAccess": "Du måste ha administratörsrättigheter för att se denna sida.",
+
+	"AdminHeader": "Administration",
+	
 	"AdminNavigationStart": "Administration",
 	"AdminNavigationCanvas": "Canvas",
 	"AdminNavigationCourse": "Tillfällen",
 	"AdminNavigationSegment": "Segment",
 	"AdminNavigationInstructor": "Handledare",
 	"AdminNavigationLocation": "Lokaler",
+
+	"AdminCanvasDescription": "Canvaskoppling",
+	"AdminCanvasHelpPaneTitle": "Hjälp",
+	"AdminCanvasHelpPaneDescription": "<p>Grundkopplingar till den kurs i Canvas som verktyget används för.</p><p>Om det finns många grupper i kursen och en student kan tänkas vara kopplad till flera olika, kan du välja att filtrera vilka gruppuppsättningar som är giltiga.</p><p>Om inget är markerat så är alla giltiga.</p>",
+	"AdminCanvasCourseNameLabel": "Kursnamn:",
+	"AdminCanvasConfigTableKeyLabel": "Nyckel",
+	"AdminCanvasConfigTableValueLabel": "Värde",
+	"AdminCanvasGroupCategoryMappingLabel": "Giltiga gruppuppsättningar:",
+	"AdminCanvasButtonSubmitLabel": "Spara ändringar",
+
 	"AdminCourseDescription": "Tillfällen kopplade till denna Canvaskurs",
 	"AdminCourseHelpPaneTitle": "Hjälp",
 	"AdminCourseHelpPaneContent": "<p>Tillfällen är separata delar som du sedan kan skapa bokningsbara tider på.</p><p>Tillfällen styr saker som grupp/individ, max antal deltagare, texter som skickas i meddelanden mm.</p>",

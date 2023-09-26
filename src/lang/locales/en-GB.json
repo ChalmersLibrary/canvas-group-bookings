@@ -106,12 +106,25 @@
 	"ConversationRobotCancelReservationSubjectPrefix": "Confirmed cancellation: ",
 	"ConversationRobotCancelReservationCcSubjectPrefix": "(Copy) Confirmed cancellation: ",
 	"GeneralErrorMessageMissingAdminAccess": "You must have administrator privileges to access this page.",
+
+	"AdminHeader": "Administration",
+	
 	"AdminNavigationStart": "Administration",
 	"AdminNavigationCanvas": "Canvas",
 	"AdminNavigationCourse": "Types",
 	"AdminNavigationSegment": "Segments",
 	"AdminNavigationInstructor": "Instructors",
 	"AdminNavigationLocation": "Locations",
+
+	"AdminCanvasDescription": "Canvas configuration",
+	"AdminCanvasHelpPaneTitle": "Help",
+	"AdminCanvasHelpPaneDescription": "<p>Configuration for the course in Canvas where the tool is used.</p><p>If there are many groupsets and a student could be a member of many groups in different groupsets, you can filter the valid groupsets.</p><p>If no particular groupset is selected, then all are valid.</p>",
+	"AdminCanvasCourseNameLabel": "Course name:",
+	"AdminCanvasConfigTableKeyLabel": "Config key",
+	"AdminCanvasConfigTableValueLabel": "Value",
+	"AdminCanvasGroupCategoryMappingLabel": "Valid groupsets:",
+	"AdminCanvasButtonSubmitLabel": "Save changes",
+
 	"AdminCourseDescription": "Types of time slots available in this Canvas course",
 	"AdminCourseHelpPaneTitle": "Help",
 	"AdminCourseHelpPaneContent": "<p>A time slot must have a type before it can be created.</p><p>The type controls if it's a group or individual slot, max reservations, texts in messages etc.</p>",
