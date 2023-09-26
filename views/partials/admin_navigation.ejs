@@ -1,44 +1,44 @@
 <ul class="nav nav-tabs">
     <li class="nav-item">
         <% if (current_page == '/') { %>
-            <a class="nav-link active" href="/admin">Administrera</a>
+            <a class="nav-link active" href="/admin"><%= __('AdminNavigationStart') %></a>
         <% } else { %>
-            <a class="nav-link" href="/admin">Administrera</a>
+            <a class="nav-link" href="/admin"><%= __('AdminNavigationStart') %></a>
         <% } %>
     </li>
     <li class="nav-item">
         <% if (current_page == 'canvas') { %>
-            <a class="nav-link active" href="/admin/canvas">Canvas</a>
+            <a class="nav-link active" href="/admin/canvas"><%= __('AdminNavigationCanvas') %></a>
         <% } else { %>
-            <a class="nav-link" href="/admin/canvas">Canvas</a>
+            <a class="nav-link" href="/admin/canvas"><%= __('AdminNavigationCanvas') %></a>
         <% } %>
     </li>
     <li class="nav-item">
         <% if (current_page == 'course') { %>
-            <a class="nav-link active" href="/admin/course">Tillfällen</a>
+            <a class="nav-link active" href="/admin/course"><%= __('AdminNavigationCourse') %></a>
         <% } else { %>
-            <a class="nav-link" href="/admin/course">Tillfällen</a>
+            <a class="nav-link" href="/admin/course"><%= __('AdminNavigationCourse') %></a>
         <% } %>
     </li>
     <li class="nav-item">
         <% if (current_page == 'segment') { %>
-            <a class="nav-link active" href="/admin/segment">Segment</a>
+            <a class="nav-link active" href="/admin/segment"><%= __('AdminNavigationSegment') %></a>
         <% } else { %>
-            <a class="nav-link" href="/admin/segment">Segment</a>
+            <a class="nav-link" href="/admin/segment"><%= __('AdminNavigationSegment') %></a>
         <% } %>
     </li>
     <li class="nav-item">
         <% if (current_page == 'instructor') { %>
-            <a class="nav-link active" href="/admin/instructor">Handledare</a>
+            <a class="nav-link active" href="/admin/instructor"><%= __('AdminNavigationInstructor') %></a>
         <% } else { %>
-            <a class="nav-link" href="/admin/instructor">Handledare</a>
+            <a class="nav-link" href="/admin/instructor"><%= __('AdminNavigationInstructor') %></a>
         <% } %>
     </li>
     <li class="nav-item">
         <% if (current_page == 'location') { %>
-            <a class="nav-link active" href="/admin/location">Lokaler</a>
+            <a class="nav-link active" href="/admin/location"><%= __('AdminNavigationLocation') %></a>
         <% } else { %>
-            <a class="nav-link" href="/admin/location">Lokaler</a>
+            <a class="nav-link" href="/admin/location"><%= __('AdminNavigationLocation') %></a>
         <% } %>
     </li>
 </ul>
