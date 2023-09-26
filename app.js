@@ -397,7 +397,7 @@ app.get('/admin', async (req, res, next) => {
         try {
             let canvas_group_categories = await canvasApi.getCourseGroupCategories(res.locals.courseId, res.locals.token);
             const db_group_categories_filter = await db.getCourseGroupCategoryFilter(res.locals.courseId);
-
+            
             for (const c of canvas_group_categories) {
                 if (db_group_categories_filter.includes(c.id)) {
                     c.filtered_in_db = true;
@@ -407,14 +407,34 @@ app.get('/admin', async (req, res, next) => {
                 }
             }
 
+            const course_config = await db.getCanvasCourseConfiguration(res.locals.courseId);
+            const available_config_keys = [
+                { key: 'FACETS_HIDE_SEGMENT' },
+                { key: 'FACETS_HIDE_COURSE' },
+                { key: 'FACETS_HIDE_INSTRUCTOR' },
+                { key: 'FACETS_HIDE_LOCATION' },
+                { key: 'FACETS_HIDE_AVAILABILITY' }
+            ];
+
+            for (const k of available_config_keys) {
+                if (course_config.filter(c => c.key == k.key).map(c => c.value)[0] !== undefined) {
+                    k.db_value = course_config.filter(c => c.key == k.key).map(c => c.value)[0];
+                }
+                else {
+                    k.db_value = null;
+                }
+            }
+
             /* return res.send({
                 status: 'up',
                 internal: req.session.internal,
                 version: pkg.version,
                 session: req.session,
                 data: {
+                    canvas_course_id: res.locals.courseId,
                     canvas_course_name: req.session.lti.context_title,
-                    canvas_group_categories: canvas_group_categories
+                    canvas_group_categories: canvas_group_categories,
+                    config_keys: available_config_keys,
                 }
             }); */
 
@@ -426,7 +446,8 @@ app.get('/admin', async (req, res, next) => {
                 data: {
                     canvas_course_id: res.locals.courseId,
                     canvas_course_name: req.session.lti.context_title,
-                    canvas_group_categories: canvas_group_categories
+                    canvas_group_categories: canvas_group_categories,
+                    config_keys: available_config_keys,
                 }
             });
         }

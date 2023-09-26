@@ -30,8 +30,28 @@
                             <%= data.canvas_course_name %>
                         </p>
                         <p>
+                            <table class="table table-sm">
+                                <thead>
+                                    <th>Nyckel</th>
+                                    <th>Värde</th>
+                                </thead>
+                                <tbody>
+                                    <% data.config_keys.forEach(k => { %>
+                                        <tr>
+                                            <td>
+                                                <%= k.key %>
+                                            </td>
+                                            <td>
+                                                <%= k.db_value %>
+                                            </td>
+                                        </div>
+                                    <% }) %>        
+                                </tbody>
+                            </table>
+                        </p>
+                        <p>
                             <label for="group_category_mapping">Giltiga gruppuppsättningar:</label><br>
-                            <select id="e_group_category_mapping" name="group_category_mapping" class="form-select" multiple size="<%= Math.max(data.canvas_group_categories.length, 10) %>">
+                            <select id="e_group_category_mapping" name="group_category_mapping" class="form-select" multiple size="<%= Math.max(data.canvas_group_categories.length, 6) %>">
                                 <% data.canvas_group_categories.forEach(c => { %>
                                     <option <%= c.filtered_in_db ? 'selected' : null %> value="<%= c.id %>"><%= c.name %></option>
                                 <% }) %>
