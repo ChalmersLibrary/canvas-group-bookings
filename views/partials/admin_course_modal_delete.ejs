@@ -4,7 +4,7 @@
             <input type="hidden" id="d_course_id" value="">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="deleteCourseLabel">Radera tillfälle</h5>
+                    <h5 class="modal-title" id="deleteCourseLabel"><%= __('AdminCourseModalDeleteLabel') %></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Stäng"></button>
                 </div>
                 <div class="modal-body loading-spinner">
@@ -23,7 +23,7 @@
                     </div>
                     <div class="course-replace" style="display:none;">
                         <div class="alert alert-danger">
-                            Tillfället är kopplat till tider i denna kurs, därför kan det inte tas bort.
+                            <%= __('AdminCourseModalDeleteNotDeletableText') %>
                         </div>
                         <!--
                         <label for="d_replace_with_course">Välj:</label><br>
@@ -35,8 +35,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
-                    <button type="submit" class="btn btn-danger" id="deleteCourseSaveButton">Radera <span class="spinner-border spinner-border-sm" style="display:none;" role="status" aria-hidden="true"></span></button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><%= __('AdminCourseModalDeleteButtonCloseLabel') %></button>
+                    <button type="submit" class="btn btn-danger" id="deleteCourseSaveButton"><%= __('AdminCourseModalDeleteButtonSubmitLabel') %> <span class="spinner-border spinner-border-sm" style="display:none;" role="status" aria-hidden="true"></span></button>
                 </div>
             </div>
         </form>

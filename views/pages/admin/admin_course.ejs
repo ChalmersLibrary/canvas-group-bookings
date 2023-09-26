@@ -17,17 +17,17 @@
         <div class="col-md-9">
             <div class="card">
                 <div class="card-header">
-                    Tillfällen kopplade till denna Canvaskurs
+                    <%= __('AdminCourseDescription') %>
                 </div>
                 <div class="card-body">
                     <table class="table table-md table-hover">
                         <thead>
                             <tr>
-                                <th>Namn och typ</th>
-                                <th class="text-right">Tider</th>
-                                <th class="text-right">Platser</th>
-                                <th class="text-right">Bokade</th>
-                                <th class="text-right">Avbokningar</th>
+                                <th><%= __('AdminCourseTableHeaderName') %></th>
+                                <th class="text-right"><%= __('AdminCourseTableHeaderSlots') %></th>
+                                <th class="text-right"><%= __('AdminCourseTableHeaderSeats') %></th>
+                                <th class="text-right"><%= __('AdminCourseTableHeaderReserved') %></th>
+                                <th class="text-right"><%= __('AdminCourseTableHeaderCancelled') %></th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -36,7 +36,7 @@
                                 <tr>
                                     <td>
                                         <strong><%= course.name %></strong><br>
-                                        <%= course.is_group ? "Gruppbokning" : "Individuell bokning" %>
+                                        <%= course.is_group ? __('AdminCourseTableNameTypeGroup') : __('AdminCourseTableNameTypeIndividual') %>
                                     </td>
                                     <td class="text-right"><%= course.slots %></td>
                                     <td class="text-right"><%= course.spots %></td>
@@ -44,8 +44,8 @@
                                     <td class="text-right"><%= course.deleted %></td>
                                     <td>
                                         <div class="float-end">
-                                            <button type="button" title="Redigera" data-bs-toggle="modal" data-bs-target="#editCourse" data-bs-course-id="<%= course.id %>" class="btn btn-secondary btn-md"><i class="bi-pencil-fill"></i></button>
-                                            <button type="button" title="Radera" data-bs-toggle="modal" data-bs-target="#deleteCourse" data-bs-course-id="<%= course.id %>" class="btn btn-secondary btn-md mx-2"><i class="bi-trash-fill"></i></button>
+                                            <button type="button" title="<%= __('AdminCourseTableControlEditButtonTitle') %>" data-bs-toggle="modal" data-bs-target="#editCourse" data-bs-course-id="<%= course.id %>" class="btn btn-secondary btn-md"><i class="bi-pencil-fill"></i></button>
+                                            <button type="button" title="<%= __('AdminCourseTableControlDeleteButtonTitle') %>" data-bs-toggle="modal" data-bs-target="#deleteCourse" data-bs-course-id="<%= course.id %>" class="btn btn-secondary btn-md mx-2"><i class="bi-trash-fill"></i></button>
                                         </div>
                                     </td>
                                 </tr>
@@ -53,7 +53,7 @@
                         </tbody>
                     </table>
                     <div class="button-bar">
-                        <button type="button" title="Skapa nytt tillfälle" data-bs-toggle="modal" data-bs-target="#newCourse" class="btn btn-md btn-secondary">Skapa nytt tillfälle</button>
+                        <button type="button" title="<%= __('AdminCourseCreateNewButtonTitle') %>" data-bs-toggle="modal" data-bs-target="#newCourse" class="btn btn-md btn-secondary"><%= __('AdminCourseCreateNewButtonTitle') %></button>
                     </div>
                 </div>
             </div>
@@ -61,15 +61,10 @@
         <div class="col-md-3">
             <div class="card">
                 <div class="card-header">
-                    Hjälp
+                    <%= __('AdminCourseHelpPaneTitle') %>
                 </div>
                 <div class="card-body text-muted">
-                    <p>
-                        Tillfällen är separata delar som du sedan kan skapa bokningsbara tider på.
-                    </p>
-                    <p>
-                        Tillfällen styr saker som grupp/individ, max antal deltagare, texter som skickas i meddelanden mm.
-                    </p>
+                    <%- __('AdminCourseHelpPaneContent') %>
                 </div>
             </div>
         </div>

@@ -3,7 +3,7 @@
         <form class="needs-validation" id="newCourseForm" novalidate method="post" action="/api/admin/course">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="newCourseLabel">Skapa nytt tillfälle</h5>
+                    <h5 class="modal-title" id="newCourseLabel"><%= __('AdminCourseModalNewLabel') %></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Stäng"></button>
                 </div>
                 <div class="modal-body loading-spinner">
@@ -16,62 +16,62 @@
                 <div class="modal-body loaded-content" style="display:none;">
                     <ul class="nav nav-tabs" id="newCourseTab" role="tablist">
                         <li class="nav-item" role="presentation">
-                          <button class="nav-link active" id="new-basic-tab" data-bs-toggle="tab" data-bs-target="#new-tab-basic" type="button" role="tab" aria-controls="new-tab-basic" aria-selected="true">Grundläggande</button>
+                          <button class="nav-link active" id="new-basic-tab" data-bs-toggle="tab" data-bs-target="#new-tab-basic" type="button" role="tab" aria-controls="new-tab-basic" aria-selected="true"><%= __('AdminCourseModalTabBasicLabel') %></button>
                         </li>
                         <li class="nav-item" role="presentation">
-                          <button class="nav-link" id="new-values-tab" data-bs-toggle="tab" data-bs-target="#new-tab-values" type="button" role="tab" aria-controls="new-tab-values" aria-selected="false">Begränsningar och förval</button>
+                          <button class="nav-link" id="new-values-tab" data-bs-toggle="tab" data-bs-target="#new-tab-values" type="button" role="tab" aria-controls="new-tab-values" aria-selected="false"><%= __('AdminCourseModalTabValuesLabel') %></button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="new-flags-tab" data-bs-toggle="tab" data-bs-target="#new-tab-flags" type="button" role="tab" aria-controls="new-tab-flags" aria-selected="false">Flaggor</button>
+                            <button class="nav-link" id="new-flags-tab" data-bs-toggle="tab" data-bs-target="#new-tab-flags" type="button" role="tab" aria-controls="new-tab-flags" aria-selected="false"><%= __('AdminCourseModalTabFlagsLabel') %></button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="new-messages-tab" data-bs-toggle="tab" data-bs-target="#new-tab-messages" type="button" role="tab" aria-controls="new-tab-messages" aria-selected="false">Meddelanden</button>
+                            <button class="nav-link" id="new-messages-tab" data-bs-toggle="tab" data-bs-target="#new-tab-messages" type="button" role="tab" aria-controls="new-tab-messages" aria-selected="false"><%= __('AdminCourseModalTabMessagesLabel') %></button>
                         </li>
                     </ul>
                     <div class="tab-content" id="newCourseTabContent">
                         <div class="tab-pane fade show active" id="new-tab-basic" role="tabpanel" aria-labelledby="new-basic-tab">
                             <p>
-                                <label for="n_name">Namn:</label><br>
+                                <label for="n_name"><%= __('AdminCourseModalLabelName') %></label><br>
                                 <input type="text" class="form-control" id="n_name" value="" required>    
                             </p>
                             <p>
-                                <label for="n_description">Beskrivning:</label><br>
+                                <label for="n_description"><%= __('AdminCourseModalLabelDescription') %></label><br>
                                 <textarea class="form-control" rows="3" id="n_description"></textarea>
                             </p>
                             <p>
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="n_type" id="n_type_is_group" checked>
                                     <label class="form-check-label" for="n_type_is_group">
-                                        Gruppbokning
+                                        <%= __('AdminCourseModalLabelTypeGroup') %>
                                     </label>
                                 </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="n_type" id="n_type_is_individual">
                                     <label class="form-check-label" for="n_type_is_individual">
-                                        Individuell bokning
+                                        <%= __('AdminCourseModalLabelTypeIndividual') %>
                                     </label>
                                 </div>
                             </p>
                             <p id="n_segmentPart">
-                                <label for="n_segment">Segment:</label><br>
+                                <label for="n_segment"><%= __('AdminCourseModalLabelSegment') %></label><br>
                                 <select class="form-control" id="n_segment"></select>
                             </p>
                         </div>
                         <div class="tab-pane fade" id="new-tab-values" role="tabpanel" aria-labelledby="new-values-tab">
                             <p>
-                                <label for="n_max_number" class="">Antal bokningsbara platser per utlagd tid:</label><br>
+                                <label for="n_max_number" class=""><%= __('AdminCourseModalLabelMaxNumber') %></label><br>
                                 <input type="number" class="form-control" min="1" max="9999" value="1" id="n_max_number">
                             </p>
                             <p>
-                                <label for="n_max_per_type">Max antal bokningar på tider inom tillfället:</label><br>
+                                <label for="n_max_per_type"><%= __('AdminCourseModalLabelMaxPerType') %></label><br>
                                 <input type="number" class="form-control" min="1" max="9999" value="1" id="n_max_per_type">
                             </p>
                             <p>
-                                <label for="n_cancellation_policy_hours">Avbokningspolicy, antal timmar innan:</label><br>
+                                <label for="n_cancellation_policy_hours"><%= __('AdminCourseModalLabelCancellationPolicy') %></label><br>
                                 <input type="number" class="form-control" min="1" max="120" value="24" id="n_cancellation_policy_hours">
                             </p>
                             <p>
-                                <label for="n_default_slot_duration_minutes">Förvald längd i minuter på utlagd tid (stödfunktion, beta):</label><br>
+                                <label for="n_default_slot_duration_minutes"><%= __('AdminCourseModalLabelDefaultSlotDuration') %></label><br>
                                 <input type="number" class="form-control" min="0" max="1440" value="90" id="n_default_slot_duration_minutes">
                             </p>
                         </div>
@@ -80,19 +80,19 @@
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" value="true" id="n_message_is_mandatory">
                                     <label class="form-check-label" for="n_message_is_mandatory">
-                                        Meddelande är obligatoriskt vid bokning
+                                        <%= __('AdminCourseModalLabelMessageIsMandatory') %>
                                     </label>
                                 </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" value="true" id="n_message_all_when_full">
                                     <label class="form-check-label" for="n_message_all_when_full">
-                                        Koppla ihop alla grupper med separat meddelande när en tid är fullbokad
+                                        <%= __('AdminCourseModalLabelMessageAllWhenFull') %>
                                     </label>
                                 </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" value="true" id="n_message_cc_instructor">
                                     <label class="form-check-label" for="n_message_cc_instructor">
-                                        Skicka kopia på alla meddelanden till handledaren
+                                        <%= __('AdminCourseModalLabelMessageCcInstructor') %>
                                     </label>
                                 </div>
                             </p>
@@ -100,15 +100,15 @@
                         <div class="tab-pane fade" id="new-tab-messages" role="tabpanel" aria-labelledby="new-messages-tab">                            
                             <div class="form-floating my-3">
                                 <textarea class="form-control" id="n_message_confirmation_body" style="height: 200px;" placeholder="" data-is-changed="false"></textarea>
-                                <label for="n_message_confirmation_body">Meddelande för bekräftelse av bokning</label>
+                                <label for="n_message_confirmation_body"><%= __('AdminCourseModalLabelMessageConfirmationBody') %></label>
                             </div>
                             <div class="form-floating my-3">
                                 <textarea class="form-control" id="n_message_cancelled_body" style="height: 200px;" placeholder="" data-is-changed="false"></textarea>
-                                <label for="n_message_cancelled_body">Meddelande för bekräftelse av avbokning</label>
+                                <label for="n_message_cancelled_body"><%= __('AdminCourseModalLabelMessageCancelledBody') %></label>
                             </div>
                             <div class="form-floating my-3" id="n_message_full_bodyPart" style="display:none;">
                                 <textarea class="form-control" id="n_message_full_body" style="height: 200px;" placeholder="" data-is-changed="false"></textarea>
-                                <label for="n_message_full_body">Meddelande för ihopkoppling av alla bokade</label>
+                                <label for="n_message_full_body"><%= __('AdminCourseModalLabelMessageFullBody') %></label>
                             </div>
                             <div class="card">
                                 <div class="card-header">
@@ -127,8 +127,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
-                    <button type="submit" class="btn btn-primary" id="newCourseSaveButton">Skapa tillfälle <span class="spinner-border spinner-border-sm" style="display:none;" role="status" aria-hidden="true"></span></button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><%= __('AdminCourseModalNewButtonCloseLabel') %></button>
+                    <button type="submit" class="btn btn-primary" id="newCourseSaveButton"><%= __('AdminCourseModalNewButtonSubmitLabel') %> <span class="spinner-border spinner-border-sm" style="display:none;" role="status" aria-hidden="true"></span></button>
                 </div>
             </div>
         </form>
