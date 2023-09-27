@@ -5,7 +5,7 @@
             <input type="hidden" id="n_instructor_existing_id" value="">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="newInstructorLabel">Lägg till handledare</h5>
+                    <h5 class="modal-title" id="newInstructorLabel"><%= __('AdminInstructorModalNewLabel') %></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Stäng"></button>
                 </div>
                 <div class="modal-body loading-spinner">
@@ -18,24 +18,23 @@
                 <div class="modal-body loaded-content" style="display:none;">
                     <div id="n_instructor_addPart">
                         <p>
-                            <label for="n_instructor_canvas_id">Från Canvas:</label>
+                            <label for="n_instructor_canvas_id"><%= __('AdminInstructorModalLabelCanvasId') %></label>
                             <select class="form-control" id="n_instructor_canvas_id"></select>
                         </p>
                         <p>
-                            <label for="n_instructor_name">Namn:</label><br>
+                            <label for="n_instructor_name"><%= __('AdminInstructorModalLabelName') %></label><br>
                             <input type="text" class="form-control" id="n_instructor_name" value="" disabled>
                         </p>
                         <p>
-                            <label for="n_instructor_email">E-postadress:</label><br>
+                            <label for="n_instructor_email"><%= __('AdminInstructorModalLabelEmail') %></label><br>
                             <input type="text" class="form-control" id="n_instructor_email" value="" disabled>
                         </p>    
                         <div class="alert alert-primary">
-                            Endast personer i denna Canvaskurs med rollen Lärare eller Examinator kan läggas till som handledare.
+                            <%= __('AdminInstructorModalAlertPrimaryContent') %>
                         </div>
                     </div>
                     <div id="n_instructor_all_addedPart" style="display:none;" class="alert alert-primary">
-                        <strong>Det finns inga personer att lägga till.</strong>
-                        <span>Alla som har rollen Lärare eller Examinator i kursen är redan tillagda som handledare.</span>
+                        <%- __('AdminInstructorModalAlertAllAddedContent') %>
                     </div>
                     <div class="alert alert-danger alert-error" style="display:none;">
                         <strong>Ett fel har uppstått:</strong>
@@ -48,8 +47,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
-                    <button type="submit" class="btn btn-primary" id="newInstructorSaveButton">Lägg till <span class="spinner-border spinner-border-sm" style="display:none;" role="status" aria-hidden="true"></span></button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><%= __('AdminInstructorModalNewButtonCloseLabel') %></button>
+                    <button type="submit" class="btn btn-primary" id="newInstructorSaveButton"><%= __('AdminInstructorModalNewButtonSubmitLabel') %> <span class="spinner-border spinner-border-sm" style="display:none;" role="status" aria-hidden="true"></span></button>
                 </div>
             </div>
         </form>

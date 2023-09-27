@@ -187,6 +187,27 @@
 	"AdminSegmentModalDeleteButtonSubmitLabel": "Radera",
 	"AdminSegmentModalDeleteReplaceAlertText": "Segmentet är kopplat till tillfällen i denna kurs. Du måste välja ett annat segment att ersätta med, eftersom alla tillfällen måste ha ett segment om det finns sådana i Canvaskursen. ",
 	"AdminSegmentModalDeleteReplaceAlertSelectLabel": "Ersätt med:",
-	"AdminSegmentModalDeleteFinalAlertText": "Det här är det enda segmentet i denna kurs. Om du väljer att radera det, kommer alla tillfällen att uppdateras så att de inte längre använder segment."
+	"AdminSegmentModalDeleteFinalAlertText": "Det här är det enda segmentet i denna kurs. Om du väljer att radera det, kommer alla tillfällen att uppdateras så att de inte längre använder segment.",
 
+	"AdminInstructorDescription": "Handledare kopplade till denna Canvaskurs",
+	"AdminInstructorHelpPaneTitle": "Hjälp",
+	"AdminInstructorHelpPaneContent": "<p>Handledare är en Canvas-användare i kursen med rollen Lärare eller Examinator.</p><p>Endast personer som finns i denna lista kan läggas som handledare på nya tider som skapas.</p>",
+	"AdminInstructorTableHeaderName": "Namn",
+	"AdminInstructorTableHeaderSlots": "Tider",
+	"AdminInstructorTableControlDeleteLabel": "Ta bort handledare",
+	"AdminInstructorCreateNewButtonTitle": "Lägg till handledare",
+	"AdminInstructorModalNewLabel": "Lägg till handledare",
+	"AdminInstructorModalDeleteLabel": "Ta bort handledare",
+	"AdminInstructorModalLabelCanvasId": "Från Canvas:",
+	"AdminInstructorModalLabelName": "Namn:",
+	"AdminInstructorModalLabelEmail": "E-post:",
+	"AdminInstructorModalAlertPrimaryContent": "Endast personer i denna Canvaskurs med rollen Lärare eller Examinator kan läggas till som handledare.",
+	"AdminInstructorModalAlertAllAddedContent": "<strong>Det finns inga personer att lägga till.</strong> <span>Alla som har rollen Lärare eller Examinator i kursen är redan tillagda som handledare.</span>",
+	"AdminInstructorModalNewButtonCloseLabel": "Stäng",
+	"AdminInstructorModalNewButtonSubmitLabel": "Lägg till handledare",
+	"AdminInstructorModalDeleteButtonCloseLabel": "Stäng",
+	"AdminInstructorModalDeleteButtonSubmitLabel": "Ta bort",
+	"AdminInstructorModalDeleteReplaceAlertText": "Handledaren är kopplad till tider i denna kurs. Du kan välja att ersätta med en annan handledare, eller låta nuvarande namn stå kvar på tiderna. Notera att inga nya tider kommer att kunna skapas med handledaren som tas bort.",
+	"AdminInstructorModalDeleteReplaceAlertSelectLabel": "Ersätt med:",
+	"AdminInstructorModalDeleteReplaceAlertSelectLabelDataDefault": "Ingen ersättning"
 }

@@ -165,6 +165,7 @@
 	"AdminCourseModalEditButtonSubmitLabel": "Save changes",
 	"AdminCourseModalDeleteButtonCloseLabel": "Close",
 	"AdminCourseModalDeleteButtonSubmitLabel": "Delete",
+
 	"AdminSegmentDescription": "Segment connected to this course",
 	"AdminSegmentHelpPaneTitle": "Help",
 	"AdminSegmentHelpPaneContent": "<p>Segments are used for making filtering slot types easier for the user. If you create a segment then every slot type must have a segment.</p><p>If there are existing slot types when you create a first segment, they will be attached to this segment. To edit the attached segment, edit the slot type.</p>",
@@ -190,5 +191,27 @@
 	"AdminSegmentModalDeleteButtonSubmitLabel": "Delete",
 	"AdminSegmentModalDeleteReplaceAlertText": "This segment is connected to slot types. Choose another segment to replace with, as all slot types must have a segment.",
 	"AdminSegmentModalDeleteReplaceAlertSelectLabel": "Replace with:",
-	"AdminSegmentModalDeleteFinalAlertText": "This is the only segment in this course. If you delete it, all slot types will be updated to not have any segment connected."
+	"AdminSegmentModalDeleteFinalAlertText": "This is the only segment in this course. If you delete it, all slot types will be updated to not have any segment connected.",
+
+	"AdminInstructorDescription": "Instructors connected to this course",
+	"AdminInstructorHelpPaneTitle": "Help",
+	"AdminInstructorHelpPaneContent": "<p>Instructors are people in this Canvas course with the Examiner or Teacher role.</p><p>Only people in this list can be added as instructors to time slots in this course.</p>",
+	"AdminInstructorTableHeaderName": "Name",
+	"AdminInstructorTableHeaderSlots": "Slots",
+	"AdminInstructorTableControlDeleteLabel": "Remove",
+	"AdminInstructorCreateNewButtonTitle": "Add new instructor",
+	"AdminInstructorModalNewLabel": "Add new instructor",
+	"AdminInstructorModalDeleteLabel": "Remove instructor",
+	"AdminInstructorModalLabelCanvasId": "From Canvas:",
+	"AdminInstructorModalLabelName": "Name:",
+	"AdminInstructorModalLabelEmail": "Email:",
+	"AdminInstructorModalAlertPrimaryContent": "Only people enrolled in this Canvas course with Examiner or Teacher role can be added as instructors.",
+	"AdminInstructorModalAlertAllAddedContent": "<strong>There are no more persons to add.</strong> <span>Everyone with the role Examiner or Teacher in this course are already added.</span>",
+	"AdminInstructorModalNewButtonCloseLabel": "Close",
+	"AdminInstructorModalNewButtonSubmitLabel": "Add instructor",
+	"AdminInstructorModalDeleteButtonCloseLabel": "Close",
+	"AdminInstructorModalDeleteButtonSubmitLabel": "Remove",
+	"AdminInstructorModalDeleteReplaceAlertText": "The instructor is connected to time slots in this course. You can choose to replace with a new instructor, or let the present instructor remain. Note that no new time slots can be created with this instructor.",
+	"AdminInstructorModalDeleteReplaceAlertSelectLabel": "Replace with:",
+	"AdminInstructorModalDeleteReplaceAlertSelectLabelDataDefault": "Don't replace"
 }

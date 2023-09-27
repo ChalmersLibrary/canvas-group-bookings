@@ -10,21 +10,24 @@
 </header>
 
 <main class="container-fluid py-2">
-    <h1>Administration</h1>
-    <%- include('../../partials/admin_navigation', { current_page: 'instructor' }) %>
-
+    <div class="row">
+        <div class="col-12">
+            <h1><%= __('AdminHeader') %></h1>
+            <%- include('../../partials/admin_navigation', { current_page: 'instructor' }) %>        
+        </div>
+    </div>
     <div class="row">
         <div class="col-md-9">
             <div class="card">
                 <div class="card-header">
-                    Handledare kopplade till denna Canvaskurs
+                    <%= __('AdminInstructorDescription') %>
                 </div>
                 <div class="card-body">
                     <table class="table table-md table-hover">
                         <thead>
                             <tr>
-                                <th>Namn</th>
-                                <th class="text-right">Tider</th>
+                                <th><%= __('AdminInstructorTableHeaderName') %></th>
+                                <th class="text-right"><%= __('AdminInstructorTableHeaderSlots') %></th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -38,8 +41,7 @@
                                     <td><%= instructor.slots %></td>
                                     <td>
                                         <div class="float-end">
-                                            <!--<button type="button" title="Redigera" data-bs-toggle="modal" data-bs-target="#editInstructor" data-bs-instructor-id="<%= instructor.id %>" class="btn btn-secondary btn-md"><i class="bi-pencil-fill"></i></button>-->
-                                            <button type="button" title="Radera" data-bs-toggle="modal" data-bs-target="#deleteInstructor" data-bs-instructor-id="<%= instructor.id %>" class="btn btn-secondary btn-md mx-2"><i class="bi-trash-fill"></i></button>
+                                            <button type="button" title="<%= __('AdminInstructorTableControlDeleteLabel') %>" data-bs-toggle="modal" data-bs-target="#deleteInstructor" data-bs-instructor-id="<%= instructor.id %>" class="btn btn-secondary btn-md mx-2"><i class="bi-trash-fill"></i></button>
                                         </div>
                                     </td>
                                 </tr>
@@ -47,7 +49,7 @@
                         </tbody>
                     </table>
                     <div class="button-bar">
-                        <button type="button" class="btn btn-md btn-secondary" title="Skapa handledare" data-bs-toggle="modal" data-bs-target="#newInstructor">Lägg till handledare</button>
+                        <button type="button" class="btn btn-md btn-secondary" title="Skapa handledare" data-bs-toggle="modal" data-bs-target="#newInstructor"><%= __('AdminInstructorCreateNewButtonTitle') %></button>
                     </div>
                 </div>
             </div>
@@ -55,15 +57,10 @@
         <div class="col-md-3">
             <div class="card">
                 <div class="card-header">
-                    Hjälp
+                    <%= __('AdminInstructorHelpPaneTitle') %>
                 </div>
                 <div class="card-body text-muted">
-                    <p>
-                        Handledare är en Canvas-användare i kursen med rollen Lärare eller Examinator.
-                    </p>
-                    <p>
-                        Endast personer som finns i denna lista kan läggas som handledare på nya tider som skapas.
-                    </p>
+                    <%- __('AdminInstructorHelpPaneContent') %>
                 </div>
             </div>
         </div>

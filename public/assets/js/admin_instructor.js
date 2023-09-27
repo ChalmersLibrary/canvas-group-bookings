@@ -204,9 +204,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
             deleteInstructorModal.querySelector('#d_name').innerHTML = data.instructor.name
             deleteInstructorModal.querySelector('#d_email').innerHTML = data.instructor.email
             deleteInstructorModal.querySelector('#d_replace_with_instructor').replaceChildren()
-            document.getElementById('d_replace_with_instructor')[0] = new Option("Ingen ersättning", "")
+            document.getElementById('d_replace_with_instructor')[0] = new Option(document.getElementById('d_replace_with_instructor').getAttribute("data-default-text"), "")
             data.course_instructors.filter(ci => ci.id != instructor_id).forEach((i, key) => {
-                document.getElementById('d_replace_with_instructor')[key+1] = new Option("Ersätt med " + i.name, i.id)
+                document.getElementById('d_replace_with_instructor')[key+1] = new Option(i.name, i.id)
             })
             if (data.instructor.slots > 0) {
                 deleteInstructorModal.querySelector('div.loaded-content div.instructor-deletable').style.display = "none"
