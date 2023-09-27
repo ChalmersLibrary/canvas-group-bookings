@@ -3,27 +3,27 @@
         <form class="needs-validation" id="newSlotForm" novalidate method="post" action="/api/instructor/slot">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="newSlotSeriesLabel">Lägg till bokningsbara tider</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Stäng"></button>
+                    <h5 class="modal-title" id="newSlotSeriesLabel"><%= __('InstructorNewSlotsModalLabel') %></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<%= __('InstructorNewSlotsModalButtonCloseLabel') %>"></button>
                 </div>
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-sm-4">
-                            <label for="course_id" class="form-label">Tillfälle:</label>
-                            <select required id="course_id" name="course_id" class="form-select" aria-label="Välj ett tillfälle" data-course-type="" data-course-max-individuals="">
-                                <option value="" selected disabled>Välj...</option>
+                            <label for="course_id" class="form-label"><%= __('InstructorSlotsModalLabelCourse') %></label>
+                            <select required id="course_id" name="course_id" class="form-select" aria-label="<%= __('InstructorSlotsModalCourseAriaLabel') %>" data-course-type="" data-course-max-individuals="">
+                                <option value="" selected disabled><%= __('InstructorSlotsModalCourseDefaultText') %></option>
                                 <% courses.forEach((course) => { %>
                                     <option value="<%= course.id %>"><%= course.name %></option>                                
                                 <% }); %>
                             </select>
                             <div class="invalid-feedback">
-                                Du måste välja ett tillfälle.
+                                <%= __('InstructorSlotsModalCourseInvalidFeedback') %>
                             </div>
                         </div>
                         <div class="col-sm-4">
-                            <label for="instructor_id" class="form-label">Handledare:</label>
-                            <select required id="instructor_id" name="instructor_id" class="form-select" aria-label="Välj en handledare" data-location-max-individuals="">
-                                <option value="" <%= session.user.db_id != null ? '' : 'selected' %> disabled>Välj...</option>
+                            <label for="instructor_id" class="form-label"><%= __('InstructorSlotsModalLabelInstructor') %></label>
+                            <select required id="instructor_id" name="instructor_id" class="form-select" aria-label="<%= __('InstructorSlotsModalInstructorAriaLabel') %>" data-location-max-individuals="">
+                                <option value="" <%= session.user.db_id != null ? '' : 'selected' %> disabled><%= __('InstructorSlotsModalInstructorDefaultText') %></option>
                                 <% instructors.forEach((instructor) => { %>
                                     <% if (instructor.id == session.user.db_id) { %>
                                         <option value="<%= instructor.id %>" selected><%= instructor.name %></option>
@@ -33,19 +33,19 @@
                                 <% }); %>
                             </select>
                             <div class="invalid-feedback">
-                                Du måste välja en handledare.
+                                <%= __('InstructorSlotsModalInstructorInvalidFeedback') %>
                             </div>
                         </div>
                         <div class="col-sm-4">
-                            <label for="location_id" class="form-label">Lokal:</label>
-                            <select required id="location_id" name="location_id" class="form-select" aria-label="Välj en lokal">
-                                <option value="" selected disabled>Välj...</option>
+                            <label for="location_id" class="form-label"><%= __('InstructorSlotsModalLabelLocation') %></label>
+                            <select required id="location_id" name="location_id" class="form-select" aria-label="<%= __('InstructorSlotsModalLocationAriaLabel') %>">
+                                <option value="" selected disabled><%= __('InstructorSlotsModalLocationDefaultText') %></option>
                                 <% locations.forEach((location) => { %>
                                     <option value="<%= location.id %>"><%= location.name %></option>                                
                                 <% }); %>
                             </select>
                             <div class="invalid-feedback">
-                                Du måste välja en lokal/plats.
+                                <%= __('InstructorSlotsModalLocationInvalidFeedback') %>
                             </div>
                         </div>
                     </div>
@@ -56,7 +56,7 @@
                     </div>
                     <div class="row" id="slot_status_message">
                         <div class="col-12">
-                            <strong>Begränsningar: </strong>
+                            <strong><%= __('InstructorNewSlotsModalSlotStatusMessageLabel') %></strong>
                             <span class="status_course"></span><span class="status_location"></span>
                         </div>
                     </div>
@@ -82,15 +82,15 @@
                         </div>
                         <div class="slot py-2 d-flex justify-content-between" id="slot_1">
                             <div class="flex-grow-1 pe-4">
-                                <label for="slot_date_1" class="form-label">Datum:</label>
+                                <label for="slot_date_1" class="form-label"><%= __('InstructorSlotsModalDateLabel') %></label>
                                 <input type="date" class="form-control" id="slot_date_1" name="slot_date_1" required>
                             </div>
                             <div class="pe-4">
-                                <label for="slot_time_start_1" class="form-label">Startar:</label>
+                                <label for="slot_time_start_1" class="form-label"><%= __('InstructorSlotsModalTimeStartLabel') %></label>
                                 <input type="time" class="form-control time-start" id="slot_time_start_1" name="slot_time_start_1" required>
                             </div>
                             <div class="pe-4">
-                                <label for="slot_time_end_1" class="form-label">Slutar:</label>
+                                <label for="slot_time_end_1" class="form-label"><%= __('InstructorSlotsModalTimeEndLabel') %></label>
                                 <input type="time" class="form-control time-end" id="slot_time_end_1" name="slot_time_end_1" required>
                             </div>
                             <div class="justify-content-end align-self-end">
@@ -100,13 +100,13 @@
                     </div>
                     <div class="row" id="slot_adder">
                         <div class="col my-3">
-                            <button type="button" id="slot_new_slot" class="btn btn-md btn-dark float-end"><i class="bi-plus"></i> Lägg till rad</button>
+                            <button type="button" id="slot_new_slot" class="btn btn-md btn-dark float-end"><i class="bi-plus"></i> <%= __('InstructorNewSlotsModalNewSlotRowButtonLabel') %></button>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
-                    <button type="submit" class="btn btn-primary" id="newSlotSaveButton">Spara <span class="spinner-border spinner-border-sm" style="display:none;" role="status" aria-hidden="true"></span></button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><%= __('InstructorNewSlotsModalButtonCloseLabel') %></button>
+                    <button type="submit" class="btn btn-primary" id="newSlotSaveButton"><%= __('InstructorNewSlotsModalButtonSubmitLabel') %> <span class="spinner-border spinner-border-sm" style="display:none;" role="status" aria-hidden="true"></span></button>
                 </div>
             </div>
         </form>
