@@ -4,7 +4,7 @@
             <input type="hidden" id="e_segment_id" value="" />
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="editSegmentLabel">Redigera segment</h5>
+                    <h5 class="modal-title" id="editSegmentLabel"><%= __('AdminSegmentModalEditLabel') %></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Stäng"></button>
                 </div>
                 <div class="modal-body loading-spinner">
@@ -16,23 +16,23 @@
                 </div>
                 <div class="modal-body loaded-content" style="display:none;">
                     <p>
-                        <label for="e_segment_name">Namn:</label><br>
+                        <label for="e_segment_name"><%= __('AdminSegmentModalLabelName') %></label><br>
                         <input type="text" class="form-control" id="e_segment_name" value="" required>    
                     </p>
                     <p>
                         <div class="d-flex">
                             <div>
-                                <label for="e_segment_sign">Kod:</label><br>
+                                <label for="e_segment_sign"><%= __('AdminSegmentModalLabelSign') %></label><br>
                                 <input type="text" class="form-control" id="e_segment_sign" maxlength="2" value="">    
                             </div>
                             <div class="ms-2">
-                                <label for="e_segment_hex_color">Färg:</label><br>
+                                <label for="e_segment_hex_color"><%= __('AdminSegmentModalLabelColor') %></label><br>
                                 <input type="color" class="form-control" id="e_segment_hex_color" value=""> 
                             </div>
                         </div>
                     </p>
                     <p>
-                        <label for="e_segment_description">Beskrivning:</label><br>
+                        <label for="e_segment_description"><%= __('AdminSegmentModalLabelDescription') %></label><br>
                         <textarea class="form-control" id="e_segment_description" style="height:100px;"></textarea>
                     </p>
                     <div class="alert alert-error alert-danger" style="display:none;">
@@ -40,8 +40,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
-                    <button type="submit" class="btn btn-primary" id="editSegmentSaveButton">Uppdatera <span class="spinner-border spinner-border-sm" style="display:none;" role="status" aria-hidden="true"></span></button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><%= __('AdminSegmentModalEditButtonCloseLabel') %></button>
+                    <button type="submit" class="btn btn-primary" id="editSegmentSaveButton"><%= __('AdminSegmentModalEditButtonSubmitLabel') %> <span class="spinner-border spinner-border-sm" style="display:none;" role="status" aria-hidden="true"></span></button>
                 </div>
             </div>
         </form>

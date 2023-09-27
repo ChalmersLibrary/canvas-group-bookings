@@ -181,7 +181,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
             deleteSegmentModal.querySelector('#d_segment_name').innerHTML = data.segment.name
             deleteSegmentModal.querySelector('#d_replace_with_segment').replaceChildren()
             data.course_segments.filter(s => s.id != segment_id).forEach((segment, key) => {
-                document.getElementById('d_replace_with_segment')[key] = new Option("Ersätt med " + segment.name, segment.id)
+                document.getElementById('d_replace_with_segment')[key] = new Option(segment.name, segment.id)
             })
             if (data.segment.courses > 0) {
                 if (data.course_segments.filter(s => s.id != segment_id).length == 0) {

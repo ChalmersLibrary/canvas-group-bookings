@@ -10,22 +10,25 @@
 </header>
 
 <main class="container-fluid py-2">
-    <h1>Administration</h1>
-    <%- include('../../partials/admin_navigation', { current_page: 'segment' }) %>
-
+    <div class="row">
+        <div class="col-12">
+            <h1><%= __('AdminHeader') %></h1>
+            <%- include('../../partials/admin_navigation', { current_page: 'canvas' }) %>        
+        </div>
+    </div>
     <div class="row">
         <div class="col-md-9">
             <div class="card">
                 <div class="card-header">
-                    Segment kopplade till denna Canvaskurs
+                    <%= __('AdminSegmentDescription') %>
                 </div>
                 <div class="card-body">
                     <table class="table table-md table-hover">
                         <thead>
                             <tr>
-                                <th>Skylt</th>
-                                <th>Namn</th>
-                                <th class="text-right">Tillfällen</th>
+                                <th><%= __('AdminSegmentTableHeaderSign') %></th>
+                                <th><%= __('AdminSegmentTableHeaderName') %></th>
+                                <th class="text-right"><%= __('AdminSegmentTableHeaderSlots') %></th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -39,8 +42,8 @@
                                     <td><%= segment.courses %></td>
                                     <td>
                                         <div class="float-end">
-                                            <button type="button" title="Redigera" data-bs-toggle="modal" data-bs-target="#editSegment" data-bs-segment-id="<%= segment.id %>" class="btn btn-secondary btn-md"><i class="bi-pencil-fill"></i></button>
-                                            <button type="button" title="Radera" data-bs-toggle="modal" data-bs-target="#deleteSegment" data-bs-segment-id="<%= segment.id %>" class="btn btn-secondary btn-md mx-2"><i class="bi-trash-fill"></i></button>
+                                            <button type="button" title="<%= __('AdminSegmentTableControlEditButtonTitle') %>" data-bs-toggle="modal" data-bs-target="#editSegment" data-bs-segment-id="<%= segment.id %>" class="btn btn-secondary btn-md"><i class="bi-pencil-fill"></i></button>
+                                            <button type="button" title="<%= __('AdminSegmentTableControlDeleteButtonTitle') %>" data-bs-toggle="modal" data-bs-target="#deleteSegment" data-bs-segment-id="<%= segment.id %>" class="btn btn-secondary btn-md mx-2"><i class="bi-trash-fill"></i></button>
                                         </div>
                                     </td>
                                 </tr>
@@ -48,7 +51,7 @@
                         </tbody>
                     </table>
                     <div class="button-bar">
-                        <button type="button" class="btn btn-md btn-secondary" title="Skapa segment" data-bs-toggle="modal" data-bs-target="#newSegment" data-bs-existing-segments="<%= segments.length %>">Skapa nytt segment</button>
+                        <button type="button" class="btn btn-md btn-secondary" title="<%= __('AdminSegmentCreateNewButtonTitle') %>" data-bs-toggle="modal" data-bs-target="#newSegment" data-bs-existing-segments="<%= segments.length %>"><%= __('AdminSegmentCreateNewButtonTitle') %></button>
                     </div>
                 </div>
             </div>
@@ -56,17 +59,10 @@
         <div class="col-md-3">
             <div class="card">
                 <div class="card-header">
-                    Hjälp
+                    <%= __('AdminSegmentHelpPaneTitle') %>
                 </div>
                 <div class="card-body text-muted">
-                    <p>
-                        Segment används för att dela upp tillfällen i olika kategorier för att enklare hitta rätt tider. 
-                        Om du väljer att skapa segment, måste varje tillfälle tillhöra ett segment.
-                    </p>
-                    <p>
-                        Om det redan finns tillfällen när du skapar ett nytt första segment, kopplas alla tillfällen till
-                        detta segment. För att ändra segment, redigera tillfället.
-                    </p>
+                    <%- __('AdminSegmentHelpPaneContent') %>
                 </div>
             </div>
         </div>

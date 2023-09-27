@@ -4,7 +4,7 @@
             <input type="hidden" id="d_segment_id" value="">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="deleteSegmentLabel">Radera segment</h5>
+                    <h5 class="modal-title" id="deleteSegmentLabel"><%= __('AdminSegmentModalDeleteLabel') %></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Stäng"></button>
                 </div>
                 <div class="modal-body loading-spinner">
@@ -22,15 +22,14 @@
                     </div>
                     <div class="segment-replace" style="display:none;">
                         <div class="alert alert-danger">
-                            Segmentet är kopplat till tillfällen i denna kurs. Du måste välja ett annat segment att ersätta med, eftersom alla tillfällen måste ha ett segment
-                            om det finns sådana i Canvaskursen. 
+                            <%= __('AdminSegmentModalDeleteReplaceAlertText') %>
                         </div>
-                        <label for="d_replace_with_segment">Välj:</label><br>
+                        <label for="d_replace_with_segment"><%= __('AdminSegmentModalDeleteReplaceAlertSelectLabel') %></label><br>
                         <select id="d_replace_with_segment" class="form-control"></select>
                     </div>
                     <div class="segment-delete-final" style="display:none;">
                         <div class="alert alert-danger">
-                            Det här är det enda segmentet i denna kurs. Om du väljer att radera det, kommer alla tillfällen att uppdateras så att de inte längre använder segment.
+                            <%= __('AdminSegmentModalDeleteFinalAlertText') %>
                         </div>
                     </div>
                     <div class="alert alert-error alert-danger" style="display:none;">
@@ -38,8 +37,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
-                    <button type="submit" class="btn btn-danger" id="deleteSegmentSaveButton">Radera <span class="spinner-border spinner-border-sm" style="display:none;" role="status" aria-hidden="true"></span></button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><%= __('AdminSegmentModalDeleteButtonCloseLabel') %></button>
+                    <button type="submit" class="btn btn-danger" id="deleteSegmentSaveButton"><%= __('AdminSegmentModalDeleteButtonSubmitLabel') %> <span class="spinner-border spinner-border-sm" style="display:none;" role="status" aria-hidden="true"></span></button>
                 </div>
             </div>
         </form>
