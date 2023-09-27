@@ -209,5 +209,21 @@
 	"AdminInstructorModalDeleteButtonSubmitLabel": "Ta bort",
 	"AdminInstructorModalDeleteReplaceAlertText": "Handledaren är kopplad till tider i denna kurs. Du kan välja att ersätta med en annan handledare, eller låta nuvarande namn stå kvar på tiderna. Notera att inga nya tider kommer att kunna skapas med handledaren som tas bort.",
 	"AdminInstructorModalDeleteReplaceAlertSelectLabel": "Ersätt med:",
-	"AdminInstructorModalDeleteReplaceAlertSelectLabelDataDefault": "Ingen ersättning"
+	"AdminInstructorModalDeleteReplaceAlertSelectLabelDataDefault": "Ingen ersättning",
+
+	"AdminLocationDescription": "Lokaler och platser kopplade till denna Canvaskurs",
+	"AdminLocationHelpPaneTitle": "Hjälp",
+	"AdminLocationHelpPaneContent": "<p>Lokaler eller platser används för information för den som bokar. Det kan även vara digitala rum om det finns en extern länk till Zoom.</p><p>Tänk på att alla lokaler delas mellan alla kurser i en installation av verktyget. Om du ändrar t ex beskrivning så berör det alla Canvaskurser som har lokalen tillagd.</p>",
+	"AdminLocationTableHeaderName": "Namn",
+	"AdminLocationTableHeaderNameTypeLocalDescriptionTitle": "Lokal beskrivning",
+	"AdminLocationTableHeaderNameTypeZoomTitle": "Zoom-möte",
+	"AdminLocationTableHeaderNameTypeExternalLinkTitle": "Extern länk",
+	"AdminLocationTableHeaderNameTypeCampusMapsTitle": "Länk till Campus Maps",
+	"AdminLocationTableHeaderMaxSeats": "Max",
+	"AdminLocationTableHeaderSlots": "Tider",
+	"AdminLocationTableControlEditLabel": "Redigera",
+	"AdminLocationTableControlDeleteLabel": "Ta bort",
+	"AdminLocationCreateNewButtonTitle": "Lägg till plats",
+
+
 }

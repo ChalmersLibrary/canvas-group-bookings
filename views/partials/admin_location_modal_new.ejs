@@ -3,8 +3,8 @@
         <form class="needs-validation" id="newLocationForm" novalidate action="/api/admin/location">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="newLocationLabel">Lägg till plats</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Stäng"></button>
+                    <h5 class="modal-title" id="newLocationLabel"><%= __('AdminLocationModalNewLabel') %></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<%= __('AdminLocationModalNewButtonCloseLabel') %>"></button>
                 </div>
                 <div class="modal-body loading-spinner">
                     <div class="d-flex justify-content-center">
@@ -16,17 +16,16 @@
                 <div class="modal-body loaded-content" style="display:none;">
                     <ul class="nav nav-tabs" id="newLocationTab" role="tablist">
                         <li class="nav-item" role="presentation">
-                          <button class="nav-link active" id="new-search-tab" data-bs-toggle="tab" data-bs-target="#new-tab-search" type="button" role="tab" aria-controls="new-tab-search" aria-selected="true">Sök plats</button>
+                          <button class="nav-link active" id="new-search-tab" data-bs-toggle="tab" data-bs-target="#new-tab-search" type="button" role="tab" aria-controls="new-tab-search" aria-selected="true"><%= __('AdminLocationModalNewTabSearchLabel') %></button>
                         </li>
                         <li class="nav-item" role="presentation">
-                          <button class="nav-link" id="new-manual-tab" data-bs-toggle="tab" data-bs-target="#new-tab-manual" type="button" role="tab" aria-controls="new-tab-manual" aria-selected="false">Skapa ny</button>
+                          <button class="nav-link" id="new-manual-tab" data-bs-toggle="tab" data-bs-target="#new-tab-manual" type="button" role="tab" aria-controls="new-tab-manual" aria-selected="false"><%= __('AdminLocationModalNewTabManualLabel') %></button>
                         </li>
                     </ul>
                     <div class="tab-content" id="newCourseTabContent">
                         <div class="tab-pane fade show active" id="new-tab-search" role="tabpanel" aria-labelledby="new-search-tab">
                             <p>
-                                <select id="n_existing_location_id" class="form-select">
-                                    <option selected>Välj...</option>
+                                <select id="n_existing_location_id" class="form-select" data-default-text="<%= __('AdminLocationModalNewTabSearchExistingLocationSelectDefaultText') %>">
                                 </select>
                             </p>
                             <div class="card selected-location-details" style="display:none;">
@@ -36,11 +35,11 @@
                                         <small class="text-muted" id="n_disp_location_description"></small>
                                     </p>
                                     <p>
-                                        <strong>Extern URL:</strong><br>
+                                        <strong><%= __('AdminLocationModalNewTabSearchSelectedExternalUrlLabel') %></strong><br>
                                         <span id="n_disp_location_external_url"></span>
                                     </p>
                                     <p>
-                                        <strong>Chalmers Maps Id:</strong><br>
+                                        <strong><%= __('AdminLocationModalNewTabSearchSelectedCampusMapsLabel') %></strong><br>
                                         <span id="n_disp_location_campus_maps_id"></span>
                                     </p>
                                 </div>
@@ -48,25 +47,25 @@
                         </div>
                         <div class="tab-pane fade" id="new-tab-manual" role="tabpanel" aria-labelledby="new-manual-tab">
                             <p>
-                                <label for="n_location_name">Namn:</label><br>
+                                <label for="n_location_name"><%= __('AdminLocationModalLabelName') %></label><br>
                                 <input type="text" class="form-control" id="n_location_name" value="" required>    
                             </p>
                             <p>
-                                <label for="n_location_description">Beskrivning:</label><br>
+                                <label for="n_location_description"><%= __('AdminLocationModalLabelDescription') %></label><br>
                                 <textarea id="n_location_description" class="form-control" style="height:190px;"></textarea>
                             </p>
                             <p>
-                                <label for="n_location_external_url">Extern länk:</label><br>
+                                <label for="n_location_external_url"><%= __('AdminLocationModalLabelExternalUrl') %></label><br>
                                 <input type="text" class="form-control" id="n_location_external_url" value="">
                             </p>
                             <p>
-                                <label for="n_location_campus_maps_id">Chalmers Maps Id:</label><br>
+                                <label for="n_location_campus_maps_id"><%= __('AdminLocationModalLabelCampusMapsId') %></label><br>
                                 <input type="text" class="form-control" id="n_location_campus_maps_id" value="">
                             </p>
                             <p>
-                                <label for="n_location_max_individuals">Max antal personer:</label><br>
+                                <label for="n_location_max_individuals"><%= __('AdminLocationModalLabelMaxIndividuals') %></label><br>
                                 <input type="number" class="form-control" id="n_location_max_individuals" value="">
-                                <small>Om detta antal är lägre än antal platser för tillfället, gäller denna siffra för tiden som använder lokalen.</small>
+                                <small><%= __('AdminLocationModalLabelMaxIndividualsNote') %></small>
                             </p>
                         </div>
                     </div>
@@ -75,8 +74,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
-                    <button type="submit" class="btn btn-primary" id="newLocationSaveButton">Lägg till <span class="spinner-border spinner-border-sm" style="display:none;" role="status" aria-hidden="true"></span></button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><%= __('AdminLocationModalNewButtonCloseLabel') %></button>
+                    <button type="submit" class="btn btn-primary" id="newLocationSaveButton"><%= __('AdminLocationModalNewButtonSubmitLabel') %> <span class="spinner-border spinner-border-sm" style="display:none;" role="status" aria-hidden="true"></span></button>
                 </div>
             </div>
         </form>

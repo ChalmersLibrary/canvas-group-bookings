@@ -10,22 +10,25 @@
 </header>
 
 <main class="container-fluid py-2">
-    <h1>Administration</h1>
-    <%- include('../../partials/admin_navigation', { current_page: 'location' }) %>
-
+    <div class="row">
+        <div class="col-12">
+            <h1><%= __('AdminHeader') %></h1>
+            <%- include('../../partials/admin_navigation', { current_page: 'location' }) %>        
+        </div>
+    </div>
     <div class="row">
         <div class="col-md-9">
             <div class="card">
                 <div class="card-header">
-                    Lokaler och platser kopplade till denna Canvaskurs
+                    <%= __('AdminLocationDescription') %>
                 </div>
                 <div class="card-body">
                     <table class="table table-md table-hover">
                         <thead>
                             <tr>
-                                <th>Namn</th>
-                                <th class="text-right">Max</th>
-                                <th class="text-right">Tider</th>
+                                <th><%= __('AdminLocationTableHeaderName') %></th>
+                                <th class="text-right"><%= __('AdminLocationTableHeaderMaxSeats') %></th>
+                                <th class="text-right"><%= __('AdminLocationTableHeaderSlots') %></th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -35,15 +38,15 @@
                                     <td>
                                         <strong><%= location.name %></strong>
                                         <span class="mx-2">
-                                            <% if (location.description) { %><i class="text-secondary bi-info-circle-fill" title="Lokal beskrivning"></i><% } %>
+                                            <% if (location.description) { %><i class="text-secondary bi-info-circle-fill" title="<%= __('AdminLocationTableHeaderNameTypeLocalDescriptionTitle') %>"></i><% } %>
                                             <% if (location.external_url) { %>
-                                                <% if (location.external_url.includes("chalmers.zoom")) { %>
-                                                    <i class="text-secondary bi-webcam-fill" title="Zoom-möte"></i>
+                                                <% if (location.external_url.includes("zoom.us")) { %>
+                                                    <i class="text-secondary bi-webcam-fill" title="<%= __('AdminLocationTableHeaderNameTypeZoomTitle') %>"></i>
                                                 <% } else { %>
-                                                    <i class="text-secondary bi-link" title="Extern länk"></i>
+                                                    <i class="text-secondary bi-link" title="<%= __('AdminLocationTableHeaderNameTypeExternalLinkTitle') %>"></i>
                                                 <% } %>
                                             <% } %>
-                                            <% if (location.campus_maps_id) { %><i class="text-secondary bi-geo-alt-fill" title="Länk till Campus Maps"></i><% } %>    
+                                            <% if (location.campus_maps_id) { %><i class="text-secondary bi-geo-alt-fill" title="<%= __('AdminLocationTableHeaderNameTypeCampusMapsTitle') %>"></i><% } %>    
                                         </span>
                                         <div>
                                             <small><%= location.description ? location.description.substring(0, Math.min(80, location.description.length)) : null %></small>
@@ -53,8 +56,8 @@
                                     <td><%= location.slots %></td>
                                     <td>
                                         <div class="float-end">
-                                            <button type="button" title="Redigera" data-bs-toggle="modal" data-bs-target="#editLocation" data-bs-location-id="<%= location.id %>" class="btn btn-secondary btn-md"><i class="bi-pencil-fill"></i></button>
-                                            <button type="button" title="Ta bort" data-bs-toggle="modal" data-bs-target="#deleteLocation" data-bs-location-id="<%= location.id %>" class="btn btn-secondary btn-md mx-2"><i class="bi-trash-fill"></i></button>
+                                            <button type="button" title="<%= __('AdminLocationTableControlEditLabel') %>" data-bs-toggle="modal" data-bs-target="#editLocation" data-bs-location-id="<%= location.id %>" class="btn btn-secondary btn-md"><i class="bi-pencil-fill"></i></button>
+                                            <button type="button" title="<%= __('AdminLocationTableControlDeleteLabel') %>" data-bs-toggle="modal" data-bs-target="#deleteLocation" data-bs-location-id="<%= location.id %>" class="btn btn-secondary btn-md mx-2"><i class="bi-trash-fill"></i></button>
                                         </div>
                                     </td>
                                 </tr>
@@ -62,7 +65,7 @@
                         </tbody>
                     </table>
                     <div class="button-bar">
-                        <button type="button" class="btn btn-md btn-secondary" title="Lägg till plats" data-bs-toggle="modal" data-bs-target="#newLocation">Lägg till plats</button>
+                        <button type="button" class="btn btn-md btn-secondary" title="<%= __('AdminLocationCreateNewButtonTitle') %>" data-bs-toggle="modal" data-bs-target="#newLocation"><%= __('AdminLocationCreateNewButtonTitle') %></button>
                     </div>
                 </div>
             </div>
@@ -70,16 +73,10 @@
         <div class="col-md-3">
             <div class="card">
                 <div class="card-header">
-                    Hjälp
+                    <%= __('AdminLocationHelpPaneTitle') %>
                 </div>
                 <div class="card-body text-muted">
-                    <p>
-                        Lokaler eller platser används för information för den som bokar. Det kan även vara digitala rum om det finns en extern länk till Zoom.
-                    </p>
-                    <p>
-                        Tänk på att alla lokaler delas mellan alla kurser i en installation av verktyget. Om du ändrar t ex beskrivning så berör det alla
-                        Canvaskurser som har lokalen tillagd.
-                    </p>
+                    <%- __('AdminLocationHelpPaneContent') %>
                 </div>
             </div>
         </div>

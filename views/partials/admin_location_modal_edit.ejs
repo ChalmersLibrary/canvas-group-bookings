@@ -4,8 +4,8 @@
             <input type="hidden" id="e_location_id" value="" />
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="editLocationLabel">Redigera plats</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Stäng"></button>
+                    <h5 class="modal-title" id="editLocationLabel"><%= __('AdminLocationModalEditLabel') %></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<%= __('AdminLocationModalEditButtonCloseLabel') %>"></button>
                 </div>
                 <div class="modal-body loading-spinner">
                     <div class="d-flex justify-content-center">
@@ -16,33 +16,33 @@
                 </div>
                 <div class="modal-body loaded-content" style="display:none;">
                     <p>
-                        <label for="e_location_name">Namn:</label><br>
+                        <label for="e_location_name"><%= __('AdminLocationModalLabelName') %></label><br>
                         <input type="text" class="form-control" id="e_location_name" value="" required>    
                     </p>
                     <p>
-                        <label for="e_location_description">Beskrivning:</label><br>
+                        <label for="e_location_description"><%= __('AdminLocationModalLabelDescription') %></label><br>
                         <textarea id="e_location_description" class="form-control" style="height:190px;"></textarea>
                     </p>
                     <p>
-                        <label for="e_location_external_url">Extern länk:</label><br>
+                        <label for="e_location_external_url"><%= __('AdminLocationModalLabelExternalUrl') %></label><br>
                         <input type="text" class="form-control" id="e_location_external_url" value="">
                     </p>
                     <p>
-                        <label for="e_location_campus_maps_id">Chalmers Maps Id:</label><br>
+                        <label for="e_location_campus_maps_id"><%= __('AdminLocationModalLabelCampusMapsId') %></label><br>
                         <input type="text" class="form-control" id="e_location_campus_maps_id" value="">
                     </p>
                     <p>
-                        <label for="e_location_max_individuals">Max antal personer:</label><br>
+                        <label for="e_location_max_individuals"><%= __('AdminLocationModalLabelMaxIndividuals') %></label><br>
                         <input type="number" class="form-control" id="e_location_max_individuals" value="">
-                        <small>Om detta antal är lägre än antal platser för tillfället, gäller denna siffra för tiden som använder lokalen.</small>
+                        <small><%= __('AdminLocationModalLabelMaxIndividualsNote') %></small>
                     </p>
                     <div class="alert alert-danger alert-error" style="display:none;">
                         <strong>Ett fel uppstod: </strong><span></span>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
-                    <button type="submit" class="btn btn-primary" id="editLocationSaveButton">Uppdatera <span class="spinner-border spinner-border-sm" style="display:none;" role="status" aria-hidden="true"></span></button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><%= __('AdminLocationModalEditButtonCloseLabel') %></button>
+                    <button type="submit" class="btn btn-primary" id="editLocationSaveButton"><%= __('AdminLocationModalEditButtonSubmitLabel') %> <span class="spinner-border spinner-border-sm" style="display:none;" role="status" aria-hidden="true"></span></button>
                 </div>
             </div>
         </form>

@@ -4,8 +4,8 @@
             <input type="hidden" id="d_location_id" value="" />
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="deleteLocationLabel">Ta bort lokal/plats</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Stäng"></button>
+                    <h5 class="modal-title" id="deleteLocationLabel"><%= __('AdminLocationModalDeleteLabel') %></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<%= __('AdminLocationModalDeleteButtonCloseLabel') %>"></button>
                 </div>
                 <div class="modal-body loading-spinner">
                     <div class="d-flex justify-content-center">
@@ -22,19 +22,18 @@
                     </div>
                     <div class="location-replace" style="display:none;">
                         <div class="alert alert-danger">
-                            Lokalen/platsen är kopplad till tider i denna kurs. Du kan välja att ersätta med en annan lokal, eller låta den nuvarande stå kvar på tiderna.
-                            Notera att inga nya tider kommer att kunna skapas med lokalen som tas bort.
+                            <%= __('AdminLocationModalDeleteReplaceAlertText') %>
                         </div>
-                        <label for="d_replace_with_location">Välj:</label><br>
-                        <select id="d_replace_with_location" class="form-control"></select>
+                        <label for="d_replace_with_location"><%= __('AdminLocationModalDeleteReplaceAlertSelectLabel') %></label><br>
+                        <select id="d_replace_with_location" class="form-control" data-default-text="<%= __('AdminLocationModalDeleteReplaceAlertSelectLabelDataDefault') %>"></select>
                     </div>
                     <div class="alert alert-error alert-danger" style="display:none;">
                         <strong>Ett fel inträffade: </strong><span></span>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
-                    <button type="submit" class="btn btn-danger" id="deleteLocationSaveButton">Ta bort <span class="spinner-border spinner-border-sm" style="display:none;" role="status" aria-hidden="true"></span></button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><%= __('AdminLocationModalDeleteButtonCloseLabel') %></button>
+                    <button type="submit" class="btn btn-danger" id="deleteLocationSaveButton"><%= __('AdminLocationModalDeleteButtonSubmitLabel') %> <span class="spinner-border spinner-border-sm" style="display:none;" role="status" aria-hidden="true"></span></button>
                 </div>
             </div>
         </form>

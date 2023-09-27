@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 api_data = data // store the data as we need to reference it
                 if (data.locations && data.locations.filter(l => l.mapped_to_canvas_course == false).length) {
                     newLocationModal.querySelector('#n_existing_location_id').replaceChildren()
-                    document.getElementById('n_existing_location_id')[0] = new Option("Välj...", "", true, true)
+                    document.getElementById('n_existing_location_id')[0] = new Option(document.getElementById('n_existing_location_id').getAttribute("data-default-text"), "", true, true)
                     data.locations.filter(ci => ci.mapped_to_canvas_course == false).forEach((i, key) => {
                         document.getElementById('n_existing_location_id')[key+1] = new Option(i.name, i.id)
                     })
@@ -243,9 +243,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
             deleteLocationModal.querySelector('#d_location_id').value = location_id
             deleteLocationModal.querySelector('#d_location_name').innerHTML = data.location.name
             deleteLocationModal.querySelector('#d_replace_with_location').replaceChildren()
-            document.getElementById('d_replace_with_location')[0] = new Option("Ingen ersättning", "")
+            document.getElementById('d_replace_with_location')[0] = new Option(document.getElementById('d_replace_with_location').getAttribute("data-default-text"), "")
             data.course_locations.filter(ci => ci.id != location_id).forEach((i, key) => {
-                document.getElementById('d_replace_with_location')[key+1] = new Option("Ersätt med " + i.name, i.id)
+                document.getElementById('d_replace_with_location')[key+1] = new Option(i.name, i.id)
             })
             if (data.location.slots > 0) {
                 deleteLocationModal.querySelector('div.loaded-content div.location-deletable').style.display = "none"
