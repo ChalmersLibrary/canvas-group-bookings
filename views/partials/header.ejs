@@ -43,8 +43,6 @@
       <% } else { %>
         <% if (user.groups_human_readable && user.groups_human_readable.length) { %>
           (<%= user.groups_human_readable.join(", ") %>)
-        <% } else { %>
-          (<%= __('HeaderLabelNoGroupMembership') %>)
         <% } %>
       <% } %>
     </span>  
