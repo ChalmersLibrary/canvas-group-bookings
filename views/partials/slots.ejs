@@ -9,7 +9,7 @@
             <table id="slots" class="table table-hover caption-top mb-3">
                 <thead>
                     <tr>
-                        <% if (slots.some(s => s.course_segment_id !== null)) { %><th class=""></th> <% } %>
+                        <% if (slots.some(s => s.course_segment_id !== null)) { %><th class="segment-sign"></th> <% } %>
                         <th class="d-md-table-cell d-md-none"><%= __('SlotListingHeaderTimeTitle') %></th>
                         <th class="d-none d-md-table-cell"><%= __('SlotListingHeaderTimeTitle') %></th>
                         <th class="d-none d-md-table-cell"><%= __('SlotListingHeaderInstructorPlaceTitle') %></th>
@@ -21,7 +21,7 @@
                     <% slots.forEach((slot) => { %>
                         <tr>
                             <% if (slots.some(s => s.course_segment_id !== null)) { %>
-                                <td class="text-center align-middle" style="color:white; background-color:<%= slot.course_segment_hex_color %>;"><strong><%= slot.course_segment_sign %></strong></td>
+                                <td class="text-center align-middle segment-sign" style="color:white; background-color:<%= slot.course_segment_hex_color %>;"><strong><%= slot.course_segment_sign %></strong></td>
                             <% } %>
                             <td class="d-md-table-cell d-md-none">
                                 <%= slot.course_name %><br>
