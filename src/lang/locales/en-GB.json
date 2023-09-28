@@ -1,20 +1,25 @@
 {
 	"ApplicationName": "Booking Tool",
 	"ApplicationDescription": "Reserve times for tutoring, seminars and workshops.",
+
 	"NavigationReserveTimeSlots": "Reserve",
 	"NavigationReservations": "My reservations",
 	"NavigationInstructorSlots": "My slots",
 	"NavigationAdministration": "Administration",
 	"NavigationNewSlots": "Add new slots",
+
 	"HeaderLabelRoleAdministrator": "Administrator",
 	"HeaderLabelRoleInstructor": "Instructor",
 	"HeaderLabelNoGroupMembership": "Not a member of any group",
+
 	"NoTimeSlots": "No time slots available",
 	"NoTimeSlotsDescription": "There are no available slots published with the selected filters.",
 	"NoTimeSlotsResetFilters": "Reset all filters",
+
 	"DatePhraseToday": "today",
 	"DatePhraseUntil": "until",
 	"DatePhraseAndForward": "and in the future",
+
 	"SlotListingHeaderNormal": "Listing {{slots}} slots from {{from}} {{to}}:",
 	"SlotListingHeaderInstructor": "Listing {{slots}} slots with you as instructor from {{from}} {{to}}:",
 	"SlotListingHeaderTimeTitle": "Type and time",
@@ -34,6 +39,7 @@
 	"SlotListingFilterDateSubmit": "Show",
 	"SlotListingPaginationPrevious": "Previous",
 	"SlotListingPaginationNext": "Next",
+
 	"SlotAvailabilityPhraseOneGroupFull": "Fully reserved",
 	"SlotAvailabilityPhraseOneGroupAvailable": "Available, one group",
 	"SlotAvailabilityPhraseGroupFull": "Fully reserved",
@@ -48,6 +54,7 @@
 		"one": "Available, one person of {{slots}}",
 		"other": "Available, {{available}} persons of {{slots}}"
 	},
+
 	"SlotReservationNoAdministrator": "Administrator can not reserve times.",
 	"SlotReservationNoInstructor": "Instructor can not reserve times.",
 	"SlotReservationFull": "Slot is reserved.",
@@ -57,6 +64,7 @@
 	"SlotReservationIndividualIsReserved": "You are reserved for this slot.",
 	"SlotReservationIndividualMaxReservations": "Max reservations ({{max}}) for {{name}}.",
 	"SlotReservationReserveButtonTitle": "Reserve",
+
 	"ReserveSlotModalTitle": "Reserve available timeslot",
 	"ReserveSlotModalLabelDateTime": "Date and time:",
 	"ReserveSlotModalLabelLocation": "Location:",
@@ -76,7 +84,9 @@
 	"ReserveSlotModalMsgErrorLoadingText": "The server did not respond. Please try again later.",
 	"ReserveSlotModalCancelButtonLabel": "Cancel",
 	"ReserveSlotModalSubmitButtonLabel": "Reserve",
+
 	"ReservationsHeader": "My reservations",
+
 	"CancelSlotReservationModalTitle": "Cancel reservation",
 	"CancelSlotReservationModalLabelCourse": "Type:",
 	"CancelSlotReservationModalLabelDateTime": "Date and time:",
@@ -90,6 +100,7 @@
 	"CancelSlotReservationModalCancelButtonLabel": "Close",
 	"CancelSlotReservationModalSubmitButtonLabel": "Cancel reservation",
 	"CancelSlotReservationApiResponseNotCancellable": "Cancellation time has passed, not possible to cancel.",
+
 	"OffCanvasSlotReservationDetailsTypeGroupPhrase": {
 		"one": "Group reservation, one group",
 		"other": "Group reservation, max {{max}} groups"
@@ -98,13 +109,16 @@
 		"one": "Individual reservation, one person",
 		"other": "Individual reservation, max {{max}} persons"
 	},
+
 	"FooterPrivacyLinkLabel": "Privacy policy",
+
 	"ConversationRobotReservationSubjectPrefix": "Reservation confirmed: ",
 	"ConversationRobotReservationCcSubjectPrefix": "(Copy) Reservation confirmed: ",
 	"ConversationRobotReservationFullSubjectPrefix": "Fully reserved timeslot: ",
 	"ConversationRobotReservationFullCcSubjectPrefix": "(Copy) Fully reserved timeslot: ",
 	"ConversationRobotCancelReservationSubjectPrefix": "Cancellation confirmed: ",
 	"ConversationRobotCancelReservationCcSubjectPrefix": "(Copy) Cancellation confirmed: ",
+
 	"GeneralErrorMessagePrefixText": "Error:",
 	"GeneralErrorMessageMissingAdminAccess": "You must have administrator privileges to access this page.",
 	
@@ -143,12 +157,14 @@
 	"AdminHeader": "Administration",
 	"AdminHelpPaneTitle": "Help",
 	"AdminHelpPaneDescription": "This page is intentionally left blank for the moment.",
+
 	"AdminNavigationStart": "Administration",
 	"AdminNavigationCanvas": "Canvas",
 	"AdminNavigationCourse": "Types",
 	"AdminNavigationSegment": "Segments",
 	"AdminNavigationInstructor": "Instructors",
 	"AdminNavigationLocation": "Locations",
+
 	"AdminCanvasDescription": "Canvas configuration",
 	"AdminCanvasHelpPaneTitle": "Help",
 	"AdminCanvasHelpPaneDescription": "<p>Configuration for the course in Canvas where the tool is used.</p><p>If there are many groupsets and a student could be a member of many groups in different groupsets, you can filter the valid groupsets.</p><p>If no particular groupset is selected, then all are valid.</p>",
@@ -199,6 +215,7 @@
 	"AdminCourseModalEditButtonSubmitLabel": "Save changes",
 	"AdminCourseModalDeleteButtonCloseLabel": "Close",
 	"AdminCourseModalDeleteButtonSubmitLabel": "Delete",
+
 	"AdminSegmentDescription": "Segment connected to this course",
 	"AdminSegmentHelpPaneTitle": "Help",
 	"AdminSegmentHelpPaneContent": "<p>Segments are used for making filtering slot types easier for the user. If you create a segment then every slot type must have a segment.</p><p>If there are existing slot types when you create a first segment, they will be attached to this segment. To edit the attached segment, edit the slot type.</p>",
@@ -225,6 +242,7 @@
 	"AdminSegmentModalDeleteReplaceAlertText": "This segment is connected to slot types. Choose another segment to replace with, as all slot types must have a segment.",
 	"AdminSegmentModalDeleteReplaceAlertSelectLabel": "Replace with:",
 	"AdminSegmentModalDeleteFinalAlertText": "This is the only segment in this course. If you delete it, all slot types will be updated to not have any segment connected.",
+
 	"AdminInstructorDescription": "Instructors connected to this course",
 	"AdminInstructorHelpPaneTitle": "Help",
 	"AdminInstructorHelpPaneContent": "<p>Instructors are people in this Canvas course with the Examiner or Teacher role.</p><p>Only people in this list can be added as instructors to time slots in this course.</p>",
@@ -246,6 +264,7 @@
 	"AdminInstructorModalDeleteReplaceAlertText": "The instructor is connected to time slots in this course. You can choose to replace with a new instructor, or let the present instructor remain. Note that no new time slots can be created with this instructor.",
 	"AdminInstructorModalDeleteReplaceAlertSelectLabel": "Replace with:",
 	"AdminInstructorModalDeleteReplaceAlertSelectLabelDataDefault": "Don't replace",
+	
 	"AdminLocationDescription": "Rooms and locations connected to this course",
 	"AdminLocationHelpPaneTitle": "Help",
 	"AdminLocationHelpPaneContent": "<p>Rooms, places, locations. They are used for telling where the activity is held. It can also be a digital location, like a Zoom meeting.</p><p>Please note that all locations are shared in the same installation, so one room can be added to this course and still be referenced from another course.</p><p>If you edit the description or link, this will change for everyone using it.</p><p>If you delete it, it will only be deleted from this course.</p>",
