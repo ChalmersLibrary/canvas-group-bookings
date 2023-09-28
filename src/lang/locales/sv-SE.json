@@ -1,20 +1,25 @@
 {
 	"ApplicationName": "Bokningsverktyg",
 	"ApplicationDescription": "Boka tider för handledningstillfällen, föreläsningar och workshops.",
+
 	"NavigationReserveTimeSlots": "Boka tid",
 	"NavigationReservations": "Mina bokningar",
 	"NavigationInstructorSlots": "Mina tillfällen",
 	"NavigationAdministration": "Administration",
 	"NavigationNewSlots": "Lägg till nya tider",
+
 	"HeaderLabelRoleAdministrator": "administratör",
 	"HeaderLabelRoleInstructor": "handledare",
 	"HeaderLabelNoGroupMembership": "ej medlem i någon grupp",
+
 	"NoTimeSlots": "Hittade inga tider",
 	"NoTimeSlotsDescription": "Antingen är inga tider utlagda eller så finns det inga tider som motsvarar de filter du valt.",
 	"NoTimeSlotsResetFilters": "Återställ alla filter",
+
 	"DatePhraseToday": "idag",
 	"DatePhraseUntil": "till",
 	"DatePhraseAndForward": "och framåt",
+
 	"SlotListingHeaderNormal": "Visar {{slots}} tider från {{from}} {{to}}:",
 	"SlotListingHeaderInstructor": "Visar {{slots}} tider med dig som handledare från {{from}} {{to}}:",
 	"SlotListingHeaderTimeTitle": "Tillfälle och tid",
@@ -34,10 +39,11 @@
 	"SlotListingFilterDateSubmit": "Visa",
 	"SlotListingPaginationPrevious": "Föregående",
 	"SlotListingPaginationNext": "Nästa",
+
 	"SlotAvailabilityPhraseOneGroupFull": "Fullbokad",
 	"SlotAvailabilityPhraseOneGroupAvailable": "Tillgänglig, en grupp",
 	"SlotAvailabilityPhraseGroupFull": "Fullbokad",
-	"SlotAvailabilityPhraseGroupAvailable":  {
+	"SlotAvailabilityPhraseGroupAvailable": {
 		"one": "Tillgänglig, en grupp av {{slots}}",
 		"other": "Tillgänglig, {{available}} grupper av {{slots}}"
 	},
@@ -48,6 +54,7 @@
 		"one": "Tillgänglig, en person av {{slots}}",
 		"other": "Tillgänglig, {{available}} personer av {{slots}}"
 	},
+
 	"SlotReservationNoAdministrator": "Administratör kan inte boka tider.",
 	"SlotReservationNoInstructor": "Handledare kan inte boka tider.",
 	"SlotReservationFull": "Tiden är fullbokad.",
@@ -77,6 +84,7 @@
 	"ReserveSlotModalMsgErrorLoadingText": "Servern svarade inte, kan inte ladda information.",
 	"ReserveSlotModalCancelButtonLabel": "Avbryt",
 	"ReserveSlotModalSubmitButtonLabel": "Boka tiden",
+
 	"ReservationsHeader": "Mina bokningar",
 
 	"CancelSlotReservationModalTitle": "Avboka bokad tid",
@@ -92,7 +100,18 @@
 	"CancelSlotReservationModalCancelButtonLabel": "Stäng",
 	"CancelSlotReservationModalSubmitButtonLabel": "Avboka",
 	"CancelSlotReservationApiResponseNotCancellable": "Tiden för avbokning har passerats, kan inte avboka.",
+
+	"OffCanvasSlotReservationDetailsTypeGroupPhrase": {
+		"one": "Gruppbokning, en grupp",
+		"other": "Gruppbokning, max {{max}} grupper"
+	},
+	"OffCanvasSlotReservationDetailsTypeIndividualPhrase": {
+		"one": "Individuell bokning, en person",
+		"other": "Individuell bokning, max {{max}} personer"
+	},
+
 	"FooterPrivacyLinkLabel": "Personuppgifter och cookies",
+
 	"ConversationRobotReservationSubjectPrefix": "Bekräftad bokning: ",
 	"ConversationRobotReservationCcSubjectPrefix": "(Kopia) Bekräftad bokning: ",
 	"ConversationRobotReservationFullSubjectPrefix": "Fullbokat tillfälle: ",
