@@ -51,9 +51,21 @@ router.all(['/', '/reservations', '/privacy', '/debug', '/admin*', '/api/*'], as
                 }
 
                 // Set the language based on lti launch presentation locale first, second API effective locale for user
-                res.setLocale(req.session.lti.launch_presentation_locale ? req.session.lti.launch_presentation_locale : req.session.user.locale);
+                // FIX: some stupid setup makes this LTI variable only be 2 chars, 2023-10-02:
+                if (req.session.lti.launch_presentation_locale && req.session.lti.launch_presentation_locale.toString().length < 3) {
+                    if (req.session.lti.launch_presentation_locale.toString() == 'sv') {
+                        res.locals.locale = "sv-SE";
+                    }
+                    else {
+                        res.locals.locale = "en-GB";
+                    }
+                }
+                else {
+                    res.locals.locale = req.session.lti.launch_presentation_locale;
+                }
+                res.setLocale(res.locals.locale ? res.locals.locale : req.session.user.locale);
                 res.locals.lang = res.getLocale().toString().slice(0, 2);
-                log.debug("Language set to: " + res.getLocale() + ", res.locals.lang: " + res.locals.lang + ", req.session.user.locale: " + req.session.user.locale + ", req.session.lti.launch_presentation_locale: " + req.session.lti.launch_presentation_locale);
+                log.info("Language set to: " + res.getLocale() + ", res.locals.lang: " + res.locals.lang + ", req.session.user.locale: " + req.session.user.locale + ", req.session.lti.launch_presentation_locale: " + req.session.lti.launch_presentation_locale + ", res.locals.locale: " + res.locals.locale);
 
                 // Read configuration keys and values for the course
                 res.locals.configuration = await db.getCanvasCourseConfiguration(res.locals.courseId);
