@@ -81,15 +81,6 @@ exports.handleLaunch = (page) => function(req, res) {
             if (isValid) {
                 log.debug("Request is valid, LTI Data:" + JSON.stringify(provider.body));
 
-                // Fix so we have a full locale, ie "en-GB" or "sv-SE", even if Canvas states "en" or "sv" as the locale
-                if (req.session.launch_presentation_locale && req.session.lti.launch_presentation_locale.toString().length < 3 && locales.any(x => x.lang == req.session.lti.launch_presentation_locale)) {
-                    req.session.lti.locale_full = locales.filter(x => x.lang == req.session.lti.launch_presentation_locale)[0].full;
-                }
-                else {
-                    req.session.lti.locale_full = req.session.lti.launch_presentation_locale + "-XX";
-                }
-                req.session.lti.locale_original = req.session.lti.launch_presentation_locale;
-
                 // Only save relevant LTI information in session LTI object
                 req.session.lti = {
                     context_id: provider.body.context_id,
@@ -109,6 +100,15 @@ exports.handleLaunch = (page) => function(req, res) {
                     tool_consumer_instance_name: provider.body.tool_consumer_instance_name,
                     launch_presentation_locale: provider.body.launch_presentation_locale
                 };
+
+                // Fix so we have a full locale, ie "en-GB" or "sv-SE", even if Canvas states "en" or "sv" as the locale
+                if (req.session.launch_presentation_locale && req.session.lti.launch_presentation_locale.toString().length < 3 && locales.any(x => x.lang == req.session.lti.launch_presentation_locale)) {
+                    req.session.lti.locale_full = locales.filter(x => x.lang == req.session.lti.launch_presentation_locale)[0].full;
+                }
+                else {
+                    req.session.lti.locale_full = req.session.lti.launch_presentation_locale + "-XX";
+                }
+                req.session.lti.locale_original = req.session.lti.launch_presentation_locale;
 
                 // TODO: remove this, only to force Azure log
                 log.info(req.session.lti);
