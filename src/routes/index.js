@@ -50,26 +50,14 @@ router.all(['/', '/reservations', '/privacy', '/debug', '/admin*', '/api/*'], as
                     req.session.user.groups = [];
                 }
 
-                // Set the language based on lti launch presentation locale first, second API effective locale for user
-                // FIX: some stupid setup makes this LTI variable only be 2 chars, 2023-10-02:
-                if (req.session.lti.launch_presentation_locale && req.session.lti.launch_presentation_locale.toString().length < 3) {
-                    if (req.session.lti.launch_presentation_locale.toString() == 'sv') {
-                        res.locals.locale = "sv-SE";
-                    }
-                    else {
-                        res.locals.locale = "en-GB";
-                    }
-                }
-                else {
-                    res.locals.locale = req.session.lti.launch_presentation_locale;
-                }
+                // Set the language based on lti launch presentation locale (fixed due to Canvas bug with only two chars in some locales) or lastly the locale in the user object
+                res.locals.locale = req.session.lti.locale_original.toString().length < 3 ? req.session.lti.locale_full : req.session.lti.locale_original;
                 res.setLocale(res.locals.locale ? res.locals.locale : req.session.user.locale);
                 res.locals.lang = res.getLocale().toString().slice(0, 2);
                 log.info("Language set to: " + res.getLocale() + ", res.locals.lang: " + res.locals.lang + ", req.session.user.locale: " + req.session.user.locale + ", req.session.lti.launch_presentation_locale: " + req.session.lti.launch_presentation_locale + ", res.locals.locale: " + res.locals.locale);
 
                 // Read configuration keys and values for the course
                 res.locals.configuration = await db.getCanvasCourseConfiguration(res.locals.courseId);
-                console.log(res.locals.configuration);
 
                 // Add some debug information
                 req.session.internal = {
@@ -91,8 +79,8 @@ router.all(['/', '/reservations', '/privacy', '/debug', '/admin*', '/api/*'], as
                         node_version: process.version,
                         db: process.env.PGDATABASE
                     },
-                    error: "Kan inte läsa LTI-information",
-                    message: "Bokningsverktyget måste startas som en LTI-applikation inifrån Canvas för att få information om kontexten."
+                    error: res.__('SystemBackendErrorLtiLaunch'),
+                    message: res.__('SystemBackendErrorLtiLaunchMessage')
                 });
             }
         }
@@ -108,8 +96,8 @@ router.all(['/', '/reservations', '/privacy', '/debug', '/admin*', '/api/*'], as
                             node_version: process.version,
                             db: process.env.PGDATABASE
                         },
-                        error: "Kan inte skapa en session",
-                        message: "Du måste tillåta cookies från tredje part i din webbläsare. Bokningsverktyget använder cookies för att kunna hantera din identitiet från Canvas. Om du inte kan eller vill tillåta tredjepartscookies, finns alternativet att öppna Bokningsverktyget i ett nytt fönster. Länken hittar du sist i listan över kursens moduler."
+                        error: res.__('SystemBackendErrorLtiLaunchSession'),
+                        message: res.__('SystemBackendErrorLtiLaunchSessionMessage')
                     });
                 } catch (error) {
                     console.error(error);

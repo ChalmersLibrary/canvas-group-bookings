@@ -300,5 +300,10 @@
 	"AdminLocationModalDeleteButtonSubmitLabel": "Delete",
 	"AdminLocationModalDeleteReplaceAlertText": " This place is used for time slots in this course. You can replace it with another, or choose to keep it as it is. However, no new time slots can be created with this location.",
 	"AdminLocationModalDeleteReplaceAlertSelectLabel": "Replace with:",
-	"AdminLocationModalDeleteReplaceAlertSelectLabelDataDefault": "Don't replace"
+	"AdminLocationModalDeleteReplaceAlertSelectLabelDataDefault": "Don't replace",
+	
+	"SystemBackendErrorLtiLaunch": "Can't read LTI messages",
+	"SystemBackendErrorLtiLaunchMessage": "The tool must be started from within a Canvas course, to get the correct LTI context.",
+	"SystemBackendErrorLtiLaunchSession": "Can't create a session",
+	"SystemBackendErrorLtiLaunchSessionMessage": "You must enable third party cookies for this site in your web browser settings, otherwise we can't create a secure session for you."
 }

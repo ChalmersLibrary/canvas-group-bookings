@@ -10,8 +10,22 @@ const nonceStore = new nodeCacheNonceStore(myCache);
 
 /* LTI Consumer Keys and Secrets with format "consumer:secret[,consumer2:secret2]". */
 const consumerKeys = process.env.LTI_KEYS;
-
 var secrets = [];
+
+/* Default full locales, when Canvas only states language (two chars) (not complete) */
+const locales = [
+    { lang: 'sv', full: 'sv-SE' },
+    { lang: 'en', full: 'en-US' },
+    { lang: 'is', full: 'is-IS' },
+    { lang: 'nb', full: 'nb-NO' },
+    { lang: 'nn', full: 'nn-NO' },
+    { lang: 'da', full: 'da-DK' },
+    { lang: 'de', full: 'de-DE' },
+    { lang: 'fi', full: 'fi-FI' },
+    { lang: 'fr', full: 'fr-FR' },
+    { lang: 'nl', full: 'nl-NL' },
+    { lang: 'it', full: 'it-IT' },
+];
 
 const getSecret = (consumerKey, callback) => {
     if (consumerKeys && secrets.length == 0) {
@@ -67,6 +81,15 @@ exports.handleLaunch = (page) => function(req, res) {
             if (isValid) {
                 log.debug("Request is valid, LTI Data:" + JSON.stringify(provider.body));
 
+                // Fix so we have a full locale, ie "en-GB" or "sv-SE", even if Canvas states "en" or "sv" as the locale
+                if (req.session.launch_presentation_locale && req.session.lti.launch_presentation_locale.toString().length < 3 && locales.any(x => x.lang == req.session.lti.launch_presentation_locale)) {
+                    req.session.lti.locale_full = locales.filter(x => x.lang == req.session.lti.launch_presentation_locale)[0].full;
+                }
+                else {
+                    req.session.lti.locale_full = req.session.lti.launch_presentation_locale + "-XX";
+                }
+                req.session.lti.locale_original = req.session.lti.launch_presentation_locale;
+
                 // Only save relevant LTI information in session LTI object
                 req.session.lti = {
                     context_id: provider.body.context_id,
@@ -87,6 +110,9 @@ exports.handleLaunch = (page) => function(req, res) {
                     launch_presentation_locale: provider.body.launch_presentation_locale
                 };
 
+                // TODO: remove this, only to force Azure log
+                log.info(req.session.lti);
+
                 req.session.save(function(err) {
                     if (err) {
                         log.error("Saving session after LTI launch", err);
@@ -97,7 +123,7 @@ exports.handleLaunch = (page) => function(req, res) {
             }
             else {
                 log.error("The request is NOT valid.", req);
-                return res.status(500).json('LTI request is not valid.')
+                return res.status(500).json('LTI request is not valid.');
             }
         });
     });
@@ -106,4 +132,3 @@ exports.handleLaunch = (page) => function(req, res) {
 
     return res.redirect("/");
 }
-

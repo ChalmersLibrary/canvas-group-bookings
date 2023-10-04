@@ -301,5 +301,10 @@
 	"AdminLocationModalDeleteButtonSubmitLabel": "Ta bort",
 	"AdminLocationModalDeleteReplaceAlertText": "Lokalen/platsen är kopplad till tider i denna kurs. Du kan välja att ersätta med en annan lokal, eller låta den nuvarande stå kvar på tiderna. Notera att inga nya tider kommer att kunna skapas med lokalen som tas bort.",
 	"AdminLocationModalDeleteReplaceAlertSelectLabel": "Ersätt med:",
-	"AdminLocationModalDeleteReplaceAlertSelectLabelDataDefault": "Ingen ersättning"
+	"AdminLocationModalDeleteReplaceAlertSelectLabelDataDefault": "Ingen ersättning",
+
+	"SystemBackendErrorLtiLaunch": "Kan inte läsa LTI-information",
+	"SystemBackendErrorLtiLaunchMessage": "Bokningsverktyget måste startas som en LTI-applikation inifrån Canvas för att få information om kontexten.",
+	"SystemBackendErrorLtiLaunchSession": "Kan inte skapa en session",
+	"SystemBackendErrorLtiLaunchSessionMessage": "Du måste tillåta cookies från tredje part i din webbläsare. Bokningsverktyget använder cookies för att kunna hantera din identitiet från Canvas. Om du inte kan eller vill tillåta tredjepartscookies, finns alternativet att öppna Bokningsverktyget i ett nytt fönster. Länken hittar du sist i listan över kursens moduler."
 }
