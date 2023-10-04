@@ -68,9 +68,15 @@ debug: Executed query {"0":{"duration":45,"rows":3,"text":"DELETE FROM \"user_se
 Canvas built-in "Student view" will not work, as the tool uses the provided custom roles. However, if you are an administrator or teacher in the Canvas course or an Account Admin, you can change your role in the course roster to "Student" to view the tool as a student will see it. The tool will always look at the most local role first, provided that you have added ```custom_canvas_roles=$Canvas.membership.roles``` to the LTI configuration.
 
 
-## A note on language
+## Language and locale
 
-The interface and some API text is in Swedish. This was a requirement from the product owners when developing the application. However, language handling is in the todo list and might be available in the future. The exact method is not yet decided, however some solution with folders for view files named according to the locale sounds reasonable.
+The package "i18n" is used for translating the interface and backend messages. All translations can be found in the ```src/lang/locales``` folder. 
+
+If you wish to add a translation, add the desired locale to ```src/lang/i18n.config.js``` and copy any existing translation file from the locales folder and name it according to the new locale. 
+
+Some parts of the interface are translated in sub-folders of the ```views``` folder, for exampel ```views/en/pages/privacy/privacy.ejs```. In this case, only the first two characters of the locale (language) is used.
+
+Note that Canvas sends the "presentation locale" in LTI data, and this is used. However, for some use cases where Canvas only returns two characters this string is fixed to a default full locale, including both language and country (for example "en" becomes "en-GB" and "sv" becomes "sv-SE"). This list of translations can be found in ```src/lti/canvas.js```.
 
 
 ## Deployment notes for Chalmers
