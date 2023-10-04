@@ -50,7 +50,8 @@ router.all(['/', '/reservations', '/privacy', '/debug', '/admin*', '/api/*'], as
                     req.session.user.groups = [];
                 }
 
-                // Set the language based on lti launch presentation locale (fixed due to Canvas bug with only two chars in some locales) or lastly the locale in the user object
+                // Set the language based on lti launch presentation locale (fixed due to Canvas bug with only two chars in some locales) or lastly the locale in the user object.
+                // Note: i18n will fallback to default locale if something non-existing is specified.
                 res.locals.locale = req.session.lti.locale_original.toString().length < 3 ? req.session.lti.locale_full : req.session.lti.locale_original;
                 res.setLocale(res.locals.locale ? res.locals.locale : req.session.user.locale);
                 res.locals.lang = res.getLocale().toString().slice(0, 2);
