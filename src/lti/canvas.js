@@ -102,17 +102,18 @@ exports.handleLaunch = (page) => function(req, res) {
                 };
 
                 // Fix so we have a full locale, ie "en-GB" or "sv-SE", even if Canvas states "en" or "sv" as the locale
-                if (req.session.lti.launch_presentation_locale && req.session.lti.launch_presentation_locale.toString().length < 3) {
-                    if (locales.some(x => x.lang === req.session.lti.launch_presentation_locale.toString())) {
-                        req.session.lti.locale_full = locales.filter(x => x.lang === req.session.lti.launch_presentation_locale.toString())[0].full;
+                req.session.lti.locale_original = req.session.lti.launch_presentation_locale;
+
+                if (req.session.lti.locale_original.toString().length < 3) {
+                    if (locales.some(x => x.lang === req.session.lti.locale_original.toString())) {
+                        req.session.lti.locale_full = locales.filter(x => x.lang === req.session.lti.locale_original.toString())[0].full;
                     }
                     else {
-                        req.session.lti.locale_full = req.session.lti.launch_presentation_locale + "-XX";
+                        req.session.lti.locale_full = req.session.lti.locale_original + "-XX";
                     }
                 }
                 else {
-                    req.session.lti.locale_original = req.session.lti.launch_presentation_locale;
-                    req.session.lti.locale_full = req.session.lti.launch_presentation_locale;
+                    req.session.lti.locale_full = req.session.lti.locale_original;
                 }
 
                 // TODO: remove this, only to force Azure log
