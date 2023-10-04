@@ -112,6 +112,7 @@ exports.handleLaunch = (page) => function(req, res) {
                 }
                 else {
                     req.session.lti.locale_original = req.session.lti.launch_presentation_locale;
+                    req.session.lti.locale_full = req.session.lti.launch_presentation_locale;
                 }
 
                 // TODO: remove this, only to force Azure log
