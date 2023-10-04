@@ -102,7 +102,7 @@ exports.handleLaunch = (page) => function(req, res) {
                 };
 
                 // Fix so we have a full locale, ie "en-GB" or "sv-SE", even if Canvas states "en" or "sv" as the locale
-                if (req.session.launch_presentation_locale && req.session.lti.launch_presentation_locale.toString().length < 3 && locales.any(x => x.lang == req.session.lti.launch_presentation_locale)) {
+                if (req.session.launch_presentation_locale && req.session.lti.launch_presentation_locale.toString().length < 3 && locales.some(x => x.lang == req.session.lti.launch_presentation_locale)) {
                     req.session.lti.locale_full = locales.filter(x => x.lang == req.session.lti.launch_presentation_locale)[0].full;
                 }
                 else {
