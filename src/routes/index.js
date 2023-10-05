@@ -89,7 +89,8 @@ router.all(['/', '/reservations', '/privacy', '/debug', '/admin*', '/api/*'], as
             if (req.query.from == "callback") {
                 try {
                     log.error("Coming from callback, but with no session. Third party cookies problem. Rendering special error page.");
-                
+                    log.error(res.locals? res.locals : "res.locals does not exist.");
+
                     return res.render(res.locals.lang ? res.locals.lang : "en" + "/pages/error/session/index", {
                         version: pkg.version,
                         internal: {
