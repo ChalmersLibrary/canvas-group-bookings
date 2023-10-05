@@ -21,6 +21,7 @@ const routes = require('./src/routes');
 const morgan = require('morgan');
 const rfs = require('rotating-file-stream');
 const path = require('path');
+const ical = require('./src/ical');
 
 const port = process.env.PORT || 3000;
 const cookieMaxAge = 3600000 * 24 * 30 * 4; // 4 months
@@ -777,6 +778,30 @@ app.get('/api/reservation/:id', async (req, res, next) => {
         });
     }
 });
+
+/**
+ * Get iCalendar entry for one specific slot reservation
+ */
+app.get('/api/reservation/:id/entry.ics', async (req, res, next) => {
+    try {
+        const reservation = await db.getReservation(res, req.session.user.id, req.session.user.groups_ids, req.params.id);
+        const ics = await ical.iCalendarEventFromReservation(reservation);
+
+        log.info("Ical data: " + ics);
+
+        return res.contentType('text/calendar').send(ics);
+    }
+    catch (error) {
+        log.error(error);
+
+        return res.send({
+            success: false,
+            error: error
+        });
+    }
+});
+
+
 
 /* Delete a reservation */
 app.delete('/api/reservation/:id', async (req, res) => { 
