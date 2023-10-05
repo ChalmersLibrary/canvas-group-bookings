@@ -90,7 +90,7 @@ router.all(['/', '/reservations', '/privacy', '/debug', '/admin*', '/api/*'], as
                 try {
                     log.error("Coming from callback, but with no session. Third party cookies problem. Rendering special error page.");
                 
-                    return res.render(res.locals.lang + "/pages/error/session", {
+                    return res.render(res.locals.lang + "/pages/error/session/index", {
                         version: pkg.version,
                         internal: {
                             version: pkg.version,
