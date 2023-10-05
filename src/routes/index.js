@@ -90,7 +90,7 @@ router.all(['/', '/reservations', '/privacy', '/debug', '/admin*', '/api/*'], as
                 try {
                     log.error("Coming from callback, but with no session. Third party cookies problem. Rendering special error page.");
                 
-                    return res.render(res.locals.lang + "/pages/error/session/index", {
+                    return res.render(res.locals.lang ? res.locals.lang : "en" + "/pages/error/session/index", {
                         version: pkg.version,
                         internal: {
                             version: pkg.version,
@@ -98,8 +98,9 @@ router.all(['/', '/reservations', '/privacy', '/debug', '/admin*', '/api/*'], as
                             db: process.env.PGDATABASE
                         }
                     });
-                } catch (error) {
-                    console.error(error);
+                }
+                catch (error) {
+                    log.error(error);
                 }
             }
             else {
