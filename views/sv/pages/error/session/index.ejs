@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../../../../partials/head'); %>
+</head>
+<body>
+
+<header>
+  <%- include('../../../../partials/header_clean'); %>
+</header>
+
+<main class="container-fluid py-2">
+  <div class="row">
+    <div class="col-lg-8">
+      <h2>Kan inte skapa en session</h2>
+      <p class="lead">
+          För att det här verktyget ska fungera med Canvas måste du tillåta tredjepartscookies i din webbläsare.
+      </p>
+      <h3>Cookies</h3>
+      <p>
+        För att kunna använda tjänsten behöver du tillåta så kallade tredjepartscookies. Detta eftersom tjänsten bäddas in i Canvas gränssnitt på ett säkert sätt.
+        Om du inte vill detta, eller har problem med att acceptera tredjepartscookies, finns det ett alternativt sätt att lägga till undantag för enstaka 
+        webbplatser. Domänen som ska läggas till undantag för är då Chalmers lärplattform Canvas på adress <code>https://chalmers.instructure.com</code>.
+      </p>
+      <h3>Läs mer</h3>
+      <p>
+        <a href="https://learn.microsoft.com/en-us/microsoft-365/lti/browser-cookies?view=o365-worldwide" target="_blank">Allow cookies for LMS URLs in your browser</a><br>
+        Denna sida beskriver hur du hanterar tredjepartscookies i webbläsarna Edge, Chrome och Firefox.
+      </p>
+    </div>
+    <div class="col-lg-4"></div>
+  </div>
+</main>
+
+<footer>
+  <%- include('../../../../partials/footer'); %>
+</footer>
+
+</body>
+</html>

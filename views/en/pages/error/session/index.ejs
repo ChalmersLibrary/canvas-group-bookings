@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../../../../partials/head'); %>
+</head>
+<body>
+
+<header>
+  <%- include('../../../../partials/header_clean'); %>
+</header>
+
+<main class="container-fluid py-2">
+  <div class="row">
+    <div class="col-lg-8">
+      <h2>Can't create a session</h2>
+      <p class="lead">
+        In order for this tool to work with Canvas you must allow third party cookies in your web browser.
+      </p>
+      <h3>Cookies</h3>
+      <p>
+        To use this service you must allow third party cookies in your web browser. This is because the tool is embedded in a secure way in the Canvas user interface.
+        If you don't want to allow third party cookies in general, you can create a special rule to only allow this for Chalmers Canvas. The domain for the
+        exception should be <code>https://chalmers.instructure.com</code>.
+      </p>
+      <h3>Detailed instructions</h3>
+      <p>
+        <a href="https://learn.microsoft.com/en-us/microsoft-365/lti/browser-cookies?view=o365-worldwide" target="_blank">Allow cookies for LMS URLs in your browser</a><br>
+        This Microsoft knowledge article describes how to allow third party cookies in popular web browsers like Edge, Chrome and Firefox.
+      </p>
+    </div>
+    <div class="col-lg-4"></div>
+  </div>
+</main>
+
+<footer>
+  <%- include('../../../../partials/footer'); %>
+</footer>
+
+</body>
+</html>

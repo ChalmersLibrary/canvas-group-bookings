@@ -88,17 +88,15 @@ router.all(['/', '/reservations', '/privacy', '/debug', '/admin*', '/api/*'], as
         else {
             if (req.query.from == "callback") {
                 try {
-                    log.error("Coming from callback, but with no session. Third party cookies problem.");
+                    log.error("Coming from callback, but with no session. Third party cookies problem. Rendering special error page.");
                 
-                    return res.render("pages/error", {
+                    return res.render(res.locals.lang + "/pages/error/session", {
                         version: pkg.version,
                         internal: {
                             version: pkg.version,
                             node_version: process.version,
                             db: process.env.PGDATABASE
-                        },
-                        error: res.__('SystemBackendErrorLtiLaunchSession'),
-                        message: res.__('SystemBackendErrorLtiLaunchSessionMessage')
+                        }
                     });
                 } catch (error) {
                     console.error(error);
