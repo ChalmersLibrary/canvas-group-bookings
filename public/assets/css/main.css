@@ -91,3 +91,7 @@ table#slots tbody tr td:nth-child(2)
 {
     padding-left: 0px;
 }
+a.btn-md > i.bi,
+button.btn-md > i.bi {
+    margin-right: 6px;
+}

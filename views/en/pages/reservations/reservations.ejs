@@ -46,6 +46,14 @@
       <div class="card-body">
         <h5 class="card-title"><%= reservation.course_name %></h5>
         <h6 class="card-subtitle mb-2 text-muted"><%- reservation.time_human_readable %></h6>
+        <div class="button-bar my-3">
+          <a href="/api/reservation/<%= reservation.id %>/entry.ics" download="<%= reservation.ics_file_name %>" target="_blank" title="Download details to your desktop calendar" class="btn btn-md btn-primary" ><i class="bi bi-cloud-download"></i>&nbsp;Download calendar entry (ics)</a>
+          <% if (reservation.is_cancelable) { %>
+            <button type="button" title="Cancel this reservation" class="btn btn-danger btn-md" data-bs-toggle="modal" data-bs-target="#deleteReservation" data-bs-reservation-id="<%= reservation.id %>"><i class="bi bi-x-circle"></i>&nbsp;Cancel this reservation</button>
+          <% } else { %>
+            <button type="button" title="Cancel this reservation" class="btn btn-danger btn-md" disabled><i class="bi bi-x-circle"></i>&nbsp;Cancel this reservation</button>
+          <% } %>
+        </div>
         <p class="card-text">
           Instructor: <%= reservation.instructor_name %><br>
           Location: <%= reservation.location_name %>
@@ -87,13 +95,6 @@
               You can not cancel this reservation.
             <% } %>
           </p>
-        </div>
-        <div class="button-bar my-3">
-          <% if (reservation.is_cancelable) { %>
-            <button type="button" title="Cancel this reservation" class="btn btn-primary btn-md" data-bs-toggle="modal" data-bs-target="#deleteReservation" data-bs-reservation-id="<%= reservation.id %>">Cancel reservation</button>
-          <% } else { %>
-            <button type="button" title="Cancel this reservation" class="btn btn-secondary btn-md" disabled>Cancel reservation</button>
-          <% } %>
         </div>
       </div>
     </div>

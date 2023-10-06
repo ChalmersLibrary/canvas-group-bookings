@@ -22,6 +22,7 @@ const morgan = require('morgan');
 const rfs = require('rotating-file-stream');
 const path = require('path');
 const ical = require('./src/ical');
+const crypto = require('crypto');
 
 const port = process.env.PORT || 3000;
 const cookieMaxAge = 3600000 * 24 * 30 * 4; // 4 months
@@ -341,6 +342,8 @@ app.get('/reservations', async (req, res, next) => {
         if (reservation.id == req.query.reservationId && req.query.reservationDone == "true") {
             reservation.just_created = true;
         }
+
+        reservation.ics_file_name =  crypto.createHash('md5').update(reservation.id.toString()).digest("hex") + ".ics";
     }
 
     /* return res.send({
@@ -766,7 +769,9 @@ app.post('/api/reservation', async (req, res, next) => {
 /* Get one reservation */
 app.get('/api/reservation/:id', async (req, res, next) => {
     try {
-        const reservation = await db.getReservation(res, req.session.user.id, req.session.user.groups_ids, req.params.id);
+        let reservation = await db.getReservation(res, req.session.user.id, req.session.user.groups_ids, req.params.id);
+        reservation.ics_file_name =  crypto.createHash('md5').update(reservation.id.toString()).digest("hex") + ".ics";
+
         return res.send(reservation);
     }
     catch (error) {
@@ -786,8 +791,6 @@ app.get('/api/reservation/:id/entry.ics', async (req, res, next) => {
     try {
         const reservation = await db.getReservation(res, req.session.user.id, req.session.user.groups_ids, req.params.id);
         const ics = await ical.iCalendarEventFromReservation(reservation);
-
-        log.info("Ical data: " + ics);
 
         return res.contentType('text/calendar').send(ics);
     }
