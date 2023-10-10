@@ -7,7 +7,7 @@ const ics = require('ics');
 
 async function iCalendarEventFromReservation(r) {
     var ical_event;
-    
+
     const start_time = new Date(r.time_start);
     const end_time = new Date(r.time_end);
 
@@ -30,7 +30,7 @@ async function iCalendarEventFromReservation(r) {
         description: r.course_description + "\n\n" + r.location_name + (r.location_url ? "\n" + r.location_url : (r.location_description ? "\n" + r.location_description : "")),
         location: r.location_url ? r.location_url : r.location_name,
         organizer: {
-            name: r.instructor_name, email: 'not_exposed_in_api@chalmers.se'
+            name: r.instructor_name, email: r.instructor_email
         },
     };
 
