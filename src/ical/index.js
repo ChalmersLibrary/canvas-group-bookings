@@ -23,9 +23,13 @@ async function iCalendarEventFromReservation(r) {
         start: [
             start_time.getFullYear(), start_time.getMonth()+1, start_time.getDate(), start_time.getHours(), start_time.getMinutes()
         ],
+        startInputType: 'local',
+        startOutputType: 'utc',
         end: [
             end_time.getFullYear(), end_time.getMonth()+1, end_time.getDate(), end_time.getHours(), end_time.getMinutes()
         ],
+        endInputType: 'local',
+        endOutputType: 'utc',
         title: r.course_name,
         description: r.course_description + "\n\n" + r.location_name + (r.location_url ? "\n" + r.location_url : (r.location_description ? "\n" + r.location_description : "")),
         location: r.location_url ? r.location_url : r.location_name,
@@ -49,6 +53,8 @@ async function iCalendarEventFromReservation(r) {
             });
         }
     }
+
+    console.log("startInputType: " + event.startInputType);
 
     ics.createEvent(event, (error, value) => {
         if (error) {
