@@ -11,6 +11,9 @@ async function iCalendarEventFromReservation(r) {
     const start_time = new Date(r.time_start);
     const end_time = new Date(r.time_end);
 
+    log.info(start_time);
+    log.info(end_time);
+
     /*
     console.log(start_time);
     console.log(end_time);
@@ -54,7 +57,8 @@ async function iCalendarEventFromReservation(r) {
         }
     }
 
-    console.log("startInputType: " + event.startInputType);
+    log.info("startInputType: " + event.startInputType);
+    log.info("startOutputType: " + event.startOutputType);
 
     ics.createEvent(event, (error, value) => {
         if (error) {
