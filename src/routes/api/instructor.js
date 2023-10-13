@@ -5,10 +5,37 @@ const router = express.Router();
 const log = require('../../logging/');
 const db = require('../../db');
 const utils = require('../../utilities');
+const ical = require('../../ical');
+const crypto = require('crypto');
 
 /* ========================= */
 /* API Endpoints, instructor */
 /* ========================= */
+
+/**
+ * Get iCalendar entry for one specific slot
+ */
+router.get('/slot/:id/entry.ics', async (req, res, next) => {
+    if (req.session.user.isInstructor) {
+        try {
+            const slot = await db.getSlot(res, req.params.id);
+            const ics = await ical.iCalendarEventFromSlot(slot);
+    
+            return res.contentType('text/calendar').send(ics);
+        }
+        catch (error) {
+            log.error(error);
+    
+            return res.send({
+                success: false,
+                error: error
+            });
+        }
+    }
+    else {
+        next(new Error("You must have instructor privileges to access this endpoint."));
+    }
+});
 
 /* Get one slot */
 router.get('/slot/:id', async (req, res) => {
@@ -23,6 +50,7 @@ router.get('/slot/:id', async (req, res) => {
                 start_time: utils.getTimePart(slot.time_start),
                 end_time: utils.getTimePart(slot.time_end)
             }
+            slot.ics_file_name =  crypto.createHash('md5').update(slot.id.toString()).digest("hex") + ".ics";
 
             return res.send(slot);                        
         }

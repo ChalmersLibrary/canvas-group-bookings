@@ -5,6 +5,12 @@ const log = require('../logging')
 const db = require('../db');
 const ics = require('ics');
 
+/**
+ * Create a calendar event (VCALENDAR 2.0) from a single reservation.
+ * 
+ * @param {Reservation} r 
+ * @returns VCALENDAR entry
+ */
 async function iCalendarEventFromReservation(r) {
     var ical_event;
 
@@ -18,7 +24,7 @@ async function iCalendarEventFromReservation(r) {
     console.log(end_time.getFullYear(), end_time.getMonth()+1, end_time.getDate(), end_time.getHours(), end_time.getMinutes());
     */
     
-    const event = {
+    let event = {
         productId: 'canvas-group-bookings/adamgibbons/ics',
         start: [
             start_time.getFullYear(), start_time.getMonth()+1, start_time.getDate(), start_time.getHours(), start_time.getMinutes()
@@ -45,12 +51,66 @@ async function iCalendarEventFromReservation(r) {
     if (r.type == "group") {
         const all_reservations = await db.getSimpleSlotReservations(r.slot_id);
 
-        event.attendees = [];
-        
+        if (all_reservations && all_reservations.length) {
+            event.description = event.description + "\n\nBokade:\n";
+    
+            for (const a of all_reservations) {
+                event.description = event.description + a.canvas_group_name + "\n";
+            }
+        }
+    }
+
+    ics.createEvent(event, (error, value) => {
+        if (error) {
+            console.error(error);
+        }
+
+        ical_event = value;
+    });
+
+    return ical_event;
+}
+
+/**
+ * Create a calendar event (VCALENDAR 2.0) from a single available slot (for instructors).
+ * 
+ * @param {Slot} s 
+ * @returns VCALENDAR entry
+ */
+async function iCalendarEventFromSlot(s) {
+    var ical_event;
+
+    const start_time = new Date(s.time_start);
+    const end_time = new Date(s.time_end);
+
+    let event = {
+        productId: 'canvas-group-bookings/adamgibbons/ics',
+        start: [
+            start_time.getFullYear(), start_time.getMonth()+1, start_time.getDate(), start_time.getHours(), start_time.getMinutes()
+        ],
+        startInputType: 'local',
+        startOutputType: 'local',
+        end: [
+            end_time.getFullYear(), end_time.getMonth()+1, end_time.getDate(), end_time.getHours(), end_time.getMinutes()
+        ],
+        endInputType: 'local',
+        endOutputType: 'local',
+        title: s.course_name,
+        description: s.course_description + "\n\n" + s.instructor_name + "\n" + s.location_name + (s.location_url ? "\n" + s.location_url : (s.location_description ? "\n" + s.location_description : "")),
+        location: s.location_url ? s.location_url : s.location_name
+    };
+
+    if (s.location_url) {
+        event.url = s.location_url;
+    }
+
+    const all_reservations = await db.getExtendedSlotReservations(s.id);
+
+    if (all_reservations && all_reservations.length) {
+        event.description = event.description + "\n\nBokade:\n";
+    
         for (const a of all_reservations) {
-            event.attendees.push({
-                name: a.canvas_group_name, rsvp: false, email: 'noreply@chalmers.se'
-            });
+            event.description = event.description + (s.type == "group" ? a.canvas_group_name : a.canvas_user_name) + "\n";
         }
     }
     
@@ -66,5 +126,6 @@ async function iCalendarEventFromReservation(r) {
 }
 
 module.exports = {
-    iCalendarEventFromReservation
+    iCalendarEventFromReservation,
+    iCalendarEventFromSlot,
 }

@@ -109,6 +109,8 @@
 		"one": "Individuell bokning, en person",
 		"other": "Individuell bokning, max {{max}} personer"
 	},
+	"OffCanvasDetailsDownloadIcalButtonText": "Kalenderpost",
+	"OffCanvasDetailsDownloadIcalButtonTitle": "Ladda ner detaljer till ditt kalenderprogram",
 
 	"FooterPrivacyLinkLabel": "Personuppgifter och cookies",
 

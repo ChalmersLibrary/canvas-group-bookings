@@ -799,12 +799,10 @@ app.get('/api/reservation/:id/entry.ics', async (req, res, next) => {
 
         return res.send({
             success: false,
-            error: error
+            error: error.toString()
         });
     }
 });
-
-
 
 /* Delete a reservation */
 app.delete('/api/reservation/:id', async (req, res) => { 

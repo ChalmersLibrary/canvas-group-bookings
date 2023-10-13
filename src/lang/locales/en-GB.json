@@ -109,6 +109,8 @@
 		"one": "Individual reservation, one person",
 		"other": "Individual reservation, max {{max}} persons"
 	},
+	"OffCanvasDetailsDownloadIcalButtonText": "Calendar",
+	"OffCanvasDetailsDownloadIcalButtonTitle": "Download details to calendar application",
 
 	"FooterPrivacyLinkLabel": "Privacy policy",
 

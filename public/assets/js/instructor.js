@@ -23,6 +23,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
             slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_time').innerHTML = data.time_human_readable
             slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_location').innerHTML = data.location_name
             slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_type_details').innerHTML = data.type_details_human_readable
+            slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_ical_button').setAttribute('href', "/api/instructor/slot/" + this_id + "/entry.ics")
+            slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_ical_button').setAttribute('download', data.ics_file_name)
             slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_reservations').replaceChildren()
             if (data.reservations && data.reservations.length) {
                 data.reservations.forEach(reservation => {
