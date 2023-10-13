@@ -11,12 +11,9 @@ async function iCalendarEventFromReservation(r) {
     const start_time = new Date(r.time_start);
     const end_time = new Date(r.time_end);
 
-    log.info(start_time);
-    log.info(end_time);
-
     /*
-    console.log(start_time);
-    console.log(end_time);
+    log.info("r.time_start: " + r.time_start + ", start_time: " + start_time);
+    log.info("r.time_end: " + r.time_end + ", end_time: " + end_time);
     console.log(start_time.getFullYear(), start_time.getMonth()+1, start_time.getDate(), start_time.getHours(), start_time.getMinutes());
     console.log(end_time.getFullYear(), end_time.getMonth()+1, end_time.getDate(), end_time.getHours(), end_time.getMinutes());
     */
@@ -27,12 +24,12 @@ async function iCalendarEventFromReservation(r) {
             start_time.getFullYear(), start_time.getMonth()+1, start_time.getDate(), start_time.getHours(), start_time.getMinutes()
         ],
         startInputType: 'local',
-        startOutputType: 'utc',
+        startOutputType: 'local',
         end: [
             end_time.getFullYear(), end_time.getMonth()+1, end_time.getDate(), end_time.getHours(), end_time.getMinutes()
         ],
         endInputType: 'local',
-        endOutputType: 'utc',
+        endOutputType: 'local',
         title: r.course_name,
         description: r.course_description + "\n\n" + r.location_name + (r.location_url ? "\n" + r.location_url : (r.location_description ? "\n" + r.location_description : "")),
         location: r.location_url ? r.location_url : r.location_name,
@@ -56,10 +53,7 @@ async function iCalendarEventFromReservation(r) {
             });
         }
     }
-
-    log.info("startInputType: " + event.startInputType);
-    log.info("startOutputType: " + event.startOutputType);
-
+    
     ics.createEvent(event, (error, value) => {
         if (error) {
             console.error(error);
