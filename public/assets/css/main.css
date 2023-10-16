@@ -30,6 +30,7 @@ h6 {
 .card-filter {
     margin-bottom: 1em;
 }
+.card-slots div.card-header,
 .card-filter div.card-header {
     font-weight: bold;
     text-transform: uppercase;

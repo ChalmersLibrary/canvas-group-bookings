@@ -20,6 +20,7 @@
 	"DatePhraseUntil": "till",
 	"DatePhraseAndForward": "och framåt",
 
+	"SlotListingHeaderSlots": "Tillgängliga tider",
 	"SlotListingHeaderNormal": "Visar {{slots}} tider från {{from}} {{to}}:",
 	"SlotListingHeaderInstructor": "Visar {{slots}} tider med dig som handledare från {{from}} {{to}}:",
 	"SlotListingHeaderTimeTitle": "Tillfälle och tid",

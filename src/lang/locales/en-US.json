@@ -20,6 +20,7 @@
 	"DatePhraseUntil": "until",
 	"DatePhraseAndForward": "and in the future",
 
+	"SlotListingHeaderSlots": "Available time slots",
 	"SlotListingHeaderNormal": "Listing {{slots}} slots from {{from}} {{to}}:",
 	"SlotListingHeaderInstructor": "Listing {{slots}} slots with you as instructor from {{from}} {{to}}:",
 	"SlotListingHeaderTimeTitle": "Type and time",
