@@ -8,8 +8,8 @@ const ics = require('ics');
 /**
  * Create a calendar event (VCALENDAR 2.0) from a single reservation.
  * 
- * @param {Reservation} r 
- * @returns VCALENDAR entry
+ * @param {Object} r
+ * @returns {String} VCALENDAR entry
  */
 async function iCalendarEventFromReservation(r) {
     var ical_event;
@@ -74,7 +74,7 @@ async function iCalendarEventFromReservation(r) {
 /**
  * Create a calendar event (VCALENDAR 2.0) from a single available slot (for instructors).
  * 
- * @param {Slot} s 
+ * @param {Object} s
  * @returns VCALENDAR entry
  */
 async function iCalendarEventFromSlot(s) {
