@@ -40,11 +40,15 @@ document.addEventListener("DOMContentLoaded", function(event) {
             else {
                 const r = slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_reservations').appendChild(document.createElement('div'))
                 r.innerText = slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_reservations').getAttribute("data-default-text")
+                // slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_send_message').setAttribute('disabled', true)
             }
         })
         .then(finished => {
             slotDetailsOffcanvas.querySelector('div.offcanvas-body.loading-spinner').style.display = "none"
-            slotDetailsOffcanvas.querySelector('div.offcanvas-body.loaded-content').style.display = "block"    
+            slotDetailsOffcanvas.querySelector('div.offcanvas-body.loaded-content').style.display = "block"
+            /* slotDetailsOffcanvas.getElementById('offcanvasSlotDetails_send_message').addEventListener('click', event => {
+                console.log(event)
+            }) */
         })
     })
 
