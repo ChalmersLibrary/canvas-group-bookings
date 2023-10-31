@@ -23,7 +23,7 @@
             Skicka meddelande
           </div>
           <div class="card-body">
-            <form>
+            <form id="offcanvasSlotDetailsMessaging_form" method="post" action="">
               <p>
                 <strong>Mottagare:</strong>
                 <span id="offcanvasSlotDetailsMessaging_receivers"></span>
@@ -32,10 +32,17 @@
                 <label for="message_text" class="form-label">Meddelande:</label><br>
                 <textarea name="message_text" id="message_text" class="form-control" style="min-height:280px;"></textarea>
               </p>
+              <div id="offcanvasSlotDetailsMessaging_error" class="d-none">
+                <div class="alert alert-error alert-danger">
+                  <strong><%= __('GeneralErrorMessagePrefixText') %></strong>
+                  <span></span>
+                </div>  
+              </div>
               <p class="float-end__x">
                 <button type="button" id="offcanvasSlotDetailsMessaging_cancel" class="btn btn-md btn-secondary">Avbryt</button>
-                <button type="submit" id="offcanvasSlotDetailsMessaging_submit" class="btn btn-md btn-primary">Skicka</button>
-              </p>  
+                <button type="submit" id="offcanvasSlotDetailsMessaging_submit" class="btn btn-md btn-primary">Skicka <span class="spinner-border spinner-border-sm" style="display:none;" role="status" aria-hidden="true"></span></button>
+              </p>
+              <div></div>
             </form>
           </div>
         </div>

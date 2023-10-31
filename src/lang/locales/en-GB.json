@@ -121,6 +121,8 @@
 	"ConversationRobotReservationFullCcSubjectPrefix": "(Copy) Fully reserved timeslot: ",
 	"ConversationRobotCancelReservationSubjectPrefix": "Cancellation confirmed: ",
 	"ConversationRobotCancelReservationCcSubjectPrefix": "(Copy) Cancellation confirmed: ",
+	"ConversationRobotManualMessageSubjectPrefix": "Message from instructor: ",
+	"ConversationRobotManualMessageCcSubjectPrefix": "(Copy) Message from instructor: ",
 
 	"GeneralErrorMessagePrefixText": "Error:",
 	"GeneralErrorMessageMissingAdminAccess": "You must have administrator privileges to access this page.",

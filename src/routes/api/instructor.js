@@ -6,6 +6,7 @@ const log = require('../../logging/');
 const db = require('../../db');
 const utils = require('../../utilities');
 const ical = require('../../ical');
+const canvasApi = require('../../api/canvas');
 const crypto = require('crypto');
 
 /* ========================= */
@@ -105,6 +106,117 @@ router.delete('/slot/:id', async (req, res) => {
                 success: true,
                 message: 'Slot was deleted.'
             });
+        }
+        catch (error) {
+            log.error(error);
+
+            return res.send({
+                success: false,
+                message: error.message
+            });
+        }
+    }
+    else {
+        next(new Error("You must have instructor privileges to access this page."));
+    }
+});
+
+/* Send message to reserved on specific timeslot */
+router.post('/slot/:id/message', async (req, res) => {
+    if (req.session.user.isInstructor) {
+        const { message_text } = req.body;
+        const RECIPIENTS_MAX_LIMIT = 50;
+
+        try {
+            const slot = await db.getSlot(res, req.params.id);
+            const reservations = await db.getSlotReservations(req.params.id);
+            const recipients = new Array();
+            let result = {};
+
+            // Create the list of recipients
+            if (reservations && reservations.length) {
+                for (const r of reservations) {
+                    r.type == "group" ? recipients.push("group_" + r.canvas_group_id) : recipients.push(r.canvas_user_id);
+                    log.debug("Pushed recipient: " + recipients[recipients.length]);
+                }
+            }
+
+            // Send message if we have recipients and conversation robot is activated
+            if (recipients.length && recipients.length < RECIPIENTS_MAX_LIMIT) {
+                log.debug("CONVERSATION_ROBOT_SEND_MESSAGES=" + process.env.CONVERSATION_ROBOT_SEND_MESSAGES);
+
+                if (process.env.CONVERSATION_ROBOT_API_TOKEN && process.env.CONVERSATION_ROBOT_SEND_MESSAGES == "true") {
+                    try {    
+                        const subject = res.__('ConversationRobotManualMessageSubjectPrefix') + slot.course_name;
+                        const subject_cc = res.__('ConversationRobotManualMessageCcSubjectPrefix') + slot.course_name;
+                        const template_type = "manual_message";
+
+                        const course = await db.getCourse(slot.course_id);
+                        let body = course.message_manual_body;
+
+                        if (body === 'undefined' || body == '') {
+                            body = utils.getTemplate(template_type);
+                        }
+
+                        if (body !== 'undefined' && body != '') {
+                            body = body.replaceAll("{{message_text}}", message_text);
+                            body = utils.replaceMessageMagics(body, course.name, "", course.cancellation_policy_hours, "", slot.time_human_readable, slot.location_name, "", "", slot.instructor_name, slot.instructor_email, "", "", req.session.lti.context_title);
+            
+                            let conversation_result = await canvasApi.createConversation(recipients, subject, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
+
+                            /*for (const r of reservations) {
+                                let log_id = await db.addCanvasConversationLog(reservation.slot_id, reservation.id, reservation.canvas_course_id, recipient, subject, body);
+                                log.info("Sent confirmation message to the group, id " + log_id.id);    
+                            } */
+
+                            /*
+                            if (course.message_cc_instructor) {
+                                let conversation_result_cc = await canvasApi.createConversation(instructor.canvas_user_id, subject_cc, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
+                                let log_id_cc = await db.addCanvasConversationLog(reservation.slot_id, reservation.id, reservation.canvas_course_id, instructor.canvas_user_id, subject_cc, body);
+
+                                log.info("Sent a copy of confirmation message to the instructor, id " + log_id_cc.id);
+                            } */
+
+                            result = {
+                                success: true,
+                                message: "Message sent."
+                            };
+                        }
+                        else {
+                            log.error("Could not find message body neither in general template file '" + template_type + "' or in db for courseId " + slot.course_id);
+                        }                        
+                    }
+                    catch (error) {
+                        log.error("When sending confirmation message: " + error);
+                    }
+                }
+                else {
+                    result = {
+                        success: false,
+                        message: "Conversation robot is not configured to send messages."
+                    };
+                }
+            }
+            else {
+                if (recipients.length >= RECIPIENTS_MAX_LIMIT) {
+                    result = {
+                        success: false,
+                        message: `Number of recipients (${recipients.length}) exceed limit, which is ${RECIPIENTS_MAX_LIMIT}.` 
+                    };
+
+                    log.error(result);
+                }
+                else {
+                    result = {
+                        success: false,
+                        message: "No recipients for this message."
+                    };
+
+                    log.error(result);
+                }
+            }
+
+            return res.send(result);
         }
         catch (error) {
             log.error(error);

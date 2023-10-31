@@ -4,15 +4,15 @@ document.addEventListener("DOMContentLoaded", function(event) {
     const slotDetailsOffcanvasMessaging = document.getElementById("offcanvasSlotDetailsMessaging")
     const slotDetailsOffcanvasMessagingButton = document.getElementById("offcanvasSlotDetails_send_message")
     const slotDetailsOffcanvasMessagingCancel = document.getElementById("offcanvasSlotDetailsMessaging_cancel")
-    const slotDetailsOffcanvasMessagingSubmit = document.getElementById("offcanvasSlotDetailsMessaging_submit")
     const newSlotModal = document.getElementById("newSlotSeries")
     const newSlotForm = document.getElementById("newSlotForm")
     const editSlotModal = document.getElementById("editSlot")
     const editSlotForm = document.getElementById("editSlotForm")
     const deleteSlotModal = document.getElementById("deleteSlot")
     const deleteSlotForm = document.getElementById("deleteSlotForm")
+    const messagingForm = document.getElementById("offcanvasSlotDetailsMessaging_form")
 
-    /* The slot details pane is shown, load information */
+    /* The slot details pane (offcanvas) is shown, load information */
     slotDetailsOffcanvas && slotDetailsOffcanvas.addEventListener('show.bs.offcanvas', event => {
         const button = event.relatedTarget
         const this_id = button.getAttribute('data-bs-slot-id')
@@ -44,28 +44,75 @@ document.addEventListener("DOMContentLoaded", function(event) {
                         rm.innerText = reservation.canvas_user_name
                     }
                 })
+                messagingForm.setAttribute('action', `/api/instructor/slot/${this_id}/message`)
                 slotDetailsOffcanvasMessagingButton.removeAttribute("disabled")
             }
             else {
                 const r = slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_reservations').appendChild(document.createElement('div'))
                 r.innerText = slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_reservations').getAttribute("data-default-text")
+                messagingForm.setAttribute('action', '')
                 slotDetailsOffcanvasMessagingButton.setAttribute("disabled", true)
             }
         })
         .then(finished => {
             slotDetailsOffcanvas.querySelector('div.offcanvas-body.loading-spinner').style.display = "none"
             slotDetailsOffcanvas.querySelector('div.offcanvas-body.loaded-content').style.display = "block"
+            slotDetailsOffcanvasMessaging.style.display = "none"
         })
     })
 
-    /* Offcanvas part: send message: open message dialog on button click */
+    /* Offcanvas: send message: open message dialog */
     slotDetailsOffcanvas && slotDetailsOffcanvasMessaging && slotDetailsOffcanvasMessagingButton && slotDetailsOffcanvasMessagingButton.addEventListener('click', event => {
         slotDetailsOffcanvasMessaging.style.display = "block"
     })
 
-    /* Offcanvas part: send message: close message dialog on button click */
+    /* Offcanvas: send message: close message dialog */
     slotDetailsOffcanvas && slotDetailsOffcanvasMessaging && slotDetailsOffcanvasMessagingButton && slotDetailsOffcanvasMessagingCancel.addEventListener('click', event => {
         slotDetailsOffcanvasMessaging.style.display = "none"
+    })
+
+    /* Offcanvas: send message: submit the message to send */
+    slotDetailsOffcanvas && slotDetailsOffcanvasMessaging && messagingForm && messagingForm.addEventListener('submit', event => {
+        const submitButton = messagingForm.querySelector('#offcanvasSlotDetailsMessaging_submit')
+        const submitSpinner = messagingForm.querySelector('span.spinner-border')
+        submitButton.disabled = true
+        submitSpinner.style.display = "inline-block"
+
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                message_text: slotDetailsOffcanvasMessaging.querySelector('#message_text').value
+            })
+        };
+
+        console.log(requestOptions);
+
+        const slot_id = editSlotModal.querySelector('#e_slot_id').value
+
+        fetch(messagingForm.getAttribute('action'), requestOptions)
+        .then(response => {
+            return response.text();
+        })
+        .then(data => { 
+            console.log(data)
+            const responseBody = JSON.parse(data)
+            if (responseBody.success) {
+                console.log("OK")
+                //window.location.assign("/")
+            }
+            else {
+                console.error(JSON.parse(data).message)
+                slotDetailsOffcanvas.querySelector('#offcanvasSlotDetailsMessaging_error .alert span').innerText = JSON.parse(data).message
+                slotDetailsOffcanvas.querySelector('#offcanvasSlotDetailsMessaging_error').classList.remove("d-none")
+                slotDetailsOffcanvas.querySelector('#offcanvasSlotDetailsMessaging_error').classList.add("d-block")
+                submitButton.disabled = true
+                submitSpinner.style.display = "none"
+            }
+        });
+        
+        event.preventDefault();
+        event.stopPropagation();
     })
     
     /* The new slot modal is shown, handle add/delete rows for times */

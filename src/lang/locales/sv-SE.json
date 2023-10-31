@@ -121,6 +121,8 @@
 	"ConversationRobotReservationFullCcSubjectPrefix": "(Kopia) Fullbokat tillfälle: ",
 	"ConversationRobotCancelReservationSubjectPrefix": "Bekräftad avbokning: ",
 	"ConversationRobotCancelReservationCcSubjectPrefix": "(Kopia) Bekräftad avbokning: ",
+	"ConversationRobotManualMessageSubjectPrefix": "Meddelande från handledare: ",
+	"ConversationRobotManualMessageCcSubjectPrefix": "(Kopia) Meddelande från handledare: ",
 
 	"GeneralErrorMessagePrefixText": "Ett fel uppstod:",
 	"GeneralErrorMessageMissingAdminAccess": "Du måste ha administratörsrättigheter för att se denna sida.",
