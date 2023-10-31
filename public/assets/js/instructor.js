@@ -1,6 +1,10 @@
 document.addEventListener("DOMContentLoaded", function(event) {
     /* Modal and form references */
     const slotDetailsOffcanvas = document.getElementById("offcanvasSlotDetails")
+    const slotDetailsOffcanvasMessaging = document.getElementById("offcanvasSlotDetailsMessaging")
+    const slotDetailsOffcanvasMessagingButton = document.getElementById("offcanvasSlotDetails_send_message")
+    const slotDetailsOffcanvasMessagingCancel = document.getElementById("offcanvasSlotDetailsMessaging_cancel")
+    const slotDetailsOffcanvasMessagingSubmit = document.getElementById("offcanvasSlotDetailsMessaging_submit")
     const newSlotModal = document.getElementById("newSlotSeries")
     const newSlotForm = document.getElementById("newSlotForm")
     const editSlotModal = document.getElementById("editSlot")
@@ -26,32 +30,44 @@ document.addEventListener("DOMContentLoaded", function(event) {
             slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_ical_button').setAttribute('href', "/api/instructor/slot/" + this_id + "/entry.ics")
             slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_ical_button').setAttribute('download', data.ics_file_name)
             slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_reservations').replaceChildren()
+            slotDetailsOffcanvas.querySelector('#offcanvasSlotDetailsMessaging_receivers').replaceChildren()
             if (data.reservations && data.reservations.length) {
                 data.reservations.forEach(reservation => {
                     const r = slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_reservations').appendChild(document.createElement('div'))
+                    const rm = slotDetailsOffcanvas.querySelector('#offcanvasSlotDetailsMessaging_receivers').appendChild(document.createElement('div'))
                     if (reservation.is_group) {
-                        r.innerText = reservation.canvas_group_name + " (" + reservation.canvas_user_name + "), " + reservation.created_at.substring(0, 10);
+                        r.innerText = reservation.canvas_group_name + " (" + reservation.canvas_user_name + "), " + reservation.created_at.substring(0, 10)
+                        rm.innerText = reservation.canvas_group_name
                     }
                     else {
                         r.innerText = reservation.canvas_user_name + ", " + reservation.created_at.substring(0, 10)
+                        rm.innerText = reservation.canvas_user_name
                     }
                 })
+                slotDetailsOffcanvasMessagingButton.removeAttribute("disabled")
             }
             else {
                 const r = slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_reservations').appendChild(document.createElement('div'))
                 r.innerText = slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_reservations').getAttribute("data-default-text")
-                // slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_send_message').setAttribute('disabled', true)
+                slotDetailsOffcanvasMessagingButton.setAttribute("disabled", true)
             }
         })
         .then(finished => {
             slotDetailsOffcanvas.querySelector('div.offcanvas-body.loading-spinner').style.display = "none"
             slotDetailsOffcanvas.querySelector('div.offcanvas-body.loaded-content').style.display = "block"
-            /* slotDetailsOffcanvas.getElementById('offcanvasSlotDetails_send_message').addEventListener('click', event => {
-                console.log(event)
-            }) */
         })
     })
 
+    /* Offcanvas part: send message: open message dialog on button click */
+    slotDetailsOffcanvas && slotDetailsOffcanvasMessaging && slotDetailsOffcanvasMessagingButton && slotDetailsOffcanvasMessagingButton.addEventListener('click', event => {
+        slotDetailsOffcanvasMessaging.style.display = "block"
+    })
+
+    /* Offcanvas part: send message: close message dialog on button click */
+    slotDetailsOffcanvas && slotDetailsOffcanvasMessaging && slotDetailsOffcanvasMessagingButton && slotDetailsOffcanvasMessagingCancel.addEventListener('click', event => {
+        slotDetailsOffcanvasMessaging.style.display = "none"
+    })
+    
     /* The new slot modal is shown, handle add/delete rows for times */
     newSlotModal && newSlotModal.addEventListener('show.bs.modal', event => {
         // var xx = new Date(document.getElementById("slot_date_1").value + "T" + document.getElementById("slot_time_start_1").value)

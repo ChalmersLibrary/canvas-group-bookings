@@ -16,27 +16,27 @@
         <span id="offcanvasSlotDetails_location"></span>
         <div class="button-bar">
           <a id="offcanvasSlotDetails_ical_button" href="/api/instructor/slot/" download="" target="_blank" title="<%= __('OffCanvasDetailsDownloadIcalButtonTitle') %>" class="btn btn-md btn-primary" ><i class="bi bi-cloud-download"></i>&nbsp;<%= __('OffCanvasDetailsDownloadIcalButtonText') %></a>
-          <a id="offcanvasSlotDetails_send_message" class="btn btn-md btn-primary"><i class="bi bi-envelope"></i>&nbsp;Meddelande</a>
+          <button id="offcanvasSlotDetails_send_message" class="btn btn-md btn-primary"><i class="bi bi-envelope"></i>&nbsp;Meddelande</button>
         </div>
-        <div class="card card-message d-none">
+        <div id="offcanvasSlotDetailsMessaging" class="card card-message" style="display:none;">
           <div class="card-header">
             Skicka meddelande
           </div>
           <div class="card-body">
-            <p>
-              <strong>Mottagare:</strong><br>
-              DATX-2024-X012-132<br>
-              IGN-2024-B12-63<br>
-              DATX-2024-B012-120<br>
-            </p>
-            <p>
-              <label for="instant_message" class="form-label">Meddelande:</label><br>
-              <textarea name="instant_message" id="instant_message" class="form-control" style="min-height:280px;"></textarea>
-            </p>
-            <p class="float-right">
-              <button type="button" class="btn btn-md btn-secondary">Avbryt</button>
-              <button type="submit" class="btn btn-md btn-primary">Skicka</button>
-            </p>
+            <form>
+              <p>
+                <strong>Mottagare:</strong>
+                <span id="offcanvasSlotDetailsMessaging_receivers"></span>
+              </p>
+              <p>
+                <label for="message_text" class="form-label">Meddelande:</label><br>
+                <textarea name="message_text" id="message_text" class="form-control" style="min-height:280px;"></textarea>
+              </p>
+              <p class="float-end__x">
+                <button type="button" id="offcanvasSlotDetailsMessaging_cancel" class="btn btn-md btn-secondary">Avbryt</button>
+                <button type="submit" id="offcanvasSlotDetailsMessaging_submit" class="btn btn-md btn-primary">Skicka</button>
+              </p>  
+            </form>
           </div>
         </div>
       </p>
