@@ -1,11 +1,1 @@
 {{message_text}}
-
----
-Tillfälle: {{reservation_course_name}}
-Tid: {{reservation_slot_time}}
-Plats: {{location_name}}
-
-Om ni har frågor, kontakta handledaren {{instructor_name}} på {{instructor_email}} eller via Canvas Inbox.
-
-Vänlig hälsning,
-{{CONVERSATION_ROBOT_NAME}}

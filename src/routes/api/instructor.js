@@ -152,7 +152,7 @@ router.post('/slot/:id/message', async (req, res) => {
                         const template_type = "manual_message";
 
                         const course = await db.getCourse(slot.course_id);
-                        let body = course.message_manual_body;
+                        let body = course.message_manual_body? course.message_manual_body : undefined;
 
                         if (body === 'undefined' || body == '') {
                             body = utils.getTemplate(template_type);
