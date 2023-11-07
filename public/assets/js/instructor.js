@@ -45,6 +45,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
                     }
                 })
                 messagingForm.setAttribute('action', `/api/instructor/slot/${this_id}/message`)
+                messagingForm.querySelector('#message_text').value = ''
                 slotDetailsOffcanvasMessagingButton.removeAttribute("disabled")
             }
             else {
@@ -57,6 +58,12 @@ document.addEventListener("DOMContentLoaded", function(event) {
         .then(finished => {
             slotDetailsOffcanvas.querySelector('div.offcanvas-body.loading-spinner').style.display = "none"
             slotDetailsOffcanvas.querySelector('div.offcanvas-body.loaded-content').style.display = "block"
+            slotDetailsOffcanvas.querySelector('#offcanvasSlotDetailsMessaging_success').classList.remove("d-block")
+            slotDetailsOffcanvas.querySelector('#offcanvasSlotDetailsMessaging_success').classList.add("d-none")
+            slotDetailsOffcanvas.querySelector('#offcanvasSlotDetailsMessaging_error').classList.remove("d-block")
+            slotDetailsOffcanvas.querySelector('#offcanvasSlotDetailsMessaging_error').classList.add("d-none")
+            slotDetailsOffcanvas.querySelector('#offcanvasSlotDetailsMessaging_actionButtons').classList.remove("d-none")
+            slotDetailsOffcanvas.querySelector('#offcanvasSlotDetailsMessaging_actionButtons').classList.add("d-block")
             slotDetailsOffcanvasMessaging.style.display = "none"
         })
     })
@@ -88,8 +95,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
         console.log(requestOptions);
 
-        const slot_id = editSlotModal.querySelector('#e_slot_id').value
-
         fetch(messagingForm.getAttribute('action'), requestOptions)
         .then(response => {
             return response.text();
@@ -98,15 +103,21 @@ document.addEventListener("DOMContentLoaded", function(event) {
             console.log(data)
             const responseBody = JSON.parse(data)
             if (responseBody.success) {
-                console.log("OK")
-                //window.location.assign("/")
+                slotDetailsOffcanvas.querySelector('#offcanvasSlotDetailsMessaging_success .alert span').innerText = JSON.parse(data).message
+                slotDetailsOffcanvas.querySelector('#offcanvasSlotDetailsMessaging_success').classList.remove("d-none")
+                slotDetailsOffcanvas.querySelector('#offcanvasSlotDetailsMessaging_success').classList.add("d-block")
+                slotDetailsOffcanvas.querySelector('#offcanvasSlotDetailsMessaging_error').classList.remove("d-block")
+                slotDetailsOffcanvas.querySelector('#offcanvasSlotDetailsMessaging_error').classList.add("d-none")
+                slotDetailsOffcanvas.querySelector('#offcanvasSlotDetailsMessaging_actionButtons').classList.remove("d-block")
+                slotDetailsOffcanvas.querySelector('#offcanvasSlotDetailsMessaging_actionButtons').classList.add("d-none")
+                submitButton.disabled = false
+                submitSpinner.style.display = "none"
             }
             else {
-                console.error(JSON.parse(data).message)
                 slotDetailsOffcanvas.querySelector('#offcanvasSlotDetailsMessaging_error .alert span').innerText = JSON.parse(data).message
                 slotDetailsOffcanvas.querySelector('#offcanvasSlotDetailsMessaging_error').classList.remove("d-none")
                 slotDetailsOffcanvas.querySelector('#offcanvasSlotDetailsMessaging_error').classList.add("d-block")
-                submitButton.disabled = true
+                submitButton.disabled = false
                 submitSpinner.style.display = "none"
             }
         });

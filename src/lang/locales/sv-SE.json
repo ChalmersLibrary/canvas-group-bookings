@@ -123,6 +123,11 @@
 	"ConversationRobotCancelReservationCcSubjectPrefix": "(Kopia) Bekräftad avbokning: ",
 	"ConversationRobotManualMessageSubjectPrefix": "Meddelande från handledare: ",
 	"ConversationRobotManualMessageCcSubjectPrefix": "(Kopia) Meddelande från handledare: ",
+	"ConversationRobotManualMessageSenderLabel": "Avsändare:",
+	"ConversationRobotManualMessageReceiverLabel": "Mottagare:",
+	"ConversationRobotManualMessageTextLabel": "Meddelande:",
+	"ConversationRobotManualMessageSuccessResponse": "Meddelandet har skickats i Canvas.",
+	"ConversationRobotManualMessageErrorMaxLimitPhrase": "För många mottagare ({{count}}), gränsen är {{max}}. Prova att göra ett Anslag i kursen istället.",
 
 	"GeneralErrorMessagePrefixText": "Ett fel uppstod:",
 	"GeneralErrorMessageMissingAdminAccess": "Du måste ha administratörsrättigheter för att se denna sida.",

@@ -25,12 +25,16 @@
           <div class="card-body">
             <form id="offcanvasSlotDetailsMessaging_form" method="post" action="">
               <p>
-                <strong>Mottagare:</strong>
+                <strong><%= __('ConversationRobotManualMessageSenderLabel') %></strong><br>
+                <span id="offcanvasSlotDetailsMessaging_sender">Chalmers Canvas Robot</span>
+              </p>
+              <p>
+                <strong><%= __('ConversationRobotManualMessageReceiverLabel') %></strong>
                 <span id="offcanvasSlotDetailsMessaging_receivers"></span>
               </p>
               <p>
-                <label for="message_text" class="form-label">Meddelande:</label><br>
-                <textarea name="message_text" id="message_text" class="form-control" style="min-height:280px;"></textarea>
+                <label for="message_text" class="form-label"><%= __('ConversationRobotManualMessageTextLabel') %></label><br>
+                <textarea required name="message_text" id="message_text" class="form-control" style="min-height:280px;"></textarea>
               </p>
               <div id="offcanvasSlotDetailsMessaging_error" class="d-none">
                 <div class="alert alert-error alert-danger">
@@ -38,11 +42,17 @@
                   <span></span>
                 </div>  
               </div>
-              <p class="float-end__x">
-                <button type="button" id="offcanvasSlotDetailsMessaging_cancel" class="btn btn-md btn-secondary">Avbryt</button>
-                <button type="submit" id="offcanvasSlotDetailsMessaging_submit" class="btn btn-md btn-primary">Skicka <span class="spinner-border spinner-border-sm" style="display:none;" role="status" aria-hidden="true"></span></button>
-              </p>
-              <div></div>
+              <div id="offcanvasSlotDetailsMessaging_success" class="d-none">
+                <div class="alert alert-success">
+                  <span></span>
+                </div>  
+              </div>
+              <div id="offcanvasSlotDetailsMessaging_actionButtons" class="d-block">
+                <div class="float-end_x">
+                  <button type="button" id="offcanvasSlotDetailsMessaging_cancel" class="btn btn-md btn-secondary">Avbryt</button>
+                  <button type="submit" id="offcanvasSlotDetailsMessaging_submit" class="btn btn-md btn-primary">Skicka <span class="spinner-border spinner-border-sm" style="display:none;" role="status" aria-hidden="true"></span></button>
+                </div>
+              </div>
             </form>
           </div>
         </div>

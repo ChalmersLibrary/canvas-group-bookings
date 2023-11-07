@@ -121,11 +121,11 @@ router.delete('/slot/:id', async (req, res) => {
     }
 });
 
-/* Send message to reserved on specific timeslot */
+/* Send message to reserved students/groups on a specific timeslot */
 router.post('/slot/:id/message', async (req, res) => {
     if (req.session.user.isInstructor) {
         const { message_text } = req.body;
-        const RECIPIENTS_MAX_LIMIT = 50;
+        const RECIPIENTS_MAX_LIMIT = 10; // TODO: configure in another way
 
         try {
             const slot = await db.getSlot(res, req.params.id);
@@ -137,7 +137,7 @@ router.post('/slot/:id/message', async (req, res) => {
             if (reservations && reservations.length) {
                 for (const r of reservations) {
                     r.type == "group" ? recipients.push("group_" + r.canvas_group_id) : recipients.push(r.canvas_user_id);
-                    log.debug("Pushed recipient: " + recipients[recipients.length]);
+                    log.debug("Pushed recipient: " + recipients[recipients.length - 1]);
                 }
             }
 
@@ -152,17 +152,17 @@ router.post('/slot/:id/message', async (req, res) => {
                         const template_type = "manual_message";
 
                         const course = await db.getCourse(slot.course_id);
-                        let body = course.message_manual_body? course.message_manual_body : undefined;
+                        let body = course.message_manual_body? course.message_manual_body : null;
 
-                        if (body === 'undefined' || body == '') {
+                        if (body === 'undefined' || body === null || body == '') {
                             body = utils.getTemplate(template_type);
                         }
 
-                        if (body !== 'undefined' && body != '') {
+                        if (body !== 'undefined' && body !== null || body != '') {
                             body = body.replaceAll("{{message_text}}", message_text);
                             body = utils.replaceMessageMagics(body, course.name, "", course.cancellation_policy_hours, "", slot.time_human_readable, slot.location_name, "", "", slot.instructor_name, slot.instructor_email, "", "", req.session.lti.context_title);
             
-                            let conversation_result = await canvasApi.createConversation(recipients, subject, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
+                            // let conversation_result = await canvasApi.createConversation(recipients, subject, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
 
                             /*for (const r of reservations) {
                                 let log_id = await db.addCanvasConversationLog(reservation.slot_id, reservation.id, reservation.canvas_course_id, recipient, subject, body);
@@ -179,7 +179,10 @@ router.post('/slot/:id/message', async (req, res) => {
 
                             result = {
                                 success: true,
-                                message: "Message sent."
+                                message: res.__('ConversationRobotManualMessageSuccessResponse'),
+                                subject: subject,
+                                recipients: recipients,
+                                body: body
                             };
                         }
                         else {
@@ -201,10 +204,10 @@ router.post('/slot/:id/message', async (req, res) => {
                 if (recipients.length >= RECIPIENTS_MAX_LIMIT) {
                     result = {
                         success: false,
-                        message: `Number of recipients (${recipients.length}) exceed limit, which is ${RECIPIENTS_MAX_LIMIT}.` 
+                        message: res.__('ConversationRobotManualMessageErrorMaxLimitPhrase', { count: recipients.length, max: RECIPIENTS_MAX_LIMIT })
                     };
 
-                    log.error(result);
+                    log.error(res.__('ConversationRobotManualMessageErrorMaxLimitPhrase', { count: recipients.length, max: RECIPIENTS_MAX_LIMIT }));
                 }
                 else {
                     result = {

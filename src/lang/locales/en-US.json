@@ -123,6 +123,11 @@
 	"ConversationRobotCancelReservationCcSubjectPrefix": "(Copy) Cancellation confirmed: ",
 	"ConversationRobotManualMessageSubjectPrefix": "Message from instructor: ",
 	"ConversationRobotManualMessageCcSubjectPrefix": "(Copy) Message from instructor: ",
+	"ConversationRobotManualMessageSenderLabel": "Sender:",
+	"ConversationRobotManualMessageReceiverLabel": "Receiver(s):",
+	"ConversationRobotManualMessageTextLabel": "Message:",
+	"ConversationRobotManualMessageSuccessResponse": "Message has been sent in Canvas.",
+	"ConversationRobotManualMessageErrorMaxLimitPhrase": "Number of recipients ({{count}}) exceed limit, which is {{max}}. Try and make a Course Announcement instead.",
 
 	"GeneralErrorMessagePrefixText": "Error:",
 	"GeneralErrorMessageMissingAdminAccess": "You must have administrator privileges to access this page.",
