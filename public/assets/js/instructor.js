@@ -112,6 +112,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 slotDetailsOffcanvas.querySelector('#offcanvasSlotDetailsMessaging_actionButtons').classList.add("d-none")
                 submitButton.disabled = false
                 submitSpinner.style.display = "none"
+                messagingForm.querySelector('#message_text').disabled = true
             }
             else {
                 slotDetailsOffcanvas.querySelector('#offcanvasSlotDetailsMessaging_error .alert span').innerText = JSON.parse(data).message
