@@ -46,6 +46,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 })
                 messagingForm.setAttribute('action', `/api/instructor/slot/${this_id}/message`)
                 messagingForm.querySelector('#message_text').value = ''
+                messagingForm.querySelector('#message_text').disabled = false
                 slotDetailsOffcanvasMessagingButton.removeAttribute("disabled")
             }
             else {
