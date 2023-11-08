@@ -432,6 +432,7 @@ async function createConversation(recipients, subject, body, token) {
                 else {
                     for (const r of recipients) {
                         bodyFormData.append('recipients[]', r);
+                        log.debug("Added recipients[]: " + r);
                     }
 
                     bodyFormData.append('group_conversation', 'true');
@@ -473,9 +474,10 @@ async function createConversation(recipients, subject, body, token) {
                 // Bad Request, often this means attribute "recipients" is invalid because integration account is not added so it has access to the recipients
                 else if (error.response.status == 400) {
                     log.error("400, Bad Request. Integration account most likely not added to Canvas course, can't send message to recipients.");
+                    log.error(error.response.data);
                 }
                 else {
-                    log.error(error.code, error.message);
+                    log.error(error.code, error.message, error.response.data);
                 }
 
                 throw new Error(error);
