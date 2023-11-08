@@ -39,7 +39,7 @@ router.get('/slot/:id/entry.ics', async (req, res, next) => {
 });
 
 /* Get one slot */
-router.get('/slot/:id', async (req, res) => {
+router.get('/slot/:id', async (req, res, next) => {
     if (req.session.user.isInstructor) {
         try {
             const slot = await db.getSlot(res, req.params.id)
@@ -122,7 +122,7 @@ router.delete('/slot/:id', async (req, res) => {
 });
 
 /* Send message to reserved students/groups on a specific timeslot */
-router.post('/slot/:id/message', async (req, res) => {
+router.post('/slot/:id/message', async (req, res, next) => {
     if (req.session.user.isInstructor) {
         const { message_text } = req.body;
         const RECIPIENTS_MAX_LIMIT = 10; // TODO: configure in another way
@@ -154,11 +154,11 @@ router.post('/slot/:id/message', async (req, res) => {
                         const course = await db.getCourse(slot.course_id);
                         let body = course.message_manual_body? course.message_manual_body : null;
 
-                        if (body === 'undefined' || body === null || body == '') {
+                        if (body === null || body == '') {
                             body = utils.getTemplate(template_type);
                         }
 
-                        if (body !== 'undefined' && body !== null || body != '') {
+                        if (body !== undefined && body !== null && body != '') {
                             body = body.replaceAll("{{message_text}}", message_text);
                             body = utils.replaceMessageMagics(body, course.name, "", course.cancellation_policy_hours, "", slot.time_human_readable, slot.location_name, "", "", slot.instructor_name, slot.instructor_email, "", "", req.session.lti.context_title);
             
@@ -186,17 +186,27 @@ router.post('/slot/:id/message', async (req, res) => {
                             };
                         }
                         else {
+                            result = {
+                                success: false,
+                                message: "Could not find message body neither in general template file '" + template_type + "' or in db for courseId " + slot.course_id
+                            };
+
                             log.error("Could not find message body neither in general template file '" + template_type + "' or in db for courseId " + slot.course_id);
-                        }                        
+                        }
                     }
                     catch (error) {
+                        result = {
+                            success: false,
+                            message: error.message
+                        };
+
                         log.error("When sending confirmation message: " + error);
                     }
                 }
                 else {
                     result = {
                         success: false,
-                        message: "Conversation robot is not configured to send messages."
+                        message: res.__('ConversationRobotManualMessageErrorRobotSendDisabled')
                     };
                 }
             }

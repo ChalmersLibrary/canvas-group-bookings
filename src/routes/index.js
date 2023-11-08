@@ -125,4 +125,11 @@ router.all(['/', '/reservations', '/privacy', '/debug', '/admin*', '/api/*'], as
 
 router.use('/api', routesApi);
 
+router.use((err, req, res, next) => {
+    res.status(400).send({
+        success: false,
+        message: err.message
+    });
+});
+
 module.exports = router;

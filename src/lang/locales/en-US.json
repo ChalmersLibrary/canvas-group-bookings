@@ -128,6 +128,7 @@
 	"ConversationRobotManualMessageTextLabel": "Message:",
 	"ConversationRobotManualMessageSuccessResponse": "Message has been sent in Canvas.",
 	"ConversationRobotManualMessageErrorMaxLimitPhrase": "Number of recipients ({{count}}) exceed limit, which is {{max}}. Try and make a Course Announcement instead.",
+	"ConversationRobotManualMessageErrorRobotSendDisabled": "The system is configured not to send any messages.",
 
 	"GeneralErrorMessagePrefixText": "Error:",
 	"GeneralErrorMessageMissingAdminAccess": "You must have administrator privileges to access this page.",
