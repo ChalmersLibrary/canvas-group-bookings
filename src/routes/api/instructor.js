@@ -129,6 +129,7 @@ router.post('/slot/:id/message', async (req, res, next) => {
 
         try {
             const slot = await db.getSlot(res, req.params.id);
+            const course = await db.getCourse(slot.course_id);
             const reservations = await db.getSlotReservations(req.params.id);
             const recipients = new Array();
             let result = {};
@@ -138,6 +139,15 @@ router.post('/slot/:id/message', async (req, res, next) => {
                 for (const r of reservations) {
                     r.type == "group" ? recipients.push("group_" + r.canvas_group_id) : recipients.push(r.canvas_user_id);
                     log.debug("Pushed recipient: " + recipients[recipients.length - 1]);
+                }
+                if (slot.instructor_id == req.session.user.db_id) {
+                    recipients.push(req.session.user.id);
+                    log.debug("Pushed recipient (instructor): " + recipients[recipients.length - 1]);
+                }
+                else {
+                    const instructor = await db.getInstructor(slot.instructor_id);
+                    recipients.push(instructor.canvas_user_id);
+                    log.debug("Pushed recipient (instructor): " + recipients[recipients.length - 1]);
                 }
             }
 
@@ -151,7 +161,6 @@ router.post('/slot/:id/message', async (req, res, next) => {
                         const subject_cc = res.__('ConversationRobotManualMessageCcSubjectPrefix') + slot.course_name;
                         const template_type = "manual_message";
 
-                        const course = await db.getCourse(slot.course_id);
                         let body = course.message_manual_body? course.message_manual_body : null;
 
                         if (body === null || body == '') {
@@ -162,7 +171,9 @@ router.post('/slot/:id/message', async (req, res, next) => {
                             body = body.replaceAll("{{message_text}}", message_text);
                             body = utils.replaceMessageMagics(body, course.name, "", course.cancellation_policy_hours, "", slot.time_human_readable, slot.location_name, "", "", slot.instructor_name, slot.instructor_email, "", "", req.session.lti.context_title);
             
-                            // let conversation_result = await canvasApi.createConversation(recipients, subject, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
+                            let conversation_result = await canvasApi.createConversation(recipients, subject, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
+
+                            log.debug(conversation_result);
 
                             /*for (const r of reservations) {
                                 let log_id = await db.addCanvasConversationLog(reservation.slot_id, reservation.id, reservation.canvas_course_id, recipient, subject, body);
