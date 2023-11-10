@@ -139,8 +139,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
               console.log(e.srcElement.value)
         }) */
         document.getElementById("course_id").addEventListener("change", function(event) {
-            console.log(event.srcElement.value)
-            fetch(`/api/instructor/course/${event.srcElement.value}`)
+            console.log(event.target.value)
+            fetch(`/api/instructor/course/${event.target.value}`)
             .then(response => response.json())
             .then(data => {
                 console.log(data)
@@ -161,8 +161,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
             })
         })
         document.getElementById("location_id").addEventListener("change", function(event) {
-            console.log(event.srcElement.value)
-            fetch(`/api/instructor/location/${event.srcElement.value}`)
+            console.log(event.target.value)
+            fetch(`/api/instructor/location/${event.target.value}`)
             .then(response => response.json())
             .then(data => {
                 console.log(data)
@@ -199,7 +199,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 e.setAttribute("data-slot", "slot_" + (slots_current.length + 1))
                 document.getElementById(e.getAttribute("id")).addEventListener("click", function (event) {
                     if (window.confirm("Vill du verkligen radera tiden?")) {
-                        const removed_slot_e = document.getElementById(document.getElementById(event.srcElement.id).getAttribute("data-slot"))
+                        const removed_slot_e = document.getElementById(document.getElementById(event.target.id).getAttribute("data-slot"))
                         removed_slot_e.remove()
                         slots_container.querySelectorAll("div.slot").forEach((slot, index) => {
                             slot.setAttribute("id", "slot_" + (index + 1))
