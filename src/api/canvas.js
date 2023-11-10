@@ -627,7 +627,7 @@ async function getCourseTeacherEnrollments(courseId, token) {
             });    
         }
         else {
-            let thisApiPath = API_HOST + API_PATH + "/courses/" + courseId + "/search_users?enrollment_type[]=teacher&include[]=avatar_url&per_page=" + API_PER_PAGE;
+            let thisApiPath = API_HOST + API_PATH + "/courses/" + courseId + "/search_users?enrollment_type[]=teacher&enrollment_state[]=active&include[]=avatar_url&per_page=" + API_PER_PAGE;
             let apiData = new Array();
             let returnedApiData = new Array();
             let errorCount = 0;
