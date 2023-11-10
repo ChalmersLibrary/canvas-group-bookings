@@ -112,6 +112,11 @@
 	},
 	"OffCanvasDetailsDownloadIcalButtonText": "Calendar",
 	"OffCanvasDetailsDownloadIcalButtonTitle": "Download details to calendar application",
+	"OffCanvasDetailsManualMessageButtonText": "Message",
+	"OffCanvasDetailsManualMessageButtonTitle": "Send a message to all reserved",
+	"OffCanvasDetailsManualMessageCardHeader": "Send message",
+	"OffCanvasDetailsManualMessageCardSubmitButtonText": "Send",
+	"OffCanvasDetailsManualMessageCardCancelButtonText": "Cancel",
 
 	"FooterPrivacyLinkLabel": "Privacy policy",
 
@@ -126,6 +131,7 @@
 	"ConversationRobotManualMessageSenderLabel": "Sender:",
 	"ConversationRobotManualMessageReceiverLabel": "Receiver(s):",
 	"ConversationRobotManualMessageTextLabel": "Message:",
+	"ConversationRobotManualMessageSendingNoteText": "The message will be sent from a system account in Canvas. You will be included in the receivers list so you're notified on replies and able to make replies yourself in Canvas Inbox.",
 	"ConversationRobotManualMessageSuccessResponse": "Message has been sent in Canvas.",
 	"ConversationRobotManualMessageErrorMaxLimitPhrase": "Number of recipients ({{count}}) exceed limit, which is {{max}}. Try and make a Course Announcement instead.",
 	"ConversationRobotManualMessageErrorRobotSendDisabled": "The system is configured not to send any messages.",

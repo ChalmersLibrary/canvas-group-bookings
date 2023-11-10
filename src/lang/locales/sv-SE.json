@@ -112,6 +112,11 @@
 	},
 	"OffCanvasDetailsDownloadIcalButtonText": "Kalenderpost",
 	"OffCanvasDetailsDownloadIcalButtonTitle": "Ladda ner detaljer till ditt kalenderprogram",
+	"OffCanvasDetailsManualMessageButtonText": "Meddelande",
+	"OffCanvasDetailsManualMessageButtonTitle": "Skicka ett meddelande till alla bokade",
+	"OffCanvasDetailsManualMessageCardHeader": "Skicka meddelande",
+	"OffCanvasDetailsManualMessageCardSubmitButtonText": "Skicka",
+	"OffCanvasDetailsManualMessageCardCancelButtonText": "Avbryt",
 
 	"FooterPrivacyLinkLabel": "Personuppgifter och cookies",
 
@@ -126,6 +131,7 @@
 	"ConversationRobotManualMessageSenderLabel": "Avsändare:",
 	"ConversationRobotManualMessageReceiverLabel": "Mottagare:",
 	"ConversationRobotManualMessageTextLabel": "Meddelande:",
+	"ConversationRobotManualMessageSendingNoteText": "Meddelandet skickas från ett systemkonto i Canvas. Du som skickar inkluderas i mottagarlistan, så att du kan få svar eller göra uppföljande meddelanden i Canvas Inbox.",
 	"ConversationRobotManualMessageSuccessResponse": "Meddelandet har skickats i Canvas.",
 	"ConversationRobotManualMessageErrorMaxLimitPhrase": "För många mottagare ({{count}}), gränsen är {{max}}. Prova att göra ett Anslag i kursen istället.",
 	"ConversationRobotManualMessageErrorRobotSendDisabled": "Systemet är konfigurerat att inte skicka ut meddelanden.",

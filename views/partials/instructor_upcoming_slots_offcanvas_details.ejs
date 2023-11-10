@@ -16,11 +16,11 @@
         <span id="offcanvasSlotDetails_location"></span>
         <div class="button-bar">
           <a id="offcanvasSlotDetails_ical_button" href="/api/instructor/slot/" download="" target="_blank" title="<%= __('OffCanvasDetailsDownloadIcalButtonTitle') %>" class="btn btn-md btn-primary" ><i class="bi bi-cloud-download"></i>&nbsp;<%= __('OffCanvasDetailsDownloadIcalButtonText') %></a>
-          <button id="offcanvasSlotDetails_send_message" class="btn btn-md btn-primary"><i class="bi bi-envelope"></i>&nbsp;Meddelande</button>
+          <button id="offcanvasSlotDetails_send_message" class="btn btn-md btn-primary" title="<%= __('OffCanvasDetailsManualMessageButtonTitle') %>"><i class="bi bi-envelope"></i>&nbsp;<%= __('OffCanvasDetailsManualMessageButtonText') %></button>
         </div>
         <div id="offcanvasSlotDetailsMessaging" class="card card-message" style="display:none;">
           <div class="card-header">
-            Skicka meddelande
+            <%= __('OffCanvasDetailsManualMessageCardHeader') %>
           </div>
           <div class="card-body">
             <form id="offcanvasSlotDetailsMessaging_form" method="post" action="">
@@ -35,6 +35,9 @@
               <p>
                 <label for="message_text" class="form-label"><%= __('ConversationRobotManualMessageTextLabel') %></label><br>
                 <textarea required name="message_text" id="message_text" class="form-control" style="min-height:280px;"></textarea>
+              </p>
+              <p>
+                <small><%= __('ConversationRobotManualMessageSendingNoteText') %></small>
               </p>
               <div id="offcanvasSlotDetailsMessaging_error" class="d-none">
                 <div class="alert alert-error alert-danger">
