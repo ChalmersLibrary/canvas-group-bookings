@@ -207,19 +207,9 @@ router.post('/slot/:id/message', async (req, res, next) => {
 
                             log.debug(conversation_result);
 
-                            /*for (const r of reservations) {
-                                let log_id = await db.addCanvasConversationLog(reservation.slot_id, reservation.id, reservation.canvas_course_id, recipient, subject, body);
-                                log.info("Sent confirmation message to the group, id " + log_id.id);    
-                            } */
-
-                            /*
-                            if (course.message_cc_instructor) {
-                                let conversation_result_cc = await canvasApi.createConversation(instructor.canvas_user_id, subject_cc, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
-                                let log_id_cc = await db.addCanvasConversationLog(reservation.slot_id, reservation.id, reservation.canvas_course_id, instructor.canvas_user_id, subject_cc, body);
-
-                                log.info("Sent a copy of confirmation message to the instructor, id " + log_id_cc.id);
-                            } */
-
+                            let log_id = await db.addCanvasConversationLog(slot.id, null, slot.canvas_course_id, recipients, subject, body);
+                            log.info(`Sent message to [${recipients}] logged with id [${log_id.id}]`);    
+                            
                             result = {
                                 success: true,
                                 message: res.__('ConversationRobotManualMessageSuccessResponse'),
