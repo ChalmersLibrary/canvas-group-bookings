@@ -121,6 +121,38 @@ router.delete('/slot/:id', async (req, res) => {
     }
 });
 
+/**
+ * Returns a list of messages sent related to a specific timeslot
+ */
+router.get('/slot/:id/messages', async (req, res, next) => {
+    if (req.session.user.isInstructor) {
+        try {
+            const slot = await db.getSlot(res, req.params.id);
+            const messages = await db.getSlotMessages(req.params.id);
+
+            return res.send({
+                success: true,
+                slot: {
+                    id: slot.id,
+                    name: slot.course_name,
+                    messages: messages
+                }
+            });
+        }
+        catch (error) {
+            log.error(error);
+
+            return res.send({
+                success: false,
+                message: error.message
+            });
+        }
+    }
+    else {
+        next(new Error("You must have instructor privileges to access this page."));
+    }
+});
+
 /* Send message to reserved students/groups on a specific timeslot */
 router.post('/slot/:id/message', async (req, res, next) => {
     if (req.session.user.isInstructor) {

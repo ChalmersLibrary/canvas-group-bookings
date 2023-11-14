@@ -382,6 +382,23 @@ async function getExtendedSlotReservations(id) {
     return data;
 }
 
+/**
+ * 
+ * @param {Number} id 
+ * @returns List of messages sent related to this slot
+ */
+async function getSlotMessages(id) {
+    let data;
+
+    await query("SELECT id, created_at, canvas_recipients, message_subject FROM canvas_conversation_log WHERE slot_id = $1 ORDER BY id DESC", [ id ]).then((result) => {
+        data = result.rows;
+    }).catch((error) => {
+        log.error(error);
+    });
+    
+    return data; 
+}
+
 async function getAllSlotsForInstructor(res, canvas_course_id, instructor_id, date) {
     let data;
     let returnedData = [];
@@ -1269,6 +1286,7 @@ module.exports = {
     getAllSlotsForInstructor,
     getSimpleSlotReservations,
     getExtendedSlotReservations,
+    getSlotMessages,
     getReservationsForUser,
     getReservation,
     createSlotReservation,
