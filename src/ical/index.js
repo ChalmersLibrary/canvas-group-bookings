@@ -6,7 +6,7 @@ const db = require('../db');
 const ics = require('ics');
 
 /**
- * Create a calendar event (VCALENDAR 2.0) from a single reservation.
+ * Create a calendar event (VCALENDAR 2.0) from a single reservation (used by the reserving party).
  * 
  * @param {Object} r
  * @returns {String} VCALENDAR entry
@@ -17,13 +17,6 @@ async function iCalendarEventFromReservation(r) {
     const start_time = new Date(r.time_start);
     const end_time = new Date(r.time_end);
 
-    /*
-    log.info("r.time_start: " + r.time_start + ", start_time: " + start_time);
-    log.info("r.time_end: " + r.time_end + ", end_time: " + end_time);
-    console.log(start_time.getFullYear(), start_time.getMonth()+1, start_time.getDate(), start_time.getHours(), start_time.getMinutes());
-    console.log(end_time.getFullYear(), end_time.getMonth()+1, end_time.getDate(), end_time.getHours(), end_time.getMinutes());
-    */
-    
     let event = {
         productId: 'canvas-group-bookings/adamgibbons/ics',
         start: [
@@ -37,10 +30,10 @@ async function iCalendarEventFromReservation(r) {
         endInputType: 'local',
         endOutputType: 'local',
         title: r.course_name,
-        description: r.course_description + "\n\n" + r.location_name + (r.location_url ? "\n" + r.location_url : (r.location_description ? "\n" + r.location_description : "")),
+        description: r.course_description + "\n\n" + r.instructor_name + "\n" + r.location_name + (r.location_url ? "\n" + r.location_url : (r.location_description ? "\n" + r.location_description : "")),
         location: r.location_url ? r.location_url : r.location_name,
         organizer: {
-            name: r.instructor_name, email: r.instructor_email
+            name: r.instructor_name, email: r.instructor_email, sentBy: r.instructor_email
         },
     };
 
