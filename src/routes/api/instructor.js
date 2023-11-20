@@ -44,7 +44,9 @@ router.get('/slot/:id', async (req, res, next) => {
         try {
             const slot = await db.getSlot(res, req.params.id)
             const reservations = await db.getSlotReservations(req.params.id);
+            const messages = await db.getSlotMessages(req.params.id);
             slot.reservations = reservations;
+            slot.messages = messages;
             slot.shortcut = {
                 start_date: utils.getDatePart(slot.time_start),
                 end_date: utils.getDatePart(slot.time_end),

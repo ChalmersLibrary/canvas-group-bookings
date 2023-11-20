@@ -55,27 +55,18 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 messagingForm.setAttribute('action', '')
                 slotDetailsOffcanvasMessagingButton.setAttribute("disabled", true)
             }
-        })
-            
-        .then(messages => {
-            fetch(`/api/instructor/slot/${this_id}/messages`)
-            .then(response => response.json())
-            .then(data => {
-                console.log(data)
-                slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_sentMessages').replaceChildren()
-                if (data.slot.messages && data.slot.messages.length) {
-                    data.slot.messages.forEach(msg => {
-                        const md = slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_sentMessages').appendChild(document.createElement('div'))
-                        md.innerText = msg.message_subject + ", " + msg.created_at.substring(0, 10)
-                    })
-                }
-                else {
-                    const mn = slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_sentMessages').appendChild(document.createElement('div'))
-                    mn.innerText = slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_sentMessages').getAttribute("data-default-text")
-                }
-            })  
-        })
-            
+            slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_sentMessages').replaceChildren()
+            if (data.messages && data.messages.length) {
+                data.messages.forEach(msg => {
+                    const md = slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_sentMessages').appendChild(document.createElement('div'))
+                    md.innerText = msg.message_subject + ", " + msg.created_at.substring(0, 10)
+                })
+            }
+            else {
+                const mn = slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_sentMessages').appendChild(document.createElement('div'))
+                mn.innerText = slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_sentMessages').getAttribute("data-default-text")
+            }
+        })            
         .then(finished => {
             slotDetailsOffcanvas.querySelector('div.offcanvas-body.loading-spinner').style.display = "none"
             slotDetailsOffcanvas.querySelector('div.offcanvas-body.loaded-content').style.display = "block"
