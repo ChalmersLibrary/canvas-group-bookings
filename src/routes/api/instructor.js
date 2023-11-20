@@ -155,7 +155,9 @@ router.get('/slot/:id/messages', async (req, res, next) => {
     }
 });
 
-/* Send message to reserved students/groups on a specific timeslot */
+/**
+ * Send message to reserved students/groups on a specific timeslot.
+ */
 router.post('/slot/:id/message', async (req, res, next) => {
     if (req.session.user.isInstructor) {
         const { message_text } = req.body;
@@ -192,7 +194,6 @@ router.post('/slot/:id/message', async (req, res, next) => {
                 if (process.env.CONVERSATION_ROBOT_API_TOKEN && process.env.CONVERSATION_ROBOT_SEND_MESSAGES == "true") {
                     try {    
                         const subject = res.__('ConversationRobotManualMessageSubjectPrefix') + slot.course_name;
-                        const subject_cc = res.__('ConversationRobotManualMessageCcSubjectPrefix') + slot.course_name;
                         const template_type = "manual_message";
 
                         let body = course.message_manual_body? course.message_manual_body : null;
