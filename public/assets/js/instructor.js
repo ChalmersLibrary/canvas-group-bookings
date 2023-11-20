@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
             if (data.messages && data.messages.length) {
                 data.messages.forEach(msg => {
                     const md = slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_sentMessages').appendChild(document.createElement('div'))
-                    md.innerText = msg.message_subject + ", " + msg.created_at.substring(0, 10)
+                    md.innerText = msg.created_at.substring(0, 10) + ", " + msg.message_subject 
                 })
             }
             else {
