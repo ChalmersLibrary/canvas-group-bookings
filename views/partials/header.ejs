@@ -28,11 +28,6 @@
           <a class="nav-link" href="/admin"><%= __('NavigationAdministration') %></a>
         </li>
       <% } %>
-      <% if (user.isAdministrator || user.isInstructor) { %>
-        <li class="nav-item">
-          <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#newSlotSeries"><%= __('NavigationNewSlots') %></a>
-        </li>
-      <% } %>
     </ul>
     <span class="navbar-text">
       <strong><%= user.name %></strong>

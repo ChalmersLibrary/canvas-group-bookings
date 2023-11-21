@@ -5,6 +5,11 @@
                 <%= __('SlotListingHeaderSlots') %>
             </div>
             <div class="card-body">
+                <% if (session.user.isAdministrator || session.user.isInstructor) { %>
+                    <div style="height:2em;">
+                        <button type="button" title="<%= __('NavigationNewSlots') %>" class="btn btn-primary btn-md float-end" data-bs-toggle="modal" data-bs-target="#newSlotSeries" aria-controls="newSlotSeries"><i class="bi bi-window-plus xbi-plus-circle"></i>&nbsp;<%= __('NavigationNewSlots') %></button>
+                    </div>
+                <% } %>
                 <% if (!slots.length) { %>
                     <h4 class="alert-heading"><%= __('NoTimeSlots') %></h4>
                     <p><%= __('NoTimeSlotsDescription') %></p>
