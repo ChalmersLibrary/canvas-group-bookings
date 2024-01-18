@@ -672,7 +672,7 @@ app.post('/api/reservation', async (req, res, next) => {
                         }
 
                         // Get the updated slot with all reservations
-                        const slot_now = await db.getSlot(slot_id);
+                        const slot_now = await db.getSlot(res, slot_id);
 
                         // Slot is full and there should be a message to all groups reserved
                         if (course.message_all_when_full && slot_now.res_now == slot_now.res_max) {
