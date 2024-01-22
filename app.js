@@ -253,7 +253,7 @@ app.get('/', async (req, res, next) => {
             const t_time = new Date();
             const t_time_now = t_time.getTime();
             const t_time_slot = new Date(slot.time_start).getTime();
-            log.info("t_time: " + t_time + " t_time_now: " + t_time_now + " slot.time_start: " + slot.time_start.toString() + " t_time_slot: " + t_time_slot + " reservable: " + !(t_time_slot <= t_time_now));
+            log.debug("t_time: " + t_time + " t_time_now: " + t_time_now + " slot.time_start: " + slot.time_start.toString() + " t_time_slot: " + t_time_slot + " reservable: " + !(t_time_slot <= t_time_now));
 
             if (t_time_slot <= t_time_now) {
                 slot.reservable_for_this_user = false;
