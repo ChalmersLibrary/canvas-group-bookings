@@ -28,10 +28,10 @@
   },
   "homepage": "https://github.com/ChalmersLibrary/canvas-group-bookings#readme",
   "devDependencies": {
-    "nodemon": "^2.0.19"
+    "nodemon": "^3.0.3"
   },
   "dependencies": {
-    "axios": "^0.27.2",
+    "axios": "^1.6.7",
     "body-parser": "^1.20.0",
     "connect-pg-simple": "^7.0.0",
     "cors": "^2.8.5",
@@ -45,7 +45,7 @@
     "http-link-header": "^1.0.5",
     "i18n": "^0.15.1",
     "ics": "^3.5.0",
-    "ims-lti": "^3.0.2",
+    "ims-lti": "^0.2.1",
     "morgan": "^1.10.0",
     "node-cache": "^5.1.2",
     "pg": "^8.8.0",
