@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Version 1.2.2
+
+2024-02-13. This release contains small bug fixes and security updates of Dependabot issues with some packages.
+
 ## Version 1.2.1
 
 2023-11-21. This release adds support for iCalendar files and manual messages from instructor to reserved groups and individuals.
