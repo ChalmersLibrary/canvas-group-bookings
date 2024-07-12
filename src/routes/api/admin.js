@@ -6,6 +6,9 @@ const log = require('../../logging/');
 const db = require('../../db');
 const canvasApi = require('../../api/canvas');
 const utils = require('../../utilities');
+const fs = require('fs');
+
+const EXPORTS_CSV_PATH = "exports/";
 
 /* ============================ */
 /* API Endpoints, administrator */
@@ -603,6 +606,43 @@ router.delete('/location/:id', async (req, res, next) => {
             success: true,
             message: 'Location has been disconnected from this Canvas course.'
         });
+    }
+    catch (error) {
+        log.error(error);
+
+        return res.send({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
+/**
+ * Data export: All group reservations for a specific Canvas course id.
+ */
+router.get('/exports/csv/group-reservations/:id', async (req, res, next) => {
+    console.log("Hello there.");
+
+    try {
+        const data = await db.getAllGroupReservationsForCanvasCourse(req.params.id);
+
+        let csvData = "Start time\tGroup name\tReserved by\tCourse name\tInstructor name\r\n";
+
+        data.forEach(row => {
+            csvData += row.time_start + "\t" + row.canvas_group_name + "\t" + row.canvas_user_name + "\t" + row.course_name + "\t" + row.instructor_name + "\r\n";
+        });
+
+        log.info(csvData);
+        
+        let fileName = "res_grp_c_" + req.params.id + "_" + new Date().toISOString().replaceAll(":", "").replaceAll("-", "").replaceAll(".", "") + ".csv";
+
+        if (!fs.existsSync(EXPORTS_CSV_PATH)) {
+            fs.mkdirSync(EXPORTS_CSV_PATH);
+        }
+
+        fs.writeFileSync(EXPORTS_CSV_PATH + fileName, csvData);
+
+        return res.download(EXPORTS_CSV_PATH + fileName, fileName);
     }
     catch (error) {
         log.error(error);

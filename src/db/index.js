@@ -427,6 +427,24 @@ async function getAllSlotsForInstructor(res, canvas_course_id, instructor_id, da
     return returnedData;
 }
 
+/**
+ * Returns a list of all group reservations for a specific Canvas course. Used in CSV export from admin page.
+ * 
+ * @param {Number} canvas_course_id
+ * @returns 
+ */
+async function getAllGroupReservationsForCanvasCourse(canvas_course_id) {
+    let data;
+
+    await query("SELECT time_start::text, canvas_group_name, canvas_user_name, course_name, instructor_name FROM reservations_view WHERE canvas_course_id = $1 AND is_group IS TRUE ORDER BY time_start ASC", [ canvas_course_id ]).then((result) => {
+        data = result.rows;
+    }).catch((error) => {
+        log.error(error);
+    });
+    
+    return data; 
+}
+
 async function getReservationsForUser(res, canvas_course_id, user_id, groups) {
     let data;
     let returnedData = [];
@@ -1287,6 +1305,7 @@ module.exports = {
     getSimpleSlotReservations,
     getExtendedSlotReservations,
     getSlotMessages,
+    getAllGroupReservationsForCanvasCourse,
     getReservationsForUser,
     getReservation,
     createSlotReservation,
