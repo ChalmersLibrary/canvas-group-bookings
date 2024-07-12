@@ -181,6 +181,7 @@
 	"AdminNavigationSegment": "Segment",
 	"AdminNavigationInstructor": "Handledare",
 	"AdminNavigationLocation": "Lokaler",
+	"AdminNavigationExports": "Dataexport",
 
 	"AdminCanvasDescription": "Canvaskoppling",
 	"AdminCanvasHelpPaneTitle": "Hjälp",

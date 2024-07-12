@@ -531,6 +531,25 @@ app.get('/admin', async (req, res, next) => {
 });
 
 
+/**
+ * Admin: Exports (data exports)
+ */
+app.get('/admin/exports', async (req, res, next) => {
+    if (req.session.user.isAdministrator) {
+        return res.render('pages/admin/admin_exports', {
+            internal: req.session.internal,
+            session: req.session,
+            data: {
+                canvas_course_id: res.locals.courseId,
+                canvas_course_name: req.session.lti.context_title
+            }
+        });
+    }
+    else {
+        next(new Error(res.__('GeneralErrorMessageMissingAdminAccess')));
+    }
+});
+
 
 /* ===================== */
 /* API Endpoints, public */

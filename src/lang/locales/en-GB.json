@@ -181,6 +181,7 @@
 	"AdminNavigationSegment": "Segments",
 	"AdminNavigationInstructor": "Instructors",
 	"AdminNavigationLocation": "Locations",
+	"AdminNavigationExports": "Exports",
 
 	"AdminCanvasDescription": "Canvas configuration",
 	"AdminCanvasHelpPaneTitle": "Help",
