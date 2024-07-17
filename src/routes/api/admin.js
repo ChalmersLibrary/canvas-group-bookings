@@ -621,8 +621,6 @@ router.delete('/location/:id', async (req, res, next) => {
  * Data export: All group reservations for a specific Canvas course id.
  */
 router.get('/exports/csv/group-reservations/:id', async (req, res, next) => {
-    console.log("Hello there.");
-
     try {
         const data = await db.getAllGroupReservationsForCanvasCourse(req.params.id);
 
@@ -631,8 +629,6 @@ router.get('/exports/csv/group-reservations/:id', async (req, res, next) => {
         data.forEach(row => {
             csvData += row.time_start + "\t" + row.canvas_group_name + "\t" + row.canvas_user_name + "\t" + row.course_name + "\t" + row.instructor_name + "\r\n";
         });
-
-        log.info(csvData);
         
         let fileName = "res_grp_c_" + req.params.id + "_" + new Date().toISOString().replaceAll(":", "").replaceAll("-", "").replaceAll(".", "") + ".csv";
 
@@ -641,6 +637,8 @@ router.get('/exports/csv/group-reservations/:id', async (req, res, next) => {
         }
 
         fs.writeFileSync(EXPORTS_CSV_PATH + fileName, csvData);
+
+        log.info("Exported data to file '" + fileName + "'.");
 
         return res.download(EXPORTS_CSV_PATH + fileName, fileName);
     }
