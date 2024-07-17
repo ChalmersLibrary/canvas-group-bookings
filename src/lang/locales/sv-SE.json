@@ -321,6 +321,12 @@
 	"AdminLocationModalDeleteReplaceAlertSelectLabel": "Ersätt med:",
 	"AdminLocationModalDeleteReplaceAlertSelectLabelDataDefault": "Ingen ersättning",
 
+	"AdminExportsDescription": "Dataexport",
+	"AdminExportsHelpPaneTitle": "Hjälp",
+	"AdminExportsHelpPaneDescription": "<p>Klicka på en länkad definition av data för att ladda ner en tabb-separerad CSV-fil.</p><p>För att öppna i Excel, skapa en tom arbetsbok och importera med funktionen i menyn Data: Från text/CSV.</p>",
+	"AdminExportsReservations": "Bokningar",
+	"AdminExportsReservationsAllGroups": "Alla gruppbokningar med tid, gruppnamn, den som bokat samt handledare",
+
 	"SystemBackendErrorLtiLaunch": "Kan inte läsa LTI-information",
 	"SystemBackendErrorLtiLaunchMessage": "Bokningsverktyget måste startas som en LTI-applikation inifrån Canvas för att få information om kontexten.",
 	"SystemBackendErrorLtiLaunchSession": "Kan inte skapa en session",

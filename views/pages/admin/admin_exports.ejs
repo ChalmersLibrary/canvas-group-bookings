@@ -20,14 +20,12 @@
         <div class="col-md-9">
             <div class="card">
                 <div class="card-header">
-                    Data exports
+                    <%= __('AdminExportsDescription') %>
                 </div>
                 <div class="card-body">
+                    <h4><%= __('AdminExportsReservations') %></h4>
                     <p>
-                        Click on a linked title to download a tab-separated CSV data export. Open the file in a text editor or import to an Excel workbook using Data - From Text/CSV.
-                    </p>
-                    <p>
-                        <i class="bi bi-file-earmark-x calendar2-check-fill"></i> <a href="/api/admin/exports/csv/group-reservations/<%= data.canvas_course_id %>">All group reservations with start time, group and instructor name</a>
+                        <i class="bi bi-file-earmark-x calendar2-check-fill"></i> <a href="/api/admin/exports/csv/group-reservations/<%= data.canvas_course_id %>"><%= __('AdminExportsReservationsAllGroups') %></a>
                     </p>
                 </div>
             </div>        
@@ -35,10 +33,10 @@
         <div class="col-md-3">
             <div class="card">
                 <div class="card-header">
-                    <%= __('AdminCanvasHelpPaneTitle') %>
+                    <%= __('AdminExportsHelpPaneTitle') %>
                 </div>
                 <div class="card-body text-muted">
-                    <%- __('AdminCanvasHelpPaneDescription') %>
+                    <%- __('AdminExportsHelpPaneDescription') %>
                 </div>
             </div>
         </div>

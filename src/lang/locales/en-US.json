@@ -320,6 +320,12 @@
 	"AdminLocationModalDeleteReplaceAlertSelectLabel": "Replace with:",
 	"AdminLocationModalDeleteReplaceAlertSelectLabelDataDefault": "Don't replace",
 	
+	"AdminExportsDescription": "Data exports",
+	"AdminExportsHelpPaneTitle": "Help",
+	"AdminExportsHelpPaneDescription": "<p>Click on a linked definition of data to download a tab separated CSV file.</p><p>To open in Excel, create a blank sheet and use the Data tab and From Text/CSV.</p>",
+	"AdminExportsReservations": "Reservations",
+	"AdminExportsReservationsAllGroups": "All group reservations with details about time, group name, course and instructor",
+
 	"SystemBackendErrorLtiLaunch": "Can't read LTI messages",
 	"SystemBackendErrorLtiLaunchMessage": "The tool must be started from within a Canvas course, to get the correct LTI context.",
 	"SystemBackendErrorLtiLaunchSession": "Can't create a session",
