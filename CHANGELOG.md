@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Version 1.2.3
+
+2024-10-01. Security updates of Dependabot issues with some packages. Also provides admin with new functionality to export some data into tab separated text files for import in Excel or other software.
+
 ## Version 1.2.2
 
 2024-02-13. This release contains small bug fixes and security updates of Dependabot issues with some packages.
