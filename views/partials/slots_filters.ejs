@@ -1,0 +1,85 @@
+<% if (navigation.filters.segment && navigation.filters.segment.length && !configuration.map(c => c.key).includes('FACETS_HIDE_SEGMENT')) { %>
+    <div class="card card-filter">
+        <div class="card-header">
+            <%= __('SlotListingFilterSegmentTitle') %>
+        </div>
+        <div class="list-group list-group-flush">
+            <% navigation.filters.segment.forEach(segment => { %>
+                <a href="<%= segment.link %>" class="list-group-item list-group-item-action <%= segment.active ? 'active' : '' %>" aria-current="<%= segment.active ? 'true' : 'false' %>"><%= segment.name %><%- segment.active ? ' <i class="bi-check float-end"></i>' : '' %></a>
+            <% }) %>
+        </div>
+    </div>
+<% } %>
+<% if (navigation.filters.course && navigation.filters.course.length && !configuration.map(c => c.key).includes('FACETS_HIDE_COURSE')) { %>
+    <div class="card card-filter">
+        <div class="card-header">
+            <%= __('SlotListingFilterCourseTitle') %>
+        </div>
+        <div class="list-group list-group-flush">
+            <% navigation.filters.course.forEach(course => { %>
+                <a href="<%= course.link %>" class="list-group-item list-group-item-action <%= course.active ? 'active' : '' %>" aria-current="<%= course.active ? 'true' : 'false' %>"><%= course.name %><%- course.active ? ' <i class="bi-check float-end"></i>' : '' %></a>
+            <% }) %>
+        </div>
+    </div>
+<% } %>
+<% if (navigation.filters.instructor && navigation.filters.instructor.length && !configuration.map(c => c.key).includes('FACETS_HIDE_INSTRUCTOR')) { %>
+    <div class="card card-filter">
+        <div class="card-header">
+            <%= __('SlotListingFilterInstructorTitle') %>
+        </div>
+        <div class="list-group list-group-flush">
+            <% navigation.filters.instructor.forEach(instructor => { %>
+                <a href="<%= instructor.link %>" class="list-group-item list-group-item-action <%= instructor.active ? 'active' : '' %>" aria-current="<%= instructor.active ? 'true' : 'false' %>"><%= instructor.name %><%- instructor.active ? ' <i class="bi-check float-end"></i>' : '' %></a>
+            <% }) %>
+        </div>
+    </div>
+<% } %>
+<% if (navigation.filters.location && navigation.filters.location.length && !configuration.map(c => c.key).includes('FACETS_HIDE_LOCATION')) { %>
+    <div class="card card-filter">
+        <div class="card-header">
+            <%= __('SlotListingFilterLocationTitle') %>
+        </div>
+        <div class="list-group list-group-flush">
+            <% navigation.filters.location.forEach(location => { %>
+                <a href="<%= location.link %>" class="list-group-item list-group-item-action <%= location.active ? 'active' : '' %>" aria-current="<%= location.active ? 'true' : 'false' %>"><%= location.name %><%- location.active ? ' <i class="bi-check float-end"></i>' : '' %></a>
+            <% }) %>
+        </div>
+    </div>
+<% } %>
+<% if (navigation.filters.availability && navigation.filters.availability.length && !configuration.map(c => c.key).includes('FACETS_HIDE_AVAILABILITY')) { %>
+    <div class="card card-filter">
+        <div class="card-header">
+            <%= __('SlotListingFilterAvailabilityTitle') %>
+        </div>
+        <div class="list-group list-group-flush">
+            <% navigation.filters.availability.forEach(availability => { %>
+                <a href="<%= availability.link %>" class="list-group-item list-group-item-action <%= availability.active ? 'active' : '' %>" aria-current="<%= availability.active ? 'true' : 'false' %>"><%= availability.name %><%- availability.active ? ' <i class="bi-check float-end"></i>' : '' %></a>
+            <% }) %>
+        </div>
+    </div>
+<% } %>
+<div class="card card-filter">
+    <div class="card-header">
+        <%= __('SlotListingFilterDateTitle') %>
+    </div>
+    <div class="card-body">
+        <form method="get" action="">
+            <% navigation.filters.date.params.forEach(p => { %>
+                <input type="hidden" name="<%= p.name %>" value="<%= p.value %>">
+            <% }) %>
+            <p>
+                <label for="start_date"><%= __('SlotListingFilterDateFrom') %>:</label><br>
+                <input id="start_date" name="start_date" type="date" class="form-control" value="<%= navigation.filters.date.start_date %>">    
+            </p>
+            <p>
+                <label for="end_date"><%= __('SlotListingFilterDateTo') %>:</label><br>
+                <input id="end_date" name="end_date" type="date" class="form-control" value="<%= navigation.filters.date.end_date %>">    
+            </p>
+            <p>
+                <button type="submit" class="btn btn-sm btn-primary float-end"><%= __('SlotListingFilterDateSubmit') %></button>
+            </p>
+        </form>
+    </div>
+</div>
+
+<a href="/"><button class="btn btn-md btn-dark">Återställ alla filter</button></a>

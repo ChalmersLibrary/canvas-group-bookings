@@ -1,15 +1,25 @@
 <div class="row pt-4">
-    <div class="col-md-9">
+    <div class="col-xl-9">
         <div class="card card-slots">
             <div class="card-header">
                 <%= __('SlotListingHeaderSlots') %>
             </div>
             <div class="card-body">
-                <% if (session.user.isAdministrator || session.user.isInstructor) { %>
-                    <div style="height:2em;">
+                <div style="height:3.0rem;">
+                    <button type="button" title="Filtrera tider" class="btn btn-dark btn-md position-relative float-end d-xl-none ms-2" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSlotFilters" aria-controls="offcanvasSlotFilters">
+                        <i class="bi bi-sliders"></i>
+                        Filtrera
+                        <% if (navigation.filters_active > 0) { %>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success">
+                            <%= navigation.filters_active %>
+                            <span class="visually-hidden">applied filters</span>
+                        </span>
+                        <% } %>
+                    </button>
+                    <% if (session.user.isAdministrator || session.user.isInstructor) { %>
                         <button type="button" title="<%= __('NavigationNewSlots') %>" class="btn btn-primary btn-md float-end" data-bs-toggle="modal" data-bs-target="#newSlotSeries" aria-controls="newSlotSeries"><i class="bi bi-window-plus xbi-plus-circle"></i>&nbsp;<%= __('NavigationNewSlots') %></button>
-                    </div>
-                <% } %>
+                    <% } %>
+                </div>
                 <% if (!slots.length) { %>
                     <h4 class="alert-heading"><%= __('NoTimeSlots') %></h4>
                     <p><%= __('NoTimeSlotsDescription') %></p>
@@ -126,90 +136,8 @@
             </div>
         </div>
     </div>
-    <div class="col-md-3 filters">
-        <% if (navigation.filters.segment && navigation.filters.segment.length && !configuration.map(c => c.key).includes('FACETS_HIDE_SEGMENT')) { %>
-            <div class="card card-filter">
-                <div class="card-header">
-                    <%= __('SlotListingFilterSegmentTitle') %>
-                </div>
-                <div class="list-group list-group-flush">
-                    <% navigation.filters.segment.forEach(segment => { %>
-                        <a href="<%= segment.link %>" class="list-group-item list-group-item-action <%= segment.active ? 'active' : '' %>" aria-current="<%= segment.active ? 'true' : 'false' %>"><%= segment.name %><%- segment.active ? ' <i class="bi-check float-end"></i>' : '' %></a>
-                    <% }) %>
-                </div>
-            </div>
-        <% } %>
-        <% if (navigation.filters.course && navigation.filters.course.length && !configuration.map(c => c.key).includes('FACETS_HIDE_COURSE')) { %>
-            <div class="card card-filter">
-                <div class="card-header">
-                    <%= __('SlotListingFilterCourseTitle') %>
-                </div>
-                <div class="list-group list-group-flush">
-                    <% navigation.filters.course.forEach(course => { %>
-                        <a href="<%= course.link %>" class="list-group-item list-group-item-action <%= course.active ? 'active' : '' %>" aria-current="<%= course.active ? 'true' : 'false' %>"><%= course.name %><%- course.active ? ' <i class="bi-check float-end"></i>' : '' %></a>
-                    <% }) %>
-                </div>
-            </div>
-        <% } %>
-        <% if (navigation.filters.instructor && navigation.filters.instructor.length && !configuration.map(c => c.key).includes('FACETS_HIDE_INSTRUCTOR')) { %>
-            <div class="card card-filter">
-                <div class="card-header">
-                    <%= __('SlotListingFilterInstructorTitle') %>
-                </div>
-                <div class="list-group list-group-flush">
-                    <% navigation.filters.instructor.forEach(instructor => { %>
-                        <a href="<%= instructor.link %>" class="list-group-item list-group-item-action <%= instructor.active ? 'active' : '' %>" aria-current="<%= instructor.active ? 'true' : 'false' %>"><%= instructor.name %><%- instructor.active ? ' <i class="bi-check float-end"></i>' : '' %></a>
-                    <% }) %>
-                </div>
-            </div>
-        <% } %>
-        <% if (navigation.filters.location && navigation.filters.location.length && !configuration.map(c => c.key).includes('FACETS_HIDE_LOCATION')) { %>
-            <div class="card card-filter">
-                <div class="card-header">
-                    <%= __('SlotListingFilterLocationTitle') %>
-                </div>
-                <div class="list-group list-group-flush">
-                    <% navigation.filters.location.forEach(location => { %>
-                        <a href="<%= location.link %>" class="list-group-item list-group-item-action <%= location.active ? 'active' : '' %>" aria-current="<%= location.active ? 'true' : 'false' %>"><%= location.name %><%- location.active ? ' <i class="bi-check float-end"></i>' : '' %></a>
-                    <% }) %>
-                </div>
-            </div>
-        <% } %>
-        <% if (navigation.filters.availability && navigation.filters.availability.length && !configuration.map(c => c.key).includes('FACETS_HIDE_AVAILABILITY')) { %>
-            <div class="card card-filter">
-                <div class="card-header">
-                    <%= __('SlotListingFilterAvailabilityTitle') %>
-                </div>
-                <div class="list-group list-group-flush">
-                    <% navigation.filters.availability.forEach(availability => { %>
-                        <a href="<%= availability.link %>" class="list-group-item list-group-item-action <%= availability.active ? 'active' : '' %>" aria-current="<%= availability.active ? 'true' : 'false' %>"><%= availability.name %><%- availability.active ? ' <i class="bi-check float-end"></i>' : '' %></a>
-                    <% }) %>
-                </div>
-            </div>
-        <% } %>
-        <div class="card card-filter">
-            <div class="card-header">
-                <%= __('SlotListingFilterDateTitle') %>
-            </div>
-            <div class="card-body">
-                <form method="get" action="">
-                    <% navigation.filters.date.params.forEach(p => { %>
-                        <input type="hidden" name="<%= p.name %>" value="<%= p.value %>">
-                    <% }) %>
-                    <p>
-                        <label for="start_date"><%= __('SlotListingFilterDateFrom') %>:</label><br>
-                        <input id="start_date" name="start_date" type="date" class="form-control" value="<%= navigation.filters.date.start_date %>">    
-                    </p>
-                    <p>
-                        <label for="end_date"><%= __('SlotListingFilterDateTo') %>:</label><br>
-                        <input id="end_date" name="end_date" type="date" class="form-control" value="<%= navigation.filters.date.end_date %>">    
-                    </p>
-                    <p>
-                        <button type="submit" class="btn btn-sm btn-primary float-end"><%= __('SlotListingFilterDateSubmit') %></button>
-                    </p>
-                </form>
-            </div>
-        </div>
+    <div class="col-md-3 d-none d-xl-block filters">
+        <%- include('slots_filters'); %>
     </div>   
 </div>
 
@@ -218,7 +146,9 @@
     <%- include('slots_admin_modal_edit'); %>
     <%- include('slots_admin_modal_delete'); %>
     <%- include('instructor_upcoming_slots_offcanvas_details'); %>
+    <%- include('slots_offcanvas_filters'); %>
 <% } else { %>
     <%- include('reservations_public_modal_new'); %>
     <%- include('reservations_public_modal_delete'); %>
+    <%- include('slots_offcanvas_filters'); %>
 <% } %>
