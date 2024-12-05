@@ -151,6 +151,7 @@ app.get('/', async (req, res, next) => {
     const filter_date = utils.linkify(res, 'date', '', parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
 
     let this_navigation = utils.paginate(availableSlots.records_total, per_page, req.query.page ? Math.max(parseInt(req.query.page), 1) : 1, parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
+    
     this_navigation.filters = {
         segment: filter_segments,
         course: filter_courses,
@@ -159,6 +160,27 @@ app.get('/', async (req, res, next) => {
         availability: filter_availability,
         date: filter_date
     };
+
+    this_navigation.filters_active = 0;
+    
+    if (this_navigation.filters.segment.some(x => x.active == true && x.id != null)) {
+        this_navigation.filters_active++;
+    }
+    if (this_navigation.filters.course.some(x => x.active == true && x.id != null)) {
+        this_navigation.filters_active++;
+    }
+    if (this_navigation.filters.instructor.some(x => x.active == true && x.id != null)) {
+        this_navigation.filters_active++;
+    }
+    if (this_navigation.filters.location.some(x => x.active == true && x.id != null)) {
+        this_navigation.filters_active++;
+    }
+    if (this_navigation.filters.availability.some(x => x.active == true && x.id != null)) {
+        this_navigation.filters_active++;
+    }
+    if (this_navigation.filters.date.start_date !== undefined || this_navigation.filters.date.end_date !== undefined) {
+        this_navigation.filters_active++;
+    }
 
     if (req.session.user.db_id != null && !isNaN(parseInt(req.query.instructor)) && parseInt(req.query.instructor) == req.session.user.db_id) {
         this_navigation.current_page_is_instructor_slots = true;
