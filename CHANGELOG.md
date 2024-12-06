@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Version 1.2.4
+
+2024-12-09. Responsive re-design of filters. When the screen size is smaller, filters are displayed in an offcanvas dialog. This improves usability for mobile and app users.
+
 ## Version 1.2.3
 
 2024-10-01. Security updates of Dependabot issues with some packages. Also provides admin with new functionality to export some data into tab separated text files for import in Excel or other software.
