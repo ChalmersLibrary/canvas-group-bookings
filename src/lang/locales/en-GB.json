@@ -7,6 +7,8 @@
 	"NavigationInstructorSlots": "My slots",
 	"NavigationAdministration": "Administration",
 	"NavigationNewSlots": "Add new slots",
+	"NavigationFilters": "Filters",
+	"NavigationFiltersTitle": "Filter time slots on different aspects.",
 
 	"HeaderLabelRoleAdministrator": "Administrator",
 	"HeaderLabelRoleInstructor": "Instructor",
@@ -26,6 +28,8 @@
 	"SlotListingHeaderTimeTitle": "Type and time",
 	"SlotListingHeaderInstructorPlaceTitle": "Instructor and location",
 	"SlotListingHeaderAvailabilityTitle": "Availability",
+
+	"SlotListingFilterOffcanvasTitle": "Filters",
 	"SlotListingFilterShowAll": "Show all",
 	"SlotListingFilterSegmentTitle": "Segment",
 	"SlotListingFilterCourseTitle": "Type",
@@ -38,6 +42,8 @@
 	"SlotListingFilterDateFrom": "From",
 	"SlotListingFilterDateTo": "To",
 	"SlotListingFilterDateSubmit": "Show",
+	"SlotListingFilterResetAll": "Reset all filters",
+	
 	"SlotListingPaginationPrevious": "Previous",
 	"SlotListingPaginationNext": "Next",
 

@@ -6,9 +6,9 @@
             </div>
             <div class="card-body">
                 <div class="top-button-bar">
-                    <button type="button" title="Filtrera tider" class="btn btn-dark btn-md position-relative float-start d-xl-none" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSlotFilters" aria-controls="offcanvasSlotFilters">
+                    <button type="button" title="<%= __('NavigationFiltersTitle') %>" class="btn btn-dark btn-md position-relative float-start d-xl-none" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSlotFilters" aria-controls="offcanvasSlotFilters">
                         <i class="bi bi-sliders"></i>
-                        Filtrera
+                        <%= __('NavigationFilters') %>
                         <% if (navigation.filters_active > 0) { %>
                         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success">
                             <%= navigation.filters_active %>

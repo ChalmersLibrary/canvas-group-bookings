@@ -7,6 +7,8 @@
 	"NavigationInstructorSlots": "Mina tillfällen",
 	"NavigationAdministration": "Administration",
 	"NavigationNewSlots": "Lägg till nya tider",
+	"NavigationFilters": "Filtrera",
+	"NavigationFiltersTitle": "Filtrera tiderna på olika egenskaper.",
 
 	"HeaderLabelRoleAdministrator": "administratör",
 	"HeaderLabelRoleInstructor": "handledare",
@@ -26,6 +28,8 @@
 	"SlotListingHeaderTimeTitle": "Tillfälle och tid",
 	"SlotListingHeaderInstructorPlaceTitle": "Handledare och plats",
 	"SlotListingHeaderAvailabilityTitle": "Tillgänglighet",
+
+	"SlotListingFilterOffcanvasTitle": "Filter",
 	"SlotListingFilterShowAll": "Visa alla",
 	"SlotListingFilterSegmentTitle": "Segment",
 	"SlotListingFilterCourseTitle": "Tillfälle",
@@ -38,6 +42,8 @@
 	"SlotListingFilterDateFrom": "Från",
 	"SlotListingFilterDateTo": "Till",
 	"SlotListingFilterDateSubmit": "Visa",
+	"SlotListingFilterResetAll": "Återställ alla filter",
+
 	"SlotListingPaginationPrevious": "Föregående",
 	"SlotListingPaginationNext": "Nästa",
 
