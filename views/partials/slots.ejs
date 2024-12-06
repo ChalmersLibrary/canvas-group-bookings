@@ -5,8 +5,8 @@
                 <%= __('SlotListingHeaderSlots') %>
             </div>
             <div class="card-body">
-                <div style="height:3.0rem;">
-                    <button type="button" title="Filtrera tider" class="btn btn-dark btn-md position-relative float-end d-xl-none ms-2" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSlotFilters" aria-controls="offcanvasSlotFilters">
+                <div class="top-button-bar">
+                    <button type="button" title="Filtrera tider" class="btn btn-dark btn-md position-relative float-start d-xl-none" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSlotFilters" aria-controls="offcanvasSlotFilters">
                         <i class="bi bi-sliders"></i>
                         Filtrera
                         <% if (navigation.filters_active > 0) { %>
@@ -30,7 +30,7 @@
                         <thead>
                             <tr>
                                 <% if (slots.some(s => s.course_segment_id !== null)) { %><th class="segment-sign"></th> <% } %>
-                                <th class="d-md-table-cell d-md-none"><%= __('SlotListingHeaderTimeTitle') %></th>
+                                <th class="d-md-table-cell d-md-none"></th>
                                 <th class="d-none d-md-table-cell"><%= __('SlotListingHeaderTimeTitle') %></th>
                                 <th class="d-none d-md-table-cell"><%= __('SlotListingHeaderInstructorPlaceTitle') %></th>
                                 <th class="d-none d-md-table-cell"><%= __('SlotListingHeaderAvailabilityTitle') %></th>
@@ -43,7 +43,7 @@
                                     <% if (slots.some(s => s.course_segment_id !== null)) { %>
                                         <td class="text-center align-middle segment-sign" style="color:white; background-color:<%= slot.course_segment_hex_color %>;"><strong><%= slot.course_segment_sign %></strong></td>
                                     <% } %>
-                                    <td class="d-md-table-cell d-md-none">
+                                    <td class="d-md-table-cell d-md-none <%= slots.some(s => s.course_segment_id !== null) ? 'ps-2' : '' %>">
                                         <%= slot.course_name %><br>
                                         <strong><%- slot.time_human_readable %></strong><br>
                                         <%= slot.instructor_name %>, <%= slot.location_name %>
