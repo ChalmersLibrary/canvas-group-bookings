@@ -21,6 +21,16 @@ div.reservations,
 div.button-bar {
     margin-bottom: 1em;
 }
+@media (max-width: 767.98px) { 
+    div.button-bar {
+        margin-bottom: 1em;
+        margin-top: 1em;
+    }
+}
+div.top-button-bar {
+    position: relative;
+    min-height: 3.6rem;
+}
 div.filters {
     border-left: 0px solid lightgrey;
 }
