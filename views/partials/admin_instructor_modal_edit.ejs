@@ -1,4 +1,4 @@
-<div class="modal modal-lg fade" id="editInstructor" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="editInstructorLabel" aria-hidden="true">
+<div class="modal modal-md fade" id="editInstructor" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="editInstructorLabel" aria-hidden="true">
     <div class="modal-dialog">
         <form class="needs-validation" id="editInstructorForm" novalidate action="/api/admin/instructor">
             <input type="hidden" id="e_instructor_id" value="" />
@@ -15,13 +15,30 @@
                     </div>
                 </div>
                 <div class="modal-body loaded-content" style="display:none;">
-                    <p>
-                        Denna funktion är inte implementerad.
-                    </p>
+                    <div id="e_instructor_editPart">
+                        <p>
+                            <label for="e_instructor_canvas_id"><%= __('AdminInstructorModalLabelCanvasId') %></label>
+                            <select class="form-control" id="e_instructor_canvas_id"></select>
+                        </p>
+                        <p>
+                            <label for="e_instructor_name"><%= __('AdminInstructorModalLabelName') %></label><br>
+                            <input type="text" class="form-control" id="e_instructor_name" value="" disabled>
+                        </p>
+                        <p>
+                            <label for="e_instructor_email"><%= __('AdminInstructorModalLabelEmail') %></label><br>
+                            <input type="text" class="form-control" id="e_instructor_email" value="" disabled>
+                        </p>
+                    </div>
+                </div>
+                <div class="modal-body content-error" style="display:none;">
+                    <div class="alert alert-danger">
+                        <strong><%= __('GeneralErrorMessagePrefixText') %></strong>
+                        <span></span>
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
-                    <button type="submit" class="btn btn-primary" id="editInstructorSaveButton" disabled>Uppdatera</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><%= __('AdminInstructorModalNewButtonCloseLabel') %></button>
+                    <button type="submit" class="btn btn-primary" id="editInstructorSaveButton"><%= __('AdminInstructorModalNewButtonSubmitLabel') %> <span class="spinner-border spinner-border-sm" style="display:none;" role="status" aria-hidden="true"></span></button>
                 </div>
             </div>
         </form>
