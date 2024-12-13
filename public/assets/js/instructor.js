@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
             if (data.messages && data.messages.length) {
                 data.messages.forEach(msg => {
                     const md = slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_sentMessages').appendChild(document.createElement('div'))
-                    md.innerHTML = "<small>" + msg.created_at.substring(0, 10) + " " + msg.created_at.substring(11, 16) + "</small><br>" + msg.message_subject + "<div class=\"message-body\"><small>" + msg.message_body.replace("\n", "<br>") + "</small></div>"
+                    md.innerHTML = "<small>" + msg.created_at.substring(0, 10) + " " + msg.created_at.substring(11, 16) + "</small><div class=\"message-subject\"><small>" + msg.message_subject + "</small></div><div class=\"message-body\"><small>" + msg.message_body.replace("\n", "<br>") + "</small></div>"
                 })
                 /* slotDetailsOffcanvas.querySelectorAll('#offcanvasSlotDetails_sentMessages button.expand-message-body').forEach(b => {
                     b.addEventListener('click', e => {
