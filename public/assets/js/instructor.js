@@ -59,14 +59,20 @@ document.addEventListener("DOMContentLoaded", function(event) {
             if (data.messages && data.messages.length) {
                 data.messages.forEach(msg => {
                     const md = slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_sentMessages').appendChild(document.createElement('div'))
-                    md.innerText = msg.created_at.substring(0, 10) + ", " + msg.message_subject 
+                    md.innerHTML = "<small>" + msg.created_at.substring(0, 10) + " " + msg.created_at.substring(11, 16) + "</small><br>" + msg.message_subject + "<div class=\"message-body\"><small>" + msg.message_body.replace("\n", "<br>") + "</small></div>"
                 })
+                /* slotDetailsOffcanvas.querySelectorAll('#offcanvasSlotDetails_sentMessages button.expand-message-body').forEach(b => {
+                    b.addEventListener('click', e => {
+                        console.log(e);
+                        e.target.parentNode.style = 'max-height:fit-content;'
+                    })
+                }) */
             }
             else {
                 const mn = slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_sentMessages').appendChild(document.createElement('div'))
                 mn.innerText = slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_sentMessages').getAttribute("data-default-text")
             }
-        })            
+        })
         .then(finished => {
             slotDetailsOffcanvas.querySelector('div.offcanvas-body.loading-spinner').style.display = "none"
             slotDetailsOffcanvas.querySelector('div.offcanvas-body.loaded-content').style.display = "block"
@@ -78,8 +84,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
             slotDetailsOffcanvas.querySelector('#offcanvasSlotDetailsMessaging_actionButtons').classList.add("d-block")
             slotDetailsOffcanvasMessaging.style.display = "none"
         })
-
-        
     })
 
     /* Offcanvas: send message: open message dialog */

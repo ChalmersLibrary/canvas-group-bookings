@@ -106,3 +106,13 @@ a.btn-md > i.bi,
 button.btn-md > i.bi {
     margin-right: 6px;
 }
+#offcanvasSlotDetails_sentMessages > div {
+    margin-bottom: 0.8rem;
+}
+#offcanvasSlotDetails_sentMessages div.message-body {
+    background-color: rgb(241,241,241);
+    padding: 0.3rem;
+    max-height:fit-content;
+    overflow: hidden;
+    line-break: auto;
+}
