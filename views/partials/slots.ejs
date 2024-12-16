@@ -5,21 +5,34 @@
                 <%= __('SlotListingHeaderSlots') %>
             </div>
             <div class="card-body">
-                <div class="top-button-bar">
-                    <button type="button" title="<%= __('NavigationFiltersTitle') %>" class="btn btn-dark btn-md position-relative float-start d-xl-none" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSlotFilters" aria-controls="offcanvasSlotFilters">
-                        <i class="bi bi-sliders"></i>
-                        <%= __('NavigationFilters') %>
-                        <% if (navigation.filters_active > 0) { %>
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success">
-                            <%= navigation.filters_active %>
-                            <span class="visually-hidden">applied filters</span>
-                        </span>
-                        <% } %>
-                    </button>
-                    <% if (session.user.isAdministrator || session.user.isInstructor) { %>
-                        <button type="button" title="<%= __('NavigationNewSlots') %>" class="btn btn-primary btn-md float-end" data-bs-toggle="modal" data-bs-target="#newSlotSeries" aria-controls="newSlotSeries"><i class="bi bi-window-plus xbi-plus-circle"></i>&nbsp;<%= __('NavigationNewSlots') %></button>
-                    <% } %>
-                </div>
+                <% if (session.user.isAdministrator || session.user.isInstructor) { %>
+                    <div class="top-button-bar">
+                        <button type="button" title="<%= __('NavigationNewSlots') %>" class="btn btn-primary btn-md float-start" data-bs-toggle="modal" data-bs-target="#newSlotSeries" aria-controls="newSlotSeries"><i class="bi bi-window-plus xbi-plus-circle"></i>&nbsp;<%= __('NavigationNewSlots') %></button>
+                        <button type="button" title="<%= __('NavigationFiltersTitle') %>" class="btn btn-dark btn-md position-relative float-end d-xl-none" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSlotFilters" aria-controls="offcanvasSlotFilters">
+                            <i class="bi bi-sliders"></i>
+                            <%= __('NavigationFilters') %>
+                            <% if (navigation.filters_active > 0) { %>
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success">
+                                <%= navigation.filters_active %>
+                                <span class="visually-hidden">applied filters</span>
+                            </span>
+                            <% } %>
+                        </button>
+                    </div>
+                <% } else { %>
+                    <div class="top-button-bar d-xl-none">
+                        <button type="button" title="<%= __('NavigationFiltersTitle') %>" class="btn btn-dark btn-md position-relative float-end d-xl-none" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSlotFilters" aria-controls="offcanvasSlotFilters">
+                            <i class="bi bi-sliders"></i>
+                            <%= __('NavigationFilters') %>
+                            <% if (navigation.filters_active > 0) { %>
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success">
+                                <%= navigation.filters_active %>
+                                <span class="visually-hidden">applied filters</span>
+                            </span>
+                            <% } %>
+                        </button>
+                    </div>
+                <% } %>
                 <% if (!slots.length) { %>
                     <h4 class="alert-heading"><%= __('NoTimeSlots') %></h4>
                     <p><%= __('NoTimeSlotsDescription') %></p>
