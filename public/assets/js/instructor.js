@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 })
             }
             else {
-                const mn = slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_sentMessages').appendChild(document.createElement('div'))
+                const mn = slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_sentMessages').appendChild(document.createElement('span'))
                 mn.innerText = slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_sentMessages').getAttribute("data-default-text")
             }
         })
