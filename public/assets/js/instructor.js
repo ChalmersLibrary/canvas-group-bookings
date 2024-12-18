@@ -22,7 +22,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
         fetch(`/api/instructor/slot/${this_id}`)
         .then(response => response.json())
         .then(data => {
-            console.log(data)
             slotDetailsOffcanvas.querySelector('#offcanvasSlotDetailsLabel').innerHTML = data.course_name
             slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_time').innerHTML = data.time_human_readable
             slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_location').innerHTML = data.location_name
