@@ -116,6 +116,10 @@
 		"one": "Individual reservation, one person",
 		"other": "Individual reservation, max {{max}} persons"
 	},
+	"OffCanvasDetailsHeaderReservations": "Reservations:",
+	"OffCanvasDetailsHeaderMessages": "Sent messages:",
+	"OffCanvasDetailsNoReservationsText": "No reservations.",
+	"OffCanvasDetailsNoMessagesText": "No messages sent.",
 	"OffCanvasDetailsDownloadIcalButtonText": "Calendar",
 	"OffCanvasDetailsDownloadIcalButtonTitle": "Download details to calendar application",
 	"OffCanvasDetailsManualMessageButtonText": "Message",

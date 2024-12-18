@@ -116,6 +116,10 @@
 		"one": "Individuell bokning, en person",
 		"other": "Individuell bokning, max {{max}} personer"
 	},
+	"OffCanvasDetailsHeaderReservations": "Bokade:",
+	"OffCanvasDetailsHeaderMessages": "Skickade meddelanden:",
+	"OffCanvasDetailsNoReservationsText": "Inga bokningar.",
+	"OffCanvasDetailsNoMessagesText": "Inga meddelanden har skickats.",
 	"OffCanvasDetailsDownloadIcalButtonText": "Kalenderpost",
 	"OffCanvasDetailsDownloadIcalButtonTitle": "Ladda ner detaljer till ditt kalenderprogram",
 	"OffCanvasDetailsManualMessageButtonText": "Meddelande",
