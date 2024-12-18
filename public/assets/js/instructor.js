@@ -59,14 +59,14 @@ document.addEventListener("DOMContentLoaded", function(event) {
             if (data.messages && data.messages.length) {
                 data.messages.forEach(msg => {
                     const md = slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_sentMessages').appendChild(document.createElement('div'))
-                    md.innerHTML = "<small>" + msg.created_at.substring(0, 10) + " " + msg.created_at.substring(11, 16) + "</small><div class=\"message-subject\"><small>" + msg.message_subject + "</small></div><div class=\"message-body\"><small>" + msg.message_body.replace("\n", "<br>") + "</small></div>"
+                    md.innerHTML = "<small>" + msg.created_at.substring(0, 10) + " " + msg.created_at.substring(11, 16) + "</small><div class=\"message-subject\"><small>" + msg.message_subject + "</small></div><div class=\"message-body\"><i class=\"expand-message-body a btn btn-sm float-end bi bi-arrows-angle-expand\"></i><small>" + msg.message_body.replaceAll("\n", "<br>") + "</small></div>"
                 })
-                /* slotDetailsOffcanvas.querySelectorAll('#offcanvasSlotDetails_sentMessages button.expand-message-body').forEach(b => {
+                slotDetailsOffcanvas.querySelectorAll('#offcanvasSlotDetails_sentMessages i.expand-message-body').forEach(b => {
                     b.addEventListener('click', e => {
-                        console.log(e);
                         e.target.parentNode.style = 'max-height:fit-content;'
+                        e.target.style = 'display:none;'
                     })
-                }) */
+                })
             }
             else {
                 const mn = slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_sentMessages').appendChild(document.createElement('div'))

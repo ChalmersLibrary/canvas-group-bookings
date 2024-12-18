@@ -107,17 +107,19 @@ button.btn-md > i.bi {
     margin-right: 6px;
 }
 #offcanvasSlotDetails_sentMessages > div {
-    margin-bottom: 0.8rem;
+    margin-bottom: 1.3rem;
 }
 #offcanvasSlotDetails_sentMessages div.message-body {
     background-color: rgb(241,241,241);
-    padding: 0.4rem;
-    max-height:fit-content;
+    padding: 0.6rem;
+    max-height: 3.1rem;
+    overflow: hidden;
     line-break: auto;
 }
 #offcanvasSlotDetails_sentMessages div.message-subject {
-    color: white;
-    background-color: rgb(102, 102, 102);
-    padding: 0.4rem;
+    color: rgb(0, 0, 0);
+    background-color: rgb(241,241,241);
+    border-bottom: 1px solid rgb(109, 109, 109);
+    padding: 0.6rem;
     line-break: auto;
 }
