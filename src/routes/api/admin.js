@@ -395,8 +395,10 @@ router.get('/instructor/:id', async (req, res, next) => {
  * Update information about an Instructor
  */
 router.put('/instructor/:id', async (req, res, next) => {
+    const { name, email } = req.body;
+
     try {
-        await db.updateInstructor(req.params.id, req.body);
+        await db.updateInstructor(req.params.id, name, email);
 
         return res.send({
             success: true,

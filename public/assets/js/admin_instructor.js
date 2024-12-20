@@ -127,6 +127,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
         .then(response => response.json())
         .then(data => {
             console.log(data)
+            editInstructorForm.querySelector('#e_instructor_id').value = data.instructor.id
+            editInstructorForm.querySelector('#e_instructor_name').value = data.instructor.name
+            editInstructorForm.querySelector('#e_instructor_email').value = data.instructor.email
         })
         .then(finished => {
             editInstructorModal.querySelector('div.modal-body.loading-spinner').style.display = "none"
@@ -151,6 +154,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
+                    name: editInstructorForm.querySelector('#e_instructor_name').value,
+                    email: editInstructorForm.querySelector('#e_instructor_email').value
                 })
             }
 

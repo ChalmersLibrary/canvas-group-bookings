@@ -17,16 +17,12 @@
                 <div class="modal-body loaded-content" style="display:none;">
                     <div id="e_instructor_editPart">
                         <p>
-                            <label for="e_instructor_canvas_id"><%= __('AdminInstructorModalLabelCanvasId') %></label>
-                            <select class="form-control" id="e_instructor_canvas_id"></select>
-                        </p>
-                        <p>
                             <label for="e_instructor_name"><%= __('AdminInstructorModalLabelName') %></label><br>
-                            <input type="text" class="form-control" id="e_instructor_name" value="" disabled>
+                            <input type="text" class="form-control" id="e_instructor_name" value="">
                         </p>
                         <p>
                             <label for="e_instructor_email"><%= __('AdminInstructorModalLabelEmail') %></label><br>
-                            <input type="text" class="form-control" id="e_instructor_email" value="" disabled>
+                            <input type="email" class="form-control" id="e_instructor_email" value="">
                         </p>
                     </div>
                 </div>
@@ -37,8 +33,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><%= __('AdminInstructorModalNewButtonCloseLabel') %></button>
-                    <button type="submit" class="btn btn-primary" id="editInstructorSaveButton"><%= __('AdminInstructorModalNewButtonSubmitLabel') %> <span class="spinner-border spinner-border-sm" style="display:none;" role="status" aria-hidden="true"></span></button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><%= __('AdminInstructorModalEditButtonCloseLabel') %></button>
+                    <button type="submit" class="btn btn-primary" id="editInstructorSaveButton"><%= __('AdminInstructorModalEditButtonSubmitLabel') %> <span class="spinner-border spinner-border-sm" style="display:none;" role="status" aria-hidden="true"></span></button>
                 </div>
             </div>
         </form>

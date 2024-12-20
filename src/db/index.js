@@ -881,6 +881,23 @@ async function connectInstructor(canvas_course_id, instructor_id) {
     return data;
 }
 
+async function updateInstructor(instructor_id, name, email) {
+    let data;
+
+    await query("UPDATE instructor SET name=$1, email=$2 WHERE id=$3", [
+        name,
+        email,
+        instructor_id
+    ]).then((result) => {
+        data = result.rows[0];
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    });
+    
+    return data;
+}
+
 async function disconnectInstructor(canvas_course_id, instructor_id) {
     await query("DELETE FROM canvas_course_instructor_mapping WHERE canvas_course_id=$1 AND instructor_id=$2", [
         canvas_course_id,
@@ -1325,6 +1342,7 @@ module.exports = {
     getAllInstructors,
     createInstructor,
     connectInstructor,
+    updateInstructor,
     disconnectInstructor,
     replaceConnectedInstructor,
     getValidLocations,
