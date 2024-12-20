@@ -374,10 +374,12 @@ router.get('/instructor/:id', async (req, res, next) => {
     try {
         const instructor = await db.getInstructorWithStatistics(res.locals.courseId, req.params.id);
         const course_instructors = await db.getInstructorsWithStatistics(res.locals.courseId);
+        let canvas_instructors = await canvasApi.getCourseTeacherEnrollments(res.locals.courseId, res.locals.token);
 
         return res.send({
             success: true,
             course_instructors: course_instructors,
+            canvas_instructors: canvas_instructors,
             instructor: instructor
         });
     }

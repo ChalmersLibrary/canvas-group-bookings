@@ -130,6 +130,12 @@ document.addEventListener("DOMContentLoaded", function(event) {
             editInstructorForm.querySelector('#e_instructor_id').value = data.instructor.id
             editInstructorForm.querySelector('#e_instructor_name').value = data.instructor.name
             editInstructorForm.querySelector('#e_instructor_email').value = data.instructor.email
+            if (data.canvas_instructors.map(x => x.id.toString()).includes(data.instructor.canvas_user_id)) {
+                console.log("Yes")
+                var datatree = data
+                editInstructorForm.querySelector('#e_instructor_name_canvas').value = data.canvas_instructors.find(x => x.id.toString() == data.instructor.canvas_user_id).name
+                editInstructorForm.querySelector('#e_instructor_email_canvas').value = data.canvas_instructors.find(x => x.id.toString() == data.instructor.canvas_user_id).email
+            }
         })
         .then(finished => {
             editInstructorModal.querySelector('div.modal-body.loading-spinner').style.display = "none"
