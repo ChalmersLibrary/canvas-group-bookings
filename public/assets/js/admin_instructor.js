@@ -117,7 +117,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         }
     })
 
-    /* The modal for editing an Instructor is shown (this is currently not supported as we have no unique data) */
+    /* The modal for editing an Instructor is shown */
     editInstructorModal && editInstructorModal.addEventListener('show.bs.modal', event => {
         editInstructorModal.querySelector('div.modal-body.loading-spinner').style.display = "block"
         editInstructorModal.querySelector('div.modal-body.loaded-content').style.display = "none"
@@ -131,8 +131,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
             editInstructorForm.querySelector('#e_instructor_name').value = data.instructor.name
             editInstructorForm.querySelector('#e_instructor_email').value = data.instructor.email
             if (data.canvas_instructors.map(x => x.id.toString()).includes(data.instructor.canvas_user_id)) {
-                console.log("Yes")
-                var datatree = data
                 editInstructorForm.querySelector('#e_instructor_name_canvas').value = data.canvas_instructors.find(x => x.id.toString() == data.instructor.canvas_user_id).name
                 editInstructorForm.querySelector('#e_instructor_email_canvas').value = data.canvas_instructors.find(x => x.id.toString() == data.instructor.canvas_user_id).email
             }
@@ -143,7 +141,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         })
     })
 
-    /* The Edit Instructor Form is submitted (this form is currently not supported) */
+    /* The Edit Instructor Form is submitted */
     editInstructorForm && editInstructorForm.addEventListener("submit", function(event) {
         if (!editInstructorForm.checkValidity()) {
             event.preventDefault()
