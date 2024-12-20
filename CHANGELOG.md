@@ -2,7 +2,12 @@
 
 ## Version 1.2.4
 
-2024-12-09. Responsive re-design of filters. When the screen size is smaller, filters are displayed in an offcanvas dialog. This improves usability for mobile and app users.
+2024-12-20. Responsive re-design of filters and better message log. 
+
+* When the screen size is smaller, filters are displayed in an offcanvas dialog accessible via a button. This improves usability for mobile and app users.
+* The sent messages log in slot details for instructors has better design and now includes the whole message itself as an expandable option.
+* Administrators can now edit the name and email address of added instructors. This makes it easier to have correct or alternative information from Canvas.
+* Security updates of Dependabot issues with some packages.
 
 ## Version 1.2.3
 
