@@ -4,7 +4,7 @@
             <input type="hidden" id="e_instructor_id" value="" />
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="editInstructorLabel">Redigera handledare</h5>
+                    <h5 class="modal-title" id="editInstructorLabel"><%= __('AdminInstructorModalEditLabel') %></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Stäng"></button>
                 </div>
                 <div class="modal-body loading-spinner">
@@ -25,18 +25,18 @@
                             <input type="email" class="form-control" id="e_instructor_email" value="">
                         </p>
                         <div>
-                            <label for="e_instructor_name_canvas">Namn i Canvas:</label>
+                            <label for="e_instructor_name_canvas"><%= __('AdminInstructorModalLabelCanvasName') %></label>
                         </div>
                         <div class="input-group pb-3">
                             <input type="text" class="form-control" id="e_instructor_name_canvas" value="" disabled>
-                            <button class="btn btn-md btn-dark" id="copy_e_instructor_name"><i class="bi bi-box-arrow-up"></i> Kopiera</button>    
+                            <button class="btn btn-md btn-dark" id="copy_e_instructor_name"><i class="bi bi-box-arrow-up"></i> <%= __('AdminInstructorModalLabelCopyButton') %></button>    
                         </div>
                         <div>
-                            <label for="e_instructor_email_canvas">E-post i Canvas:</label>
+                            <label for="e_instructor_email_canvas"><%= __('AdminInstructorModalLabelCanvasEmail') %></label>
                         </div>
                         <div class="input-group pb-3">
                             <input type="text" class="form-control" id="e_instructor_email_canvas" value="" disabled>
-                            <button class="btn btn-md btn-dark" id="copy_e_instructor_email"><i class="bi bi-box-arrow-up"></i> Kopiera</button>    
+                            <button class="btn btn-md btn-dark" id="copy_e_instructor_email"><i class="bi bi-box-arrow-up"></i> <%= __('AdminInstructorModalLabelCopyButton') %></button>    
                         </div>
                     </div>
                 </div>
