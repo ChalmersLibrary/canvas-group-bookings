@@ -133,6 +133,16 @@ document.addEventListener("DOMContentLoaded", function(event) {
             if (data.canvas_instructors.map(x => x.id.toString()).includes(data.instructor.canvas_user_id)) {
                 editInstructorForm.querySelector('#e_instructor_name_canvas').value = data.canvas_instructors.find(x => x.id.toString() == data.instructor.canvas_user_id).name
                 editInstructorForm.querySelector('#e_instructor_email_canvas').value = data.canvas_instructors.find(x => x.id.toString() == data.instructor.canvas_user_id).email
+                document.getElementById('copy_e_instructor_name').addEventListener('click', e => {
+                    editInstructorForm.querySelector('#e_instructor_name').value = editInstructorForm.querySelector('#e_instructor_name_canvas').value
+                    e.preventDefault()
+                    e.stopPropagation()
+                });
+                document.getElementById('copy_e_instructor_email').addEventListener('click', e => {
+                    editInstructorForm.querySelector('#e_instructor_email').value = editInstructorForm.querySelector('#e_instructor_email_canvas').value
+                    e.preventDefault()
+                    e.stopPropagation()
+                });
             }
         })
         .then(finished => {
