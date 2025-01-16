@@ -400,7 +400,7 @@ router.put('/instructor/:id', async (req, res, next) => {
     const { name, email } = req.body;
 
     try {
-        await db.updateInstructor(req.params.id, name, email);
+        await db.updateInstructor(req.params.id, name, email, req.session.user.id);
 
         return res.send({
             success: true,

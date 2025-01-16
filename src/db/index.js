@@ -881,13 +881,14 @@ async function connectInstructor(canvas_course_id, instructor_id) {
     return data;
 }
 
-async function updateInstructor(instructor_id, name, email) {
+async function updateInstructor(instructor_id, name, email, canvas_user_id) {
     let data;
 
-    await query("UPDATE instructor SET name=$1, email=$2 WHERE id=$3", [
+    await query("UPDATE instructor SET name=$1, email=$2, updated_by=$4, updated_at=now() WHERE id=$3", [
         name,
         email,
-        instructor_id
+        instructor_id,
+        canvas_user_id
     ]).then((result) => {
         data = result.rows[0];
     }).catch((error) => {
