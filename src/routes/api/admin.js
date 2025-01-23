@@ -195,7 +195,7 @@ router.delete('/course/:id', async (req, res, next) => {
     try {
         const course = await db.getCourseWithStatistics(req.params.id);
 
-        if (course.slots_all == 0) {
+        if (course.slots == 0) {
             await db.deleteCourse(req.params.id, req.session.user.id);
         }
         else {
