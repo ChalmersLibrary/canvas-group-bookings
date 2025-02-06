@@ -2,20 +2,35 @@
 
 const winston = require('winston');
 const { combine, timestamp, json, errors } = winston.format;
+const LogstashTransport = require('winston-logstash/lib/winston-logstash-latest');
 require('winston-daily-rotate-file');
 require('dotenv').config();
 
-const fileRotateTransport = new winston.transports.DailyRotateFile({
-    filename: './logs/combined-%DATE%.log',
-    datePattern: 'YYYY-MM-DD',
-    maxFiles: '14d',
-});
+let transports = [];
+
+transports.push(
+    new winston.transports.DailyRotateFile({
+        filename: './logs/combined-%DATE%.log',
+        datePattern: 'YYYY-MM-DD',
+        maxFiles: '14d',
+    })
+);
+
+if (process.env.LOGSTASH_HOST?.length > 0 && process.env.LOGSTASH_PORT?.length > 0) {
+    transports.push(
+        new LogstashTransport({
+            port: process.env.LOGSTASH_PORT,
+            host: process.env.LOGSTASH_HOST,
+            node_name: "canvas-group-bookings"
+        })
+    );
+}
 
 const logger = winston.createLogger({
     level: 'info',
     format: combine(errors({ stack: true }), timestamp(), json()),
     defaultMeta: {},
-    transports: [fileRotateTransport]
+    transports: transports
 });
 
 // fired when a log file is created

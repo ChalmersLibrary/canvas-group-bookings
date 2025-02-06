@@ -54,6 +54,7 @@
     "simple-oauth2": "^4.3.0",
     "uglify-js": "^3.17.4",
     "winston": "^3.8.1",
-    "winston-daily-rotate-file": "^4.7.1"
+    "winston-daily-rotate-file": "^4.7.1",
+    "winston-logstash": "^1.2.1"
   }
 }
