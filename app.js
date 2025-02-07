@@ -801,6 +801,8 @@ app.post('/api/reservation', async (req, res, next) => {
             }
         }
 
+        log.info("Reservation done, id " + reservation.id);
+
         return res.send({
             success: true,
             message: "Tiden har bokats.",
@@ -941,6 +943,8 @@ app.delete('/api/reservation/:id', async (req, res) => {
             }
         }
 
+        log.info("Reservation deleted, id " + req.params.id);
+        
         return res.send({
             success: true,
             message: 'Reservation was deleted.',
