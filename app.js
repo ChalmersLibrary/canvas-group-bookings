@@ -894,13 +894,13 @@ app.delete('/api/reservation/:id', async (req, res) => {
                         let conversation_result_group = await canvasApi.createConversation(recipient, subject, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
                         let log_id = await db.addCanvasConversationLog(reservation.slot_id, reservation.id, reservation.canvas_course_id, recipient, subject, body);
 
-                        log.info("Sent confirmation message to the group, id " + log_id.id);
+                        log.info("Sent confirmation message of deleted reservation to the group, log id " + log_id.id);
 
                         if (course.message_cc_instructor) {
                             let conversation_result_cc = await canvasApi.createConversation(instructor.canvas_user_id, subject_cc, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
                             let log_id_cc = await db.addCanvasConversationLog(reservation.slot_id, reservation.id, reservation.canvas_course_id, instructor.canvas_user_id, subject_cc, body);
 
-                            log.info("Sent a copy of confirmation message to the instructor, id " + log_id_cc.id);
+                            log.info("Sent a copy of confirmation message of deleted reservation to the instructor, log id " + log_id_cc.id);
                         }
                     }
                     else {
@@ -912,7 +912,7 @@ app.delete('/api/reservation/:id', async (req, res) => {
                     const subject_cc = res.__('ConversationRobotCancelReservationCcSubjectPrefix') + course.name + ", " + req.session.user.name;
                     const template_type = "reservation_individual_canceled";
 
-                    let body = course.message_confirmation_body;
+                    let body = course.message_cancelled_body;
 
                     if (body === 'undefined' || body == '') {
                         body = utils.getTemplate(template_type);
@@ -924,13 +924,13 @@ app.delete('/api/reservation/:id', async (req, res) => {
                         let conversation_result_user = await canvasApi.createConversation(req.session.user.id, subject, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
                         let log_id = await db.addCanvasConversationLog(reservation.slot_id, reservation.id, reservation.canvas_course_id, req.session.user.id, subject, body);
                         
-                        log.info("Sent confirmation message to the user, id " + log_id.id);
+                        log.info("Sent confirmation message of deleted reservation to the user, log id " + log_id.id);
 
                         if (course.message_cc_instructor) {
                             let conversation_result_cc = await canvasApi.createConversation(instructor.canvas_user_id, subject_cc, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
                             let log_id_cc = await db.addCanvasConversationLog(reservation.slot_id, reservation.id, reservation.canvas_course_id, instructor.canvas_user_id, subject_cc, body);
                             
-                            log.info("Sent a copy of confirmation message to the instructor, id " + log_id_cc.id);
+                            log.info("Sent a copy of confirmation message of deleted reservation to the instructor, log id " + log_id_cc.id);
                         }
                     }
                     else {
@@ -939,7 +939,7 @@ app.delete('/api/reservation/:id', async (req, res) => {
                 }
             }
             catch (error) {
-                log.error("When sending confirmation message: " + error);
+                log.error("When sending confirmation message for deleted reservation: " + error);
             }
         }
 
