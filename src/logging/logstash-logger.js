@@ -24,6 +24,7 @@ class LogstashLogger {
           body: JSON.stringify(data)
         });
         if (!response.ok) {
+          console.error("Failed to send log message to Logstash:", response.status, await response.text());
           throw new Error("Response was (" + response.status + "): " + await response.text());
         }
       } catch (error) {
