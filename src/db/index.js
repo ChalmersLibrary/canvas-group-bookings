@@ -11,8 +11,7 @@ const pool = new Pool();
 pool.connect();
 
 pool.on('connect', client => {
-    log.info("Pool connected.");
-    // log.debug(client);
+    log.debug("Pool connected.");
 });
 
 pool.on('error', (error, client) => {
