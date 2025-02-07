@@ -3,7 +3,6 @@
 const winston = require('winston');
 const { combine, timestamp, json, errors } = winston.format;
 const { LogstashLogger } = require('./logstash-logger');
-//import { LogstashLogger } from './logstash-logger';
 require('winston-daily-rotate-file');
 require('dotenv').config();
 
@@ -64,11 +63,11 @@ if (process.env.NODE_ENV !== 'production') {
 
 async function info(msg, ...meta) {
     await logger.log({ level: 'info', message: msg, ...meta });
-    logstashLogger?.info(msg);
+    await logstashLogger?.info(msg.toString());
 }
 async function error(msg, ...meta) {
     await logger.error({ level: 'error', message: msg, ...meta });
-    logstashLogger?.error(msg, ...meta);
+    await logstashLogger?.error(msg.toString());
 }
 async function debug(msg, ...meta) {
     await logger.debug({ level: 'debug', message: msg, ...meta });
