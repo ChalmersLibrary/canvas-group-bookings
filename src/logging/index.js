@@ -22,7 +22,7 @@ if (process.env.LOGSTASH_BASEURL?.length > 0 && process.env.LOGSTASH_USER?.lengt
         process.env.LOGSTASH_BASEURL,
         process.env.LOGSTASH_USER,
         process.env.LOGSTASH_PWD,
-        "canvas-group-bookings"
+        process.env.LOGSTASH_SOURCE? process.env.LOGSTASH_SOURCE : "canvas-group-bookings"
     );
 }
 
