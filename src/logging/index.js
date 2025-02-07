@@ -63,11 +63,11 @@ if (process.env.NODE_ENV !== 'production') {
 
 async function info(msg, ...meta) {
     await logger.log({ level: 'info', message: msg, ...meta });
-    await logstashLogger?.info(msg.toString());
+    await logstashLogger?.info(msg);
 }
 async function error(msg, ...meta) {
     await logger.error({ level: 'error', message: msg, ...meta });
-    await logstashLogger?.error(msg.toString());
+    await logstashLogger?.error(msg);
 }
 async function debug(msg, ...meta) {
     await logger.debug({ level: 'debug', message: msg, ...meta });

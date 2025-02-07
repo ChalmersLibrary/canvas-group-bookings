@@ -38,25 +38,16 @@ class LogstashLogger {
       Type: "Info",
       Time: new Date().toISOString(),
       Source: this.source,
-      Message: msg
+      Message: typeof(msg) === 'object' ? JSON.stringify(msg) : msg.toString()
     });
   }
-
-  async warn(msg) {
-    await this.sendToLogstash({
-      Type: "Warning",
-      Time: new Date().toISOString(),
-      Source: this.source,
-      Message: msg
-    });
-  }
-
+  
   async error(msg) {
     await this.sendToLogstash({
       Type: "Error",
       Time: new Date().toISOString(),
       Source: this.source,
-      Message: msg
+      Message: typeof(msg) === 'object' ? JSON.stringify(msg) : msg.toString()
     });
   }
 }
