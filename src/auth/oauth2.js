@@ -78,7 +78,7 @@ function setupAuthEndpoints(app, callbackUrl) {
             return res.status(500).json(error);
         }
 
-        log.info("OAuth callback finished, redirecting to root app.");
+        log.debug("OAuth callback finished, redirecting to root app.");
 
         res.location("/?from=callback");
         return res.redirect("/?from=callback");
@@ -111,7 +111,7 @@ async function checkAccessToken(req) {
         log.debug("UserId found in user session object: " + req.session.user.id);
     }
     else {
-        log.error("No user object in session or in LTI, seems like we have no session!");
+        log.debug("No user object in session or in LTI, seems like we have no session!");
         tokenResult.success = false;
         tokenResult.message = "Can't find any user id in session.";
     }

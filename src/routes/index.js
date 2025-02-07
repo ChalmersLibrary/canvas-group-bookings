@@ -105,7 +105,7 @@ router.all(['/', '/reservations', '/privacy', '/debug', '/admin*', '/api/*'], as
                 }
             }
             else {
-                log.error("Access token is not valid or not found, redirecting to auth flow...");
+                log.debug("Access token is not valid or not found, redirecting to auth flow...");
 
                 return res.redirect("/auth");
             }
