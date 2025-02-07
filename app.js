@@ -131,214 +131,224 @@ app.get('/debug', async (req, res, next) => {
 
 // Main page with available slots for user to reserve */
 app.get('/', async (req, res, next) => {
-    let availableSlots;
-    const per_page = DB_PER_PAGE ? DB_PER_PAGE : 25;
-    const offset = req.query.page ? Math.max(parseInt(req.query.page) - 1, 0) * per_page : 0;
-
-    /* Date and time handling */
-    const dateOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
-    const timeOptions = { hour: '2-digit', minute: '2-digit' };
-
-    /* Available slots, with filters applied, paginated */
-    availableSlots = await db.getAllSlotsPaginated(res, offset, per_page, res.locals.courseId, parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
-
-    /* Difference between valid courses to use in slots and courses used for filtering */
-    const filter_segments = utils.linkify(res, 'segment', await db.getSegments(res.locals.courseId), parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
-    const filter_courses = utils.linkify(res, 'course', await db.getValidCourses(res.locals.courseId), parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
-    const filter_instructors = utils.linkify(res, 'instructor', await db.getValidInstructors(res.locals.courseId), parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
-    const filter_locations = utils.linkify(res, 'location', await db.getValidLocations(res.locals.courseId), parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
-    const filter_availability = utils.linkify(res, 'availability', [ { id: 1, name: res.__('SlotListingFilterAvailabilityAll') } ], parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
-    const filter_date = utils.linkify(res, 'date', '', parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
-
-    let this_navigation = utils.paginate(availableSlots.records_total, per_page, req.query.page ? Math.max(parseInt(req.query.page), 1) : 1, parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
+    try {
+        let availableSlots;
+        const per_page = DB_PER_PAGE ? DB_PER_PAGE : 25;
+        const offset = req.query.page ? Math.max(parseInt(req.query.page) - 1, 0) * per_page : 0;
     
-    this_navigation.filters = {
-        segment: filter_segments,
-        course: filter_courses,
-        instructor: filter_instructors,
-        location: filter_locations,
-        availability: filter_availability,
-        date: filter_date
-    };
-
-    this_navigation.filters_active = 0;
+        /* Date and time handling */
+        const dateOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+        const timeOptions = { hour: '2-digit', minute: '2-digit' };
     
-    if (this_navigation.filters.segment.some(x => x.active == true && x.id != null)) {
-        this_navigation.filters_active++;
-    }
-    if (this_navigation.filters.course.some(x => x.active == true && x.id != null)) {
-        this_navigation.filters_active++;
-    }
-    if (this_navigation.filters.instructor.some(x => x.active == true && x.id != null)) {
-        this_navigation.filters_active++;
-    }
-    if (this_navigation.filters.location.some(x => x.active == true && x.id != null)) {
-        this_navigation.filters_active++;
-    }
-    if (this_navigation.filters.availability.some(x => x.active == true && x.id != null)) {
-        this_navigation.filters_active++;
-    }
-    if (this_navigation.filters.date.start_date !== undefined || this_navigation.filters.date.end_date !== undefined) {
-        this_navigation.filters_active++;
-    }
-
-    if (req.session.user.db_id != null && !isNaN(parseInt(req.query.instructor)) && parseInt(req.query.instructor) == req.session.user.db_id) {
-        this_navigation.current_page_is_instructor_slots = true;
-    }
-    else {
-        this_navigation.current_page_is_instructor_slots = false;
-    }
-
-    let this_start_date_string = res.__('DatePhraseToday');
-    let this_end_date_string = res.__('DatePhraseAndForward');
-
-    if (Date.parse(req.query.start_date)) {
-         if (new Date().toLocaleDateString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric' }) != new Date(req.query.start_date).toLocaleDateString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric' })) {
-            this_start_date_string = new Date(req.query.start_date).toLocaleDateString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric' });
+        /* Available slots, with filters applied, paginated */
+        availableSlots = await db.getAllSlotsPaginated(res, offset, per_page, res.locals.courseId, parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
+    
+        /* Difference between valid courses to use in slots and courses used for filtering */
+        const filter_segments = utils.linkify(res, 'segment', await db.getSegments(res.locals.courseId), parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
+        const filter_courses = utils.linkify(res, 'course', await db.getValidCourses(res.locals.courseId), parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
+        const filter_instructors = utils.linkify(res, 'instructor', await db.getValidInstructors(res.locals.courseId), parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
+        const filter_locations = utils.linkify(res, 'location', await db.getValidLocations(res.locals.courseId), parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
+        const filter_availability = utils.linkify(res, 'availability', [ { id: 1, name: res.__('SlotListingFilterAvailabilityAll') } ], parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
+        const filter_date = utils.linkify(res, 'date', '', parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
+    
+        let this_navigation = utils.paginate(availableSlots.records_total, per_page, req.query.page ? Math.max(parseInt(req.query.page), 1) : 1, parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
+        
+        this_navigation.filters = {
+            segment: filter_segments,
+            course: filter_courses,
+            instructor: filter_instructors,
+            location: filter_locations,
+            availability: filter_availability,
+            date: filter_date
+        };
+    
+        this_navigation.filters_active = 0;
+        
+        if (this_navigation.filters.segment.some(x => x.active == true && x.id != null)) {
+            this_navigation.filters_active++;
         }
-    }
-    if (Date.parse(req.query.end_date)) {
-        if (new Date().toLocaleDateString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric' }) != new Date(req.query.end_date).toLocaleDateString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric' })) {
-           this_end_date_string = res.__('DatePhraseUntil') + " " + new Date(req.query.end_date).toLocaleDateString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric' });
-       }
-    }
-
-    if (this_navigation.current_page_is_instructor_slots) {
-        this_navigation.title = res.__('SlotListingHeaderInstructor', { slots: this_navigation.records_total, from: this_start_date_string, to: this_end_date_string });
-    }
-    else {
-        this_navigation.title = res.__('SlotListingHeaderNormal', { slots: this_navigation.records_total, from: this_start_date_string, to: this_end_date_string });
-    }
-
-    /* Add contextual availability notice for each slot */
-    for (const slot of availableSlots.slots) {
-        if (slot.res_max == 1) {
-            if (slot.res_max == slot.res_now) {
-                if (slot.type == "group") {
-                    slot.availability_notice = res.__('SlotAvailabilityPhraseOneGroupFull');
-                }
-                else {
-                    slot.availability_notice = res.__('SlotAvailabilityPhraseOneIndividualFull');
-                }
-            }
-            else {
-                if (slot.type == "group") {
-                    slot.availability_notice = res.__('SlotAvailabilityPhraseOneGroupAvailable');
-                }
-                else {
-                    slot.availability_notice = res.__('SlotAvailabilityPhraseOneIndividualAvailable');
-                }
-            }
+        if (this_navigation.filters.course.some(x => x.active == true && x.id != null)) {
+            this_navigation.filters_active++;
+        }
+        if (this_navigation.filters.instructor.some(x => x.active == true && x.id != null)) {
+            this_navigation.filters_active++;
+        }
+        if (this_navigation.filters.location.some(x => x.active == true && x.id != null)) {
+            this_navigation.filters_active++;
+        }
+        if (this_navigation.filters.availability.some(x => x.active == true && x.id != null)) {
+            this_navigation.filters_active++;
+        }
+        if (this_navigation.filters.date.start_date !== undefined || this_navigation.filters.date.end_date !== undefined) {
+            this_navigation.filters_active++;
+        }
+    
+        if (req.session.user.db_id != null && !isNaN(parseInt(req.query.instructor)) && parseInt(req.query.instructor) == req.session.user.db_id) {
+            this_navigation.current_page_is_instructor_slots = true;
         }
         else {
-            if (slot.res_max == slot.res_now) {
-                if (slot.type == "group") {
-                    slot.availability_notice = res.__('SlotAvailabilityPhraseGroupFull');
-                }
-                else {
-                    slot.availability_notice = res.__('SlotAvailabilityPhraseIndividualFull');
-                }
-            }
-            else {
-                if (slot.type == "group") {
-                    slot.availability_notice = res.__n('SlotAvailabilityPhraseGroupAvailable', (slot.res_max - slot.res_now), { reservations: slot.res_now, available: (slot.res_max - slot.res_now), slots: slot.res_max });
-                }
-                else {
-                    slot.availability_notice = res.__n('SlotAvailabilityPhraseIndividualAvailable', (slot.res_max - slot.res_now), { reservations: slot.res_now, available: slot.res_max - slot.res_now, slots: slot.res_max });
-                }
+            this_navigation.current_page_is_instructor_slots = false;
+        }
+    
+        let this_start_date_string = res.__('DatePhraseToday');
+        let this_end_date_string = res.__('DatePhraseAndForward');
+    
+        if (Date.parse(req.query.start_date)) {
+             if (new Date().toLocaleDateString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric' }) != new Date(req.query.start_date).toLocaleDateString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric' })) {
+                this_start_date_string = new Date(req.query.start_date).toLocaleDateString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric' });
             }
         }
-    }
-
-    /* Calculate if this slot is bookable, based on existing reservations */
-    /* TODO: make it more general in utilities or something! */
-    for (const slot of availableSlots.slots) {
-        slot.res_percent = Math.round((slot.res_now / slot.res_max) * 100);
-
-        if (req.session.user.isAdministrator) {
-            slot.reservable_for_this_user = false;
-            slot.reservable_notice = res.__('SlotReservationNoAdministrator');
+        if (Date.parse(req.query.end_date)) {
+            if (new Date().toLocaleDateString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric' }) != new Date(req.query.end_date).toLocaleDateString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric' })) {
+               this_end_date_string = res.__('DatePhraseUntil') + " " + new Date(req.query.end_date).toLocaleDateString('sv-SE', { year: 'numeric', month: 'numeric', day: 'numeric' });
+           }
         }
-        else if (req.session.user.isInstructor) {
-            slot.reservable_for_this_user = false;
-            slot.reservable_notice = res.__('SlotReservationNoInstructor');
+    
+        if (this_navigation.current_page_is_instructor_slots) {
+            this_navigation.title = res.__('SlotListingHeaderInstructor', { slots: this_navigation.records_total, from: this_start_date_string, to: this_end_date_string });
         }
         else {
-            slot.reservable_for_this_user = true;
-
-            if (slot.res_now >= slot.res_max) {
-                slot.reservable_for_this_user = false;
-                slot.reservable_notice = res.__('SlotReservationFull');
-            }
-
-            // DEBUG FOR AZURE AND UTC, should be removed
-            const t_time = new Date();
-            const t_time_now = t_time.getTime();
-            const t_time_slot = new Date(slot.time_start).getTime();
-            log.debug("t_time: " + t_time + " t_time_now: " + t_time_now + " slot.time_start: " + slot.time_start.toString() + " t_time_slot: " + t_time_slot + " reservable: " + !(t_time_slot <= t_time_now));
-
-            if (t_time_slot <= t_time_now) {
-                slot.reservable_for_this_user = false;
-                slot.reservable_notice = res.__('SlotReservationTimeInPast');
-            }
+            this_navigation.title = res.__('SlotListingHeaderNormal', { slots: this_navigation.records_total, from: this_start_date_string, to: this_end_date_string });
+        }
     
-            if (slot.type == "group") {
-                // Check if any of this user's groups are reserved on this slot
-                if (slot.res_group_ids && slot.res_group_ids.filter(id => req.session.user.groups_ids?.includes(id)).length) {
-                    slot.reservable_for_this_user = false;
-                    slot.reservable_notice = res.__('SlotReservationGroupIsReserved');
+        /* Add contextual availability notice for each slot */
+        for (const slot of availableSlots.slots) {
+            if (slot.res_max == 1) {
+                if (slot.res_max == slot.res_now) {
+                    if (slot.type == "group") {
+                        slot.availability_notice = res.__('SlotAvailabilityPhraseOneGroupFull');
+                    }
+                    else {
+                        slot.availability_notice = res.__('SlotAvailabilityPhraseOneIndividualFull');
+                    }
                 }
-
-                // Check how many times this user's groups are reserved on slots with the same course context
-                if (slot.res_course_group_ids && slot.reservable_for_this_user) {
-                    if (slot.res_course_group_ids.filter(id => req.session.user.groups_ids?.includes(id)).length >= slot.course_max_per_type) {
-                        slot.reservable_for_this_user = false;
-                        slot.reservable_notice = res.__('SlotReservationGroupMaxReservations', { max: slot.course_max_per_type, name: slot.course_name });
+                else {
+                    if (slot.type == "group") {
+                        slot.availability_notice = res.__('SlotAvailabilityPhraseOneGroupAvailable');
+                    }
+                    else {
+                        slot.availability_notice = res.__('SlotAvailabilityPhraseOneIndividualAvailable');
                     }
                 }
             }
             else {
-                // Check if this user is reserved on this slot
-                if (slot.res_user_ids && slot.res_user_ids.includes(req.session.user.id)) {
-                    slot.reservable_for_this_user = false;
-                    slot.reservable_notice = res.__('SlotReservationIndividualIsReserved');
+                if (slot.res_max == slot.res_now) {
+                    if (slot.type == "group") {
+                        slot.availability_notice = res.__('SlotAvailabilityPhraseGroupFull');
+                    }
+                    else {
+                        slot.availability_notice = res.__('SlotAvailabilityPhraseIndividualFull');
+                    }
                 }
-
-                // Check how many times this user is reserved on slots with the same course context
-                if (slot.res_course_user_ids && slot.reservable_for_this_user) {
-                    if (slot.res_course_user_ids.filter(id => req.session.user.id == id).length >= slot.course_max_per_type) {
-                        slot.reservable_for_this_user = false;
-                        slot.reservable_notice = res.__('SlotReservationIndividualMaxReservations', { max: slot.course_max_per_type, name: slot.course_name });
+                else {
+                    if (slot.type == "group") {
+                        slot.availability_notice = res.__n('SlotAvailabilityPhraseGroupAvailable', (slot.res_max - slot.res_now), { reservations: slot.res_now, available: (slot.res_max - slot.res_now), slots: slot.res_max });
+                    }
+                    else {
+                        slot.availability_notice = res.__n('SlotAvailabilityPhraseIndividualAvailable', (slot.res_max - slot.res_now), { reservations: slot.res_now, available: slot.res_max - slot.res_now, slots: slot.res_max });
                     }
                 }
             }
         }
+    
+        /* Calculate if this slot is bookable, based on existing reservations */
+        /* TODO: make it more general in utilities or something! */
+        for (const slot of availableSlots.slots) {
+            slot.res_percent = Math.round((slot.res_now / slot.res_max) * 100);
+    
+            if (req.session.user.isAdministrator) {
+                slot.reservable_for_this_user = false;
+                slot.reservable_notice = res.__('SlotReservationNoAdministrator');
+            }
+            else if (req.session.user.isInstructor) {
+                slot.reservable_for_this_user = false;
+                slot.reservable_notice = res.__('SlotReservationNoInstructor');
+            }
+            else {
+                slot.reservable_for_this_user = true;
+    
+                if (slot.res_now >= slot.res_max) {
+                    slot.reservable_for_this_user = false;
+                    slot.reservable_notice = res.__('SlotReservationFull');
+                }
+    
+                // DEBUG FOR AZURE AND UTC, should be removed
+                const t_time = new Date();
+                const t_time_now = t_time.getTime();
+                const t_time_slot = new Date(slot.time_start).getTime();
+                log.debug("t_time: " + t_time + " t_time_now: " + t_time_now + " slot.time_start: " + slot.time_start.toString() + " t_time_slot: " + t_time_slot + " reservable: " + !(t_time_slot <= t_time_now));
+    
+                if (t_time_slot <= t_time_now) {
+                    slot.reservable_for_this_user = false;
+                    slot.reservable_notice = res.__('SlotReservationTimeInPast');
+                }
+        
+                if (slot.type == "group") {
+                    // Check if any of this user's groups are reserved on this slot
+                    if (slot.res_group_ids && slot.res_group_ids.filter(id => req.session.user.groups_ids?.includes(id)).length) {
+                        slot.reservable_for_this_user = false;
+                        slot.reservable_notice = res.__('SlotReservationGroupIsReserved');
+                    }
+    
+                    // Check how many times this user's groups are reserved on slots with the same course context
+                    if (slot.res_course_group_ids && slot.reservable_for_this_user) {
+                        if (slot.res_course_group_ids.filter(id => req.session.user.groups_ids?.includes(id)).length >= slot.course_max_per_type) {
+                            slot.reservable_for_this_user = false;
+                            slot.reservable_notice = res.__('SlotReservationGroupMaxReservations', { max: slot.course_max_per_type, name: slot.course_name });
+                        }
+                    }
+                }
+                else {
+                    // Check if this user is reserved on this slot
+                    if (slot.res_user_ids && slot.res_user_ids.includes(req.session.user.id)) {
+                        slot.reservable_for_this_user = false;
+                        slot.reservable_notice = res.__('SlotReservationIndividualIsReserved');
+                    }
+    
+                    // Check how many times this user is reserved on slots with the same course context
+                    if (slot.res_course_user_ids && slot.reservable_for_this_user) {
+                        if (slot.res_course_user_ids.filter(id => req.session.user.id == id).length >= slot.course_max_per_type) {
+                            slot.reservable_for_this_user = false;
+                            slot.reservable_notice = res.__('SlotReservationIndividualMaxReservations', { max: slot.course_max_per_type, name: slot.course_name });
+                        }
+                    }
+                }
+            }
+        }
+    
+        /* return res.send({
+            internal: req.session.internal,
+            session: req.session,
+            groups: req.session.user.groups,
+            navigation: this_navigation,
+            slots: availableSlots.slots,
+            segments: await db.getSegments(res.locals.courseId),
+            courses: await db.getValidCourses(res.locals.courseId),
+            instructors: await db.getValidInstructors(),
+            locations: await db.getValidLocations()
+        }); */
+    
+        return res.render('pages/index', {
+            internal: req.session.internal,
+            session: req.session,
+            groups: req.session.user.groups,
+            navigation: this_navigation,
+            slots: availableSlots.slots,
+            configuration: res.locals.configuration,
+            segments: await db.getSegments(res.locals.courseId),
+            courses: await db.getValidCourses(res.locals.courseId),
+            instructors: await db.getValidInstructors(res.locals.courseId),
+            locations: await db.getValidLocations(res.locals.courseId)
+        });
     }
+    catch (error) {
+        log.error(error);
 
-    /* return res.send({
-        internal: req.session.internal,
-        session: req.session,
-        groups: req.session.user.groups,
-        navigation: this_navigation,
-        slots: availableSlots.slots,
-        segments: await db.getSegments(res.locals.courseId),
-        courses: await db.getValidCourses(res.locals.courseId),
-        instructors: await db.getValidInstructors(),
-        locations: await db.getValidLocations()
-    }); */
-
-    return res.render('pages/index', {
-        internal: req.session.internal,
-        session: req.session,
-        groups: req.session.user.groups,
-        navigation: this_navigation,
-        slots: availableSlots.slots,
-        configuration: res.locals.configuration,
-        segments: await db.getSegments(res.locals.courseId),
-        courses: await db.getValidCourses(res.locals.courseId),
-        instructors: await db.getValidInstructors(res.locals.courseId),
-        locations: await db.getValidLocations(res.locals.courseId)
-    });
+        return res.send({
+            success: false,
+            message: error.message
+        });
+    }
 });
 
 /**
@@ -979,6 +989,7 @@ app.listen(port, () => log.info(`Application listening on port ${port}.`));
 
 /* Catch uncaught exceptions */
 process.on('uncaughtException', (err) => {
-    console.error(err);
+    log.error("Uncaught exception!", err);
+    console.error("Uncaught exception!", err);
     process.exit(1); //mandatory (as per the Node docs)
 });
