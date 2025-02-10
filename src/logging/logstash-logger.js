@@ -38,7 +38,7 @@ class LogstashLogger {
       Type: "Info",
       Time: new Date().toISOString(),
       Source: this.source,
-      Message: typeof(msg) === 'object' ? JSON.stringify(msg) : msg.toString()
+      Message: typeof(msg) === 'object' && Object.keys(msg) !== 0 ? JSON.stringify(msg) : msg.toString()
     });
   }
   
@@ -47,7 +47,7 @@ class LogstashLogger {
       Type: "Error",
       Time: new Date().toISOString(),
       Source: this.source,
-      Message: typeof(msg) === 'object' ? JSON.stringify(msg) : msg.toString()
+      Message: typeof(msg) === 'object' && Object.keys(msg) !== 0 ? JSON.stringify(msg) : msg.toString()
     });
   }
 }
