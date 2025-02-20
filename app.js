@@ -23,6 +23,7 @@ const rfs = require('rotating-file-stream');
 const path = require('path');
 const ical = require('./src/ical');
 const crypto = require('crypto');
+const { env } = require('process');
 
 const port = process.env.PORT || 3000;
 const cookieMaxAge = 3600000 * 24 * 30 * 4; // 4 months
@@ -127,6 +128,17 @@ app.get('/debug', async (req, res, next) => {
     else {
         return res.sendStatus(404);
     }
+});
+
+// Simple status information
+app.get('/status', (req, res, next) => {
+    return res.send({
+        status: 'up',
+        version: pkg.version,
+        node_version: process.version,
+        node_env: process.env.NODE_ENV,
+        db: process.env.PGDATABASE
+    });
 });
 
 // Main page with available slots for user to reserve */
