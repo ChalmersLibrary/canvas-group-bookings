@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "dev": "nodemon --trace-warnings app.js",
+    "dev": "node --watch-path=./src --watch-path=./views app.js",
     "debug": "set DEBUG=* && nodemon --trace-warnings app.js",
     "build": "git rev-parse HEAD | cut -c1-7 > views/partials/git_latest_commit_hash.ejs",
     "minifyjs": "uglifyjs public/assets/js/public.js --compress --mangle --warn --output public/assets/js/public.min.js"
@@ -27,9 +27,6 @@
     "url": "https://github.com/ChalmersLibrary/canvas-group-bookings/issues"
   },
   "homepage": "https://github.com/ChalmersLibrary/canvas-group-bookings#readme",
-  "devDependencies": {
-    "nodemon": "^3.0.3"
-  },
   "dependencies": {
     "axios": "^1.6.7",
     "body-parser": "^1.20.0",
