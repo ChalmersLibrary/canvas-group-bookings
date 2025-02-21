@@ -1127,6 +1127,16 @@ async function deleteSlot(id) {
     });
 }
 
+/**
+ * Adds a log item for a message sent to Canvas users with Conversation API. Readable for admins.
+ * @param {Number} slot_id 
+ * @param {Number} reservation_id 
+ * @param {Number} canvas_course_id 
+ * @param {*} canvas_recipients 
+ * @param {*} message_subject 
+ * @param {*} message_body 
+ * @returns 
+ */
 async function addCanvasConversationLog(slot_id, reservation_id, canvas_course_id, canvas_recipients, message_subject, message_body) {
     let data;
 
@@ -1137,6 +1147,40 @@ async function addCanvasConversationLog(slot_id, reservation_id, canvas_course_i
         canvas_recipients, 
         message_subject, 
         message_body
+    ]).then((result) => {
+        data = result.rows[0];
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    });
+    
+    return data;
+}
+
+/**
+ * Adds a log item for a failed message sent to Canvas users with Conversation API. Readable for admins.
+ * @param {Number} slot_id 
+ * @param {Number} reservation_id 
+ * @param {Number} canvas_course_id 
+ * @param {*} canvas_recipients 
+ * @param {*} message_subject 
+ * @param {*} message_body 
+ * @param {String} error_message 
+ * @returns 
+ */
+async function addFailedCanvasConversationLog(slot_id, reservation_id, canvas_course_id, canvas_recipients, message_subject, message_body, error_message) {
+    let data;
+    let success = false;
+
+    await query("INSERT INTO canvas_conversation_log (slot_id, reservation_id, canvas_course_id, canvas_recipients, message_subject, message_body, success, error_message) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id", [ 
+        slot_id, 
+        reservation_id, 
+        canvas_course_id, 
+        canvas_recipients, 
+        message_subject, 
+        message_body,
+        success,
+        error_message
     ]).then((result) => {
         data = result.rows[0];
     }).catch((error) => {
@@ -1360,6 +1404,7 @@ module.exports = {
     updateSlot,
     deleteSlot,
     addCanvasConversationLog,
+    addFailedCanvasConversationLog,
     updateCanvasConnection,
     checkDatabaseVersion,
     getCanvasCourseConfiguration,

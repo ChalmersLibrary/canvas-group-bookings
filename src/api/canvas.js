@@ -465,33 +465,29 @@ async function createConversation(recipients, subject, body, token) {
 
                 // Refresh token, then try again
                 if (error.response.status == 401 && error.response.headers['www-authenticate']) {
-                    log.error("401, with www-authenticate header. Can't refresh this token, must be done manually for integration account.");
+                    throw new Error("401, with www-authenticate header. Can't refresh this token, must be done manually for integration account.");
                 }
                 // No access, redirect to auth (www-authenticate)
                 else if (error.response.status == 401 && !error.response.headers['www-authenticate']) {
-                    log.error("401, without www-authenticate header. Integration account not authorized in Canvas for use of this API endpoint.");
+                    throw new Error("401, without www-authenticate header. Integration account not authorized in Canvas for use of this API endpoint.");
                 }
                 // Bad Request, often this means attribute "recipients" is invalid because integration account is not added so it has access to the recipients
                 else if (error.response.status == 400) {
-                    log.error("400, Bad Request. Integration account most likely not added to Canvas course, can't send message to recipients.");
-                    log.error(error.response.data);
+                    log.error("Response data from Canvas Conversation API: " + JSON.stringify(error.response.data));
+                    throw new Error("400, Bad Request. Integration account most likely not added to Canvas course.");
                 }
                 else {
                     log.error(error.code, error.message, error.response.data);
                 }
 
-                throw new Error(error);
+                throw error;
             }
         }    
 
-        return new Promise((resolve) => {
-            resolve(apiData);
-        });
+        return apiData;
     }
     catch (error) {
-        return new Promise((reject) => {
-            reject(error);
-        }); 
+        throw error;
     }
 }
 

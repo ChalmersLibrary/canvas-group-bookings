@@ -722,16 +722,27 @@ app.post('/api/reservation', async (req, res, next) => {
                     if (body !== 'undefined' && body != '') {
                         body = utils.replaceMessageMagics(body, course.name, message, course.cancellation_policy_hours, req.session.user.name, slot.time_human_readable, slot.location_name, slot.location_url, slot.location_description, instructor.name, instructor.email, group_name, "", req.session.lti.context_title);
 
-                        let conversation_result_group = await canvasApi.createConversation(recipient, subject, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
-                        let log_id = await db.addCanvasConversationLog(slot_id, reservation.id, slot.canvas_course_id, recipient, subject, body);
-
-                        log.info(`Sent confirmation message to [${recipient}] log id [${log_id.id}]`);
+                        try {
+                            await canvasApi.createConversation(recipient, subject, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
+                            let log_id = await db.addCanvasConversationLog(slot_id, reservation.id, slot.canvas_course_id, recipient, subject, body);
+                            log.info(`Sent confirmation message to [${recipient}] log id ${log_id.id}.`); 
+                        }
+                        catch (error) {
+                            let log_id_f = await db.addFailedCanvasConversationLog(slot_id, reservation.id, slot.canvas_course_id, recipient, subject, body, error.toString());
+                            log.error(`Could not send message to [${recipient}] because of: ${error.toString()} - logging as failed with log id ${log_id_f.id}.`);
+                        }
+                        
 
                         if (course.message_cc_instructor) {
-                            let conversation_result_cc = await canvasApi.createConversation(instructor.canvas_user_id, subject_cc, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
-                            let log_id_cc = await db.addCanvasConversationLog(slot_id, reservation.id, slot.canvas_course_id, instructor.canvas_user_id, subject_cc, body);
-
-                            log.info(`Sent a copy of confirmation message to the instructor, log id [${log_id_cc.id}]`);
+                            try {
+                                await canvasApi.createConversation(instructor.canvas_user_id, subject_cc, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
+                                let log_id_cc = await db.addCanvasConversationLog(slot_id, reservation.id, slot.canvas_course_id, instructor.canvas_user_id, subject_cc, body);
+                                log.info(`Sent a copy of confirmation message to the instructor, log id ${log_id_cc.id}.`);  
+                            }
+                            catch (error) {
+                                let log_id_f = await db.addFailedCanvasConversationLog(slot_id, reservation.id, slot.canvas_course_id, recipient, subject, body, error.toString());
+                                log.error(`Could not send copy of message to instructor [${instructor.canvas_user_id}] because of: ${error.toString()} - logging as failed with log id ${log_id_f.id}.`);
+                            }
                         }
 
                         // Get the updated slot with all reservations
@@ -756,16 +767,26 @@ app.post('/api/reservation', async (req, res, next) => {
                                 const subject_all = res.__('ConversationRobotReservationFullSubjectPrefix') + course.name;
                                 const subject_all_cc = res.__('ConversationRobotReservationFullCcSubjectPrefix') + course.name + " (" + slot_now.res_group_names.join(", ") + ")";
 
-                                let conversation_result_all = await canvasApi.createConversation(recipients, subject_all, body_all, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
-                                let log_id_all = await db.addCanvasConversationLog(slot_id, null, slot_now.canvas_course_id, recipients, subject_all, body_all);
-
-                                log.info(`Sent connection message to [${recipients.join(", ")}] log id [${log_id_all.id}]`);
+                                try {
+                                    await canvasApi.createConversation(recipients, subject_all, body_all, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
+                                    let log_id_all = await db.addCanvasConversationLog(slot_id, null, slot_now.canvas_course_id, recipients, subject_all, body_all);
+                                    log.info(`Sent connection message to [${recipients.join(", ")}] log id ${log_id_all.id}.`);
+                                }
+                                catch (error) {
+                                    let log_id_f = await db.addFailedCanvasConversationLog(slot_id, null, slot_now.canvas_course_id, recipients, subject_all, body_all, error.toString());
+                                    log.error(`Could not send connection message to [${recipients.join(", ")}] because of: ${error.toString()} - logging as failed with log id ${log_id_f.id}.`);
+                                }
 
                                 if (course.message_cc_instructor) {
-                                    let conversation_result_all_cc = await canvasApi.createConversation(instructor.canvas_user_id, subject_all_cc, body_all, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
-                                    let log_id_all_cc = await db.addCanvasConversationLog(slot_id, null, slot.canvas_course_id, instructor.canvas_user_id, subject_all_cc, body_all);
-        
-                                    log.info(`Sent a copy of connection message to the instructor, log id [${log_id_all_cc.id}]`);
+                                    try {
+                                        await canvasApi.createConversation(instructor.canvas_user_id, subject_all_cc, body_all, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
+                                        let log_id_all_cc = await db.addCanvasConversationLog(slot_id, null, slot.canvas_course_id, instructor.canvas_user_id, subject_all_cc, body_all);            
+                                        log.info(`Sent a copy of connection message to the instructor, log id ${log_id_all_cc.id}.`);
+                                    }
+                                    catch (error) {
+                                        let log_id_f = await db.addFailedCanvasConversationLog(slot_id, null, slot_now.canvas_course_id, instructor.canvas_user_id, subject_all_cc, body_all, error.toString());
+                                        log.error(`Could not send copy of connection message to the instructor [${instructor.canvas_user_id}] because of: ${error.toString()} - logging as failed with log id ${log_id_f.id}.`);
+                                    }
                                 }
                             }
                             else {
@@ -791,16 +812,26 @@ app.post('/api/reservation', async (req, res, next) => {
                     if (body !== 'undefined' && body != '') {
                         body = utils.replaceMessageMagics(body, course.name, message, course.cancellation_policy_hours, req.session.user.name, slot.time_human_readable, slot.location_name, slot.location_url, slot.location_description, instructor.name, instructor.email, "", "", req.session.lti.context_title);
 
-                        let conversation_result_user = await canvasApi.createConversation(req.session.user.id, subject, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
-                        let log_id = await db.addCanvasConversationLog(slot_id, reservation.id, slot.canvas_course_id, req.session.user.id, subject, body);
-                        
-                        log.info("Sent confirmation message to the user, id " + log_id.id);
+                        try {
+                            await canvasApi.createConversation(req.session.user.id, subject, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
+                            let log_id = await db.addCanvasConversationLog(slot_id, reservation.id, slot.canvas_course_id, req.session.user.id, subject, body);
+                            log.info(`Sent confirmation message to the user [${req.session.user.id}], log id ${log_id.id}.`);
+                        }
+                        catch (error) {
+                            let log_id_f = await db.addFailedCanvasConversationLog(slot_id, reservation.id, slot.canvas_course_id, req.session.user.id, subject, body, error.toString());
+                            log.error(`Could not send confirmation message to the user [${req.session.user.id}] because of: ${error.toString()} - logging as failed with log id ${log_id_f.id}.`);
+                        }
 
                         if (course.message_cc_instructor) {
-                            let conversation_result_cc = await canvasApi.createConversation(instructor.canvas_user_id, subject_cc, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
-                            let log_id_cc = await db.addCanvasConversationLog(slot_id, reservation.id, slot.canvas_course_id, instructor.canvas_user_id, subject_cc, body);
-                            
-                            log.info("Sent a copy of confirmation message to the instructor, id " + log_id_cc.id);
+                            try {
+                                await canvasApi.createConversation(instructor.canvas_user_id, subject_cc, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
+                                let log_id_cc = await db.addCanvasConversationLog(slot_id, reservation.id, slot.canvas_course_id, instructor.canvas_user_id, subject_cc, body);
+                                log.info(`Sent a copy of confirmation message to the instructor [${instructor.canvas_user_id}], log id ${log_id_cc.id}.`);                                    
+                            }
+                            catch (error) {
+                                let log_id_f = await db.addFailedCanvasConversationLog(slot_id, reservation.id, slot.canvas_course_id, req.session.user.id, subject, body, error.toString());
+                                log.error(`Could not send copy of confirmation message to the instructor [${instructor.canvas_user_id}] because of: ${error.toString()} - logging as failed with log id ${log_id_f.id}.`);
+                            }
                         }
                     }
                     else {
@@ -903,16 +934,26 @@ app.delete('/api/reservation/:id', async (req, res) => {
                     if (body !== 'undefined' && body != '') {
                         body = utils.replaceMessageMagics(body, course.name, "", course.cancellation_policy_hours, req.session.user.name, reservation.time_human_readable, reservation.location_name, "", "", instructor.name, instructor.email, reservation.canvas_group_name, "", req.session.lti.context_title);
         
-                        let conversation_result_group = await canvasApi.createConversation(recipient, subject, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
-                        let log_id = await db.addCanvasConversationLog(reservation.slot_id, reservation.id, reservation.canvas_course_id, recipient, subject, body);
-
-                        log.info("Sent confirmation message of deleted reservation to the group, log id " + log_id.id);
+                        try {
+                            await canvasApi.createConversation(recipient, subject, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
+                            let log_id = await db.addCanvasConversationLog(reservation.slot_id, reservation.id, reservation.canvas_course_id, recipient, subject, body);
+                            log.info(`Sent confirmation message for deleted reservation to [${recipient}], log id ${log_id.id}.`);
+                        }
+                        catch (error) {
+                            let log_id_f = await db.addFailedCanvasConversationLog(reservation.slot_id, reservation.id, reservation.canvas_course_id, recipient, subject, body, error.toString());
+                            log.error(`Could not send confirmation message for deleted reservation to [${recipient}] because of: ${error.toString()} - logging as failed with log id ${log_id_f.id}.`);
+                        }
 
                         if (course.message_cc_instructor) {
-                            let conversation_result_cc = await canvasApi.createConversation(instructor.canvas_user_id, subject_cc, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
-                            let log_id_cc = await db.addCanvasConversationLog(reservation.slot_id, reservation.id, reservation.canvas_course_id, instructor.canvas_user_id, subject_cc, body);
-
-                            log.info("Sent a copy of confirmation message of deleted reservation to the instructor, log id " + log_id_cc.id);
+                            try {
+                                await canvasApi.createConversation(instructor.canvas_user_id, subject_cc, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
+                                let log_id_cc = await db.addCanvasConversationLog(reservation.slot_id, reservation.id, reservation.canvas_course_id, instructor.canvas_user_id, subject_cc, body);
+                                log.info(`Sent a copy of confirmation message of deleted reservation to the instructor [${instructor.canvas_user_id}], log id ${log_id_cc.id}.`);
+                            }
+                            catch (error) {
+                                let log_id_f = await db.addFailedCanvasConversationLog(reservation.slot_id, reservation.id, reservation.canvas_course_id, instructor.canvas_user_id, subject_cc, body, error.toString());
+                                log.error(`Cound not send copy of confirmation message for deleted reservation to the instructor [${instructor.canvas_user_id}] because of: ${error.toString()} - logging as failed with log id ${log_id_f.id}.`);
+                            }
                         }
                     }
                     else {
@@ -933,16 +974,26 @@ app.delete('/api/reservation/:id', async (req, res) => {
                     if (body !== 'undefined' && body != '') {
                         body = utils.replaceMessageMagics(body, course.name, "", course.cancellation_policy_hours, req.session.user.name, reservation.time_human_readable, reservation.location_name, "", "", instructor.name, instructor.email, "", "", req.session.lti.context_title);
 
-                        let conversation_result_user = await canvasApi.createConversation(req.session.user.id, subject, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
-                        let log_id = await db.addCanvasConversationLog(reservation.slot_id, reservation.id, reservation.canvas_course_id, req.session.user.id, subject, body);
-                        
-                        log.info("Sent confirmation message of deleted reservation to the user, log id " + log_id.id);
+                        try {
+                            await canvasApi.createConversation(req.session.user.id, subject, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
+                            let log_id = await db.addCanvasConversationLog(reservation.slot_id, reservation.id, reservation.canvas_course_id, req.session.user.id, subject, body);
+                            log.info(`Sent confirmation message of deleted reservation to the user [${req.session.user.id}], log id ${log_id.id}.`);
+                        }
+                        catch (error) {
+                            let log_id_f = await db.addFailedCanvasConversationLog(reservation.slot_id, reservation.id, reservation.canvas_course_id, req.session.user.id, subject, body, error.toString());
+                            log.error(`Cound not send confirmation message for deleted reservation to the user [${req.session.user.id}] because of: ${error.toString()} - logging as failed with log id ${log_id_f.id}.`);
+                        }
 
                         if (course.message_cc_instructor) {
-                            let conversation_result_cc = await canvasApi.createConversation(instructor.canvas_user_id, subject_cc, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
-                            let log_id_cc = await db.addCanvasConversationLog(reservation.slot_id, reservation.id, reservation.canvas_course_id, instructor.canvas_user_id, subject_cc, body);
-                            
-                            log.info("Sent a copy of confirmation message of deleted reservation to the instructor, log id " + log_id_cc.id);
+                            try {
+                                await canvasApi.createConversation(instructor.canvas_user_id, subject_cc, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
+                                let log_id_cc = await db.addCanvasConversationLog(reservation.slot_id, reservation.id, reservation.canvas_course_id, instructor.canvas_user_id, subject_cc, body);
+                                log.info(`Sent a copy of confirmation message of deleted reservation to the instructor [${instructor.canvas_user_id}], log id ${log_id_cc.id}.`);
+                            }
+                            catch (error) {
+                                let log_id_f = await db.addFailedCanvasConversationLog(reservation.slot_id, reservation.id, reservation.canvas_course_id, instructor.canvas_user_id, subject_cc, body, error.toString());
+                                log.error(`Cound not send copy of confirmation message for deleted reservation to the instructor [${instructor.canvas_user_id}] because of: ${error.toString()} - logging as failed with log id ${log_id_f.id}.`);
+                            }
                         }
                     }
                     else {
