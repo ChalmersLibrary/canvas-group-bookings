@@ -58,7 +58,12 @@ document.addEventListener("DOMContentLoaded", function(event) {
             if (data.messages && data.messages.length) {
                 data.messages.forEach(msg => {
                     const md = slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_sentMessages').appendChild(document.createElement('div'))
-                    md.innerHTML = "<div class=\"message-timestamp\"><small><strong>" + msg.created_at.substring(0, 10) + " " + msg.created_at.substring(11, 16) + "</strong></small></div><div class=\"message-subject\"><small>" + msg.message_subject + "</small></div><div class=\"message-body\"><i class=\"expand-message-body a btn btn-sm float-end bi bi-arrows-angle-expand\"></i><small>" + msg.message_body.replaceAll("\n", "<br>") + "</small></div>"
+                    md.innerHTML = "<div class=\"message-timestamp\"><small><strong>" + msg.created_at.substring(0, 10) + " " + msg.created_at.substring(11, 16) + "</strong></small></div>"
+                    md.innerHTML += "<div class=\"message-subject\"><small>" + msg.message_subject + "</small></div>"
+                    if (!msg.success) {
+                        md.innerHTML += "<div class=\"message-error\"><i class=\"float-start pe-2 bi bi-exclamation-triangle-fill\"></i><small><strong>Error when sending message:</strong><br>" + msg.error_message + "</small></div>"
+                    }
+                    md.innerHTML += "<div class=\"message-body\"><i class=\"expand-message-body a btn btn-sm float-end bi bi-arrows-angle-expand\"></i><small>" + msg.message_body.replaceAll("\n", "<br>") + "</small></div>"
                 })
                 slotDetailsOffcanvas.querySelectorAll('#offcanvasSlotDetails_sentMessages i.expand-message-body').forEach(b => {
                     b.addEventListener('click', e => {

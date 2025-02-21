@@ -124,3 +124,9 @@ button.btn-md > i.bi {
     padding: 0.3rem 0.6rem 0.6rem 0.6rem;
     line-break: auto;
 }
+#offcanvasSlotDetails_sentMessages div.message-error {
+    background-color: rgb(255, 220, 220);
+    border-bottom: 1px solid rgb(109, 109, 109);
+    padding: 0.3rem 0.6rem 0.6rem 0.6rem;
+    line-break: auto;
+}
