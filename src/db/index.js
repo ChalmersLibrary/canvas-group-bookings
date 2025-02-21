@@ -389,7 +389,7 @@ async function getExtendedSlotReservations(id) {
 async function getSlotMessages(id) {
     let data;
 
-    await query("SELECT id, created_at, canvas_recipients, message_subject, message_body FROM canvas_conversation_log WHERE slot_id = $1 ORDER BY id DESC", [ id ]).then((result) => {
+    await query("SELECT id, created_at, canvas_recipients, message_subject, message_body, success, error_message FROM canvas_conversation_log WHERE slot_id = $1 ORDER BY id DESC", [ id ]).then((result) => {
         data = result.rows;
     }).catch((error) => {
         log.error(error);
