@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
                     md.innerHTML = "<div class=\"message-timestamp\"><small><strong>" + msg.created_at.substring(0, 10) + " " + msg.created_at.substring(11, 16) + "</strong></small></div>"
                     md.innerHTML += "<div class=\"message-subject\"><small>" + msg.message_subject + "</small></div>"
                     if (!msg.success) {
-                        md.innerHTML += "<div class=\"message-error\"><i class=\"float-start pe-2 bi bi-exclamation-triangle-fill\"></i><small><strong>Error when sending message:</strong><br>" + msg.error_message + "</small></div>"
+                        md.innerHTML += "<div class=\"message-error\"><i class=\"float-start pe-2 bi bi-exclamation-triangle-fill\"></i><small><strong>" + slotDetailsOffcanvas.querySelector('#offcanvasSlotDetails_sentMessages').getAttribute("data-error-prefix-text") + "</strong><br>" + msg.error_message + "</small></div>"
                     }
                     md.innerHTML += "<div class=\"message-body\"><i class=\"expand-message-body a btn btn-sm float-end bi bi-arrows-angle-expand\"></i><small>" + msg.message_body.replaceAll("\n", "<br>") + "</small></div>"
                 })

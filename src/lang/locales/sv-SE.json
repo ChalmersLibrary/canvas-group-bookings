@@ -120,6 +120,7 @@
 	"OffCanvasDetailsHeaderMessages": "Skickade meddelanden:",
 	"OffCanvasDetailsNoReservationsText": "Inga bokningar.",
 	"OffCanvasDetailsNoMessagesText": "Inga meddelanden har skickats.",
+	"OffCanvasDetailsMessagesErrorPrefix": "Ett fel uppstod när meddelandet skulle skickas:",
 	"OffCanvasDetailsDownloadIcalButtonText": "Kalenderpost",
 	"OffCanvasDetailsDownloadIcalButtonTitle": "Ladda ner detaljer till ditt kalenderprogram",
 	"OffCanvasDetailsManualMessageButtonText": "Meddelande",

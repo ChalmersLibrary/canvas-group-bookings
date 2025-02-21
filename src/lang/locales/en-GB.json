@@ -118,6 +118,7 @@
 	},
 	"OffCanvasDetailsHeaderReservations": "Reservations:",
 	"OffCanvasDetailsHeaderMessages": "Sent messages:",
+	"OffCanvasDetailsMessagesErrorPrefix": "There was an error when sending this message:",
 	"OffCanvasDetailsNoReservationsText": "No reservations.",
 	"OffCanvasDetailsNoMessagesText": "No messages sent.",
 	"OffCanvasDetailsDownloadIcalButtonText": "Calendar",

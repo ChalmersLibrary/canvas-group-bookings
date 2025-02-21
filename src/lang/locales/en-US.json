@@ -120,6 +120,7 @@
 	"OffCanvasDetailsHeaderMessages": "Sent messages:",
 	"OffCanvasDetailsNoReservationsText": "No reservations.",
 	"OffCanvasDetailsNoMessagesText": "No messages sent.",
+	"OffCanvasDetailsMessagesErrorPrefix": "There was an error when sending this message:",
 	"OffCanvasDetailsDownloadIcalButtonText": "Calendar",
 	"OffCanvasDetailsDownloadIcalButtonTitle": "Download details to calendar application",
 	"OffCanvasDetailsManualMessageButtonText": "Message",
