@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## Version 1.2.5
+
+2025-02-24. Failed messages log and error handling.
+
+* The sent messages log now includes if an error occured with Canvas API. Most likely this is because the conversation robot account is missing in the course.
+* Canvas API calls are now better logged with errors and handled better in code.
+* (Experimental) Elastic/Logstash connection, logs to remote endpoint with HTTP POST.
+
 ## Version 1.2.4
 
 2025-01-20. Responsive re-design of filters and better message log. 
