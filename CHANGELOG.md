@@ -7,6 +7,7 @@
 * The sent messages log now includes if an error occured with Canvas API. Most likely this is because the conversation robot account is missing in the course.
 * Canvas API calls are now better logged with errors and handled better in code.
 * (Experimental) Elastic/Logstash connection, logs to remote endpoint with HTTP POST.
+* Tested with Node 22 LTS.
 
 ## Version 1.2.4
 
