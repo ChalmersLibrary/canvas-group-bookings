@@ -34,9 +34,15 @@ router.all(['/', '/reservations', '/privacy', '/debug', '/admin*', '/api/*'], as
 
                 // Add the groups from Canvas for this user, only if active enrollment
                 if (req.session.lti.custom_canvas_enrollment_state && req.session.lti.custom_canvas_enrollment_state == "active") {
-                    let canvasGroupCategoryFilter = await db.getCourseGroupCategoryFilter(res.locals.courseId);
-                    req.session.user.groups = await canvasApi.getCourseGroupsSelfReference(res.locals.courseId, canvasGroupCategoryFilter, token);
-
+                    try {
+                        let canvasGroupCategoryFilter = await db.getCourseGroupCategoryFilter(res.locals.courseId);
+                        req.session.user.groups = await canvasApi.getCourseGroupsSelfReference(res.locals.courseId, canvasGroupCategoryFilter, token);
+                    }
+                    catch (error) {
+                        log.error(`Error fetching groups for user id ${req.session.user.id}: ${error.message}.`);
+                        req.session.user.groups = [];
+                    }
+                    
                     // Create arrays in user object for easy access and correct type mapping against db
                     req.session.user.groups_ids = new Array();
                     req.session.user.groups_human_readable = new Array();

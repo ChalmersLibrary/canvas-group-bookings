@@ -443,8 +443,15 @@ app.get('/admin', async (req, res, next) => {
  app.get('/admin/canvas', async (req, res, next) => {
     if (req.session.user.isAdministrator) {
         try {
-            let canvas_group_categories = await canvasApi.getCourseGroupCategories(res.locals.courseId, res.locals.token);
             const db_group_categories_filter = await db.getCourseGroupCategoryFilter(res.locals.courseId);
+            let canvas_group_categories = [];
+
+            try {
+                canvas_group_categories = await canvasApi.getCourseGroupCategories(res.locals.courseId, res.locals.token);                
+            }
+            catch (error) {
+                log.error("Could not get group categories from Canvas API: " + error.message);
+            }
             
             for (const c of canvas_group_categories) {
                 if (db_group_categories_filter.includes(c.id)) {
@@ -500,7 +507,7 @@ app.get('/admin', async (req, res, next) => {
             });
         }
         catch (error) {
-            throw new Error(error);
+            next(new Error(error));
         }
     }
     else {

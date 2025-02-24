@@ -339,7 +339,14 @@ router.get('/instructor', async (req, res, next) => {
     try {
         const course_instructors = await db.getInstructorsWithStatistics(res.locals.courseId);
         const all_instructors = await db.getAllInstructors();
-        let canvas_instructors = await canvasApi.getCourseTeacherEnrollments(res.locals.courseId, res.locals.token);
+        let canvas_instructors = [];
+        
+        try {
+            canvas_instructors = await canvasApi.getCourseTeacherEnrollments(res.locals.courseId, res.locals.token);
+        }
+        catch (error) {
+            log.error("Error fetching Canvas instructors: " + error.message);
+        }
 
         for (const i of canvas_instructors) {
             if (course_instructors.map(instructor => instructor.canvas_user_id.toString()).includes(i.id.toString())) {
