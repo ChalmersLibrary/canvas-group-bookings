@@ -205,21 +205,32 @@ router.post('/slot/:id/message', async (req, res, next) => {
                         if (body !== undefined && body !== null && body != '') {
                             body = body.replaceAll("{{message_text}}", message_text);
                             body = utils.replaceMessageMagics(body, course.name, "", course.cancellation_policy_hours, "", slot.time_human_readable, slot.location_name, "", "", slot.instructor_name, slot.instructor_email, "", "", req.session.lti.context_title);
-            
-                            let conversation_result = await canvasApi.createConversation(recipients, subject, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
 
-                            log.debug(conversation_result);
+                            try {
+                                await canvasApi.createConversation(recipients, subject, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
+                                let log_id = await db.addCanvasConversationLog(slot.id, null, slot.canvas_course_id, recipients, subject, body);
+                                log.info(`Sent manual message to [${recipients.join(", ")}], log id ${log_id.id}.`);
 
-                            let log_id = await db.addCanvasConversationLog(slot.id, null, slot.canvas_course_id, recipients, subject, body);
-                            log.info(`Sent message to [${recipients}] logged with id [${log_id.id}]`);    
-                            
-                            result = {
-                                success: true,
-                                message: res.__('ConversationRobotManualMessageSuccessResponse'),
-                                subject: subject,
-                                recipients: recipients,
-                                body: body
-                            };
+                                result = {
+                                    success: true,
+                                    message: res.__('ConversationRobotManualMessageSuccessResponse'),
+                                    subject: subject,
+                                    recipients: recipients,
+                                    body: body
+                                };
+                            }
+                            catch (error) {
+                                let log_id_f = await db.addFailedCanvasConversationLog(slot.id, null, slot.canvas_course_id, recipients, subject, body, error.toString());
+                                log.error(`Cound not send manual message to [${recipients.join(", ")}] because of: ${error.toString()} - logging as failed with log id ${log_id_f.id}.`);
+
+                                result = {
+                                    success: false,
+                                    message: error.toString(),
+                                    subject: subject,
+                                    recipients: recipients,
+                                    body: body
+                                };
+                            }
                         }
                         else {
                             result = {
@@ -236,7 +247,7 @@ router.post('/slot/:id/message', async (req, res, next) => {
                             message: error.message
                         };
 
-                        log.error("When sending confirmation message: " + error);
+                        log.error("When sending manual message: " + error);
                     }
                 }
                 else {

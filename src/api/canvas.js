@@ -227,10 +227,11 @@ async function createConversation(recipients, subject, body, token) {
                 else if (error.response.status == 401 && !error.response.headers['www-authenticate']) {
                     throw new Error("401, without www-authenticate header. Integration account not authorized in Canvas for use of this API endpoint.");
                 }
-                // Bad Request, often this means attribute "recipients" is invalid because integration account is not added so it has access to the recipients
+                // Bad Request, often this means attribute "recipients" is invalid because integration account is not added so it has access to the recipients.
+                // It could also be that the group doing a DELETE /reservation is deleted in Canvas.
                 else if (error.response.status == 400) {
                     log.error("Response data from Canvas Conversation API: " + JSON.stringify(error.response.data));
-                    throw new Error("400, Bad Request. Integration account most likely not added to Canvas course.");
+                    throw new Error("400, Bad Request. Integration account most likely not added to Canvas course or recipient group is missing.");
                 }
                 else {
                     log.error(error.code, error.message, error.response.data);
