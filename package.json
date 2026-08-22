@@ -9,7 +9,8 @@
   "scripts": {
     "dev": "node --watch-path=./src --watch-path=./views --watch-path=./app.js app.js",
     "build": "git rev-parse HEAD | cut -c1-7 > views/partials/git_latest_commit_hash.ejs",
-    "minifyjs": "uglifyjs public/assets/js/public.js --compress --mangle --warn --output public/assets/js/public.min.js"
+    "minifyjs": "uglifyjs public/assets/js/public.js --compress --mangle --warn --output public/assets/js/public.min.js",
+    "test": "node --test \"test/*.test.js\""
   },
   "nodemonConfig": {
     "ignore": [
