@@ -94,10 +94,33 @@ router.all(['/', '/reservations', '/privacy', '/debug', '/admin*', '/api/*'], as
         else {
             if (req.query.from == "callback") {
                 try {
-                    log.error("Coming from callback, but with no session. Third party cookies problem. Rendering special error page.");
-                    log.error(res.locals? res.locals : "res.locals does not exist.");
+                    /* The code cannot see why the session is unusable, so record what separates
+                       the two candidates instead of asserting one: a browser that never sent the
+                       cookie, which is a cookie policy and what cookie.partitioned addresses,
+                       against a cookie that arrived on an empty session, which is the store. The
+                       user agent says whether the browser is one partitioning helps. */
+                    const cookieName = process.env.SESSION_NAME ? process.env.SESSION_NAME : "LTI_TEST_SID";
+                    const cookieArrived = (req.headers.cookie || "").includes(cookieName + "=");
+                    /* express-session always puts `cookie` on the session, so anything beyond
+                       that one key means data came back with it. */
+                    const sessionHasData = req.session && Object.keys(req.session).length > 1;
 
-                    return res.render(res.locals.lang ? res.locals.lang : "en" + "/pages/error/session/index", {
+                    log.error("Callback with no usable session." +
+                        " Session cookie " + (cookieArrived ? "arrived" : "did NOT arrive") +
+                        ", session " + (sessionHasData ? "has data" : "is empty") +
+                        ", sid " + log.fingerprint(req.sessionID) +
+                        ", secure " + req.secure + ", protocol " + req.protocol +
+                        ", user agent " + JSON.stringify(req.headers['user-agent'] || "-"));
+
+                    /* The path has to be built before the ternary: `+` binds tighter than `?:`,
+                       so `lang ? lang : "en" + "/pages/..."` renders a template called "sv" when
+                       a language is set. It never fired because res.locals.lang is only set on
+                       the branch that has a session, but it made views/sv/.../session
+                       unreachable and would have broken the page the moment that changed. */
+                    const errorPage = (res.locals.lang ? res.locals.lang : "en") +
+                        "/pages/error/session/index";
+
+                    return res.render(errorPage, {
                         version: pkg.version,
                         internal: {
                             version: pkg.version,

@@ -82,9 +82,23 @@ morgan.token('user-id', function getUserId (req) {
 morgan.token('user-groups', function getUserGroups (req) {
     return req.session?.user?.groups_human_readable ? req.session.user.groups_human_readable : "-";
 });
+/* The OAuth callback is GET /callback?code=..., and :url would put that code in the access log.
+   The code is single use and consumed immediately, so it is not a live credential once written,
+   but the access log has no retention limit set while the application log does, so anything
+   written here stays. Keep secrets out of the url that gets logged. */
+morgan.token('url-redacted', function getRedactedUrl (req) {
+    const url = req.originalUrl || req.url;
+
+    if (!url) {
+        return "-";
+    }
+
+    return url.replace(/([?&](?:code|access_token|refresh_token|client_secret)=)[^&]*/gi,
+        "$1[redacted]");
+});
 
 // Setup https request logging
-app.use(morgan(':remote-addr [:date[clf]] ":method :url" :status :res[content-length] - :course-id :user-id ":user-groups" ":response-time ms" ":referrer" ":user-agent"', { stream: accessLogStream }))
+app.use(morgan(':remote-addr [:date[clf]] ":method :url-redacted" :status :res[content-length] - :course-id :user-id ":user-groups" ":response-time ms" ":referrer" ":user-agent"', { stream: accessLogStream }))
 
 // Content Security Policy
 app.use(function (req, res, next) {
@@ -100,6 +114,15 @@ if (process.env.NODE_ENV === "production") {
     app.set('trust proxy', 1);
     sessionOptions.cookie.secure = true;
     sessionOptions.cookie.sameSite = 'none';
+    /* The tool only ever runs in an iframe inside Canvas, so its session cookie is always a
+       third-party cookie. Browsers restrict those unless they are partitioned, and a cookie that
+       is not stored means no session at all, which for a tool with no other way in means nobody
+       can use it. Requires Secure, set above.
+
+       express-session supports this from 1.18.0, and package.json permits older, so check the
+       installed version rather than the range. test/session-cookie.test.js asserts the attribute
+       reaches the header. */
+    sessionOptions.cookie.partitioned = true;
 }
 
 // Session options

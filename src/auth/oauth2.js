@@ -51,7 +51,9 @@ function setupAuthEndpoints(app, callbackUrl) {
     
         try {
             const accessToken = await client.getToken(options);
-            log.debug("The resulting token from client.getToken(): " + JSON.stringify(accessToken.token));
+            log.debug("Got token from client.getToken() for user " + accessToken.token?.user?.id +
+                ", refresh_token " + log.fingerprint(accessToken.token?.refresh_token) +
+                ", expires " + accessToken.token?.expires_at);
 
             // Persist the access token to db
             await persistAccessToken(accessToken.token).then(async (result) => {
@@ -126,7 +128,11 @@ async function checkAccessToken(req) {
 
                     try {
                         let newAccessToken = await accessToken.refresh();
-                        await log.debug("accessToken.refresh: ", newAccessToken);
+                        /* Canvas does not rotate the refresh token, so the fingerprint should be
+                           unchanged across a refresh. That is the thing worth seeing here. */
+                        await log.debug("accessToken.refresh returned, expires " +
+                            newAccessToken.token?.expires_at + ", refresh_token " +
+                            log.fingerprint(newAccessToken.token?.refresh_token));
 
                         const newAccessTokenWithRefreshToken = JSON.parse(JSON.stringify(newAccessToken));
                         newAccessTokenWithRefreshToken.refresh_token = accessToken.token.refresh_token; // https://canvas.instructure.com/doc/api/file.oauth.html#using-refresh-tokens
@@ -251,11 +257,12 @@ async function persistAccessToken(token) {
     let client = process.env.AUTH_CLIENT_ID;
     let userId = token.user.global_id && process.env.USERID_PREFIX_FORCE_GLOBAL_ID && token.user.global_id.startsWith(process.env.USERID_PREFIX_FORCE_GLOBAL_ID) ? token.user.global_id : token.user.id;
 
-    log.debug("Persisting access token for user " + userId + ", domain " + domain + ", client " + client + ": " + JSON.stringify(token));
+    log.debug("Persisting access token for user " + userId + ", domain " + domain + ", client " +
+        client + ", refresh_token " + log.fingerprint(token.refresh_token));
 
     if (token.user.global_id.startsWith(process.env.USERID_PREFIX_FORCE_GLOBAL_ID)) {
         token.user.id = token.user.global_id;
-        log.debug("Fixed user.id in token, copied from user.global_id: " + JSON.stringify(token));
+        log.debug("Fixed user.id in token, copied from user.global_id: " + token.user.global_id);
     }
 
     await db.query("INSERT INTO user_token (canvas_user_id, canvas_domain, canvas_client_id, data, updated_at) VALUES ($1, $2, $3, $4, now()) ON CONFLICT (canvas_user_id, canvas_domain, canvas_client_id) DO UPDATE SET data = EXCLUDED.data, updated_at = now()", [
@@ -266,7 +273,10 @@ async function persistAccessToken(token) {
     ]).then((result) => {
         log.debug("Access token persisted to db, bound to user id " + userId + " for domain " + domain);
     }).catch((error) => {
-        log.error("Persisting access token", token, error);
+        /* Never the token itself. error level is not filtered by NODE_ENV, so anything passed
+           here reaches the log file in every environment. */
+        log.error("Persisting access token failed for user " + userId + ", domain " + domain +
+            ", client " + client, error);
     });
 }
 
