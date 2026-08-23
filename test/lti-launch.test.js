@@ -22,11 +22,16 @@ const CONSUMER = 'testconsumer';
 
 process.env.LTI_KEYS = `${CONSUMER}:${SECRET}`;
 process.env.NODE_ENV = 'production';
+/* The Canvas this deployment serves. The default launch body reports 127.0.0.1 as its api domain,
+   so a launch from anywhere else is the mismatch case. */
+process.env.AUTH_HOST = 'https://127.0.0.1';
+delete process.env.API_HOST;
+delete process.env.LTI_ALLOWED_API_DOMAINS;
 
 const express = require('express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
-const { signedLaunch } = require('./helpers/lti');
+const { signedLaunch, signLaunch } = require('./helpers/lti');
 const lti = require('../src/lti/canvas');
 
 const request = (port, path, method, headers, payload, cookie) => new Promise((resolve, reject) => {
@@ -169,21 +174,13 @@ test('the LTI launch', async (t) => {
         assert.equal(status, 500, 'an invalid signature must not be accepted');
     });
 
-    /*
-     * Refused, but by accident rather than by design. getSecret calls back with an error that
-     * carries status 403; handleLaunch logs it and carries on without returning, so it builds
-     * an ims-lti Provider with an undefined secret, which throws. The launch is therefore
-     * refused by whatever error handler is mounted — 400 here and in src/routes/index.js — and
-     * the 403 the code went to the trouble of setting is discarded. Asserted as "refused"
-     * rather than as a specific code, because the code comes from the error handler and not
-     * from the launch path.
-     */
-    await t.test('a launch for an unknown consumer key is refused', async () => {
+    /* getSecret sets status 403 on its error, and handleLaunch now returns rather than building
+       a provider with an undefined secret and letting the throw be caught by an error handler. */
+    await t.test('a launch for an unknown consumer key is refused with its own status', async () => {
         const { status } = await launch(payloadFor({ oauth_consumer_key: 'not-a-consumer' }))
             .catch((error) => ({ status: `the connection failed: ${error.code}` }));
 
-        assert.ok(status >= 400 && status < 600,
-            `an unknown consumer must not be accepted, got ${status}`);
+        assert.equal(status, 403, 'an unknown consumer must not be accepted');
     });
 
     /*
@@ -210,24 +207,106 @@ test('the LTI launch', async (t) => {
      * the session, which is what routes/index.js reads to decide whether it has a user, so the
      * launch would be sent into the OAuth flow for no reason.
      */
+    /* The redirect used to sit outside the validation callback, so a refused launch was answered
+       and then redirected, throwing ERR_HTTP_HEADERS_SENT on every one. */
+    await t.test('a refused launch does not throw after answering', async () => {
+        errors.length = 0;
+
+        await launch(payloadFor({}, 'wrong-secret'));
+        await new Promise((r) => setTimeout(r, 100));
+
+        assert.deepEqual(errors.map((error) => error.code), [],
+            'the refusal also tried to redirect, so the response was written twice');
+    });
+
     /*
-     * Marked todo rather than failing, so the suite stays usable as a baseline for the module
-     * upgrade. Turn it into a plain test the moment handleLaunch stops redirecting outside the
-     * validation callback; the fix is to move `return res.redirect(page)` into the success
-     * branch of valid_request.
+     * Non-production Canvas environments are reset from production, so ids match across them and a
+     * launch from the wrong one would be served this deployment's data without failing. The launch
+     * says which Canvas it came from; the deployment knows which one it serves.
      */
-    await t.test('a refused launch does not throw after answering',
-        { todo: 'handleLaunch redirects outside the valid_request callback (src/lti/canvas.js:138)' },
-        async () => {
-            errors.length = 0;
+    await t.test('a launch from a Canvas this deployment does not serve is refused', async () => {
+        errors.length = 0;
 
-            await launch(payloadFor({}, 'wrong-secret'));
-            await new Promise((r) => setTimeout(r, 100));
+        const { status } = await launch(payloadFor({ custom_canvas_api_domain: 'other.instructure.com' }));
 
-            assert.deepEqual(errors.map((error) => error.code), [],
-                'answering 500 and then redirecting throws ERR_HTTP_HEADERS_SENT on every ' +
-                'forged or misconfigured launch');
-        });
+        assert.equal(status, 409, 'a launch from another Canvas must not be served');
+        assert.deepEqual(errors.map((error) => error.code), [], 'and it must not throw either');
+    });
+
+    await t.test('a launch with no api domain is still accepted, since it cannot be checked', async () => {
+        /* Signed after removing the field, so only the missing domain is under test. */
+        const body = signedLaunch(launchUrl, SECRET, {});
+
+        delete body.custom_canvas_api_domain;
+        delete body.oauth_signature;
+        body.oauth_signature = signLaunch(launchUrl, body, SECRET);
+
+        const { status } = await launch(new URLSearchParams(body).toString());
+
+        assert.equal(status, 302,
+            'a privacy level that omits the api domain must not make launches impossible');
+    });
+
+    /*
+     * ims-lti defines `body` on the Provider prototype rather than per instance, so every launch
+     * in the process writes into one shared object and nothing ever clears it. A launch that omits
+     * a field would inherit the previous launch's value for it — across users, concurrently. The
+     * launch must therefore be read from req.body. This is the regression test for that: launch
+     * once with a course id, then launch without one, and the second must not inherit the first.
+     */
+    await t.test('a launch does not inherit fields from the launch before it', async () => {
+        await launch(payloadFor({ custom_canvas_course_id: '999', context_title: 'First course' }));
+
+        const body = signedLaunch(launchUrl, SECRET, {});
+
+        delete body.custom_canvas_course_id;
+        delete body.context_title;
+        delete body.oauth_signature;
+        body.oauth_signature = signLaunch(launchUrl, body, SECRET);
+
+        const { setCookie } = await launch(new URLSearchParams(body).toString());
+
+        assert.ok(setCookie, 'the second launch should be accepted');
+
+        await new Promise((r) => setTimeout(r, 250));
+
+        const { body: probed } = await request(port, '/probe', 'GET', {}, null, setCookie.split(';')[0]);
+        const { lti: launched } = JSON.parse(probed);
+
+        assert.equal(launched.custom_canvas_course_id, undefined,
+            'the course id came from the previous launch');
+        assert.equal(launched.context_title, undefined,
+            'the course title came from the previous launch');
+    });
+
+    /* A launch need not carry a locale, and one that does not must still work. */
+    await t.test('a launch with no locale still gets a full locale', async () => {
+        const body = signedLaunch(launchUrl, SECRET, {});
+
+        delete body.launch_presentation_locale;
+        delete body.oauth_signature;
+        body.oauth_signature = signLaunch(launchUrl, body, SECRET);
+
+        const { status, setCookie } = await launch(new URLSearchParams(body).toString());
+
+        assert.equal(status, 302, 'a launch without a locale must not fail');
+
+        await new Promise((r) => setTimeout(r, 250));
+
+        const { body: probed } = await request(port, '/probe', 'GET', {}, null, setCookie.split(';')[0]);
+
+        assert.equal(JSON.parse(probed).lti.locale_full, 'en-US');
+    });
+
+    await t.test('LTI_ALLOWED_API_DOMAINS admits another Canvas deliberately', async () => {
+        process.env.LTI_ALLOWED_API_DOMAINS = 'other.instructure.com';
+
+        t.after(() => { delete process.env.LTI_ALLOWED_API_DOMAINS; });
+
+        const { status } = await launch(payloadFor({ custom_canvas_api_domain: 'other.instructure.com' }));
+
+        assert.equal(status, 302, 'an explicitly allowed domain should be served');
+    });
 
     await t.test('the session carries the launch before the redirect is answered', async () => {
         const { setCookie } = await launch(payloadFor({}));

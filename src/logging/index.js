@@ -17,7 +17,15 @@ require('dotenv').config();
  * such) and fingerprinting those would throw away the diagnosis. The authorization code in the
  * OAuth callback is redacted where it actually appears, in the morgan url token in app.js.
  */
-const SECRET_KEY = /^(access_token|refresh_token|api_token|client_secret|password|secret|authorization)$/i;
+const SECRET_KEY = /^(access_token|refresh_token|api_token|client_secret|password|secret|authorization|cookie)$/i;
+
+/*
+ * An LTI launch body carries personal data under innocuous names: lis_person_sourcedid is the
+ * personnummer, and ims-lti derives `username` from the given name. None of it belongs in a log,
+ * and the opaque ids beside it are what a launch is actually debugged with. Redacted outright
+ * rather than fingerprinted, since there is no reason to compare one occurrence with another.
+ */
+const PERSONAL_KEY = /^(lis_person_sourcedid|lis_person_contact_email_primary|lis_person_name_full|lis_person_name_given|lis_person_name_family|lis_person_name_sourcedid|custom_canvas_user_login_id|username)$/i;
 
 /* The same shape in a log and in a database row can be compared without either being readable. */
 const fingerprint = (value) => {
@@ -29,6 +37,19 @@ const fingerprint = (value) => {
 
     return 'sha256:' + crypto.createHash('sha256').update(text).digest('hex').slice(0, 12) +
         ' len=' + text.length;
+};
+
+/* One key/value pair: a credential becomes a fingerprint, personal data goes entirely. */
+const redactValue = (key, item, seen) => {
+    if (PERSONAL_KEY.test(key)) {
+        return '[redacted]';
+    }
+
+    if (SECRET_KEY.test(key) && (item === null || typeof item !== 'object')) {
+        return fingerprint(item);
+    }
+
+    return sanitize(item, seen);
 };
 
 /* Replace credential values, turn Errors into something json() will not flatten to {}. */
@@ -48,9 +69,7 @@ const sanitize = (value, seen = new WeakSet()) => {
 
         for (const [key, item] of Object.entries(value)) {
             if (!(key in out)) {
-                out[key] = SECRET_KEY.test(key) && (item === null || typeof item !== 'object')
-                    ? fingerprint(item)
-                    : sanitize(item, seen);
+                out[key] = redactValue(key, item, seen);
             }
         }
 
@@ -74,9 +93,7 @@ const sanitize = (value, seen = new WeakSet()) => {
     const out = {};
 
     for (const [key, item] of Object.entries(value)) {
-        out[key] = SECRET_KEY.test(key) && (item === null || typeof item !== 'object')
-            ? fingerprint(item)
-            : sanitize(item, seen);
+        out[key] = redactValue(key, item, seen);
     }
 
     return out;
@@ -84,7 +101,7 @@ const sanitize = (value, seen = new WeakSet()) => {
 
 /* A token stringified into the message is not reachable by key, so the text needs scrubbing too. */
 const redactText = (text) => text.replace(
-    /("(?:access_token|refresh_token|api_token|client_secret)"\s*:\s*)"[^"]*"/gi,
+    /("(?:access_token|refresh_token|api_token|client_secret|lis_person_sourcedid|lis_person_contact_email_primary|lis_person_name_full|lis_person_name_given|lis_person_name_family|custom_canvas_user_login_id)"\s*:\s*)"[^"]*"/gi,
     '$1"[redacted]"');
 
 /* Errors are left alone so the errors({ stack: true }) format can still expand them. */
