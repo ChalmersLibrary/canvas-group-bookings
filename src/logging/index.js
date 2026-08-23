@@ -168,18 +168,31 @@ if (process.env.NODE_ENV !== 'production') {
     });
 }
 
+/*
+ * One meta argument is sent as itself and several as an array, so the common case — an Error
+ * beside a message — arrives as an object rather than a one-element list.
+ */
+const forLogstash = (meta) => (meta.length === 1 ? meta[0] : (meta.length ? meta : undefined));
+
 async function info(msg, ...meta) {
     const message = scrubMessage(msg);
+    const detail = sanitize(meta);
 
-    await logger.log({ level: 'info', message, ...sanitize(meta) });
-    await logstashLogger?.info(message);
+    await logger.log({ level: 'info', message, ...detail });
+    await logstashLogger?.info(message, forLogstash(detail));
 }
 async function error(msg, ...meta) {
     const message = scrubMessage(msg);
+    const detail = sanitize(meta);
 
-    await logger.error({ level: 'error', message, ...sanitize(meta) });
-    await logstashLogger?.error(message);
+    await logger.error({ level: 'error', message, ...detail });
+    await logstashLogger?.error(message, forLogstash(detail));
 }
+/*
+ * Deliberately not sent to logstash. winston filters debug by level, but a direct call would not
+ * be, so every debug line would be shipped in production — the volume it was filtered out to
+ * avoid, and the level that carries whole objects.
+ */
 async function debug(msg, ...meta) {
     await logger.debug({ level: 'debug', message: scrubMessage(msg), ...sanitize(meta) });
 }
