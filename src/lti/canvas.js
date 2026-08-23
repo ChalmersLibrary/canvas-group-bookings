@@ -69,6 +69,16 @@ const servedApiDomains = () => {
     return [...new Set([...configured, ...alsoAllowed])];
 };
 
+/* Whether a launch from a Canvas this installation is not configured for is refused or merely
+   reported. Reporting is the default: an installation whose configured host does not match the
+   name Canvas reports for itself would refuse every launch, and there is no other way into the
+   tool. Enable only after the log has shown the two agree. */
+const enforceApiDomain = () => {
+    const value = (process.env.LTI_ENFORCE_API_DOMAIN || '').trim().toLowerCase();
+
+    return value === 'true' || value === '1' || value === 'yes';
+};
+
 /* Enough of a launch to diagnose one, and nothing personal. lis_person_sourcedid carries the
    personnummer; the name, the email and the login id are personal too, and ims-lti derives
    `username` from the given name. The opaque ids are what a launch is actually debugged with. */
@@ -132,10 +142,20 @@ exports.handleLaunch = (page) => function(req, res) {
                 const served = servedApiDomains();
 
                 if (launchDomain && served.length && !served.includes(launchDomain)) {
-                    log.error("Launch refused: it came from Canvas api domain '" + launchDomain +
-                        "', and this installation serves '" + served.join("', '") + "'.");
+                    /* Reported at info level, which survives NODE_ENV, because the two names an
+                       instance answers to need not match what it reports here, and the only way to
+                       learn what it reports is to see it in a log. */
+                    log.info("Launch is from Canvas api domain '" + launchDomain +
+                        "', and this installation is configured for '" + served.join("', '") +
+                        "'. Enforcing: " + (enforceApiDomain() ? "yes, refusing it" : "no, serving it anyway") + ".");
 
-                    return res.status(409).json('This installation does not serve the Canvas it was launched from.');
+                    /* Off by default, deliberately. A configured host that does not match what
+                       Canvas reports would otherwise refuse every launch, and this tool has no
+                       other way in: getting it wrong locks out everybody rather than degrading.
+                       Turn it on once the log above has confirmed the two agree. */
+                    if (enforceApiDomain()) {
+                        return res.status(409).json('This installation does not serve the Canvas it was launched from.');
+                    }
                 }
 
                 if (!launchDomain) {

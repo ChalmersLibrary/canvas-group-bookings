@@ -224,13 +224,45 @@ test('the LTI launch', async (t) => {
      * launch from the wrong one would be served this deployment's data without failing. The launch
      * says which Canvas it came from; the deployment knows which one it serves.
      */
-    await t.test('a launch from a Canvas this deployment does not serve is refused', async () => {
+    /* Off by default. A configured host that does not match the name Canvas reports for itself
+       would refuse every launch, and there is no other way into the tool, so the safe default is
+       to report and serve. */
+    await t.test('a launch from another Canvas is served by default, and reported', async () => {
         errors.length = 0;
 
         const { status } = await launch(payloadFor({ custom_canvas_api_domain: 'other.instructure.com' }));
 
-        assert.equal(status, 409, 'a launch from another Canvas must not be served');
-        assert.deepEqual(errors.map((error) => error.code), [], 'and it must not throw either');
+        assert.equal(status, 302, 'without enforcement the launch must still work');
+        assert.deepEqual(errors.map((error) => error.code), [], 'and it must not throw');
+    });
+
+    await t.test('with enforcement on, a launch from another Canvas is refused', async () => {
+        process.env.LTI_ENFORCE_API_DOMAIN = 'true';
+
+        try {
+            errors.length = 0;
+
+            const { status } = await launch(payloadFor({ custom_canvas_api_domain: 'other.instructure.com' }));
+
+            assert.equal(status, 409, 'a launch from another Canvas must not be served');
+            assert.deepEqual(errors.map((error) => error.code), [], 'and it must not throw either');
+        }
+        finally {
+            delete process.env.LTI_ENFORCE_API_DOMAIN;
+        }
+    });
+
+    await t.test('with enforcement on, the Canvas it does serve still works', async () => {
+        process.env.LTI_ENFORCE_API_DOMAIN = 'true';
+
+        try {
+            const { status } = await launch(payloadFor({}));
+
+            assert.equal(status, 302, 'the configured Canvas must always be served');
+        }
+        finally {
+            delete process.env.LTI_ENFORCE_API_DOMAIN;
+        }
     });
 
     await t.test('a launch with no api domain is still accepted, since it cannot be checked', async () => {
@@ -298,14 +330,19 @@ test('the LTI launch', async (t) => {
         assert.equal(JSON.parse(probed).lti.locale_full, 'en-US');
     });
 
-    await t.test('LTI_ALLOWED_API_DOMAINS admits another Canvas deliberately', async () => {
+    await t.test('LTI_ALLOWED_API_DOMAINS admits another Canvas even under enforcement', async () => {
         process.env.LTI_ALLOWED_API_DOMAINS = 'other.instructure.com';
+        process.env.LTI_ENFORCE_API_DOMAIN = 'true';
 
-        t.after(() => { delete process.env.LTI_ALLOWED_API_DOMAINS; });
+        try {
+            const { status } = await launch(payloadFor({ custom_canvas_api_domain: 'other.instructure.com' }));
 
-        const { status } = await launch(payloadFor({ custom_canvas_api_domain: 'other.instructure.com' }));
-
-        assert.equal(status, 302, 'an explicitly allowed domain should be served');
+            assert.equal(status, 302, 'an explicitly allowed domain should be served');
+        }
+        finally {
+            delete process.env.LTI_ALLOWED_API_DOMAINS;
+            delete process.env.LTI_ENFORCE_API_DOMAIN;
+        }
     });
 
     await t.test('the session carries the launch before the redirect is answered', async () => {
