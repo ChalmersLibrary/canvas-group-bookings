@@ -10,6 +10,7 @@
 * A launch from a Canvas that the installation is not set up for is now reported in the log, and can optionally be refused.
 * The tool now states at startup which Canvas, which database, which runtime version and which log destination it is running with. A wrong setting previously looked exactly like a correct one.
 * Long-lived Canvas credentials and authorization codes are no longer written to any log file.
+* The tool can now restrict which sites are allowed to embed it, via a new `CSP_FRAME_ANCESTORS` setting naming the Canvas hosts. Left unset, any site may embed it, which is how it behaved before.
 * The Swedish error page for session problems is now reachable; it was previously always shown in English.
 * Remote logging now includes the structured detail of an entry, not only its message, so it can replace the log files rather than summarise them.
 * Dependency upgrades: the OAuth, security header, session store, logging and configuration libraries all moved to current major versions, and three unused dependencies were removed. All reported vulnerabilities are now cleared.

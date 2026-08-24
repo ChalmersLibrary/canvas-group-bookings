@@ -51,6 +51,7 @@ const appWithHeaders = () => {
 
 test('the headers an embedded tool depends on', async (t) => {
     delete process.env.CSP_FRAME_SRC_ALLOW;
+    delete process.env.CSP_FRAME_ANCESTORS;
 
     const server = appWithHeaders().listen(0);
 
@@ -75,6 +76,36 @@ test('the headers an embedded tool depends on', async (t) => {
 
     await t.test('helmet still sets the protections that do not concern framing', () => {
         assert.equal(headers['x-content-type-options'], 'nosniff');
+    });
+});
+
+test('who is allowed to embed the tool', async (t) => {
+    t.after(() => delete process.env.CSP_FRAME_ANCESTORS);
+
+    await t.test('unconfigured, the directive is absent and any site may frame the tool', () => {
+        /* The permissive default is deliberate. A frame-ancestors that omits one Canvas host in
+           use denies every launch from it, and the tool has no other way in, so this has to be
+           something a deployment turns on rather than something a deploy imposes. */
+        delete process.env.CSP_FRAME_ANCESTORS;
+
+        assert.doesNotMatch(configuration.contentSecurityPolicy(), /frame-ancestors/);
+    });
+
+    await t.test('configured, it names the hosts and nothing else', () => {
+        process.env.CSP_FRAME_ANCESTORS = 'https://canvas.example.se https://*.example.com';
+
+        assert.match(configuration.contentSecurityPolicy(),
+            /; frame-ancestors https:\/\/canvas\.example\.se https:\/\/\*\.example\.com$/);
+    });
+
+    await t.test('it is reported at startup, since a wrong value denies every launch', () => {
+        process.env.CSP_FRAME_ANCESTORS = 'https://canvas.example.se';
+
+        assert.equal(configuration.summary().frame_ancestors, 'https://canvas.example.se');
+
+        delete process.env.CSP_FRAME_ANCESTORS;
+
+        assert.match(configuration.summary().frame_ancestors, /any site may embed/);
     });
 });
 
