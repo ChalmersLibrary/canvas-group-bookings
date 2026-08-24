@@ -30,7 +30,7 @@ For all this to work, these steps are required:
 
 ## Requirements
 
-This application requires PostgreSQL (12) as a database backend for storing time slots, reservations etc. Also sessions are stored in database. It is possible that other database engines could be used, all SQL code is in ```db/setup.sql``` and database upgrades are handled with a basic increasing number pattern, ie ```setup_2.sql``` etc for db upgrades from version 1 (baseline). 
+This application requires PostgreSQL (12) as a database backend for storing time slots, reservations etc. Also sessions are stored in database. It is possible that other database engines could be used, all SQL code is in ```src/db/setup.sql``` and database upgrades are handled with a basic increasing number pattern, ie ```setup_2.sql``` etc for db upgrades from version 1 (baseline). 
 
 All other requirements are Node-related modules specified in ```packages.json```.
 
@@ -55,30 +55,20 @@ Two things to expect: the file is read once at startup, so changes need a restar
 
 ## Starting
 
-To start on your local machine, just type ```npm run dev```. This should start nodemon and the application on port 3000. The first time, database tables and views will be created from ```db/setup.sql``` and then
-the newer versions will be applied from sql files. Reloading the application will always check for new sql file versions to apply.
+Start it with ```npm run dev```, which runs the application on port 3000 and restarts it when a file under ```src```, ```views``` or ```app.js``` changes. Node does the watching itself, so there is nothing else to install.
 
-```js
-> canvas-group-bookings@1.1.2 dev
-> nodemon --trace-warnings app.js
+The application must be started from the repository root. Several paths are resolved against the working directory, including the log files, the ```.env``` file and the migration files, and a missing migration file is indistinguishable from being up to date.
 
-[nodemon] 2.0.19
-[nodemon] to restart at any time, enter `rs`
-[nodemon] watching path(s): *.*
-[nodemon] watching extensions: js,mjs,json
-[nodemon] starting `node --trace-warnings app.js`
-setting logger.level to debug because process.env.NODE_ENV=development
-debug: This is not a production environment. {"timestamp":"2023-05-16T14:25:44.628Z"}
-info: Application listening on port 3000. {"timestamp":"2023-05-16T14:25:44.636Z"}
-info: Pool connected. {"timestamp":"2023-05-16T14:25:44.856Z"}
-info: Pool connected. {"timestamp":"2023-05-16T14:25:44.873Z"}
-info: Pool connected. {"timestamp":"2023-05-16T14:25:44.899Z"}
-debug: Executed query {"0":{"duration":291,"rows":1,"text":"SELECT db_version FROM version ORDER BY applied_at DESC LIMIT 1"},"timestamp":"2023-05-16T14:25:44.919Z"}
-debug: Executed query {"0":{"duration":302,"rows":1,"text":"SELECT to_regclass($1::text)"},"timestamp":"2023-05-16T14:25:44.942Z"}
-debug: Executed query {"0":{"duration":42,"rows":1,"text":"SELECT db_version FROM version ORDER BY applied_at DESC LIMIT 1"},"timestamp":"2023-05-16T14:25:44.962Z"}
-info: Current db_version is 5 {"timestamp":"2023-05-16T14:25:44.964Z"}
-debug: Executed query {"0":{"duration":45,"rows":3,"text":"DELETE FROM \"user_session\" WHERE expire < to_timestamp($1)"},"timestamp":"2023-05-16T14:25:44.987Z"}
-```
+The first start creates the tables and views from ```src/db/setup.sql```, then applies each ```setup_<n>.sql``` in turn. Every start repeats that check, so a new file is applied by restarting. A migration that fails is logged and **does not stop the application**, which then serves on a half-applied schema, so the startup output is worth reading rather than glancing at.
+
+Two lines say whether the start was healthy: one giving the port, and one naming the Canvas, database, runtime and log destination the instance is configured with. The second is the quickest way to confirm an instance is pointed where you think it is. In development the level is raised to debug and everything also goes to the console; in production only these and genuine events are written.
+
+
+## Tests
+
+```npm test``` runs the test suite. It needs no database and reaches nothing outside the machine; where a test needs a server to talk to, it starts one on the loopback address.
+
+Every test file moves the process into a temporary directory before requiring anything from the application, so a run cannot write into the working copy and cannot find the ```.env``` or ```mock-lti.json``` belonging to the developer. That has to happen first in the file, because the logging module resolves its path when it is required.
 
 
 ## Student preview in the tool
