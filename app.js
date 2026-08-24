@@ -1081,7 +1081,7 @@ app.get('/api/statistics', async (req, res, next) => {
 log.debug("This is not a production environment.");
 
 /* Set server to listen and start working! */
-app.listen(port, () => {
+const server = app.listen(port, () => {
     log.info(`Application listening on port ${port}.`);
 
     /* Which Canvas, which database and where the log goes are set outside the code and cannot be
@@ -1098,3 +1098,13 @@ process.on('uncaughtException', (err) => {
     console.error("Uncaught exception!", err);
     process.exit(1); //mandatory (as per the Node docs)
 });
+
+/*
+ * Exported so a caller can shut the server down, which is what a test driving the whole
+ * application needs and what requiring this file otherwise makes impossible.
+ *
+ * Requiring it still starts a listener and still runs the schema check against whatever the PG
+ * environment points at, so a test that requires this file must point that environment at a
+ * database it is allowed to write to. Never the one a developer works in.
+ */
+module.exports = { app, server };
