@@ -18,11 +18,20 @@ router.post('/lti', lti.handleLaunch('/'));
 // Setup OAuth2 endpoints and communication
 auth.setupAuthEndpoints(router, process.env.AUTH_REDIRECT_CALLBACK);
 
+/*
+ * The paths that require a token and an LTI session. A page reachable without passing through
+ * here has no user, so anything added to the application belongs in this list.
+ *
+ * A wildcard segment is named, and matches one or more segments after the prefix but not the
+ * prefix alone, which is why the admin root is listed separately from what is under it.
+ */
+const guardedPaths = ['/', '/reservations', '/privacy', '/debug', '/admin', '/admin/*splat', '/api/*splat'];
+
 /**
  * General middleware that runs first, checking access token and LTI session.
  * Also populates session object with user information like id, name, groups.
  */
-router.all(['/', '/reservations', '/privacy', '/debug', '/admin*', '/api/*'], async function (req, res, next) {
+router.all(guardedPaths, async function (req, res, next) {
     await auth.checkAccessToken(req).then(async (token) => {
         if (token !== undefined && token.success === true) {
             await user.mockLtiSession(req);
@@ -162,3 +171,6 @@ router.use((err, req, res, next) => {
 });
 
 module.exports = router;
+
+/* Exposed so the paths themselves can be tested, rather than a copy of them. */
+module.exports.guardedPaths = guardedPaths;

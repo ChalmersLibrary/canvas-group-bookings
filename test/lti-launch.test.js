@@ -30,7 +30,7 @@ delete process.env.LTI_ALLOWED_API_DOMAINS;
 
 const express = require('express');
 const session = require('express-session');
-const bodyParser = require('body-parser');
+
 const { signedLaunch, signLaunch } = require('./helpers/lti');
 const lti = require('../src/lti/canvas');
 
@@ -72,7 +72,7 @@ const request = (port, path, method, headers, payload, cookie) => new Promise((r
 test('the LTI launch', async (t) => {
     const app = express();
 
-    app.use(bodyParser.urlencoded({ extended: false }));
+    app.use(express.urlencoded({ extended: false }));
     app.use(session({ secret: 'test-secret', resave: false, saveUninitialized: false }));
     app.post('/lti', lti.handleLaunch('/'));
 

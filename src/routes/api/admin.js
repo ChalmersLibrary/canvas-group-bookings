@@ -15,9 +15,10 @@ const EXPORTS_CSV_PATH = "exports/";
 /* ============================ */
 
 /**
- * General match for checking administrator status, otherwise we return a JSON error message
+ * General match for checking administrator status, otherwise we return a JSON error message.
+ * No path, so it guards every endpoint mounted here including any added later.
  */
-router.use('/*', async (req, res, next) => {
+router.use(async (req, res, next) => {
     if (!req.session.user.isAdministrator) {
         return res.send({
             success: false,

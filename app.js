@@ -4,7 +4,6 @@ require('dotenv').config();
 
 const pkg = require('./package.json');
 const i18n = require('./src/lang/i18n.config');
-const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
 const log = require('./src/logging/');
@@ -54,15 +53,14 @@ app.set('json spaces', 2);
 app.use("/assets",
     express.static(__dirname + '/public/assets')
 );
-app.use(bodyParser.urlencoded({
-    extended: false
-}));
 app.use(helmet({
     frameguard: false
 }));
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+/* Not extended: an LTI launch and the forms here are flat, and the parser that ran first decided
+   this before, since a body is only parsed once. */
+app.use(express.urlencoded({ extended: false }));
 
 // Create a rotating write stream for request access logging
 var accessLogStream = rfs.createStream('access.log', {
