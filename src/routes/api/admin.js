@@ -6,6 +6,7 @@ const log = require('../../logging/');
 const db = require('../../db');
 const canvasApi = require('../../api/canvas');
 const utils = require('../../utilities');
+const { logWrites } = require('./write-log');
 const fs = require('fs');
 
 const EXPORTS_CSV_PATH = "exports/";
@@ -13,6 +14,10 @@ const EXPORTS_CSV_PATH = "exports/";
 /* ============================ */
 /* API Endpoints, administrator */
 /* ============================ */
+
+/* Before the administrator check, so an attempted write by someone without the role is recorded
+   as well as a permitted one. The line carries whether the caller held the role. */
+router.use(logWrites('admin'));
 
 /**
  * General match for checking administrator status, otherwise we return a JSON error message.

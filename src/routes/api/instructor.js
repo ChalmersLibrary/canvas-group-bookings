@@ -7,11 +7,16 @@ const db = require('../../db');
 const utils = require('../../utilities');
 const ical = require('../../ical');
 const canvasApi = require('../../api/canvas');
+const { logWrites } = require('./write-log');
 const crypto = require('crypto');
 
 /* ========================= */
 /* API Endpoints, instructor */
 /* ========================= */
+
+/* Slots are created, changed and deleted here, and they belong to a course resolved the same way
+   the administration endpoints resolve it. */
+router.use(logWrites('instructor'));
 
 /**
  * Get iCalendar entry for one specific slot
