@@ -18,6 +18,7 @@ const db = require('./src/db');
 const utils = require('./src/utilities');
 const cache = require('./src/cache');
 const routes = require('./src/routes');
+const configuration = require('./src/configuration');
 const morgan = require('morgan');
 const rfs = require('rotating-file-stream');
 const path = require('path');
@@ -1082,7 +1083,16 @@ app.get('/api/statistics', async (req, res, next) => {
 log.debug("This is not a production environment.");
 
 /* Set server to listen and start working! */
-app.listen(port, () => log.info(`Application listening on port ${port}.`));
+app.listen(port, () => {
+    log.info(`Application listening on port ${port}.`);
+
+    /* Which Canvas, which database and where the log goes are set outside the code and cannot be
+       told apart from inside a running instance, so a restart is the only occasion on which they
+       can be recorded. Without this an instance serving the wrong one looks exactly like an
+       instance serving the right one, and the configuration has to be read from the platform to
+       find out. */
+    log.info(configuration.summaryLine(), configuration.summary());
+});
 
 /* Catch uncaught exceptions */
 process.on('uncaughtException', (err) => {

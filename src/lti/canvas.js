@@ -69,6 +69,8 @@ const servedApiDomains = () => {
     return [...new Set([...configured, ...alsoAllowed])];
 };
 
+exports.servedApiDomains = servedApiDomains;
+
 /* Whether a launch from a Canvas this installation is not configured for is refused or merely
    reported. Reporting is the default: an installation whose configured host does not match the
    name Canvas reports for itself would refuse every launch, and there is no other way into the
@@ -78,6 +80,8 @@ const enforceApiDomain = () => {
 
     return value === 'true' || value === '1' || value === 'yes';
 };
+
+exports.enforceApiDomain = enforceApiDomain;
 
 /* Enough of a launch to diagnose one, and nothing personal. lis_person_sourcedid carries the
    personnummer; the name, the email and the login id are personal too, and ims-lti derives

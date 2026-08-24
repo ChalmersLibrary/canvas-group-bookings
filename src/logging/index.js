@@ -115,6 +115,7 @@ const scrubMessage = (msg) => {
 
 let transports = [];
 let logstashLogger = null;
+let logstashSource = null;
 
 transports.push(
     new winston.transports.DailyRotateFile({
@@ -125,13 +126,23 @@ transports.push(
 );
 
 if (process.env.LOGSTASH_BASEURL?.length > 0 && process.env.LOGSTASH_USER?.length > 0 && process.env.LOGSTASH_PWD?.length > 0) {
+    logstashSource = process.env.LOGSTASH_SOURCE? process.env.LOGSTASH_SOURCE : "canvas-group-bookings";
+
     logstashLogger = new LogstashLogger(
         process.env.LOGSTASH_BASEURL,
         process.env.LOGSTASH_USER,
         process.env.LOGSTASH_PWD,
-        process.env.LOGSTASH_SOURCE? process.env.LOGSTASH_SOURCE : "canvas-group-bookings"
+        logstashSource
     );
 }
+
+/*
+ * The source this instance ships under, or null when the transport was not built at all. The
+ * client is constructed inside a condition and its send failures are reported to the console, so
+ * not configured, configured and failing, and configured with nothing to say all look the same
+ * from the log. Naming the target once at startup is what separates them.
+ */
+const logstashTarget = () => logstashSource;
 
 const logger = winston.createLogger({
     level: 'info',
@@ -201,5 +212,6 @@ module.exports = {
     info,
     error,
     debug,
-    fingerprint
+    fingerprint,
+    logstashTarget
 }
