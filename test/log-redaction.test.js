@@ -118,4 +118,35 @@ test('what the log does with a token', async (t) => {
 
         assert.ok(written.includes('ECONNRESET'), 'the error code was redacted or dropped');
     });
+
+    /*
+     * The detail of a call goes under one key, matching what the same call sends to logstash, so
+     * a reader does not have to know how many arguments a call site passed to find it.
+     */
+    await t.test('detail is written under one key rather than by argument position', async () => {
+        await log.error('something failed', { course_id: '4711', status: 500 });
+
+        const entry = JSON.parse((await flushed()).trim().split('\n').at(-1));
+
+        assert.deepEqual(entry.data, { course_id: '4711', status: 500 });
+        assert.equal(entry['0'], undefined, 'detail must not be named by its position');
+    });
+
+    await t.test('several arguments arrive as a list under that same key', async () => {
+        await log.error('two things', { a: 1 }, { b: 2 });
+
+        const entry = JSON.parse((await flushed()).trim().split('\n').at(-1));
+
+        assert.deepEqual(entry.data, [{ a: 1 }, { b: 2 }]);
+    });
+
+    await t.test('a call with no detail carries no key at all', async () => {
+        /* Most lines pass nothing, and they are meant to be unchanged by any of this. */
+        await log.error('nothing to add');
+
+        const entry = JSON.parse((await flushed()).trim().split('\n').at(-1));
+
+        assert.equal('data' in entry, false);
+        assert.deepEqual(Object.keys(entry).sort(), ['level', 'message', 'timestamp']);
+    });
 });

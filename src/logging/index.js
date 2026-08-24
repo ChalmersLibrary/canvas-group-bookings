@@ -185,18 +185,26 @@ if (process.env.NODE_ENV !== 'production') {
  */
 const forLogstash = (meta) => (meta.length === 1 ? meta[0] : (meta.length ? meta : undefined));
 
+/*
+ * The same detail for the file, under one key rather than spread. Meta is an array, so spreading
+ * it names each argument by its position and a reader has to know how many there were. Built from
+ * the same function as the wire, so the two sinks cannot describe one call differently. A call
+ * with no detail adds nothing, which keeps those lines exactly as they were.
+ */
+const forFile = (meta) => (meta.length ? { data: forLogstash(meta) } : {});
+
 async function info(msg, ...meta) {
     const message = scrubMessage(msg);
     const detail = sanitize(meta);
 
-    await logger.log({ level: 'info', message, ...detail });
+    await logger.log({ level: 'info', message, ...forFile(detail) });
     await logstashLogger?.info(message, forLogstash(detail));
 }
 async function error(msg, ...meta) {
     const message = scrubMessage(msg);
     const detail = sanitize(meta);
 
-    await logger.error({ level: 'error', message, ...detail });
+    await logger.error({ level: 'error', message, ...forFile(detail) });
     await logstashLogger?.error(message, forLogstash(detail));
 }
 /*
@@ -205,7 +213,7 @@ async function error(msg, ...meta) {
  * avoid, and the level that carries whole objects.
  */
 async function debug(msg, ...meta) {
-    await logger.debug({ level: 'debug', message: scrubMessage(msg), ...sanitize(meta) });
+    await logger.debug({ level: 'debug', message: scrubMessage(msg), ...forFile(sanitize(meta)) });
 }
 
 module.exports = {

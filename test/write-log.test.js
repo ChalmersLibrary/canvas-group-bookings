@@ -56,12 +56,8 @@ const appWithWriteLog = (user) => {
 /* Lines land in the sandbox's own log directory, so reading them back reads what was written. */
 const written = () => sandbox.logLines().map((line) => JSON.parse(line));
 
-/*
- * The logging module spreads its meta arguments, which are an array, so a single detail object
- * arrives in the file under the key "0". The logstash side unwraps it and sends it as Data. This
- * reads the file shape as it is rather than the shape it might be.
- */
-const detailOf = (entry) => entry['0'];
+/* The logging module puts the detail of a call under one key, the same value the wire carries. */
+const detailOf = (entry) => entry.data;
 
 test('the write log', async (t) => {
     const server = appWithWriteLog({ id: 8822, isAdministrator: true, isInstructor: false }).listen(0);
