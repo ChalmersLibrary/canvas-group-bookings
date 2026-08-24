@@ -1,5 +1,21 @@
 # CHANGELOG
 
+## Version 1.2.6
+
+2026-08-24. Sign-in fixes, security updates and a large dependency upgrade.
+
+* Fixed the error page that some users met after signing in to Canvas. The session cookie is now partitioned, which browsers increasingly require of a tool running in an iframe, and a cookie that is not stored means no session at all.
+* When that error does still happen, the log now records what actually failed — whether the cookie arrived, and which browser — instead of assuming the cause.
+* Fixed a fault where one launch could inherit details from the previous launch handled by the same server, which could show the wrong course, title or enrolment state.
+* A launch from a Canvas that the installation is not set up for is now reported in the log, and can optionally be refused.
+* The tool now states at startup which Canvas, which database, which runtime version and which log destination it is running with. A wrong setting previously looked exactly like a correct one.
+* Long-lived Canvas credentials and authorization codes are no longer written to any log file.
+* The Swedish error page for session problems is now reachable; it was previously always shown in English.
+* Remote logging now includes the structured detail of an entry, not only its message, so it can replace the log files rather than summarise them.
+* Dependency upgrades: the OAuth, security header, session store, logging and configuration libraries all moved to current major versions, and three unused dependencies were removed. All reported vulnerabilities are now cleared.
+* Tested with Node 22 LTS and Node 24.
+* Added an automated test suite, run with `npm test`, covering LTI launches and their refusal paths, the session cookie, OAuth token storage and refresh, log redaction, remote logging, the startup report and the headers that let Canvas embed the tool.
+
 ## Version 1.2.5
 
 2025-02-24. Failed messages log and error handling.

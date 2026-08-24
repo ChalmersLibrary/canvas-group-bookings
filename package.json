@@ -1,10 +1,10 @@
 {
   "name": "canvas-group-bookings",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "description": "",
   "main": "app.js",
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=22.0.0"
   },
   "scripts": {
     "dev": "node --watch-path=./src --watch-path=./views --watch-path=./app.js app.js",
