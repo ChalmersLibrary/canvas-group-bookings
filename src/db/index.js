@@ -8,13 +8,9 @@ const utils = require('../utilities');
 /*
  * Pool uses env variables: PGUSER, PGHOST, PGPASSWORD, PGDATABASE and PGPORT.
  *
- * Deliberately not connecting here. A pool opens a connection when a query first needs one, so
- * connecting at module load bought nothing: it checked out a client that was never released,
- * costing the pool a slot for the lifetime of the process, and returned a promise nobody handled,
- * so a database that was unreachable at startup raised an unhandled rejection rather than an
- * error anyone could act on. It also meant that requiring any module reaching this one opened a
- * connection to whatever the environment pointed at, which is not something a test can be allowed
- * to do by accident.
+ * The pool opens a connection when a query needs one, and nothing connects at load. So requiring
+ * this module, or anything that reaches it, touches no database, and a connection failure
+ * surfaces at the query that caused it rather than at startup where nothing can act on it.
  */
 const pool = new Pool();
 

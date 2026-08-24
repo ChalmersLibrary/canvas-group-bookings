@@ -1,8 +1,5 @@
 'use strict';
 
-/* fetch is the runtime's own. The polyfill this used to import announced itself in the user agent
-   on every request, which is a needless dependency on the credential path. */
-
 class LogstashLogger {
   constructor(logstashBaseUrl, logstashUsername, logstashPassword, source) {
     this.logstashBaseUrl = logstashBaseUrl;

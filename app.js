@@ -1100,11 +1100,11 @@ process.on('uncaughtException', (err) => {
 });
 
 /*
- * Exported so a caller can shut the server down, which is what a test driving the whole
- * application needs and what requiring this file otherwise makes impossible.
+ * Exported so a caller can close the server, which is what a test driving the whole application
+ * needs.
  *
- * Requiring it still starts a listener and still runs the schema check against whatever the PG
- * environment points at, so a test that requires this file must point that environment at a
- * database it is allowed to write to. Never the one a developer works in.
+ * Requiring this file starts a listener and runs the schema check against whatever the PG
+ * environment points at, so anything requiring it must point that environment at a database it is
+ * allowed to write to. Never the one a developer works in.
  */
 module.exports = { app, server };
