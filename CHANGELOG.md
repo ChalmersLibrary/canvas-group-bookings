@@ -15,7 +15,9 @@
 * Remote logging now includes the structured detail of an entry, not only its message, so it can replace the log files rather than summarise them.
 * Dependency upgrades: the LTI, web framework, OAuth, security header, session store, logging and configuration libraries all moved to current major versions, and four dependencies that were no longer needed were removed. All reported vulnerabilities are now cleared.
 * The tool no longer rewrites its own translation files when a text is missing, and finds them wherever it is started from.
-* Tested with Node 22 LTS and Node 24.
+* Changes made through the administration and instructor pages are now logged, with the course each change applied to, the user who made it and whether it succeeded. Previously only student bookings and cancellations were logged, so nothing recorded what an administrator had changed or where.
+* Example configuration files for setting the tool up: `.env_example` lists every setting the tool reads, and `mock-lti_example.json` is a starting point for running it locally without Canvas. See the README.
+* Tested with Node 22 LTS and Node 24 LTS.
 * Added an automated test suite, run with `npm test`, covering LTI launches and their refusal paths, the session cookie, OAuth token storage and refresh, log redaction, remote logging, the startup report and the headers that let Canvas embed the tool.
 
 ## Version 1.2.5

@@ -1,0 +1,18 @@
+{
+    "context_id": "0000000000000000000000000000000000000000",
+    "context_title": "An Example Course",
+    "custom_canvas_course_id": "12345",
+    "custom_canvas_enrollment_state": "active",
+    "custom_canvas_roles": "Account Admin,TeacherEnrollment",
+    "custom_canvas_groups_context": "",
+    "custom_canvas_user_id": "67890",
+    "lti_message_type": "basic-lti-launch-request",
+    "lti_version": "LTI-1p0",
+    "resource_link_id": "0000000000000000000000000000000000000000",
+    "resource_link_title": "Booking",
+    "tool_consumer_info_product_family_code": "canvas",
+    "tool_consumer_info_version": "cloud",
+    "tool_consumer_instance_guid": "0000000000000000000000000000000000000000.canvas.example.com",
+    "tool_consumer_instance_name": "Example University",
+    "launch_presentation_locale": "en"
+}

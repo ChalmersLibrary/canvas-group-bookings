@@ -35,6 +35,24 @@ This application requires PostgreSQL (12) as a database backend for storing time
 All other requirements are Node-related modules specified in ```packages.json```.
 
 
+## Configuration
+
+Copy ```.env_example``` to ```.env``` and fill it in. Every variable the application reads is listed there, with a note on the ones where a wrong value is not obvious from the outside. Both files stay out of version control.
+
+The Postgres variables are read by the database driver rather than by this application, so they do not appear anywhere in the source.
+
+
+## Running without Canvas
+
+The tool is normally started by an LTI launch from Canvas, which is what supplies the course, the user's role and their enrollment state. For local development that launch can be mocked: copy ```mock-lti_example.json``` to ```mock-lti.json``` and edit it.
+
+With ```NODE_ENV=development```, the file is read at startup and its contents become the LTI session on every request. **Only the launch is mocked.** Signing in still goes to the real Canvas named by ```AUTH_HOST```, the Canvas API is real, and the database is real — so a local run obtains genuine credentials for the account that signs in, and writes them to whatever ```PGDATABASE``` points at.
+
+```custom_canvas_roles``` in that file decides what you are allowed to do locally, and ```custom_canvas_course_id``` decides which course you are working in. Both come from the file, not from Canvas.
+
+Two things to expect: the file is read once at startup, so changes need a restart, and its contents replace the LTI session on every request, so a genuine launch against a local instance would be overwritten by it.
+
+
 ## Starting
 
 To start on your local machine, just type ```npm run dev```. This should start nodemon and the application on port 3000. The first time, database tables and views will be created from ```db/setup.sql``` and then
