@@ -16,6 +16,7 @@ const lti = require('./lti/canvas');
  */
 const summary = () => ({
     environment: process.env.NODE_ENV ? process.env.NODE_ENV : "(unset)",
+    node_version: process.version,
     canvas_api_domains: lti.servedApiDomains(),
     enforce_api_domain: lti.enforceApiDomain(),
     auth_redirect_callback: process.env.AUTH_REDIRECT_CALLBACK ? process.env.AUTH_REDIRECT_CALLBACK : "(unset)",

@@ -9,7 +9,6 @@ const express = require('express');
 const session = require('express-session');
 const log = require('./src/logging/');
 const pg = require('pg');
-const fileStore = require('session-file-store')(session);
 const pgSessionStore = require('connect-pg-simple')(session);
 const helmet = require('helmet');
 const cors = require('cors');
@@ -28,7 +27,6 @@ const { env } = require('process');
 
 const port = process.env.PORT || 3000;
 const cookieMaxAge = 3600000 * 24 * 30 * 4; // 4 months
-const fileStoreOptions = { ttl: 3600 * 12, retries: 3 };
 
 const DB_PER_PAGE = 50;
 

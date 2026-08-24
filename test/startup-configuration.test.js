@@ -60,6 +60,13 @@ test('the startup configuration line', async (t) => {
         assert.equal(summary.auth_redirect_callback, 'https://tool.example.se/callback');
     });
 
+    await t.test('it names the runtime it is running on', () => {
+        /* The deployment platform chooses the runtime independently of what the manifest asks
+           for, so which one an instance actually got is another thing only the process knows. */
+        assert.equal(configuration.summary().node_version, process.version);
+        assert.match(configuration.summary().node_version, /^v\d+\./);
+    });
+
     await t.test('the Canvas host is the one the launch check compares against', () => {
         /* Stating a different set from the one that decides a launch would make the line
            misleading in exactly the case it exists for, so it comes from that function. */
