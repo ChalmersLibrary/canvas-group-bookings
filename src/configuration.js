@@ -33,7 +33,26 @@ const summaryLine = () => {
         `environment ${configured.environment}, logstash ${configured.logstash_source}.`;
 };
 
+/*
+ * The Content-Security-Policy this instance serves.
+ *
+ * `frame-src` governs what the tool is allowed to embed, so anything it needs to show in an
+ * iframe of its own has to be named here. A CSP source list is space separated, so
+ * CSP_FRAME_SRC_ALLOW may hold several hosts separated by spaces, and wildcards are permitted in
+ * the leftmost label.
+ *
+ * Deliberately no frame-ancestors directive: that one governs who may embed the tool, and the
+ * tool is only ever reached inside an iframe in Canvas. Naming an origin there, or letting a
+ * default supply 'self', locks every user out.
+ */
+const contentSecurityPolicy = () =>
+    "default-src 'self'; script-src 'self' cdn.jsdelivr.net unpkg.com; " +
+    "style-src 'self' 'unsafe-inline' cdn.jsdelivr.net fonts.googleapis.com; " +
+    "font-src 'self' cdn.jsdelivr.net fonts.gstatic.com; img-src 'self' data:; frame-src 'self'" +
+    (process.env.CSP_FRAME_SRC_ALLOW ? " " + process.env.CSP_FRAME_SRC_ALLOW : "");
+
 module.exports = {
     summary,
-    summaryLine
+    summaryLine,
+    contentSecurityPolicy
 }

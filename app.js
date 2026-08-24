@@ -99,13 +99,12 @@ morgan.token('url-redacted', function getRedactedUrl (req) {
 // Setup https request logging
 app.use(morgan(':remote-addr [:date[clf]] ":method :url-redacted" :status :res[content-length] - :course-id :user-id ":user-groups" ":response-time ms" ":referrer" ":user-agent"', { stream: accessLogStream }))
 
-// Content Security Policy
+/* Content Security Policy. Set here rather than by helmet, and after it, so this is the policy
+   that reaches the client: helmet's own default names frame-ancestors, which would stop Canvas
+   embedding the tool. */
 app.use(function (req, res, next) {
-    res.setHeader(
-      'Content-Security-Policy', 
-      "default-src 'self'; script-src 'self' cdn.jsdelivr.net unpkg.com; style-src 'self' 'unsafe-inline' cdn.jsdelivr.net fonts.googleapis.com; font-src 'self' cdn.jsdelivr.net fonts.gstatic.com; img-src 'self' data:; frame-src 'self'" + (process.env.CSP_FRAME_SRC_ALLOW ? " " + process.env.CSP_FRAME_SRC_ALLOW : "")
-    );
-    
+    res.setHeader('Content-Security-Policy', configuration.contentSecurityPolicy());
+
     next();
 });
 
