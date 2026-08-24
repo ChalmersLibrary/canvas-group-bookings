@@ -13,7 +13,8 @@
 * The tool can now restrict which sites are allowed to embed it, via a new `CSP_FRAME_ANCESTORS` setting naming the Canvas hosts. Left unset, any site may embed it, which is how it behaved before.
 * The Swedish error page for session problems is now reachable; it was previously always shown in English.
 * Remote logging now includes the structured detail of an entry, not only its message, so it can replace the log files rather than summarise them.
-* Dependency upgrades: the OAuth, security header, session store, logging and configuration libraries all moved to current major versions, and three unused dependencies were removed. All reported vulnerabilities are now cleared.
+* Dependency upgrades: the LTI, web framework, OAuth, security header, session store, logging and configuration libraries all moved to current major versions, and four dependencies that were no longer needed were removed. All reported vulnerabilities are now cleared.
+* The tool no longer rewrites its own translation files when a text is missing, and finds them wherever it is started from.
 * Tested with Node 22 LTS and Node 24.
 * Added an automated test suite, run with `npm test`, covering LTI launches and their refusal paths, the session cookie, OAuth token storage and refresh, log redaction, remote logging, the startup report and the headers that let Canvas embed the tool.
 
