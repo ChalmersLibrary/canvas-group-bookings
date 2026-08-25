@@ -1308,8 +1308,7 @@ async function checkDatabaseVersion() {
                     if (fs.existsSync(file)) {
                         let sql = fs.readFileSync(file).toString();
             
-                        await query(sql).then((result) => {
-                            log.info(result);
+                        await query(sql).then(() => {
                             log.info("Database updated from " + file);
                             latest_applied_version = (current_version + 1);
                         }).catch((error) => {
@@ -1338,8 +1337,8 @@ async function setupDatabase() {
 
     log.info("Setting up database...");
 
-    await query(sql).then((result) => {
-        log.info(result);
+    await query(sql).then(() => {
+        log.info("Database setup complete.");
     }).catch((error) => {
         log.error(error);
     });
