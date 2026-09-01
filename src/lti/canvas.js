@@ -125,7 +125,11 @@ exports.handleLaunch = (page) => function(req, res) {
             return res.status(err.status ? err.status : 403).json('Unknown consumer.');
         }
 
-        const provider = new lti.Provider(consumerKey, consumerSecret); // Include nonceStore for custom store, default memory store
+        /* The store is passed rather than left to the provider, which would build a new one per
+           launch. A store that has only ever seen this launch cannot refuse a replay of it, so
+           without this a captured launch body can be posted repeatedly while its timestamp stays
+           fresh, and each post yields a session as that user. */
+        const provider = new lti.Provider(consumerKey, consumerSecret, nonceStore);
 
         provider.valid_request(req, (err, isValid) => {
             if (err) {

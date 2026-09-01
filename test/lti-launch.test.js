@@ -356,4 +356,87 @@ test('the LTI launch', async (t) => {
         assert.notEqual(JSON.parse(body).lti, null,
             'the redirect was sent before the launch was written to the session');
     });
+
+    /*
+     * A nonce may be used once. The provider builds a nonce store per instance when none is passed
+     * to it, and the handler builds a provider per launch, so a store that remembers nothing from
+     * the launch before is the same as no nonce check at all: the identical signed body can be
+     * posted for as long as its timestamp is fresh, each time establishing a session as that user.
+     *
+     * This is the regression test for the store being passed. It fails by accepting the replay,
+     * not by erroring, which is why it has to assert the second status rather than the first.
+     */
+    await t.test('the same signed launch cannot be posted twice', async () => {
+        const payload = payloadFor({});
+
+        const first = await launch(payload);
+        const second = await launch(payload);
+
+        assert.equal(first.status, 302, 'the first launch of a fresh nonce must be accepted');
+        assert.equal(second.status, 500, 'posting the same launch again must be refused');
+    });
+
+    /*
+     * The store is only shared if it is one object for the process. Two providers stand in for two
+     * launches here, since that is the part of the arrangement worth pinning: the handler makes a
+     * provider per launch and they have to consult the same store.
+     */
+    await t.test('two providers sharing the store refuse the same nonce', async () => {
+        const NodeCache = require('node-cache');
+        const NonceStore = require('../src/node-cache-nonce');
+
+        const store = new NonceStore(new NodeCache());
+        const nonce = 'nonce-shared-between-providers';
+        const timestamp = String(Math.floor(Date.now() / 1000));
+
+        const answers = [];
+
+        store.isNew(nonce, timestamp, (err, valid) => answers.push([err?.message, valid]));
+        store.isNew(nonce, timestamp, (err, valid) => answers.push([err?.message, valid]));
+
+        assert.deepEqual(answers[0], [undefined, true], 'the first use must be accepted');
+        assert.deepEqual(answers[1], ['Nonce already seen', false], 'the second must not be');
+    });
+
+    /*
+     * The store answers through a callback, and node-cache dropped the callback form of get in
+     * version 5. A store that never calls back leaves valid_request without an answer, so the
+     * launch is never responded to at all: it hangs rather than failing. Asserting that the
+     * callback fires is what would catch that returning.
+     */
+    await t.test('the store answers rather than hanging', async () => {
+        const NodeCache = require('node-cache');
+        const NonceStore = require('../src/node-cache-nonce');
+
+        const store = new NonceStore(new NodeCache());
+
+        const answered = await new Promise((resolve) => {
+            const timer = setTimeout(() => resolve(false), 200);
+
+            store.isNew('nonce-answers', String(Math.floor(Date.now() / 1000)), () => {
+                clearTimeout(timer);
+                resolve(true);
+            });
+        });
+
+        assert.equal(answered, true, 'the nonce store must always call back');
+    });
+
+    /* A launch too old to be replayed is refused on its timestamp, and a nonce is not needed to
+       remember it. Asserted here because the two checks are easy to reorder. */
+    await t.test('an expired timestamp is refused whether or not the nonce is known', async () => {
+        const NodeCache = require('node-cache');
+        const NonceStore = require('../src/node-cache-nonce');
+
+        const store = new NonceStore(new NodeCache());
+        const stale = String(Math.floor(Date.now() / 1000) - (6 * 60));
+
+        const answers = [];
+
+        store.isNew('nonce-stale', stale, (err, valid) => answers.push([err?.message, valid]));
+        store.isNew('nonce-stale', stale, (err, valid) => answers.push([err?.message, valid]));
+
+        assert.deepEqual(answers[0], ['Expired timestamp', false]);
+        assert.deepEqual(answers[1], ['Expired timestamp', false]);
+    });
 });
