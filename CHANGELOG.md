@@ -2,13 +2,16 @@
 
 ## Version 1.2.7
 
-2026-09-01. Messages that were silently not sent, and a correction to the startup log.
+2026-09-01. Messages that were silently not sent, a launch that could be re-used, and a session failure that stopped the tool.
 
 * Fixed a fault where a course with an empty message text sent no messages at all. Leaving the text empty is meant to fall back to the standard template, but confirmations and cancellations were skipped instead: the booking or cancellation itself succeeded, the person was told nothing, and nothing appeared in the sent messages log.
 * The message templates that ship with the tool are now found wherever it is started from, rather than only when it is started from its own directory.
+* A launch from Canvas can no longer be used more than once. Every launch carries a one-time value, and the tool now remembers the ones it has seen, so a launch that has been captured cannot be sent again to open the tool as that person. Previously each launch was checked against an empty memory, which is the same as not checking at all.
+* A session that cannot be stored is now reported on the one request it affects. Previously it stopped the whole application, which interrupted everyone who happened to be using the tool at that moment, and the restart was the only sign it had happened.
+* Signing in to Canvas no longer answers twice when the token cannot be stored, and the message shown on a failed sign-in no longer includes Canvas's own response.
 * Applying a database migration now reports which file was applied, instead of also sending the database driver internal result object to the log collector.
 * Corrected the starting instructions in the README, and documented how to run the tests.
-* Added tests for how the message body of a course is chosen, and for the templates the tool ships with.
+* Added tests for how the message body of a course is chosen, for the templates the tool ships with, for repeated launches, and for the sign-in callback, which had no coverage at all.
 
 ## Version 1.2.6
 
