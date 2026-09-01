@@ -56,34 +56,41 @@ function setupAuthEndpoints(app, callbackUrl) {
                 ", expires " + accessToken.token?.expires_at);
 
             // Persist the access token to db
-            await persistAccessToken(accessToken.token).then(async (result) => {
-                // Save the user object to session for faster access
-                let userData = await user.createSessionUserdataFromToken(req, accessToken.token);
-                log.debug(userData);
+            await persistAccessToken(accessToken.token);
 
-                // If we set it before redirect we must persist it with session.save()
-                await req.session.save(function(err) {
-                    if (err) {
-                        log.error(err);
-                        return res.status(500).json(err);
-                    }
+            // Save the user object to session for faster access
+            let userData = await user.createSessionUserdataFromToken(req, accessToken.token);
+            log.debug(userData);
 
-                    log.debug("Session saved with user object from OAuth2 callback.", req.session);
-                });
-            }).catch((error) => {
-                log.error(error);
-                return res.status(500).json(error);
+            /* Answer from inside the save and nowhere else, as the launch handler does.
+               session.save() returns the session rather than a promise, so awaiting it does not
+               wait for the store write: the redirect used to be written at the end of this
+               function whatever happened above it, and this callback then ran on a response
+               already sent. That throws ERR_HTTP_HEADERS_SENT from a store callback, outside any
+               request, where the only thing left to catch it is the uncaughtException handler in
+               app.js -- which exits the process and takes every request in flight with it. */
+            return req.session.save(function(err) {
+                if (err) {
+                    log.error("Saving session after OAuth callback", err);
+
+                    return res.status(500).json('Could not save the session after authorization.');
+                }
+
+                log.debug("Session saved with user object from OAuth2 callback, redirecting to root app.");
+
+                res.location("/?from=callback");
+
+                return res.redirect("/?from=callback");
             });
         }
         catch (error) {
-            log.error('Access Token Error: ', error.message);
-            return res.status(500).json(error);
+            /* Getting the token, storing it and building the session user all end the callback the
+               same way. The error is not returned to the browser: a simple-oauth2 error carries
+               the provider's own response payload. */
+            log.error("OAuth callback failed", error);
+
+            return res.status(500).json('Authorization could not be completed.');
         }
-
-        log.debug("OAuth callback finished, redirecting to root app.");
-
-        res.location("/?from=callback");
-        return res.redirect("/?from=callback");
     });
 };
 
@@ -144,13 +151,19 @@ async function checkAccessToken(req) {
                             log.debug(result);
                         });
 
+                        /* Reported, not thrown. This callback runs when the store answers, on a
+                           later tick and outside any request, so a throw here reaches nothing but
+                           the uncaughtException handler in app.js and exits the process. The
+                           session holds a cached copy of the user; the token this function returns
+                           is read from the database, so the request is still answerable without
+                           it. */
                         req.session.save(function(err) {
                             if (err) {
-                                log.error(err);
-                                throw new Error("Saving session.", { cause: err });
+                                log.error("Saving session after refreshing the access token", err);
                             }
-        
-                            log.debug("Access token refreshed, session saved.");
+                            else {
+                                log.debug("Access token refreshed, session saved.");
+                            }
                         });
     
                         tokenResult.success = true;
@@ -179,10 +192,10 @@ async function checkAccessToken(req) {
                     // Save the user object to session for faster access
                     await user.createSessionUserdataFromToken(req, token);
 
+                    /* Reported, not thrown, for the same reason as the save above. */
                     req.session.save(function(err) {
                         if (err) {
-                            log.error(err);
-                            throw new Error("Saving session after user object.", { cause: err });
+                            log.error("Saving session after adding the user object", err);
                         }
                     });
 
