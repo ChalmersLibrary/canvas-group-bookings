@@ -79,10 +79,6 @@ morgan.token('user-id', function getUserId (req) {
 morgan.token('user-groups', function getUserGroups (req) {
     return req.session?.user?.groups_human_readable ? req.session.user.groups_human_readable : "-";
 });
-/* The OAuth callback is GET /callback?code=..., and :url would put that code in the access log.
-   The code is single use and consumed immediately, so it is not a live credential once written,
-   but the access log has no retention limit set while the application log does, so anything
-   written here stays. Keep secrets out of the url that gets logged. */
 morgan.token('url-redacted', function getRedactedUrl (req) {
     const url = req.originalUrl || req.url;
 
