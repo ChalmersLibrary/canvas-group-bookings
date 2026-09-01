@@ -65,7 +65,7 @@ app.use(express.urlencoded({ extended: false }));
 // Create a rotating write stream for request access logging
 var accessLogStream = rfs.createStream('access.log', {
     interval: '1d', // rotate daily
-    maxFiles: 180, // keep about six months
+    maxFiles: 30, // keep about one month
     path: path.join(__dirname, 'logs')
 });
 
