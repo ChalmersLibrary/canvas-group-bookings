@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## Version 1.2.7
+
+2026-09-01. Messages that were silently not sent, and a correction to the startup log.
+
+* Fixed a fault where a course with an empty message text sent no messages at all. Leaving the text empty is meant to fall back to the standard template, but confirmations and cancellations were skipped instead: the booking or cancellation itself succeeded, the person was told nothing, and nothing appeared in the sent messages log.
+* The message templates that ship with the tool are now found wherever it is started from, rather than only when it is started from its own directory.
+* Applying a database migration now reports which file was applied, instead of also sending the database driver internal result object to the log collector.
+* Corrected the starting instructions in the README, and documented how to run the tests.
+* Added tests for how the message body of a course is chosen, and for the templates the tool ships with.
+
 ## Version 1.2.6
 
 2026-08-24. Sign-in fixes, security updates and a large dependency upgrade.
