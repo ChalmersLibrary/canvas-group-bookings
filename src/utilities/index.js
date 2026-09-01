@@ -2,6 +2,7 @@
 
 require('dotenv').config();
 const fs = require('fs');
+const path = require('path');
 const i18n = require('../lang/i18n.config');
 
 function getDatePart(date) {
@@ -13,15 +14,31 @@ function getTimePart(date) {
     return new Date(date).toLocaleTimeString('sv-SE', timeOptions);
 }
 
+/* Templates ship with the application, so they are found relative to this file rather than to
+   the directory the process was started from. */
 function getTemplate(type) {
     let content;
-    let file = "templates/" + type + ".txt";
+    let file = path.join(__dirname, "..", "..", "templates", type + ".txt");
 
     if (fs.existsSync(file)) {
         content = fs.readFileSync(file).toString();
     }
 
     return content;
+}
+
+/* The message body a course is configured with, or the packaged template when it has none. A
+   body cleared in the administration interface is stored as null, and one the interface never
+   filled in arrives as the literal string "undefined"; both mean the template. Null when
+   neither has content, which the caller reports. */
+function getMessageBody(configured_body, template_type) {
+    let body = configured_body;
+
+    if (!body || body === 'undefined') {
+        body = getTemplate(template_type);
+    }
+
+    return body ? body : null;
 }
 
 function capitalizeFirstLetter(string) {
@@ -203,6 +220,7 @@ module.exports = {
     getDatePart,
     getTimePart,
     getTemplate,
+    getMessageBody,
     capitalizeFirstLetter,
     replaceMessageMagics,
     paginate,

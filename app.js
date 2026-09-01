@@ -739,13 +739,9 @@ app.post('/api/reservation', async (req, res, next) => {
                     const recipient = "group_" + group_id;
                     const template_type = "reservation_group_done";
 
-                    let body = course.message_confirmation_body;
+                    let body = utils.getMessageBody(course.message_confirmation_body, template_type);
 
-                    if (body === 'undefined' || body == '') {
-                        body = utils.getTemplate(template_type);
-                    }
-
-                    if (body !== 'undefined' && body != '') {
+                    if (body) {
                         body = utils.replaceMessageMagics(body, course.name, message, course.cancellation_policy_hours, req.session.user.name, slot.time_human_readable, slot.location_name, slot.location_url, slot.location_description, instructor.name, instructor.email, group_name, "", req.session.lti.context_title);
 
                         try {
@@ -777,13 +773,9 @@ app.post('/api/reservation', async (req, res, next) => {
                         // Slot is full and there should be a message to all groups reserved
                         if (course.message_all_when_full && slot_now.res_now == slot_now.res_max) {
                             let recipients = new Array();
-                            let body_all = course.message_full_body;
+                            let body_all = utils.getMessageBody(course.message_full_body, "reservation_group_full");
 
-                            if (body_all === 'undefined' || body_all == '') {
-                                body_all = utils.getTemplate("reservation_group_full");
-                            }
-
-                            if (body_all !== 'undefined' && body_all != '') {
+                            if (body_all) {
                                 body_all = utils.replaceMessageMagics(body_all, course.name, message, course.cancellation_policy_hours, req.session.user.name, slot_now.time_human_readable, slot_now.location_name, slot_now.location_url, slot_now.location_description, instructor.name, instructor.email, group_name, slot_now.res_group_names.join(", "), req.session.lti.context_title);
 
                                 for (const id of slot_now.res_group_ids) {
@@ -829,13 +821,9 @@ app.post('/api/reservation', async (req, res, next) => {
                     const subject_cc = res.__('ConversationRobotReservationCcSubjectPrefix') + course.name + ", " + req.session.user.name;
                     const template_type = "reservation_individual_done";
 
-                    let body = course.message_confirmation_body;
+                    let body = utils.getMessageBody(course.message_confirmation_body, template_type);
 
-                    if (body === 'undefined' || body == '') {
-                        body = utils.getTemplate(template_type);
-                    }
-
-                    if (body !== 'undefined' && body != '') {
+                    if (body) {
                         body = utils.replaceMessageMagics(body, course.name, message, course.cancellation_policy_hours, req.session.user.name, slot.time_human_readable, slot.location_name, slot.location_url, slot.location_description, instructor.name, instructor.email, "", "", req.session.lti.context_title);
 
                         try {
@@ -951,13 +939,9 @@ app.delete('/api/reservation/:id', async (req, res) => {
                     const recipient = "group_" + reservation.canvas_group_id;
                     const template_type = "reservation_group_canceled";
 
-                    let body = course.message_cancelled_body;
+                    let body = utils.getMessageBody(course.message_cancelled_body, template_type);
 
-                    if (body === 'undefined' || body == '') {
-                        body = utils.getTemplate(template_type);
-                    }
-
-                    if (body !== 'undefined' && body != '') {
+                    if (body) {
                         body = utils.replaceMessageMagics(body, course.name, "", course.cancellation_policy_hours, req.session.user.name, reservation.time_human_readable, reservation.location_name, "", "", instructor.name, instructor.email, reservation.canvas_group_name, "", req.session.lti.context_title);
         
                         try {
@@ -991,13 +975,9 @@ app.delete('/api/reservation/:id', async (req, res) => {
                     const subject_cc = res.__('ConversationRobotCancelReservationCcSubjectPrefix') + course.name + ", " + req.session.user.name;
                     const template_type = "reservation_individual_canceled";
 
-                    let body = course.message_cancelled_body;
+                    let body = utils.getMessageBody(course.message_cancelled_body, template_type);
 
-                    if (body === 'undefined' || body == '') {
-                        body = utils.getTemplate(template_type);
-                    }
-
-                    if (body !== 'undefined' && body != '') {
+                    if (body) {
                         body = utils.replaceMessageMagics(body, course.name, "", course.cancellation_policy_hours, req.session.user.name, reservation.time_human_readable, reservation.location_name, "", "", instructor.name, instructor.email, "", "", req.session.lti.context_title);
 
                         try {

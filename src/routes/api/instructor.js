@@ -201,13 +201,9 @@ router.post('/slot/:id/message', async (req, res, next) => {
                         const subject = res.__('ConversationRobotManualMessageSubjectPrefix') + slot.course_name;
                         const template_type = "manual_message";
 
-                        let body = course.message_manual_body? course.message_manual_body : null;
+                        let body = utils.getMessageBody(course.message_manual_body, template_type);
 
-                        if (body === null || body == '') {
-                            body = utils.getTemplate(template_type);
-                        }
-
-                        if (body !== undefined && body !== null && body != '') {
+                        if (body) {
                             body = body.replaceAll("{{message_text}}", message_text);
                             body = utils.replaceMessageMagics(body, course.name, "", course.cancellation_policy_hours, "", slot.time_human_readable, slot.location_name, "", "", slot.instructor_name, slot.instructor_email, "", "", req.session.lti.context_title);
 
