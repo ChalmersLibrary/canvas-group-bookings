@@ -93,6 +93,57 @@ test('what reaches logstash', async (t) => {
         assert.ok(body.Data.stack, 'the stack should come with it');
     });
 
+    /*
+     * The shape 110 call sites in this application use: the error object on its own, in the
+     * message position. JSON.stringify makes that "{}" on the wire, so the file log had the
+     * diagnosis and logstash — the only sink that survives a slot swap — had nothing.
+     */
+    await t.test('an Error passed as the message arrives with its text and its stack', async () => {
+        received.length = 0;
+
+        await log.error(new Error('invalid_grant'));
+        await settle();
+
+        assert.equal(received.length, 1);
+
+        const { body } = received[0];
+
+        assert.equal(body.Type, 'Error');
+        assert.equal(body.Message, 'invalid_grant', 'an Error as the message must not ship as {}');
+        assert.equal(body.Data.name, 'Error');
+        assert.equal(body.Data.message, 'invalid_grant');
+        assert.ok(body.Data.stack, 'the stack is the half a message cannot carry');
+    });
+
+    await t.test('an Error as the message keeps the detail beside it', async () => {
+        received.length = 0;
+
+        await log.error(new Error('boom'), { courseId: 4711 });
+        await settle();
+
+        const { body } = received[0];
+
+        assert.equal(body.Message, 'boom');
+        assert.ok(Array.isArray(body.Data), 'the error and the detail should both be sent');
+        assert.equal(body.Data.length, 2);
+        assert.equal(body.Data[0].message, 'boom');
+        assert.equal(body.Data[1].courseId, 4711);
+    });
+
+    /* Unpacking an Error must not open a route around the redaction the module exists for. */
+    await t.test('a credential stringified into an Error is redacted in both halves', async () => {
+        received.length = 0;
+
+        await log.error(new Error('token trouble: {"refresh_token": "' + REFRESH + '"}'));
+        await settle();
+
+        const raw = JSON.stringify(received[0].body);
+
+        assert.equal(raw.includes(REFRESH), false, 'the refresh token was shipped to logstash');
+        assert.ok(received[0].body.Message.includes('[redacted]'), 'the message should be scrubbed');
+        assert.ok(received[0].body.Data.message.includes('[redacted]'), 'and so should the detail');
+    });
+
     await t.test('several detail arguments arrive as a list', async () => {
         received.length = 0;
 

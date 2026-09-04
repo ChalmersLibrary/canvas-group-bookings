@@ -64,8 +64,14 @@ const sanitize = (value, seen = new WeakSet()) => {
         /* name, message and stack are not enumerable, so they have to be named. Everything else
            an Error carries is: `code` and `errno` on a system error, `cause`, and whatever the
            application attached, such as the `status` that getSecret sets. Dropping those would
-           throw away the diagnosis, which is half of what this fix is for. */
-        const out = { name: value.name, message: value.message, stack: value.stack };
+           throw away the diagnosis, which is half of what this fix is for. The text of the two
+           that carry it is scrubbed like any other message, since a stringified credential can
+           land in either. */
+        const out = {
+            name: value.name,
+            message: redactText(value.message),
+            stack: value.stack ? redactText(value.stack) : value.stack
+        };
 
         for (const [key, item] of Object.entries(value)) {
             if (!(key in out)) {
@@ -193,19 +199,31 @@ const forLogstash = (meta) => (meta.length === 1 ? meta[0] : (meta.length ? meta
  */
 const forFile = (meta) => (meta.length ? { data: forLogstash(meta) } : {});
 
+/*
+ * An Error keeps its name, message and stack on the prototype, so JSON.stringify writes it as {}
+ * and a call that passes one as the message ships an empty entry. The file transport has
+ * errors({ stack: true }) to expand it and the wire has no equivalent, so the text goes as the
+ * message and the error itself joins the detail, where sanitize has already named the three.
+ */
+const forWire = (message, detail) => (message instanceof Error
+    ? { message: scrubMessage(message.message), detail: [sanitize(message), ...detail] }
+    : { message, detail });
+
 async function info(msg, ...meta) {
     const message = scrubMessage(msg);
     const detail = sanitize(meta);
+    const wire = forWire(message, detail);
 
     await logger.log({ level: 'info', message, ...forFile(detail) });
-    await logstashLogger?.info(message, forLogstash(detail));
+    await logstashLogger?.info(wire.message, forLogstash(wire.detail));
 }
 async function error(msg, ...meta) {
     const message = scrubMessage(msg);
     const detail = sanitize(meta);
+    const wire = forWire(message, detail);
 
     await logger.error({ level: 'error', message, ...forFile(detail) });
-    await logstashLogger?.error(message, forLogstash(detail));
+    await logstashLogger?.error(wire.message, forLogstash(wire.detail));
 }
 /*
  * Deliberately not sent to logstash. winston filters debug by level, but a direct call would not

@@ -10,8 +10,9 @@
 * A session that cannot be stored is now reported on the one request it affects. Previously it stopped the whole application, which interrupted everyone who happened to be using the tool at that moment, and the restart was the only sign it had happened.
 * Signing in to Canvas no longer answers twice when the token cannot be stored, and the message shown on a failed sign-in no longer includes Canvas's own response.
 * Applying a database migration now reports which file was applied, instead of also sending the database driver internal result object to the log collector.
+* An error sent to the remote log collector now carries its text, its detail and its stack. An error reported on its own arrived there as an empty entry, so most of the tool's failure lines said nothing at the one destination that survives a deployment, while the log files on the server held them in full. A credential written into the text of an error is scrubbed there as it is everywhere else.
 * Corrected the starting instructions in the README, and documented how to run the tests.
-* Added tests for how the message body of a course is chosen, for the templates the tool ships with, for repeated launches, and for the sign-in callback, which had no coverage at all.
+* Added tests for how the message body of a course is chosen, for the templates the tool ships with, for repeated launches, for the sign-in callback, which had no coverage at all, and for what an error looks like when it reaches the remote log collector.
 
 ## Version 1.2.6
 
