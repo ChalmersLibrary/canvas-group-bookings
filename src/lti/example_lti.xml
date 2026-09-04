@@ -17,8 +17,11 @@
       <lticm:options name="custom_fields">
         <lticm:property name="custom_canvas_roles">$Canvas.membership.roles</lticm:property>
       </lticm:options>
+      <!-- No url here on purpose. A placement url overrides the tool url and nothing in the
+           Canvas interface can edit it, so a tool installed with one is pinned to that hostname
+           until the placement is replaced or the API is used. Left out, the placement follows
+           blti:launch_url above, which the interface can edit. -->
       <lticm:options name="course_navigation">
-        <lticm:property name="url">https://HOSTNAME/lti</lticm:property>
         <lticm:property name="text">Bokningsverktyg</lticm:property>
         <lticm:property name="visibility">public</lticm:property>
         <lticm:property name="default">enabled</lticm:property>
