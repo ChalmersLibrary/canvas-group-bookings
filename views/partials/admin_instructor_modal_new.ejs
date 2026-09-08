@@ -1,6 +1,6 @@
 <div class="modal modal-md fade" id="newInstructor" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="newInstructorLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <form class="needs-validation" id="newInstructorForm" novalidate action="/api/admin/instructor">
+        <form class="needs-validation" id="newInstructorForm" novalidate action="<%= ctxUrl('/api/admin/instructor') %>">
             <input type="hidden" id="n_instructor_avatar_url" value="">
             <input type="hidden" id="n_instructor_existing_id" value="">
             <div class="modal-content">

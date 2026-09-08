@@ -94,10 +94,12 @@ async function getSegmentsWithStatistics(canvas_course_id) {
 /**
  * Get a single segment with statistics
  */
-async function getSegmentWithStatistics(segment_id) {
+async function getSegmentWithStatistics(canvas_course_id, segment_id) {
+    requireCourse('getSegmentWithStatistics', canvas_course_id);
     let data;
 
-    await query("SELECT s.*,(SELECT count(DISTINCT id)::integer AS courses FROM course WHERE segment_id=s.id) FROM segment s WHERE s.id=$1", [
+    await query("SELECT s.*,(SELECT count(DISTINCT id)::integer AS courses FROM course WHERE segment_id=s.id) FROM segment s WHERE s.id=$2 AND s.canvas_course_id=$1", [
+        canvas_course_id,
         segment_id
     ]).then((result) => {
         data = result.rows[0];
@@ -132,27 +134,39 @@ async function createSegment(canvas_course_id, canvas_user_id, name, sign, hex_c
     return data;
 }
 
-async function updateSegment(segment_id, canvas_user_id, name, sign, hex_color, description) {
-    await query("UPDATE segment SET name=$3, sign=$4, hex_color=$5, description=$6, updated_at=now(), updated_by=$2 WHERE id=$1", [
+async function updateSegment(canvas_course_id, segment_id, canvas_user_id, name, sign, hex_color, description) {
+    requireCourse('updateSegment', canvas_course_id);
+    await query("UPDATE segment SET name=$3, sign=$4, hex_color=$5, description=$6, updated_at=now(), updated_by=$2 WHERE id=$1 AND canvas_course_id=$7", [
         segment_id,
         canvas_user_id,
         name,
         sign,
         hex_color,
-        description
+        description,
+        canvas_course_id
     ]).then((result) => {
         log.debug(result);
+
+        if (result.rowCount === 0) {
+            throw notInThisCourse();
+        }
     }).catch((error) => {
         log.error(error);
         throw new Error(error);
     }); 
 }
-async function deleteSegment(segment_id, canvas_user_id) {
-    await query("UPDATE segment SET deleted_at=now(), deleted_by=$1 WHERE id=$2", [
+async function deleteSegment(canvas_course_id, segment_id, canvas_user_id) {
+    requireCourse('deleteSegment', canvas_course_id);
+    await query("UPDATE segment SET deleted_at=now(), deleted_by=$1 WHERE id=$2 AND canvas_course_id=$3", [
         canvas_user_id,
-        segment_id
+        segment_id,
+        canvas_course_id
     ]).then((result) => {
         log.debug(result);
+
+        if (result.rowCount === 0) {
+            throw notInThisCourse();
+        }
     }).catch((error) => {
         log.error(error);
         throw new Error(error);
@@ -172,11 +186,13 @@ async function applySegmentToAllCourses(segment_id, canvas_course_id, canvas_use
     });
 }
 
-async function replaceExistingSegmentInCourses(old_segment_id, new_segment_id, canvas_user_id) {
-    await query("UPDATE course SET segment_id=$2, updated_at=now(), updated_by=$3 WHERE segment_id=$1", [
+async function replaceExistingSegmentInCourses(canvas_course_id, old_segment_id, new_segment_id, canvas_user_id) {
+    requireCourse('replaceExistingSegmentInCourses', canvas_course_id);
+    await query("UPDATE course SET segment_id=$2, updated_at=now(), updated_by=$3 WHERE segment_id=$1 AND canvas_course_id=$4", [
         old_segment_id,
         new_segment_id,
-        canvas_user_id
+        canvas_user_id,
+        canvas_course_id
     ]).then((result) => {
         log.debug(result);
     }).catch((error) => {
@@ -321,13 +337,14 @@ async function getAllSlotsPaginated(res, offset, limit, canvas_course_id, segmen
     return returnedData;
 }
 
-async function getSlot(res, id) {
+async function getSlot(res, canvas_course_id, id) {
+    requireCourse('getSlot', canvas_course_id);
     let data;
     let returnedData = [];
     const dateOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
     const timeOptions = { hour: '2-digit', minute: '2-digit' };
 
-    await query("SELECT * FROM slots_view WHERE id = $1", [ id ]).then((result) => {
+    await query("SELECT * FROM slots_view WHERE id = $2 AND canvas_course_id = $1", [ canvas_course_id, id ]).then((result) => {
         data = result.rows;
     }).catch((error) => {
         log.error(error);
@@ -347,10 +364,11 @@ async function getSlot(res, id) {
 }
 
 /* Get reservations for a slot, full view */
-async function getSlotReservations(id) {
+async function getSlotReservations(canvas_course_id, id) {
+    requireCourse('getSlotReservations', canvas_course_id);
     let data;
 
-    await query("SELECT * FROM reservations_view WHERE slot_id=$1", [ id ]).then((result) => {
+    await query("SELECT rv.* FROM reservations_view rv, slot s, course c WHERE rv.slot_id=$2 AND rv.slot_id=s.id AND s.course_id=c.id AND c.canvas_course_id=$1", [ canvas_course_id, id ]).then((result) => {
         data = result.rows;
     }).catch((error) => {
         log.error(error);
@@ -360,10 +378,11 @@ async function getSlotReservations(id) {
 }
 
 /* Get reservations for a slot, simple view (for end user) */
-async function getSimpleSlotReservations(id) {
+async function getSimpleSlotReservations(canvas_course_id, id) {
+    requireCourse('getSimpleSlotReservations', canvas_course_id);
     let data;
 
-    await query("SELECT canvas_group_id, canvas_group_name, is_group, is_individual, max_groups, max_individuals, res_now FROM reservations_view WHERE slot_id = $1", [ id ]).then((result) => {
+    await query("SELECT rv.canvas_group_id, rv.canvas_group_name, rv.is_group, rv.is_individual, rv.max_groups, rv.max_individuals, rv.res_now FROM reservations_view rv, slot s, course c WHERE rv.slot_id = $2 AND rv.slot_id=s.id AND s.course_id=c.id AND c.canvas_course_id=$1", [ canvas_course_id, id ]).then((result) => {
         data = result.rows;
     }).catch((error) => {
         log.error(error);
@@ -390,10 +409,11 @@ async function getExtendedSlotReservations(id) {
  * @param {Number} id 
  * @returns List of messages sent related to this slot
  */
-async function getSlotMessages(id) {
+async function getSlotMessages(canvas_course_id, id) {
+    requireCourse('getSlotMessages', canvas_course_id);
     let data;
 
-    await query("SELECT id, created_at, canvas_recipients, message_subject, message_body, success, error_message FROM canvas_conversation_log WHERE slot_id = $1 ORDER BY id DESC", [ id ]).then((result) => {
+    await query("SELECT id, created_at, canvas_recipients, message_subject, message_body, success, error_message FROM canvas_conversation_log WHERE slot_id = $2 AND canvas_course_id = $1 ORDER BY id DESC", [ canvas_course_id, id ]).then((result) => {
         data = result.rows;
     }).catch((error) => {
         log.error(error);
@@ -520,11 +540,18 @@ async function deleteReservation(user_id, groups, reservation_id) {
 }
 
 /* Makes a reservation for a slot time, either individual or group */
-async function createSlotReservation(res, slot_id, user_id, user_name, group_id, group_name, message) {
+async function createSlotReservation(res, canvas_course_id, slot_id, user_id, user_name, group_id, group_name, message) {
+    requireCourse('createSlotReservation', canvas_course_id);
     let data;
 
     // Load data about the slot being reserved
-    const slot = await getSlot(res, slot_id);
+    const slot = await getSlot(res, canvas_course_id, slot_id);
+
+    /* Scoped, so a slot in another course is not found. Said here rather than left to the reads
+       below, which would report it as a missing property. */
+    if (!slot) {
+        throw notInThisCourse();
+    }
 
     // Always set group_id to null if individual
     if (slot.type == "individual") {
@@ -584,7 +611,8 @@ async function getValidCourses(canvas_course_id) {
     return data;
 }
 
-async function getCourseWithStatistics(course_id) {
+async function getCourseWithStatistics(canvas_course_id, course_id) {
+    requireCourse('getCourseWithStatistics', canvas_course_id);
     let data;
 
     await query("SELECT c.*, " +
@@ -595,7 +623,7 @@ async function getCourseWithStatistics(course_id) {
                 "(SELECT COUNT(r.*)::integer AS reservations_all FROM reservation r, slot s WHERE r.slot_id=s.id AND s.course_id=c.id), " +
                 "(SELECT COUNT(r.*)::integer AS deleted FROM reservation r, slot s WHERE r.deleted_at IS NOT NULL AND r.slot_id=s.id AND s.course_id=c.id) " +
                 "FROM course c " + 
-                "WHERE c.id=$1", [ course_id ]).then((result) => {
+                "WHERE c.id=$2 AND c.canvas_course_id=$1", [ canvas_course_id, course_id ]).then((result) => {
         data = result.rows[0];
     }).catch((error) => {
         log.error(error);
@@ -623,10 +651,11 @@ async function getAllCoursesWithStatistics(canvas_course_id) {
     return data;
 }
 
-async function getCourse(id) {
+async function getCourse(canvas_course_id, id) {
+    requireCourse('getCourse', canvas_course_id);
     let data;
 
-    await query("SELECT * FROM course WHERE id = $1", [ id ]).then((result) => {
+    await query("SELECT * FROM course WHERE id = $2 AND canvas_course_id = $1", [ canvas_course_id, id ]).then((result) => {
         data = result.rows[0];
     }).catch((error) => {
         log.error(error);
@@ -698,7 +727,8 @@ async function createCourse(canvas_course_id, canvas_user_id, parameters) {
 /**
  * Update information about a course.
  */
-async function updateCourse(course_id, canvas_user_id, parameters) {
+async function updateCourse(canvas_course_id, course_id, canvas_user_id, parameters) {
+    requireCourse('updateCourse', canvas_course_id);
     let {
         segment_id, name, description, is_group, is_individual, max_groups, max_individuals, max_per_type, default_slot_duration_minutes, 
         cancellation_policy_hours, message_is_mandatory, message_all_when_full, message_cc_instructor, message_confirmation_body, message_full_body, message_cancelled_body
@@ -723,7 +753,7 @@ async function updateCourse(course_id, canvas_user_id, parameters) {
 
     await query("UPDATE course SET segment_id=$1, name=$2, description=$3, is_group=$4, is_individual=$5, max_groups=$6, max_individuals=$7, max_per_type=$8, default_slot_duration_minutes=$9, " +
                 "cancellation_policy_hours=$10, message_is_mandatory=$11, message_all_when_full=$12, message_cc_instructor=$13, message_confirmation_body=$14, message_full_body=$15, message_cancelled_body=$16, " +
-                "updated_at=now(), updated_by=$17 WHERE id=$18", [ 
+                "updated_at=now(), updated_by=$17 WHERE id=$18 AND canvas_course_id=$19", [ 
         segment_id, 
         name, 
         description, 
@@ -741,21 +771,32 @@ async function updateCourse(course_id, canvas_user_id, parameters) {
         message_full_body, 
         message_cancelled_body,
         canvas_user_id,
-        course_id
+        course_id,
+        canvas_course_id
     ]).then((result) => {
         log.debug(result);
+
+        if (result.rowCount === 0) {
+            throw notInThisCourse();
+        }
     }).catch((error) => {
         log.error(error);
         throw new Error(error);
     });
 }
 
-async function deleteCourse(course_id, canvas_user_id) {
-    await query("UPDATE course SET deleted_at=now(), deleted_by=$1 WHERE id=$2", [
+async function deleteCourse(canvas_course_id, course_id, canvas_user_id) {
+    requireCourse('deleteCourse', canvas_course_id);
+    await query("UPDATE course SET deleted_at=now(), deleted_by=$1 WHERE id=$2 AND canvas_course_id=$3", [
         canvas_user_id,
-        course_id
+        course_id,
+        canvas_course_id
     ]).then((result) => {
         log.debug(result);
+
+        if (result.rowCount === 0) {
+            throw notInThisCourse();
+        }
     }).catch((error) => {
         log.error(error);
         throw new Error(error);
@@ -884,16 +925,22 @@ async function connectInstructor(canvas_course_id, instructor_id) {
     return data;
 }
 
-async function updateInstructor(instructor_id, name, email, canvas_user_id) {
+async function updateInstructor(canvas_course_id, instructor_id, name, email, canvas_user_id) {
+    requireCourse('updateInstructor', canvas_course_id);
     let data;
 
-    await query("UPDATE instructor SET name=$1, email=$2, updated_by=$4, updated_at=now() WHERE id=$3", [
+    await query("UPDATE instructor SET name=$1, email=$2, updated_by=$4, updated_at=now() WHERE id=$3 AND EXISTS (SELECT 1 FROM canvas_course_instructor_mapping m WHERE m.instructor_id=instructor.id AND m.canvas_course_id=$5)", [
         name,
         email,
         instructor_id,
-        canvas_user_id
+        canvas_user_id,
+        canvas_course_id
     ]).then((result) => {
         data = result.rows[0];
+
+        if (result.rowCount === 0) {
+            throw notInThisCourse();
+        }
     }).catch((error) => {
         log.error(error);
         throw new Error(error);
@@ -983,10 +1030,30 @@ async function getAllLocations() {
     return data;
 }
 
-async function getLocation(location_id) {
+/*
+ * A location by id, with no course. Used only where a course is about to be connected to a shared
+ * location it does not have yet, so scoping the lookup would make the feature impossible. The
+ * scoped getLocation below is what every other path uses.
+ */
+async function getLocationById(location_id) {
     let data;
 
-    await query("SELECT * FROM location WHERE id=$1", [ 
+    await query("SELECT * FROM location WHERE id=$1", [ location_id ]).then((result) => {
+        data = result.rows[0];
+    }).catch((error) => {
+        log.error(error);
+        throw new Error(error);
+    });
+
+    return data;
+}
+
+async function getLocation(canvas_course_id, location_id) {
+    requireCourse('getLocation', canvas_course_id);
+    let data;
+
+    await query("SELECT l.* FROM location l, canvas_course_location_mapping m WHERE l.id=m.location_id AND m.canvas_course_id=$1 AND l.id=$2", [ 
+        canvas_course_id,
         location_id 
     ]).then((result) => {
         data = result.rows[0];
@@ -1021,22 +1088,28 @@ async function createLocation(name, description, external_url, campus_maps_id, m
     return data;
 }
 
-async function updateLocation(id, name, description, external_url, campus_maps_id, max_individuals) {
+async function updateLocation(canvas_course_id, id, name, description, external_url, campus_maps_id, max_individuals) {
+    requireCourse('updateLocation', canvas_course_id);
     let data;
 
     if (max_individuals === undefined || max_individuals == '' || max_individuals == 0) {
         max_individuals = null;
     }
 
-    await query("UPDATE location SET name=$2, description=$3, external_url=$4, campus_maps_id=$5, max_individuals=$6 WHERE id=$1", [
+    await query("UPDATE location SET name=$2, description=$3, external_url=$4, campus_maps_id=$5, max_individuals=$6 WHERE id=$1 AND EXISTS (SELECT 1 FROM canvas_course_location_mapping m WHERE m.location_id=location.id AND m.canvas_course_id=$7)", [
         id,
         name,
         description,
         external_url,
         campus_maps_id,
-        max_individuals
+        max_individuals,
+        canvas_course_id
     ]).then((result) => {
         data = result.rows[0];
+
+        if (result.rowCount === 0) {
+            throw notInThisCourse();
+        }
     }).catch((error) => {
         log.error(error);
         throw new Error(error);
@@ -1087,18 +1160,29 @@ async function replaceConnectedLocation(canvas_course_id, location_id, new_locat
 }
 
 async function createSlots(data) {
-    const { course_id, instructor_id, location_id, slots } = data;
+    const { canvas_course_id, course_id, instructor_id, location_id, slots } = data;
+
+    requireCourse('createSlots', canvas_course_id);
 
     for (const slot of slots) {
         log.debug(slot);
-        await query("INSERT INTO slot (course_id, instructor_id, location_id, time_start, time_end) VALUES ($1, $2, $3, $4, $5)", [
+        /* The course the slots are created in arrives from the form as an id, so it is written
+           only when it is one of this Canvas course's own: an insert whose course belongs
+           elsewhere selects no row and writes nothing. */
+        await query("INSERT INTO slot (course_id, instructor_id, location_id, time_start, time_end) " +
+                    "SELECT $1, $2, $3, $4, $5 WHERE EXISTS (SELECT 1 FROM course c WHERE c.id=$1 AND c.canvas_course_id=$6)", [
             course_id,
             instructor_id,
             location_id,
             slot.start,
-            slot.end
+            slot.end,
+            canvas_course_id
         ]).then((result) => {
             log.debug(result);
+
+            if (result.rowCount === 0) {
+                throw notInThisCourse();
+            }
         }).catch((error) => {
             log.error(error);
             throw new Error(error);
@@ -1106,25 +1190,38 @@ async function createSlots(data) {
     }
 }
 
-async function updateSlot(id, course_id, instructor_id, location_id, time_start, time_end) {
-    await query("UPDATE slot SET course_id=$2, instructor_id=$3, location_id=$4, time_start=$5, time_end=$6, updated_at=now() WHERE id=$1", [
+async function updateSlot(canvas_course_id, id, course_id, instructor_id, location_id, time_start, time_end) {
+    requireCourse('updateSlot', canvas_course_id);
+    await query("UPDATE slot SET course_id=$2, instructor_id=$3, location_id=$4, time_start=$5, time_end=$6, updated_at=now() WHERE id=$1 " +
+                "AND EXISTS (SELECT 1 FROM course c WHERE c.id=slot.course_id AND c.canvas_course_id=$7) " +
+                "AND EXISTS (SELECT 1 FROM course c WHERE c.id=$2 AND c.canvas_course_id=$7)", [
         id,
         course_id,
         instructor_id,
         location_id,
         time_start,
-        time_end
+        time_end,
+        canvas_course_id
     ]).then((result) => {
         log.debug(result);
+
+        if (result.rowCount === 0) {
+            throw notInThisCourse();
+        }
     }).catch((error) => {
         log.error(error);
         throw new Error(error);
     });
 }
 
-async function deleteSlot(id) {
-    await query("UPDATE slot SET deleted_at=now() WHERE id=$1", [ id ]).then((result) => {
+async function deleteSlot(canvas_course_id, id) {
+    requireCourse('deleteSlot', canvas_course_id);
+    await query("UPDATE slot SET deleted_at=now() WHERE id=$1 AND EXISTS (SELECT 1 FROM course c WHERE c.id=slot.course_id AND c.canvas_course_id=$2)", [ id, canvas_course_id ]).then((result) => {
         log.debug(result);
+
+        if (result.rowCount === 0) {
+            throw notInThisCourse();
+        }
     }).catch((error) => {
         log.error(error);
         throw new Error(error);
@@ -1246,6 +1343,33 @@ async function updateCanvasConnection(canvas_course_id, group_category_mappings)
 /**
  * Retrieve configuration keys and values for a specific course
  */
+/*
+ * A record asked for by id, from a course that does not hold it.
+ *
+ * Every statement below that takes an id also takes the course the request acts in, so a write
+ * from a page showing another course matches no row. That has to be reported: answering success
+ * for a change that did not happen is the same silent-wrong-course failure the scoping is here to
+ * remove, only inverted.
+ */
+/*
+ * A course-scoped statement called without a course matches nothing, and "matches nothing" reads as
+ * "no such record" rather than as the mistake it is. So every function below that takes a course
+ * refuses an undefined one and names itself doing it.
+ *
+ * This exists because of what happened when the course was added: eight call sites were left on the
+ * old signature, and each one silently passed the record id as the course and undefined as the id.
+ * The symptom was a TypeError several frames later, in code that had nothing to do with it. Nothing
+ * in the test suite could see it either -- the route tests replace this module with a stub that
+ * accepts any arguments, so an arity mistake is invisible to them by construction.
+ */
+const requireCourse = (fn, canvas_course_id) => {
+    if (canvas_course_id === undefined || canvas_course_id === null) {
+        throw new Error(fn + " needs the course the request acts in, and was called without one.");
+    }
+};
+
+const notInThisCourse = () => new Error("That record does not belong to this course. Open the tool from Canvas again.");
+
 async function getCanvasCourseConfiguration(canvas_course_id) {
     let data;
     let returnedData = [];
@@ -1397,6 +1521,7 @@ module.exports = {
     getLocationsWithStatistics,
     getAllLocations,
     getLocation,
+    getLocationById,
     createLocation,
     updateLocation,
     connectLocation,

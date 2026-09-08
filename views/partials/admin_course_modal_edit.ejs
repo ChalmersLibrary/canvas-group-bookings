@@ -1,6 +1,6 @@
 <div class="modal modal-lg fade" id="editCourse" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="editCourseLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <form class="needs-validation" id="editCourseForm" novalidate action="/api/admin/course">
+        <form class="needs-validation" id="editCourseForm" novalidate action="<%= ctxUrl('/api/admin/course') %>">
             <input type="hidden" id="e_course_id" value="" />
             <input type="hidden" id="e_canvas_course_id" value="" />
             <div class="modal-content">

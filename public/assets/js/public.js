@@ -137,7 +137,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
                         submitButton.disabled = false
                     }
                     else {
-                        window.location.assign("/reservations?reservationDone=true" + (reserveSlotModal.querySelector('#r_type').value == 'group' ? "&reservationGroup=true" : "") + "&reservationId=" + responseBody.reservation_id)
+                        window.location.assign(ctxUrl("/reservations?reservationDone=true") + (reserveSlotModal.querySelector('#r_type').value == 'group' ? "&reservationGroup=true" : "") + "&reservationId=" + responseBody.reservation_id)
                     }
                     submitSpinner.classList.remove("d-inline-block")        
                     submitSpinner.classList.add("d-none")
@@ -240,7 +240,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
                     submitButton.disabled = false
                 }
                 else {
-                    window.location.assign("/reservations?reservationDeleted=true" + (r_type == 'group' ? "&reservationGroup=true" : "") + "&reservationTitle=" + r_course)
+                    window.location.assign(ctxUrl("/reservations?reservationDeleted=true") + (r_type == 'group' ? "&reservationGroup=true" : "") + "&reservationTitle=" + r_course)
                 }
                 submitSpinner.classList.remove("d-inline-block")        
                 submitSpinner.classList.add("d-none")

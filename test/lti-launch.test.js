@@ -77,7 +77,12 @@ test('the LTI launch', async (t) => {
     app.post('/lti', lti.handleLaunch('/'));
 
     /* Reports what the launch actually put in the session. */
-    app.get('/probe', (req, res) => res.json({ lti: req.session.lti ?? null }));
+    app.get('/probe', (req, res) => res.json({
+        launches: req.session.launches ?? null,
+        /* The single launch, for the assertions that only ever make one. */
+        lti: req.session.launches ? Object.values(req.session.launches)[0] ?? null : null,
+        keys: req.session.launches ? Object.keys(req.session.launches) : []
+    }));
 
     /* The real application mounts an error handler (src/routes/index.js), so this one does too,
        and records what reached it. */
@@ -116,7 +121,11 @@ test('the LTI launch', async (t) => {
         const { status, location } = await launch(payloadFor({}));
 
         assert.equal(status, 302, 'a valid launch should redirect');
-        assert.equal(location, '/');
+
+        /* The redirect carries the key of the launch it just stored: it is what every request
+           from the page then names, and there is no fallback to the most recent launch. */
+        assert.match(location, /^\/\?ctx=[0-9a-f]{12}$/,
+            'the redirect should name the launch the page is to act in');
     });
 
     await t.test('a valid launch puts the Canvas ids in the session', async () => {

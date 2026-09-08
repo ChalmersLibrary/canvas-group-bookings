@@ -4,6 +4,7 @@ require('dotenv').config();
 const db = require('../db');
 const log = require('../logging')
 const user = require('../user');
+const context = require('../lti/context');
 const { AuthorizationCode } = require('simple-oauth2');
 
 const clientConfig = {
@@ -29,26 +30,47 @@ function TokenResult(success, message, access_token, token_type, user_id) {
 };
 
 function setupAuthEndpoints(app, callbackUrl) {
-    // Authorization uri definition
-    const authorizationUri = client.authorizeURL({
-        redirect_uri: callbackUrl,
-        state: 'CatDogMouseKey'
-    });
-    
     // Initial page redirecting to Canvas
     app.get('/auth', (req, res) => {
-        return res.redirect(authorizationUri);
+        /* The flow leaves for Canvas and returns on a redirect, so the only thing that survives
+           the round trip is what Canvas sends back. `state` is that, and it carries which launch
+           the user was in: without it the callback lands on whichever launch was most recent,
+           which is the defect this key exists to remove. Built per request for the same reason --
+           a uri computed once at startup can only hold a constant. */
+        const key = context.keyFromRequest(req);
+
+        if (!key) {
+            log.error("Authorization was started without a context key, so there is nothing to return to.");
+
+            return res.status(400).json('Open the tool from Canvas again.');
+        }
+
+        return res.redirect(client.authorizeURL({
+            redirect_uri: callbackUrl,
+            state: key
+        }));
     });
     
     // Callback service parsing the authorization token and asking for the access token
     // If denied, we get parameter "error" with "access_denied" and should present some useful information.
     app.get('/callback', async (req, res) => {
-        const { code } = req.query;
+        const { code, state } = req.query;
         const options = {
           code,
           redirect_uri: callbackUrl,
         };
-    
+
+        /* Checked against this session's own launches rather than merely being present, so a
+           callback carrying somebody else's state, or a fabricated one, is refused instead of
+           being answered with a token for whatever context happened to be at hand. */
+        const launches = req.session && req.session.launches ? req.session.launches : {};
+
+        if (!state || !launches[state]) {
+            log.error("OAuth callback carries no state this session launched with.");
+
+            return res.status(400).json('Open the tool from Canvas again.');
+        }
+
         try {
             const accessToken = await client.getToken(options);
             log.debug("Got token from client.getToken() for user " + accessToken.token?.user?.id +
@@ -76,11 +98,13 @@ function setupAuthEndpoints(app, callbackUrl) {
                     return res.status(500).json('Could not save the session after authorization.');
                 }
 
-                log.debug("Session saved with user object from OAuth2 callback, redirecting to root app.");
+                const target = context.withKey("/?from=callback", state);
 
-                res.location("/?from=callback");
+                log.debug("Session saved with user object from OAuth2 callback, redirecting to " + target + ".");
 
-                return res.redirect("/?from=callback");
+                res.location(target);
+
+                return res.redirect(target);
             });
         }
         catch (error) {
@@ -107,13 +131,13 @@ function setupAuthEndpoints(app, callbackUrl) {
  * 
  * If there is no token at all, the calling code should redirect into the OAuth2 flow.
  */
-async function checkAccessToken(req) {
+async function checkAccessToken(req, lti) {
     let tokenResult = new TokenResult();
     let userId;
 
-    if (req.session.lti && req.session.lti.custom_canvas_user_id) {
-        userId = req.session.lti.custom_canvas_user_id;
-        log.debug("UserId found in LTI session object: " + req.session.lti.custom_canvas_user_id);
+    if (lti && lti.custom_canvas_user_id) {
+        userId = lti.custom_canvas_user_id;
+        log.debug("UserId found in the launch this request acts in: " + lti.custom_canvas_user_id);
     }
     else if (req.session.user && req.session.user.id) {
         userId = req.session.user.id;

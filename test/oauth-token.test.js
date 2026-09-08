@@ -113,13 +113,14 @@ test('the stored OAuth token', async (t) => {
 
     t.after(() => canvas.close());
 
-    const request = () => ({ session: { lti: { custom_canvas_user_id: 4711 }, save: (cb) => cb(null) } });
+    const request = () => ({ session: { save: (cb) => cb(null) } });
+    const launch = () => ({ custom_canvas_user_id: 4711 });
 
     await t.test('a token that has not expired is used without asking Canvas', async () => {
         stored = storedToken(new Date(Date.now() + hour).toISOString());
         requests.length = 0;
 
-        const result = await auth.checkAccessToken(request());
+        const result = await auth.checkAccessToken(request(), launch());
 
         assert.equal(result.success, true);
         assert.equal(result.access_token, 'ACCESS-BEFORE');
@@ -132,7 +133,7 @@ test('the stored OAuth token', async (t) => {
         stored = storedToken(new Date(Date.now() - hour).toISOString());
         requests.length = 0;
 
-        await auth.checkAccessToken(request());
+        await auth.checkAccessToken(request(), launch());
 
         assert.equal(requests.length, 1, 'an expired token should be refreshed');
         assert.match(requests[0].url, /\/login\/oauth2\/token/);
@@ -142,7 +143,7 @@ test('the stored OAuth token', async (t) => {
         stored = storedToken(new Date(Date.now() - hour).toISOString());
         requests.length = 0;
 
-        await auth.checkAccessToken(request());
+        await auth.checkAccessToken(request(), launch());
 
         const sent = requests[0].body;
 
@@ -156,7 +157,7 @@ test('the stored OAuth token', async (t) => {
         stored = storedToken(new Date(Date.now() - hour).toISOString());
         answer = { status: 200, body: { access_token: 'ACCESS-AFTER', token_type: 'Bearer', expires_in: 3600, user: CANVAS_USER } };
 
-        const result = await auth.checkAccessToken(request());
+        const result = await auth.checkAccessToken(request(), launch());
 
         assert.equal(result.success, true);
         assert.equal(result.access_token, 'ACCESS-AFTER');
@@ -171,7 +172,7 @@ test('the stored OAuth token', async (t) => {
         answer = { status: 400, body: { error: 'invalid_grant', error_description: 'refresh_token not found' } };
 
         await assert.rejects(
-            () => auth.checkAccessToken(request()),
+            () => auth.checkAccessToken(request(), launch()),
             (error) => error.message.includes('invalid_grant')
         );
 
@@ -182,7 +183,7 @@ test('the stored OAuth token', async (t) => {
         /* The middleware turns this into a redirect into the OAuth flow, so it must not throw. */
         stored = undefined;
 
-        const result = await auth.checkAccessToken(request());
+        const result = await auth.checkAccessToken(request(), launch());
 
         assert.equal(result.success, false);
         assert.match(result.message, /No token found/);
@@ -194,7 +195,7 @@ test('the stored OAuth token', async (t) => {
         stored = storedToken(new Date(Date.now() + hour).toISOString());
         queries.length = 0;
 
-        await auth.checkAccessToken(request());
+        await auth.checkAccessToken(request(), launch());
 
         const lookup = queries.find((q) => q.text.startsWith('SELECT data FROM user_token'));
 
@@ -207,7 +208,7 @@ test('the stored OAuth token', async (t) => {
            through would break it silently, and this is the shape the stored row depends on. */
         stored = storedToken(new Date(Date.now() - hour).toISOString());
 
-        await auth.checkAccessToken(request());
+        await auth.checkAccessToken(request(), launch());
 
         assert.equal(stored.user.id, CANVAS_USER.id);
         assert.equal(stored.user.global_id, CANVAS_USER.global_id);

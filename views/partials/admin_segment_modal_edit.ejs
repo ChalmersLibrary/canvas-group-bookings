@@ -1,6 +1,6 @@
 <div class="modal modal-md fade" id="editSegment" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="editSegmentLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <form class="needs-validation" id="editSegmentForm" novalidate action="/api/admin/segment">
+        <form class="needs-validation" id="editSegmentForm" novalidate action="<%= ctxUrl('/api/admin/segment') %>">
             <input type="hidden" id="e_segment_id" value="" />
             <div class="modal-content">
                 <div class="modal-header">

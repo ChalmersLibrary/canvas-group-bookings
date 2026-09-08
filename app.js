@@ -93,6 +93,15 @@ morgan.token('url-redacted', function getRedactedUrl (req) {
 // Setup https request logging
 app.use(morgan(':remote-addr [:date[clf]] ":method :url-redacted" :status :res[content-length] - :course-id :user-id ":user-groups" ":response-time ms" ":referrer" ":user-agent"', { stream: accessLogStream }))
 
+/* Every page builds its links with ctxUrl, including the error pages, which render without a
+   launch. Defined for every request so a template can call it unconditionally; the LTI middleware
+   replaces it with the version that adds the key once it knows which launch the request is in. */
+app.use(function (req, res, next) {
+    res.locals.ctxUrl = (url) => url;
+
+    next();
+});
+
 /* Content Security Policy. Set here rather than by helmet, and after it, so this is the policy
    that reaches the client: helmet's own default names frame-ancestors, which would stop Canvas
    embedding the tool. */
@@ -388,7 +397,7 @@ app.get('/reservations', async (req, res, next) => {
         // Get other reservations if this is a group and there are other groups reserved.
         // For now, we store the information in database when a user for a group makes the reservation.
         if (reservation.is_group == true && reservation.max_groups > 1) {
-            let other_reservations = await db.getSimpleSlotReservations(reservation.slot_id);
+            let other_reservations = await db.getSimpleSlotReservations(res.locals.courseId, reservation.slot_id);
             reservation.other_reservations = [];
 
             for (const r of other_reservations) {
@@ -502,7 +511,7 @@ app.get('/admin', async (req, res, next) => {
                 session: req.session,
                 data: {
                     canvas_course_id: res.locals.courseId,
-                    canvas_course_name: req.session.lti.context_title,
+                    canvas_course_name: res.locals.lti.context_title,
                     canvas_group_categories: canvas_group_categories,
                     config_keys: available_config_keys,
                 }
@@ -515,7 +524,7 @@ app.get('/admin', async (req, res, next) => {
                 session: req.session,
                 data: {
                     canvas_course_id: res.locals.courseId,
-                    canvas_course_name: req.session.lti.context_title,
+                    canvas_course_name: res.locals.lti.context_title,
                     canvas_group_categories: canvas_group_categories,
                     config_keys: available_config_keys,
                 }
@@ -607,7 +616,7 @@ app.get('/admin/exports', async (req, res, next) => {
             session: req.session,
             data: {
                 canvas_course_id: res.locals.courseId,
-                canvas_course_name: req.session.lti.context_title
+                canvas_course_name: res.locals.lti.context_title
             }
         });
     }
@@ -624,12 +633,22 @@ app.get('/admin/exports', async (req, res, next) => {
 /* Get one slot */
 app.get('/api/slot/:id', async (req, res, next) => {
     try {
-        const slot = await db.getSlot(res, req.params.id)
+        const slot = await db.getSlot(res, res.locals.courseId, req.params.id)
+
+        /* Scoped to the course, so a slot id belonging to another one is not found rather than
+           returned. Said explicitly: the code below reads the slot, and a TypeError would report
+           this as a failure rather than as a refusal. */
+        if (!slot) {
+            return res.send({
+                success: false,
+                message: "That slot is not part of this course."
+            });
+        }
 
         // add info about reserved groups, needed for UI
         // don't leak user information on individuals, not used
         if (slot.type != 'individual') {
-            slot.reservations = await db.getSimpleSlotReservations(req.params.id);
+            slot.reservations = await db.getSimpleSlotReservations(res.locals.courseId, req.params.id);
         }
         else {
             delete slot.res_user_ids;
@@ -667,7 +686,14 @@ app.post('/api/reservation', async (req, res, next) => {
     const { slot_id, group_id, user_id, message } = req.body;
     
     try {
-        const slot = await db.getSlot(res, slot_id);
+        const slot = await db.getSlot(res, res.locals.courseId, slot_id);
+
+        /* The slot id arrives in the body, and it is now looked up within the course this request
+           acts in, so a slot belonging to another course is not found. Answered here rather than
+           left to the first read of an absent slot below. */
+        if (!slot) {
+            throw new Error("That slot is not part of this course.");
+        }
 
         const t_time_now = new Date().getTime();
         const t_time_slot = new Date(slot.time_start).getTime();
@@ -720,13 +746,13 @@ app.post('/api/reservation', async (req, res, next) => {
             }
         }
 
-        const reservation = await db.createSlotReservation(res, slot_id, req.session.user.id, req.session.user.name, group_id, group_name, message);
+        const reservation = await db.createSlotReservation(res, res.locals.courseId, slot_id, req.session.user.id, req.session.user.name, group_id, group_name, message);
 
         // Send confirmation messages with Canvas Conversation Robot to Inbox
         log.debug("CONVERSATION_ROBOT_SEND_MESSAGES=" + process.env.CONVERSATION_ROBOT_SEND_MESSAGES);
         if (process.env.CONVERSATION_ROBOT_API_TOKEN && process.env.CONVERSATION_ROBOT_SEND_MESSAGES == "true") {
             try {
-                const course = await db.getCourse(slot.course_id);
+                const course = await db.getCourse(slot.canvas_course_id, slot.course_id);
                 const instructor = await db.getInstructor(slot.instructor_id);
 
                 if (slot.type == "group") {
@@ -738,7 +764,7 @@ app.post('/api/reservation', async (req, res, next) => {
                     let body = utils.getMessageBody(course.message_confirmation_body, template_type);
 
                     if (body) {
-                        body = utils.replaceMessageMagics(body, course.name, message, course.cancellation_policy_hours, req.session.user.name, slot.time_human_readable, slot.location_name, slot.location_url, slot.location_description, instructor.name, instructor.email, group_name, "", req.session.lti.context_title);
+                        body = utils.replaceMessageMagics(body, course.name, message, course.cancellation_policy_hours, req.session.user.name, slot.time_human_readable, slot.location_name, slot.location_url, slot.location_description, instructor.name, instructor.email, group_name, "", res.locals.lti.context_title);
 
                         try {
                             await canvasApi.createConversation(recipient, subject, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
@@ -764,7 +790,7 @@ app.post('/api/reservation', async (req, res, next) => {
                         }
 
                         // Get the updated slot with all reservations
-                        const slot_now = await db.getSlot(res, slot_id);
+                        const slot_now = await db.getSlot(res, res.locals.courseId, slot_id);
 
                         // Slot is full and there should be a message to all groups reserved
                         if (course.message_all_when_full && slot_now.res_now == slot_now.res_max) {
@@ -772,7 +798,7 @@ app.post('/api/reservation', async (req, res, next) => {
                             let body_all = utils.getMessageBody(course.message_full_body, "reservation_group_full");
 
                             if (body_all) {
-                                body_all = utils.replaceMessageMagics(body_all, course.name, message, course.cancellation_policy_hours, req.session.user.name, slot_now.time_human_readable, slot_now.location_name, slot_now.location_url, slot_now.location_description, instructor.name, instructor.email, group_name, slot_now.res_group_names.join(", "), req.session.lti.context_title);
+                                body_all = utils.replaceMessageMagics(body_all, course.name, message, course.cancellation_policy_hours, req.session.user.name, slot_now.time_human_readable, slot_now.location_name, slot_now.location_url, slot_now.location_description, instructor.name, instructor.email, group_name, slot_now.res_group_names.join(", "), res.locals.lti.context_title);
 
                                 for (const id of slot_now.res_group_ids) {
                                     recipients.push("group_" + id);
@@ -820,7 +846,7 @@ app.post('/api/reservation', async (req, res, next) => {
                     let body = utils.getMessageBody(course.message_confirmation_body, template_type);
 
                     if (body) {
-                        body = utils.replaceMessageMagics(body, course.name, message, course.cancellation_policy_hours, req.session.user.name, slot.time_human_readable, slot.location_name, slot.location_url, slot.location_description, instructor.name, instructor.email, "", "", req.session.lti.context_title);
+                        body = utils.replaceMessageMagics(body, course.name, message, course.cancellation_policy_hours, req.session.user.name, slot.time_human_readable, slot.location_name, slot.location_url, slot.location_description, instructor.name, instructor.email, "", "", res.locals.lti.context_title);
 
                         try {
                             await canvasApi.createConversation(req.session.user.id, subject, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
@@ -926,7 +952,7 @@ app.delete('/api/reservation/:id', async (req, res) => {
         log.debug("CONVERSATION_ROBOT_SEND_MESSAGES=" + process.env.CONVERSATION_ROBOT_SEND_MESSAGES);
         if (process.env.CONVERSATION_ROBOT_API_TOKEN && process.env.CONVERSATION_ROBOT_SEND_MESSAGES == "true") {
             try {
-                const course = await db.getCourse(reservation.course_id);
+                const course = await db.getCourse(reservation.canvas_course_id, reservation.course_id);
                 const instructor = await db.getInstructor(reservation.instructor_id);
 
                 if (reservation.type == "group") {
@@ -938,7 +964,7 @@ app.delete('/api/reservation/:id', async (req, res) => {
                     let body = utils.getMessageBody(course.message_cancelled_body, template_type);
 
                     if (body) {
-                        body = utils.replaceMessageMagics(body, course.name, "", course.cancellation_policy_hours, req.session.user.name, reservation.time_human_readable, reservation.location_name, "", "", instructor.name, instructor.email, reservation.canvas_group_name, "", req.session.lti.context_title);
+                        body = utils.replaceMessageMagics(body, course.name, "", course.cancellation_policy_hours, req.session.user.name, reservation.time_human_readable, reservation.location_name, "", "", instructor.name, instructor.email, reservation.canvas_group_name, "", res.locals.lti.context_title);
         
                         try {
                             await canvasApi.createConversation(recipient, subject, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
@@ -974,7 +1000,7 @@ app.delete('/api/reservation/:id', async (req, res) => {
                     let body = utils.getMessageBody(course.message_cancelled_body, template_type);
 
                     if (body) {
-                        body = utils.replaceMessageMagics(body, course.name, "", course.cancellation_policy_hours, req.session.user.name, reservation.time_human_readable, reservation.location_name, "", "", instructor.name, instructor.email, "", "", req.session.lti.context_title);
+                        body = utils.replaceMessageMagics(body, course.name, "", course.cancellation_policy_hours, req.session.user.name, reservation.time_human_readable, reservation.location_name, "", "", instructor.name, instructor.email, "", "", res.locals.lti.context_title);
 
                         try {
                             await canvasApi.createConversation(req.session.user.id, subject, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });

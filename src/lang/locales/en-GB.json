@@ -346,6 +346,8 @@
 
 	"SystemBackendErrorLtiLaunch": "Can't read LTI messages",
 	"SystemBackendErrorLtiLaunchMessage": "The tool must be started from within a Canvas course, to get the correct LTI context.",
+	"SystemBackendErrorLtiContext": "Can't tell which course this page is for",
+	"SystemBackendErrorLtiContextMessage": "Open the booking tool from Canvas again. If you have it open in more than one tab, open it again from the course you want to work in.",
 	"SystemBackendErrorLtiLaunchSession": "Can't create a session",
 	"SystemBackendErrorLtiLaunchSessionMessage": "You must enable third party cookies for this site in your web browser settings, otherwise we can't create a secure session for you."
 }

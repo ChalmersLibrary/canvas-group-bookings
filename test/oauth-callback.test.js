@@ -148,6 +148,30 @@ test('the OAuth callback', async (t) => {
 
     auth.setupAuthEndpoints(app, `http://127.0.0.1:${port}/callback`);
 
+    /*
+     * The callback now has to say which launch it is returning to, and that launch has to be one
+     * this session actually made: `state` is checked against the session's own launches, so a
+     * callback carrying a fabricated one is refused rather than answered with a token. This route
+     * stands in for the launch that precedes an authorization.
+     */
+    const context = require('../src/lti/context');
+
+    app.get('/plant', (req, res) => {
+        const key = context.store(req, {
+            custom_canvas_user_id: CANVAS_USER.id,
+            resource_link_id: 'resource-link-1'
+        });
+
+        return req.session.save(() => res.json({ key }));
+    });
+
+    /* A session holding one launch, and the key that names it. */
+    const planted = async () => {
+        const { setCookie, body } = await get(port, '/plant');
+
+        return { cookie: setCookie[0].split(';')[0], key: JSON.parse(body).key };
+    };
+
     /* Anything uncaught is the failure this file is about, so it is recorded rather than left to
        take the test runner with it. */
     const uncaught = [];
@@ -170,11 +194,12 @@ test('the OAuth callback', async (t) => {
         store.failSet = false;
         uncaught.length = 0;
 
-        const { status, location, setCookie } = await get(port, '/callback?code=the-code');
+        const { cookie, key } = await planted();
+        const { status, location } = await get(port, `/callback?code=the-code&state=${key}`, cookie);
 
         assert.equal(status, 302, 'the callback should redirect');
-        assert.equal(location, '/?from=callback');
-        assert.ok(setCookie, 'the session the callback wrote must reach the browser');
+        /* Back to the launch it left from, rather than to whichever is most recent. */
+        assert.equal(location, `/?from=callback&ctx=${key}`);
 
         await settle();
 
@@ -193,7 +218,11 @@ test('the OAuth callback', async (t) => {
         });
 
         try {
-            await get(port, '/callback?code=the-code');
+            const { cookie, key } = await planted();
+
+            writes.length = 0;
+
+            await get(port, `/callback?code=the-code&state=${key}`, cookie);
 
             assert.equal(writes.length > 0, true,
                 'the session must be persisted before the browser is sent to the next request');
@@ -209,11 +238,16 @@ test('the OAuth callback', async (t) => {
      * later tick and app.js turned that into process.exit(1).
      */
     await t.test('a session store failure is reported, not fatal', async () => {
-        store.failSet = true;
         uncaught.length = 0;
 
         try {
-            const { status, location } = await get(port, '/callback?code=the-code');
+            /* Planted before the store is broken: the launch this callback returns to has to have
+               been written, or the refusal under test is never reached. */
+            const { cookie, key } = await planted();
+
+            store.failSet = true;
+
+            const { status, location } = await get(port, `/callback?code=the-code&state=${key}`, cookie);
 
             assert.equal(status, 500, 'a session that cannot be stored must not redirect');
             assert.equal(location, undefined, 'the redirect must not also be sent');
@@ -238,7 +272,8 @@ test('the OAuth callback', async (t) => {
         canvasAnswer = { status: 400, body: { error: 'invalid_grant' } };
 
         try {
-            const { status, location } = await get(port, '/callback?code=stale-code');
+            const { cookie, key } = await planted();
+            const { status, location } = await get(port, `/callback?code=stale-code&state=${key}`, cookie);
 
             assert.equal(status, 500, 'a refused exchange must not be reported as success');
             assert.equal(location, undefined, 'the redirect must not be sent as well');
@@ -263,7 +298,8 @@ test('the OAuth callback', async (t) => {
         canvasAnswer = { status: 400, body: { error: 'invalid_grant', error_description: 'secret detail' } };
 
         try {
-            const { body } = await get(port, '/callback?code=stale-code');
+            const { cookie, key } = await planted();
+            const { body } = await get(port, `/callback?code=stale-code&state=${key}`, cookie);
 
             assert.equal(body.includes('secret detail'), false,
                 'the provider payload must not reach the browser');

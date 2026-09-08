@@ -133,7 +133,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 try {
                     const responseBody = JSON.parse(data)
                     if (responseBody.success) {
-                        window.location.assign("/admin/course")
+                        window.location.assign(ctxUrl("/admin/course"))
                     }
                     else {
                         newCourseModal.querySelector('div.alert.alert-error span').innerText = JSON.parse(data).message
@@ -259,7 +259,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 try {
                     const responseBody = JSON.parse(data)
                     if (responseBody.success) {
-                        window.location.assign("/admin/course")
+                        window.location.assign(ctxUrl("/admin/course"))
                     }
                     else {
                         editCourseModal.querySelector('div.alert.alert-error span').innerText = JSON.parse(data).message
@@ -345,7 +345,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 try {
                     const responseBody = JSON.parse(data)
                     if (responseBody.success) {
-                        window.location.assign("/admin/course")
+                        window.location.assign(ctxUrl("/admin/course"))
                     }
                     else {
                         deleteCourseForm.querySelector('div.alert.alert-error span').innerText = JSON.parse(data).message

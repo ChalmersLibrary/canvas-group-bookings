@@ -42,7 +42,17 @@ router.put('/canvas/:id', async (req, res, next) => {
     try {
         const { group_category_mapping } = req.body;
 
-        await db.updateCanvasConnection(req.params.id, group_category_mapping);
+        /* The url names the Canvas course whose group category mapping is about to be deleted
+           and rewritten. It is only ever this one, and a request naming another is refused rather
+           than served, since the statement itself has no way to tell them apart. */
+        if (String(req.params.id) !== String(res.locals.courseId)) {
+            return res.send({
+                success: false,
+                message: "That course is not the one this page was opened for."
+            });
+        }
+
+        await db.updateCanvasConnection(res.locals.courseId, group_category_mapping);
 
         return res.send({
             success: true,
@@ -64,7 +74,7 @@ router.put('/canvas/:id', async (req, res, next) => {
  */
 router.get('/course/:id', async (req, res, next) => {
     try {
-        const course = await db.getCourseWithStatistics(req.params.id);
+        const course = await db.getCourseWithStatistics(res.locals.courseId, req.params.id);
         const segments = await db.getSegments(course.canvas_course_id);
 
         return res.send({
@@ -177,7 +187,7 @@ router.post('/course', async (req, res, next) => {
  */
 router.put('/course/:id', async (req, res, next) => {
     try {
-        await db.updateCourse(req.params.id, req.session.user.id, req.body);
+        await db.updateCourse(res.locals.courseId, req.params.id, req.session.user.id, req.body);
 
         return res.send({
             success: true,
@@ -199,10 +209,10 @@ router.put('/course/:id', async (req, res, next) => {
  */
 router.delete('/course/:id', async (req, res, next) => {
     try {
-        const course = await db.getCourseWithStatistics(req.params.id);
+        const course = await db.getCourseWithStatistics(res.locals.courseId, req.params.id);
 
         if (course.slots == 0) {
-            await db.deleteCourse(req.params.id, req.session.user.id);
+            await db.deleteCourse(res.locals.courseId, req.params.id, req.session.user.id);
         }
         else {
             throw new Error("Course has slots, can't delete.");
@@ -229,7 +239,7 @@ router.delete('/course/:id', async (req, res, next) => {
  */
 router.get('/segment/:id', async (req, res, next) => {
     try {
-        const segment = await db.getSegmentWithStatistics(req.params.id);
+        const segment = await db.getSegmentWithStatistics(res.locals.courseId, req.params.id);
         const course_segments = await db.getSegmentsWithStatistics(res.locals.courseId);
 
         return res.send({
@@ -289,7 +299,7 @@ router.put('/segment/:id', async (req, res, next) => {
     try {
         const { name, sign, hex_color, description } = req.body;
 
-        const segment = await db.updateSegment(req.params.id, req.session.user.id, name, sign, hex_color, description);
+        const segment = await db.updateSegment(res.locals.courseId, req.params.id, req.session.user.id, name, sign, hex_color, description);
 
         return res.send({
             success: true,
@@ -312,14 +322,14 @@ router.delete('/segment/:id', async (req, res, next) => {
 
         if (replace_with_segment_id) {
             if (replace_with_segment_id == req.params.id) {
-                await db.replaceExistingSegmentInCourses(req.params.id, null, req.session.user.id); // Last segment, null all segment columns
+                await db.replaceExistingSegmentInCourses(res.locals.courseId, req.params.id, null, req.session.user.id); // Last segment, null all segment columns
             }
             else {
-                await db.replaceExistingSegmentInCourses(req.params.id, replace_with_segment_id, req.session.user.id);
+                await db.replaceExistingSegmentInCourses(res.locals.courseId, req.params.id, replace_with_segment_id, req.session.user.id);
             }
         }
 
-        await db.deleteSegment(req.params.id, req.session.user.id);
+        await db.deleteSegment(res.locals.courseId, req.params.id, req.session.user.id);
 
         return res.send({
             success: true,
@@ -413,7 +423,7 @@ router.put('/instructor/:id', async (req, res, next) => {
     const { name, email } = req.body;
 
     try {
-        await db.updateInstructor(req.params.id, name, email, req.session.user.id);
+        await db.updateInstructor(res.locals.courseId, req.params.id, name, email, req.session.user.id);
 
         return res.send({
             success: true,
@@ -551,10 +561,10 @@ router.get('/location/:id', async (req, res, next) => {
 router.put('/location/:id', async (req, res, next) => {
     try {
         const { name, description, external_url, campus_maps_id, max_individuals } = req.body;
-        const existing_location = await db.getLocation(req.params.id);
+        const existing_location = await db.getLocation(res.locals.courseId, req.params.id);
         
         if (existing_location) {
-            await db.updateLocation(existing_location.id, name, description, external_url, campus_maps_id, max_individuals);
+            await db.updateLocation(res.locals.courseId, existing_location.id, name, description, external_url, campus_maps_id, max_individuals);
         }
 
         return res.send({
@@ -580,7 +590,7 @@ router.put('/location/:id', async (req, res, next) => {
         const { existing_location_id, name, description, external_url, campus_maps_id, max_individuals } = req.body;
 
         if (existing_location_id) {
-            const existing_location = await db.getLocation(existing_location_id);
+            const existing_location = await db.getLocationById(existing_location_id);
         
             if (existing_location) {
                 await db.connectLocation(res.locals.courseId, existing_location.id);
@@ -639,7 +649,16 @@ router.delete('/location/:id', async (req, res, next) => {
  */
 router.get('/exports/csv/group-reservations/:id', async (req, res, next) => {
     try {
-        const data = await db.getAllGroupReservationsForCanvasCourse(req.params.id);
+        /* The export carries student names and group names, so a url naming another Canvas
+           course is a disclosure rather than an inconsistency. It only ever names this one. */
+        if (String(req.params.id) !== String(res.locals.courseId)) {
+            return res.send({
+                success: false,
+                message: "That course is not the one this page was opened for."
+            });
+        }
+
+        const data = await db.getAllGroupReservationsForCanvasCourse(res.locals.courseId);
 
         let csvData = "Start time\tGroup name\tReserved by\tCourse name\tInstructor name\r\n";
 

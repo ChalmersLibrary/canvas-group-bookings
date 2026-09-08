@@ -1,6 +1,6 @@
 <div class="modal modal-md fade" id="newLocation" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="newLocationLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <form class="needs-validation" id="newLocationForm" novalidate action="/api/admin/location">
+        <form class="needs-validation" id="newLocationForm" novalidate action="<%= ctxUrl('/api/admin/location') %>">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="newLocationLabel"><%= __('AdminLocationModalNewLabel') %></h5>

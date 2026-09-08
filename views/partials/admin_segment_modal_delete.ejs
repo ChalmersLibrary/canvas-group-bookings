@@ -1,6 +1,6 @@
 <div class="modal modal-md fade" id="deleteSegment" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteSegmentLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <form id="deleteSegmentForm" action="/api/admin/segment">
+        <form id="deleteSegmentForm" action="<%= ctxUrl('/api/admin/segment') %>">
             <input type="hidden" id="d_segment_id" value="">
             <div class="modal-content">
                 <div class="modal-header">

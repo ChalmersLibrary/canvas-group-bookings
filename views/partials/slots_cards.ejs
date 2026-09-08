@@ -79,6 +79,7 @@
             </div>
             <div class="card-body">
                 <form method="get" action="">
+                    <input type="hidden" name="ctx" value="<%= typeof contextKey !== 'undefined' && contextKey ? contextKey : '' %>">
                     <% navigation.filters.date.params.forEach(p => { %>
                         <input type="hidden" name="<%= p.name %>" value="<%= p.value %>">
                     <% }) %>

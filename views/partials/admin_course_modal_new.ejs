@@ -1,6 +1,6 @@
 <div class="modal modal-lg fade" id="newCourse" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="newCourseLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <form class="needs-validation" id="newCourseForm" novalidate method="post" action="/api/admin/course">
+        <form class="needs-validation" id="newCourseForm" novalidate method="post" action="<%= ctxUrl('/api/admin/course') %>">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="newCourseLabel"><%= __('AdminCourseModalNewLabel') %></h5>

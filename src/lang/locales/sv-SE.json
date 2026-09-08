@@ -347,6 +347,8 @@
 
 	"SystemBackendErrorLtiLaunch": "Kan inte läsa LTI-information",
 	"SystemBackendErrorLtiLaunchMessage": "Bokningsverktyget måste startas som en LTI-applikation inifrån Canvas för att få information om kontexten.",
+	"SystemBackendErrorLtiContext": "Kan inte avgöra vilken kurs sidan gäller",
+	"SystemBackendErrorLtiContextMessage": "Öppna Bokningsverktyget från Canvas igen. Om du har verktyget öppet i flera flikar, öppna det på nytt från den kurs du vill arbeta med.",
 	"SystemBackendErrorLtiLaunchSession": "Kan inte skapa en session",
 	"SystemBackendErrorLtiLaunchSessionMessage": "Du måste tillåta cookies från tredje part i din webbläsare. Bokningsverktyget använder cookies för att kunna hantera din identitiet från Canvas. Om du inte kan eller vill tillåta tredjepartscookies, finns alternativet att öppna Bokningsverktyget i ett nytt fönster. Länken hittar du sist i listan över kursens moduler."
 }

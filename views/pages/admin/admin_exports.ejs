@@ -25,7 +25,7 @@
                 <div class="card-body">
                     <h4><%= __('AdminExportsReservations') %></h4>
                     <p>
-                        <i class="bi bi-file-earmark-x calendar2-check-fill"></i> <a href="/api/admin/exports/csv/group-reservations/<%= data.canvas_course_id %>"><%= __('AdminExportsReservationsAllGroups') %></a>
+                        <i class="bi bi-file-earmark-x calendar2-check-fill"></i> <a href="<%= ctxUrl('/api/admin/exports/csv/group-reservations/' + data.canvas_course_id) %>"><%= __('AdminExportsReservationsAllGroups') %></a>
                     </p>
                 </div>
             </div>        

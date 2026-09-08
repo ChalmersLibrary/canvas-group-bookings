@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
                     editFormCanvas.querySelector('#editFormCanvasError.alert').classList.add("d-block")
                 }
                 else {
-                    window.location.assign("/admin/canvas")
+                    window.location.assign(ctxUrl("/admin/canvas"))
                 }  
             }
             catch (error) {

@@ -42,7 +42,7 @@ async function iCalendarEventFromReservation(r) {
     }
 
     if (r.type == "group") {
-        const all_reservations = await db.getSimpleSlotReservations(r.slot_id);
+        const all_reservations = await db.getSimpleSlotReservations(r.canvas_course_id, r.slot_id);
 
         if (all_reservations && all_reservations.length) {
             event.description = event.description + "\n\nBokade:\n";

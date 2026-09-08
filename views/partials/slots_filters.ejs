@@ -64,6 +64,7 @@
     </div>
     <div class="card-body">
         <form method="get" action="">
+            <input type="hidden" name="ctx" value="<%= typeof contextKey !== 'undefined' && contextKey ? contextKey : '' %>">
             <% navigation.filters.date.params.forEach(p => { %>
                 <input type="hidden" name="<%= p.name %>" value="<%= p.value %>">
             <% }) %>
@@ -82,4 +83,4 @@
     </div>
 </div>
 
-<a href="/"><button class="btn btn-md btn-dark"><i class="bi bi-x-circle"></i> <%= __('SlotListingFilterResetAll') %></button></a>
+<a href="<%= ctxUrl('/') %>"><button class="btn btn-md btn-dark"><i class="bi bi-x-circle"></i> <%= __('SlotListingFilterResetAll') %></button></a>

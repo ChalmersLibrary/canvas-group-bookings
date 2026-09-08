@@ -5,6 +5,7 @@ const lti = require('ims-lti');
 const session = require('express-session');
 const NodeCache = require('node-cache');
 const nodeCacheNonceStore = require('../node-cache-nonce');
+const context = require('./context');
 const myCache = new NodeCache();
 const nonceStore = new nodeCacheNonceStore(myCache);
 
@@ -174,8 +175,10 @@ exports.handleLaunch = (page) => function(req, res) {
                    prototype rather than per instance, so every launch in the process merges into
                    one shared object and a field absent from this launch keeps the previous
                    launch's value. Reading it would mix one user's launch into another's. */
+                /* Kept in a map keyed by placement rather than in one field, so a second launch
+                   in a second tab does not overwrite the first. See src/lti/context.js. */
                 // Only save relevant LTI information in session LTI object
-                req.session.lti = {
+                const launch = {
                     context_id: req.body.context_id,
                     context_title: req.body.context_title,
                     custom_canvas_course_id: req.body.custom_canvas_course_id,
@@ -198,23 +201,35 @@ exports.handleLaunch = (page) => function(req, res) {
                 /* A launch need not carry a locale at all, and reading the launch from req.body
                    means an absent one is now undefined rather than whatever the previous launch
                    had. Fall back to the default rather than throwing on toString(). */
-                req.session.lti.locale_original = req.session.lti.launch_presentation_locale
-                    ? req.session.lti.launch_presentation_locale
+                launch.locale_original = launch.launch_presentation_locale
+                    ? launch.launch_presentation_locale
                     : 'en';
 
-                if (req.session.lti.locale_original.toString().length < 3) {
-                    if (locales.some(x => x.lang === req.session.lti.locale_original.toString())) {
-                        req.session.lti.locale_full = locales.filter(x => x.lang === req.session.lti.locale_original.toString())[0].full;
+                if (launch.locale_original.toString().length < 3) {
+                    if (locales.some(x => x.lang === launch.locale_original.toString())) {
+                        launch.locale_full = locales.filter(x => x.lang === launch.locale_original.toString())[0].full;
                     }
                     else {
-                        req.session.lti.locale_full = req.session.lti.locale_original + "-XX";
+                        launch.locale_full = launch.locale_original + "-XX";
                     }
                 }
                 else {
-                    req.session.lti.locale_full = req.session.lti.locale_original;
+                    launch.locale_full = launch.locale_original;
                 }
 
-                log.debug(req.session.lti);
+                log.debug(launch);
+
+                /* The key the page will carry in every request it makes. A resource_link_request
+                   without a resource_link_id is malformed, and there is nothing to key the launch
+                   by, so it is refused rather than served from a field that would then be shared
+                   with every other tab. */
+                const contextKey = context.store(req, launch);
+
+                if (!contextKey) {
+                    log.error("Launch carries no resource_link_id, so it cannot be placed in a course context.");
+
+                    return res.status(422).json('Launch carries no resource link id.');
+                }
 
                 /* Answer from inside the save, not after it. The redirect used to sit at the end
                    of the outer function, so it was written whatever validation decided: a refused
@@ -228,9 +243,11 @@ exports.handleLaunch = (page) => function(req, res) {
                         return res.status(500).json('Could not save the session after launch.');
                     }
 
-                    log.debug("Session saved with LTI object, redirecting to " + page + ".");
+                    const target = context.withKey(page, contextKey);
 
-                    return res.redirect(page);
+                    log.debug("Session saved with LTI object, redirecting to " + target + ".");
+
+                    return res.redirect(target);
                 });
             }
             else {

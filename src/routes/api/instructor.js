@@ -7,6 +7,7 @@ const db = require('../../db');
 const utils = require('../../utilities');
 const ical = require('../../ical');
 const canvasApi = require('../../api/canvas');
+const context = require('../../lti/context');
 const { logWrites } = require('./write-log');
 const crypto = require('crypto');
 
@@ -24,7 +25,7 @@ router.use(logWrites('instructor'));
 router.get('/slot/:id/entry.ics', async (req, res, next) => {
     if (req.session.user.isInstructor) {
         try {
-            const slot = await db.getSlot(res, req.params.id);
+            const slot = await db.getSlot(res, res.locals.courseId, req.params.id);
             const ics = await ical.iCalendarEventFromSlot(slot);
     
             return res.contentType('text/calendar').send(ics);
@@ -47,9 +48,9 @@ router.get('/slot/:id/entry.ics', async (req, res, next) => {
 router.get('/slot/:id', async (req, res, next) => {
     if (req.session.user.isInstructor) {
         try {
-            const slot = await db.getSlot(res, req.params.id)
-            const reservations = await db.getSlotReservations(req.params.id);
-            const messages = await db.getSlotMessages(req.params.id);
+            const slot = await db.getSlot(res, res.locals.courseId, req.params.id)
+            const reservations = await db.getSlotReservations(res.locals.courseId, req.params.id);
+            const messages = await db.getSlotMessages(res.locals.courseId, req.params.id);
             slot.reservations = reservations;
             slot.messages = messages;
             slot.shortcut = {
@@ -77,12 +78,12 @@ router.get('/slot/:id', async (req, res, next) => {
 });
 
 /* Update a given timeslot */
-router.put('/slot/:id', async (req, res) => {
+router.put('/slot/:id', async (req, res, next) => {
     if (req.session.user.isInstructor) {
         const { course_id, instructor_id, location_id, time_start, time_end } = req.body;
 
         try {
-            await db.updateSlot(req.params.id, course_id, instructor_id, location_id, time_start, time_end);
+            await db.updateSlot(res.locals.courseId, req.params.id, course_id, instructor_id, location_id, time_start, time_end);
 
             return res.send({
                 success: true,
@@ -104,10 +105,10 @@ router.put('/slot/:id', async (req, res) => {
 });
 
 /* Delete a given timeslot */
-router.delete('/slot/:id', async (req, res) => { 
+router.delete('/slot/:id', async (req, res, next) => { 
     if (req.session.user.isInstructor) {
         try {
-            await db.deleteSlot(req.params.id);
+            await db.deleteSlot(res.locals.courseId, req.params.id);
 
             return res.send({
                 success: true,
@@ -134,8 +135,8 @@ router.delete('/slot/:id', async (req, res) => {
 router.get('/slot/:id/messages', async (req, res, next) => {
     if (req.session.user.isInstructor) {
         try {
-            const slot = await db.getSlot(res, req.params.id);
-            const messages = await db.getSlotMessages(req.params.id);
+            const slot = await db.getSlot(res, res.locals.courseId, req.params.id);
+            const messages = await db.getSlotMessages(res.locals.courseId, req.params.id);
 
             return res.send({
                 success: true,
@@ -169,9 +170,9 @@ router.post('/slot/:id/message', async (req, res, next) => {
         const RECIPIENTS_MAX_LIMIT = 10; // TODO: configure in another way
 
         try {
-            const slot = await db.getSlot(res, req.params.id);
-            const course = await db.getCourse(slot.course_id);
-            const reservations = await db.getSlotReservations(req.params.id);
+            const slot = await db.getSlot(res, res.locals.courseId, req.params.id);
+            const course = await db.getCourse(slot.canvas_course_id, slot.course_id);
+            const reservations = await db.getSlotReservations(res.locals.courseId, req.params.id);
             const recipients = new Array();
             let result = {};
 
@@ -205,7 +206,7 @@ router.post('/slot/:id/message', async (req, res, next) => {
 
                         if (body) {
                             body = body.replaceAll("{{message_text}}", message_text);
-                            body = utils.replaceMessageMagics(body, course.name, "", course.cancellation_policy_hours, "", slot.time_human_readable, slot.location_name, "", "", slot.instructor_name, slot.instructor_email, "", "", req.session.lti.context_title);
+                            body = utils.replaceMessageMagics(body, course.name, "", course.cancellation_policy_hours, "", slot.time_human_readable, slot.location_name, "", "", slot.instructor_name, slot.instructor_email, "", "", res.locals.lti.context_title);
 
                             try {
                                 await canvasApi.createConversation(recipients, subject, body, { token_type: "Bearer", access_token: process.env.CONVERSATION_ROBOT_API_TOKEN });
@@ -294,13 +295,14 @@ router.post('/slot/:id/message', async (req, res, next) => {
 });
 
 /* Create a new (series of) timeslot(s) */
-router.post('/slot', async (req, res) => {
+router.post('/slot', async (req, res, next) => {
     if (req.session.user.isInstructor) {
         const { course_id, instructor_id, location_id } = req.body;
 
         let slots = [];
 
         let data = {
+            canvas_course_id: res.locals.courseId,
             course_id: course_id,
             instructor_id: instructor_id,
             location_id: location_id,
@@ -323,7 +325,7 @@ router.post('/slot', async (req, res) => {
 
             await db.createSlots(data);
 
-            return res.redirect("/");                        
+            return res.redirect(context.withKey("/", res.locals.contextKey));                        
         }
         catch (error) {
             log.error(error);
@@ -343,8 +345,14 @@ router.post('/slot', async (req, res) => {
  * Get information about a specific location, used for getting data on select change in new slot dialog
  */
 router.get('/location/:id', async (req, res, next) => {
+    /* The only two handlers in this router that had no role check, so any launched user could read
+       a location or a course by id. */
+    if (!req.session.user.isInstructor) {
+        return next(new Error("You must have instructor privileges to access this endpoint."));
+    }
+
     try {
-        const location = await db.getLocation(req.params.id);
+        const location = await db.getLocation(res.locals.courseId, req.params.id);
 
         return res.send({
             success: true,
@@ -365,8 +373,12 @@ router.get('/location/:id', async (req, res, next) => {
  * Get information about a specific course, used for getting data on select change in new slots dialog
  */
 router.get('/course/:id', async (req, res, next) => {
+    if (!req.session.user.isInstructor) {
+        return next(new Error("You must have instructor privileges to access this endpoint."));
+    }
+
     try {
-        const course = await db.getCourse(req.params.id);
+        const course = await db.getCourse(res.locals.courseId, req.params.id);
 
         return res.send({
             success: true,

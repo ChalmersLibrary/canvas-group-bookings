@@ -4,6 +4,7 @@ require('dotenv').config();
 const fs = require('fs');
 const log = require('../logging');
 const db = require('../db');
+const context = require('../lti/context');
 
 let developmentLtiData;
 
@@ -17,11 +18,38 @@ if (process.env.NODE_ENV === 'development') {
     }
 }
 
-// Mock session with LTI object in development
+/*
+ * Mock session with LTI object in development.
+ *
+ * A mocked launch never goes through the launch handler, so nothing has put it in the session's
+ * launch map and no url carries its key. Register it here and answer the key, so a developer
+ * machine reaches the application the same way a real launch does.
+ *
+ * Only when the request names no context at all. A request carrying a key that this session does
+ * not hold is refused here exactly as it is in production: registering the mock for it would make
+ * the mock the answer to any key, so a developer would never meet the refusal and would never see
+ * the missed link or call site it exists to expose.
+ */
 async function mockLtiSession(req) {
     if (process.env.NODE_ENV === 'development' && developmentLtiData) {
-        req.session.lti = JSON.parse(developmentLtiData);
+        if (context.keyFromRequest(req)) {
+            return undefined;
+        }
+
+        const launch = JSON.parse(developmentLtiData);
+
+        /* The launch map is keyed by placement, and a mock file need not carry the
+           resource_link_id a real launch always does. Stand one in from the course so a mock
+           without it still resolves, rather than making the file's completeness decide whether a
+           developer machine works at all. */
+        if (!launch.resource_link_id) {
+            launch.resource_link_id = 'mock-' + launch.context_id;
+        }
+
+        return context.store(req, launch);
     }
+
+    return undefined;
 }
 
 // Copy user data from a token into session
@@ -48,20 +76,20 @@ async function createSessionUserdataFromToken(req, token) {
 
 // Add flags in the session user object, requires custom field "custom_canvas_roles"
 // with variable substitution "$Canvas.membership.roles".
-async function addUserFlagsForRoles(req) {
-    if(req.session.user && req.session.lti) {
-        if (req.session.lti.custom_canvas_roles) {
+async function addUserFlagsForRoles(req, lti) {
+    if(req.session.user && lti) {
+        if (lti.custom_canvas_roles) {
             req.session.user.isAdministrator = false;
             req.session.user.isInstructor = false;
 
-            if (req.session.lti.custom_canvas_roles != "") {
-                req.session.lti.custom_canvas_roles.split(",").forEach((role) => {
+            if (lti.custom_canvas_roles != "") {
+                lti.custom_canvas_roles.split(",").forEach((role) => {
                     if (role === "Examiner" || role === "Administrator" || role === "Department Admin" || role === "Account Admin") {
-                        if (req.session.lti.custom_canvas_roles.includes("StudentEnrollment")) { // fix for if this user is account admin but enrolled as student in current course
+                        if (lti.custom_canvas_roles.includes("StudentEnrollment")) { // fix for if this user is account admin but enrolled as student in current course
                             req.session.user.isAdministrator = false;
                             req.session.user.isInstructor = false;
                         }
-                        else if (req.session.lti.custom_canvas_roles.includes("TeacherEnrollment")) { // fix for if this user is account admin but enrolled as teacher in current course
+                        else if (lti.custom_canvas_roles.includes("TeacherEnrollment")) { // fix for if this user is account admin but enrolled as teacher in current course
                             req.session.user.isAdministrator = false;
                             req.session.user.isInstructor = true;
                         }

@@ -1,6 +1,6 @@
 <div class="modal modal-md fade" id="deleteCourse" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteCourseLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <form id="deleteCourseForm" action="/api/admin/course">
+        <form id="deleteCourseForm" action="<%= ctxUrl('/api/admin/course') %>">
             <input type="hidden" id="d_course_id" value="">
             <div class="modal-content">
                 <div class="modal-header">

@@ -1,5 +1,21 @@
 # CHANGELOG
 
+## Unreleased
+
+Each page now says which course it belongs to, and the tool acts on that course rather than on the most recently opened one.
+
+* Fixed the long-standing fault where the tool followed the most recently opened course. Opening it for two courses in two tabs and then working in the first one showed, and changed, the second. Each page now carries which course it was opened for, and every link and every action it takes says so, so the two tabs no longer interfere. A page that cannot say which course it belongs to is now told so and asks to be opened from Canvas again, rather than quietly using another course.
+* An administrator or teacher can no longer read, change or delete another course's booking configuration by asking for a record directly. The course is now part of every statement, so a record belonging to another course is not found rather than acted on. This covered courses, segments, instructors, locations and time slots.
+* The data export of group reservations now returns only the course the tool was opened for. It previously returned student names and group names for any course whose number was supplied.
+* The group category settings of another course can no longer be replaced by supplying its number.
+* A student can no longer book a time slot belonging to another course.
+* Two endpoints that return a location or a course now require the teacher role, which they never checked.
+* Refusing an action for want of the teacher role now answers with that refusal, instead of failing in a way that reported nothing useful.
+* Signing in to Canvas now returns to the course the sign-in was started from, and a returning sign-in that does not match the one this browser started is refused.
+* A change that is refused because the record belongs to another course now says so, rather than reporting success for something that did not happen.
+* Starting the tool with a hand-written mock launch no longer depends on that file carrying fields a real launch would have.
+* Added tests for which course a request acts in, for the refusal when a request names none, and for the course reaching each of the endpoints that take a record number.
+
 ## Version 1.2.7
 
 2026-09-01. Messages that were silently not sent, a launch that could be re-used, and a session failure that stopped the tool.

@@ -90,7 +90,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 try {
                     const responseBody = JSON.parse(data)
                     if (responseBody.success) {
-                        window.location.assign("/admin/instructor")
+                        window.location.assign(ctxUrl("/admin/instructor"))
                     }
                     else {
                         newInstructorModal.querySelector('div.alert.alert-error span').innerText = JSON.parse(data).message
@@ -186,7 +186,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 try {
                     const responseBody = JSON.parse(data)
                     if (responseBody.success) {
-                        window.location.assign("/admin/instructor")
+                        window.location.assign(ctxUrl("/admin/instructor"))
                     }
                     else {
                         editInstructorModal.querySelector('div.alert.alert-error span').innerText = JSON.parse(data).message
@@ -276,7 +276,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 try {
                     const responseBody = JSON.parse(data)
                     if (responseBody.success) {
-                        window.location.assign("/admin/instructor")
+                        window.location.assign(ctxUrl("/admin/instructor"))
                     }
                     else {
                         deleteInstructorForm.querySelector('div.alert.alert-error span').innerText = JSON.parse(data).message
