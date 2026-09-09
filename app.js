@@ -713,10 +713,13 @@ app.post('/api/reservation', async (req, res, next) => {
                     throw new Error(res.__('SlotReservationGroupIsReserved'));
                 }
 
-                // Check how many times this user's groups are reserved on slots with the same course context
-                if (slot.res_course_group_ids && slot.reservable_for_this_user) {
+                /* Check how many times this user's groups are reserved on slots with the same course context.
+                   Checked here, before the write, because the limit reached after the listing was drawn is
+                   the case the interface cannot see. It used to also read the flag the listing sets while
+                   rendering, which is never set on this path, so the limit was enforced in the interface only. */
+                if (slot.res_course_group_ids) {
                     if (slot.res_course_group_ids.filter(id => req.session.user.groups_ids?.includes(id)).length >= slot.course_max_per_type) {
-                        throw new Error(res.__('SlotReservationIndividualMaxReservations', { max: slot.course_max_per_type, name: slot.course_name }));
+                        throw new Error(res.__('SlotReservationGroupMaxReservations', { max: slot.course_max_per_type, name: slot.course_name }));
                     }
                 }
             }
@@ -726,8 +729,9 @@ app.post('/api/reservation', async (req, res, next) => {
                     throw new Error(res.__('SlotReservationIndividualIsReserved'));
                 }
 
-                // Check how many times this user is reserved on slots with the same course context
-                if (slot.res_course_user_ids && slot.reservable_for_this_user) {
+                /* Check how many times this user is reserved on slots with the same course context.
+                   Same as above: checked before the write, and no longer gated on the listing's flag. */
+                if (slot.res_course_user_ids) {
                     if (slot.res_course_user_ids.filter(id => req.session.user.id == id).length >= slot.course_max_per_type) {
                         throw new Error(res.__('SlotReservationIndividualMaxReservations', { max: slot.course_max_per_type, name: slot.course_name }));
                     }
