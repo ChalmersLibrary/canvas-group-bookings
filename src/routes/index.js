@@ -56,7 +56,9 @@ router.all(guardedPaths, async function (req, res, next) {
             });
         }
 
-        return res.render("pages/error", {
+        /* The same status the api branch above answers with, for the same condition: a refusal
+           served as 200 tells a monitor, a cache and a proxy that the request succeeded. */
+        return res.status(400).render("pages/error", {
             version: pkg.version,
             internal: {
                 version: pkg.version,
@@ -160,7 +162,9 @@ router.all(guardedPaths, async function (req, res, next) {
                     const errorPage = (res.locals.lang ? res.locals.lang : "en") +
                         "/pages/error/session/index";
 
-                    return res.render(errorPage, {
+                    /* A refusal, so not 200: the callback arrived without a usable session and
+                       nothing was served. */
+                    return res.status(400).render(errorPage, {
                         version: pkg.version,
                         internal: {
                             version: pkg.version,

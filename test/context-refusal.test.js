@@ -166,12 +166,18 @@ test('a request that names no course', async (t) => {
         assert.equal(JSON.parse(body).success, false);
     });
 
+    /*
+     * Both halves matter and they are not the same half. The body is for the person, who needs to
+     * be told the remedy is to launch the tool again; the status is for everything that is not a
+     * person -- a monitor, a cache, a proxy -- and answering 200 told those the refusal had
+     * succeeded. The api branch beside it has always answered 400 for this same condition.
+     */
     await t.test('a page with no key gets a page saying so, not a wrong course', async () => {
         const { cookie } = await planted();
 
         const { status, body } = await get(port, '/', cookie);
 
-        assert.equal(status, 200, 'a person gets a page rather than a status code');
+        assert.equal(status, 400, 'a refusal must not be reported as success');
         assert.match(body, /which course/i,
             'the page has to say what is wrong, since the remedy is to launch the tool again');
     });

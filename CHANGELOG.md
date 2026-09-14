@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Unreleased
+
+* The pages shown when the tool cannot tell which course it belongs to, and when a sign-in returns without a usable session, now answer with an error status instead of a success one. The page a person sees is unchanged; what changes is what monitoring, caches and proxies are told, which was previously that the refusal had succeeded.
+
 ## Version 1.2.8
 
 2026-09-14. Each page now says which course it belongs to and the tool acts on that course rather than on the most recently opened one, and a booking that would pass the course's limit is refused where it is written rather than only in the interface.
