@@ -45,7 +45,18 @@ function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-function paginate(total_records, per_page, current_page, segment, course, instructor, location, availability, start_date, end_date) {
+/*
+ * The context key belongs on every url these builders produce. A request that carries no key is
+ * refused rather than served against the most recent launch, so a link that leaves it out sends
+ * the user to an error page instead of to the page they clicked. It is added here, where the
+ * query string is assembled, rather than in each view: the views that add it link by link are how
+ * the filters and the pagination came to be the two that did not.
+ */
+const withContext = (link_url, res) => (res && res.locals && res.locals.contextKey
+    ? link_url + "&ctx=" + res.locals.contextKey
+    : link_url);
+
+function paginate(res, total_records, per_page, current_page, segment, course, instructor, location, availability, start_date, end_date) {
     const total_pages = Math.ceil(total_records / per_page);
     const pages = new Array(total_pages);
 
@@ -58,6 +69,8 @@ function paginate(total_records, per_page, current_page, segment, course, instru
     availability !== undefined && !isNaN(availability) ? link_url = link_url + "&availability=" + availability : null;
     start_date !== undefined ? link_url = link_url + "&start_date=" + start_date : null;
     end_date !== undefined ? link_url = link_url + "&end_date=" + end_date : null;
+
+    link_url = withContext(link_url, res);
 
     let pagination = {
         records_total: total_records,
@@ -95,6 +108,8 @@ function linkify(res, this_filter_name, this_filter_items, segment, course, inst
     this_filter_name != 'availability' && availability !== undefined && !isNaN(availability) ? link_url = link_url + "&availability=" + availability : null;
     this_filter_name != 'date' && start_date !== undefined ? link_url = link_url + "&start_date=" + start_date : null;
     this_filter_name != 'date' && end_date !== undefined ? link_url = link_url + "&end_date=" + end_date : null;
+
+    link_url = withContext(link_url, res);
 
     if (this_filter_name == 'segment') {
         this_list.push({

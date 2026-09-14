@@ -145,3 +145,54 @@ test('the launch context', async (t) => {
         assert.equal(context.courseId({ context_id: 'ctx-1' }), 'lti_context_id:ctx-1');
     });
 });
+
+/*
+ * The slot listing builds its own query strings rather than going through withKey, because its
+ * links are filter parameters rather than paths. Both builders were missing the key, so every
+ * filter and every page number led to the refusal above -- found by clicking one in Canvas, since
+ * nothing here had covered the links themselves.
+ */
+test('the links the slot listing builds', async (t) => {
+    t.after(() => sandbox.cleanup());
+
+    const utils = require('../src/utilities');
+    const responseWith = (contextKey) => ({ locals: contextKey ? { contextKey } : {}, __: (key) => key });
+
+    const filterLinks = (res) => ['segment', 'course', 'instructor', 'location', 'availability']
+        .flatMap((name) => utils.linkify(res, name, [{ id: 1, name: 'One' }], NaN, NaN, NaN, NaN, NaN, undefined, undefined))
+        .map((entry) => entry.link);
+
+    const pageLinks = (res) => {
+        const navigation = utils.paginate(res, 100, 10, 1, NaN, NaN, NaN, NaN, NaN, undefined, undefined);
+
+        return [...Object.values(navigation.link), ...navigation.pages.map((page) => page.link)];
+    };
+
+    await t.test('every filter link carries the key', () => {
+        const links = filterLinks(responseWith('abc123def456'));
+
+        assert.equal(links.length > 0, true, 'no filter links were built, so nothing was asserted');
+
+        for (const link of links) {
+            assert.equal(link.includes('&ctx=abc123def456'), true, `filter link without the key: ${link}`);
+        }
+    });
+
+    await t.test('every pagination link carries the key', () => {
+        const links = pageLinks(responseWith('abc123def456'));
+
+        assert.equal(links.length > 0, true, 'no pagination links were built, so nothing was asserted');
+
+        for (const link of links) {
+            assert.equal(link.includes('&ctx=abc123def456'), true, `pagination link without the key: ${link}`);
+        }
+    });
+
+    /* A launch that never reached the context middleware has no key, and a literal "ctx=undefined"
+       would resolve to no launch and refuse the request it was meant to carry. */
+    await t.test('with no key in the response, no key is added', () => {
+        for (const link of [...filterLinks(responseWith(null)), ...pageLinks(responseWith(null))]) {
+            assert.equal(link.includes('ctx='), false, `a key was invented for: ${link}`);
+        }
+    });
+});

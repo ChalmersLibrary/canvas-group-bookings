@@ -187,7 +187,7 @@ app.get('/', async (req, res, next) => {
         const filter_availability = utils.linkify(res, 'availability', [ { id: 1, name: res.__('SlotListingFilterAvailabilityAll') } ], parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
         const filter_date = utils.linkify(res, 'date', '', parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
     
-        let this_navigation = utils.paginate(availableSlots.records_total, per_page, req.query.page ? Math.max(parseInt(req.query.page), 1) : 1, parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
+        let this_navigation = utils.paginate(res, availableSlots.records_total, per_page, req.query.page ? Math.max(parseInt(req.query.page), 1) : 1, parseInt(req.query.segment), parseInt(req.query.course), parseInt(req.query.instructor), parseInt(req.query.location), parseInt(req.query.availability), req.query.start_date, req.query.end_date);
         
         this_navigation.filters = {
             segment: filter_segments,
