@@ -175,7 +175,23 @@ test('the links the slot listing builds', async (t) => {
 
         for (const link of links) {
             assert.equal(link.includes('&ctx=abc123def456'), true, `filter link without the key: ${link}`);
+            assert.equal(link.split('ctx=').length - 1, 1, `the key appears more than once in: ${link}`);
         }
+    });
+
+    /*
+     * The date filter is not a list of links but hidden fields for a form, and the form carries
+     * the key as a field of its own. Adding it to these as well submits ctx twice; express reads a
+     * repeated parameter as an array, and a key that is two keys resolves to no launch, so the
+     * date submit answers with the error page. Found by driving it in Canvas.
+     */
+    await t.test('the date filter fields leave the key to the form', () => {
+        const date = utils.linkify(responseWith('abc123def456'), 'date', '', NaN, 2, NaN, NaN, NaN, undefined, undefined);
+
+        assert.deepEqual(date.params.filter((param) => param.name === 'ctx'), [],
+            'the date form would submit ctx twice, and a doubled key resolves to no launch');
+        assert.equal(date.params.some((param) => param.name === 'course'), true,
+            'the other filters must still survive a date submit');
     });
 
     await t.test('every pagination link carries the key', () => {

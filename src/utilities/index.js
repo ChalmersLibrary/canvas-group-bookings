@@ -109,8 +109,6 @@ function linkify(res, this_filter_name, this_filter_items, segment, course, inst
     this_filter_name != 'date' && start_date !== undefined ? link_url = link_url + "&start_date=" + start_date : null;
     this_filter_name != 'date' && end_date !== undefined ? link_url = link_url + "&end_date=" + end_date : null;
 
-    link_url = withContext(link_url, res);
-
     if (this_filter_name == 'segment') {
         this_list.push({
             id: null,
@@ -211,7 +209,13 @@ function linkify(res, this_filter_name, this_filter_items, segment, course, inst
         this_list.end_date = end_date;
     }
 
-    return this_list;
+    /* Only the link-shaped lists. The date filter returns hidden form fields built by splitting
+       the same query string, and the form carries the key as a field of its own, so adding it
+       here as well would submit ctx twice -- which express reads as an array, and a key that is
+       two keys resolves to no launch and refuses the request. */
+    return Array.isArray(this_list)
+        ? this_list.map((entry) => ({ ...entry, link: withContext(entry.link, res) }))
+        : this_list;
 }
 
 function replaceMessageMagics(body, course_name, reservation_message, cancellation_policy_hours, user_name, time_start, location_name, location_url, location_description, instructor_name, instructor_email, group_name, group_names, canvas_course_name) {
