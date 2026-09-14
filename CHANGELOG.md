@@ -2,8 +2,8 @@
 
 ## Unreleased
 
-* The pages shown when the tool cannot tell which course it belongs to, and when a sign-in returns without a usable session, now answer with an error status instead of a success one. The page a person sees is unchanged; what changes is what monitoring, caches and proxies are told, which was previously that the refusal had succeeded.
-* The status endpoint no longer reports which database the instance is connected to. It answers without authentication, and the database name says nothing about whether the instance is healthy. The release, the runtime and the environment it still reports are what confirm that a deployment landed.
+* Error pages are unchanged for the user but now carry a non-200 status for machines.
+* The unauthenticated status endpoint no longer reports the database name.
 
 ## Version 1.2.8
 
