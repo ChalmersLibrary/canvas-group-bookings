@@ -153,10 +153,15 @@ exports.handleLaunch = (page) => function(req, res) {
                 if (launchDomain && served.length && !served.includes(launchDomain)) {
                     /* Reported at info level, which survives NODE_ENV, because the two names an
                        instance answers to need not match what it reports here, and the only way to
-                       learn what it reports is to see it in a log. */
+                       learn what it reports is to see it in a log. The summary is attached because
+                       the message names the two domains and not the launch: without it the line
+                       says that something arrived from elsewhere but not what, and answering that
+                       means matching it against the access log by timestamp. It is the redacted
+                       summary rather than the body, which carries personal data. */
                     log.info("Launch is from Canvas api domain '" + launchDomain +
                         "', and this installation is configured for '" + served.join("', '") +
-                        "'. Enforcing: " + (enforceApiDomain() ? "yes, refusing it" : "no, serving it anyway") + ".");
+                        "'. Enforcing: " + (enforceApiDomain() ? "yes, refusing it" : "no, serving it anyway") + ".",
+                        launchSummary(req.body));
 
                     /* Off by default, deliberately. A configured host that does not match what
                        Canvas reports would otherwise refuse every launch, and this tool has no

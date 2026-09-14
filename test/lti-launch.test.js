@@ -245,6 +245,39 @@ test('the LTI launch', async (t) => {
         assert.deepEqual(errors.map((error) => error.code), [], 'and it must not throw');
     });
 
+    /*
+     * That report is the only record such a launch leaves, and its message names the two domains
+     * rather than the launch, so without the summary the line says that something arrived from
+     * elsewhere but not what, and answering that means matching it against the access log by
+     * timestamp. It carries the redacted summary and not the body, which holds the personnummer.
+     */
+    await t.test('the report names the launch, and not the personal fields of the body', async () => {
+        const marker = 'MUST-NOT-BE-LOGGED';
+
+        await launch(payloadFor({
+            custom_canvas_api_domain: 'other.instructure.com',
+            lis_person_sourcedid: marker,
+            lis_person_contact_email_primary: marker
+        }));
+
+        /* Winston writes through a stream, so give it a moment to reach the file. */
+        await new Promise((r) => setTimeout(r, 250));
+
+        const reported = sandbox.logLines()
+            .map((line) => JSON.parse(line))
+            .filter((line) => line.message.startsWith('Launch is from Canvas api domain'));
+
+        assert.equal(reported.length > 0, true, 'a launch from another Canvas was not reported at all');
+
+        const line = reported.at(-1);
+
+        assert.equal(line.data?.custom_canvas_user_id, '777',
+            'the report must name the user, or the line cannot be followed up');
+        assert.equal(line.data?.custom_canvas_course_id, '123', 'and the course it was launched from');
+        assert.equal(JSON.stringify(line).includes(marker), false,
+            'the launch body reached the log, which is where the personal fields are');
+    });
+
     await t.test('with enforcement on, a launch from another Canvas is refused', async () => {
         process.env.LTI_ENFORCE_API_DOMAIN = 'true';
 
