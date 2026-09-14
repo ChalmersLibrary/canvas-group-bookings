@@ -14,7 +14,6 @@
 * Signing in to Canvas now returns to the course the sign-in was started from, and a returning sign-in that does not match the one this browser started is refused.
 * A change that is refused because the record belongs to another course now says so, rather than reporting success for something that did not happen.
 * Starting the tool with a hand-written mock launch no longer depends on that file carrying fields a real launch would have.
-* Fixed the filters and the page numbers in the time slot listing, which asked to be opened from Canvas again instead of filtering or turning the page. The links they are built from did not carry the course, so the first click on any of them lost it. The teacher's message panel now carries the course on its form as well.
 * A booking that would pass the number of places a course allows is now refused when it is made. The limit was enforced only while the page was being drawn, so a place taken by somebody else in the meantime let the next booking through, and going back to an earlier page and booking again did the same.
 * A launch from a Canvas the installation is not set up for is now reported with the course, the user and the placement it came from, rather than only the two host names. The report carries no personal details.
 * The example environment file now documents how to require an encrypted connection to the database, and warns that this driver checks the server's certificate where the usual Postgres tools do not.
