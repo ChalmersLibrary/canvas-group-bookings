@@ -43,7 +43,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
                         rm.innerText = reservation.canvas_user_name
                     }
                 })
-                messagingForm.setAttribute('action', `/api/instructor/slot/${this_id}/message`)
+                /* Through ctxUrl like every form action rendered in a view: the submit handler
+                   sends this with fetch, which carries the key as a header, but an action that
+                   reaches the browser is a request with no header at all. */
+                messagingForm.setAttribute('action', ctxUrl(`/api/instructor/slot/${this_id}/message`))
                 messagingForm.querySelector('#message_text').value = ''
                 messagingForm.querySelector('#message_text').disabled = false
                 slotDetailsOffcanvasMessagingButton.removeAttribute("disabled")
