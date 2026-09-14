@@ -154,14 +154,18 @@ app.get('/debug', async (req, res, next) => {
     }
 });
 
-// Simple status information
+/*
+ * Simple status information, answered without authentication so that a deploy can be confirmed
+ * without credentials. The database name is deliberately not among these: it says nothing about
+ * whether the instance is healthy and everything about what it is connected to. What an instance
+ * is configured for belongs in the startup line, which goes to the log collector.
+ */
 app.get('/status', (req, res, next) => {
     return res.send({
         status: 'up',
         version: pkg.version,
         node_version: process.version,
-        node_env: process.env.NODE_ENV,
-        db: process.env.PGDATABASE
+        node_env: process.env.NODE_ENV
     });
 });
 
