@@ -46,11 +46,11 @@ The Postgres variables are read by the database driver rather than by this appli
 
 The tool is normally started by an LTI launch from Canvas, which is what supplies the course, the user's role and their enrollment state. For local development that launch can be mocked: copy ```mock-lti_example.json``` to ```mock-lti.json``` and edit it.
 
-With ```NODE_ENV=development```, the file is read at startup and its contents become the LTI session on every request. **Only the launch is mocked.** Signing in still goes to the real Canvas named by ```AUTH_HOST```, the Canvas API is real, and the database is real — so a local run obtains genuine credentials for the account that signs in, and writes them to whatever ```PGDATABASE``` points at.
+With ```NODE_ENV=development```, the file is read at startup and stands in as the launch for any request that does not name one of its own. **Only the launch is mocked.** Signing in still goes to the real Canvas named by ```AUTH_HOST```, the Canvas API is real, and the database is real — so a local run obtains genuine credentials for the account that signs in, and writes them to whatever ```PGDATABASE``` points at.
 
 ```custom_canvas_roles``` in that file decides what you are allowed to do locally, and ```custom_canvas_course_id``` decides which course you are working in. Both come from the file, not from Canvas.
 
-Two things to expect: the file is read once at startup, so changes need a restart, and its contents replace the LTI session on every request, so a genuine launch against a local instance would be overwritten by it.
+Two things to expect: the file is read once at startup, so changes need a restart, and it supplies a launch only where the request carries none, so a genuine launch against a local instance keeps its own course rather than being overwritten by the file. The mock needs no ```resource_link_id```; one is derived from the course when the file does not carry it.
 
 
 ## Starting
