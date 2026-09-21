@@ -5,6 +5,7 @@
 * Error pages are unchanged for the user but now carry a non-200 status for machines.
 * The unauthenticated status endpoint no longer reports the database name.
 * A data export is now sent from memory rather than also written to the server, where every export ever taken was kept.
+* Listing time slots is no longer slower the more bookings a course has. Drawing the list looked up every booking in the course once for each slot shown, so the work grew with the slots and the bookings multiplied together; it now looks them up once. What the list shows is unchanged.
 
 ## Version 1.2.8
 
