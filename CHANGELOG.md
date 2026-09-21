@@ -4,6 +4,7 @@
 
 * Error pages are unchanged for the user but now carry a non-200 status for machines.
 * The unauthenticated status endpoint no longer reports the database name.
+* A data export is now sent from memory rather than also written to the server, where every export ever taken was kept.
 
 ## Version 1.2.8
 

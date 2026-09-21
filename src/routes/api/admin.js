@@ -7,9 +7,6 @@ const db = require('../../db');
 const canvasApi = require('../../api/canvas');
 const utils = require('../../utilities');
 const { logWrites } = require('./write-log');
-const fs = require('fs');
-
-const EXPORTS_CSV_PATH = "exports/";
 
 /* ============================ */
 /* API Endpoints, administrator */
@@ -668,15 +665,13 @@ router.get('/exports/csv/group-reservations/:id', async (req, res, next) => {
         
         let fileName = "res_grp_c_" + req.params.id + "_" + new Date().toISOString().replaceAll(":", "").replaceAll("-", "").replaceAll(".", "") + ".csv";
 
-        if (!fs.existsSync(EXPORTS_CSV_PATH)) {
-            fs.mkdirSync(EXPORTS_CSV_PATH);
-        }
+        log.info("Exported data as '" + fileName + "'.");
 
-        fs.writeFileSync(EXPORTS_CSV_PATH + fileName, csvData);
+        /* Sent from memory, never written to disk. The export carries student and group names, so
+           a copy left on the server outlives the download it was made for. */
+        res.attachment(fileName);
 
-        log.info("Exported data to file '" + fileName + "'.");
-
-        return res.download(EXPORTS_CSV_PATH + fileName, fileName);
+        return res.send(csvData);
     }
     catch (error) {
         log.error(error);
