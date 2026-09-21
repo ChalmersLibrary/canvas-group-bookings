@@ -6,6 +6,7 @@
 * The unauthenticated status endpoint no longer reports the database name.
 * A data export is now sent from memory rather than also written to the server, where every export ever taken was kept.
 * Listing time slots is no longer slower the more bookings a course has. Drawing the list looked up every booking in the course once for each slot shown, so the work grew with the slots and the bookings multiplied together; it now looks them up once. What the list shows is unchanged.
+* The log now names a database migration before it is applied, rather than only after it has succeeded. A restart while one was running left the schema updated with nothing recorded, which read exactly like a start that had nothing to do.
 * Added a test for the numbering of the database migration files, a gap in which would silently skip every migration above it.
 
 ## Version 1.2.8

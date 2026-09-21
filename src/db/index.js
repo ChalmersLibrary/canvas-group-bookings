@@ -1431,7 +1431,13 @@ async function checkDatabaseVersion() {
     
                     if (fs.existsSync(file)) {
                         let sql = fs.readFileSync(file).toString();
-            
+
+                        /* Said before the statement rather than only after it. A process that dies
+                           while a migration is in flight leaves the schema advanced, and with
+                           nothing written first there is no record that anything was attempted, so
+                           an interrupted migration reads exactly like a start with nothing to do. */
+                        log.info("Applying " + file + "...");
+
                         await query(sql).then(() => {
                             log.info("Database updated from " + file);
                             latest_applied_version = (current_version + 1);
