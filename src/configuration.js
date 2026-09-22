@@ -21,6 +21,8 @@ const summary = () => ({
     enforce_api_domain: lti.enforceApiDomain(),
     auth_redirect_callback: process.env.AUTH_REDIRECT_CALLBACK ? process.env.AUTH_REDIRECT_CALLBACK : "(unset)",
     database: process.env.PGDATABASE ? process.env.PGDATABASE : "(unset)",
+    /* The database name does not say which login opened it, and the two are set separately. */
+    database_user: process.env.PGUSER ? process.env.PGUSER : "(unset)",
     /* Named here because a value that omits a Canvas host in use denies every launch from it. */
     frame_ancestors: process.env.CSP_FRAME_ANCESTORS ? process.env.CSP_FRAME_ANCESTORS : "(any site may embed)",
     logstash_source: log.logstashTarget() ? log.logstashTarget() : "(not shipping)"
