@@ -1,6 +1,8 @@
 # CHANGELOG
 
-## Unreleased
+## Version 1.2.9
+
+2026-09-25. Listing time slots no longer slows down as a course collects bookings, editing a slot returns to the listing as it was, and a data export is no longer kept on the server.
 
 * Error pages are unchanged for the user but now carry a non-200 status for machines.
 * The unauthenticated status endpoint no longer reports the database name.
