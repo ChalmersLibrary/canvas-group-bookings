@@ -36,7 +36,6 @@ async function getCourseGroupsSelfReference(courseId, groupCategoryFilter, token
 
         if (cachedData !== undefined) {
             log.debug("Using found NodeCache entry for key " + cacheKey);
-            log.debug("Cache value: " + typeof(cachedData) === 'Object' ? JSON.stringify(cachedData) : cachedData);
             log.debug("Cache statistics: " + JSON.stringify(await cache.getCacheStats('courseGroupsCache')));
         
             await cache.addCacheRead('courseGroupsCache');
@@ -260,7 +259,6 @@ async function getCourseGroupCategories(courseId, token) {
 
         if (cachedData !== undefined) {
             log.debug("Using found NodeCache entry for key " + courseId);
-            log.debug("Cache value: " + typeof(cachedData) === 'Object' ? JSON.stringify(cachedData) : cachedData);
             log.debug("Cache statistics: " + JSON.stringify(await cache.getCacheStats('courseGroupsCache')));
         
             await cache.addCacheRead('courseGroupCategoriesCache');
@@ -379,7 +377,6 @@ async function getCourseTeacherEnrollments(courseId, token) {
 
         if (cachedData !== undefined) {
             log.debug("Using found NodeCache entry for key " + courseId);
-            log.debug("Cache value: " + typeof(cachedData) === 'Object' ? JSON.stringify(cachedData) : cachedData);
             log.debug("Cache statistics: " + JSON.stringify(await cache.getCacheStats('courseTeacherEnrollmentsCache')));
         
             await cache.addCacheRead('courseTeacherEnrollmentsCache');

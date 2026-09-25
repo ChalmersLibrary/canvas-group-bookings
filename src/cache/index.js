@@ -48,15 +48,16 @@ courseTeacherEnrollmentsCache.on('expired', function(key) {
     log.debug("[Cache] Expired NodeCache entry for courseTeacherEnrollmentsCache key '" + key + "'.");
 });
 
-/* Debug log when cache is set */
-courseGroupsCache.on('set', function(key, value) {
-    log.debug("[Cache] Set entry for courseGroupsCache key '" + key + "': " + typeof(value) === 'Object' ? JSON.stringify(value) : value);
+/* Debug log when cache is set. The key only: the values are Canvas groups and enrollments, which
+   carry names. */
+courseGroupsCache.on('set', function(key) {
+    log.debug("[Cache] Set entry for courseGroupsCache key '" + key + "'.");
 });
-courseGroupCategoriesCache.on('set', function(key, value) {
-    log.debug("[Cache] Set entry for courseGroupCategoriesCache key '" + key + "': " + typeof(value) === 'Object' ? JSON.stringify(value) : value);
+courseGroupCategoriesCache.on('set', function(key) {
+    log.debug("[Cache] Set entry for courseGroupCategoriesCache key '" + key + "'.");
 });
-courseTeacherEnrollmentsCache.on('set', function(key, value) {
-    log.debug("[Cache] Set entry for courseTeacherEnrollmentsCache key '" + key + "': " + typeof(value) === 'Object' ? JSON.stringify(value) : value);
+courseTeacherEnrollmentsCache.on('set', function(key) {
+    log.debug("[Cache] Set entry for courseTeacherEnrollmentsCache key '" + key + "'.");
 });
 
 /* Cache statistics */
