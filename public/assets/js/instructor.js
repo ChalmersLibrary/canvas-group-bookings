@@ -353,7 +353,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
             console.log(data)
             const responseBody = JSON.parse(data)
             if (responseBody.success) {
-                window.location.assign(ctxUrl("/"))
+                window.location.reload()
             }
             else {
                 console.error(JSON.parse(data).message)
@@ -447,7 +447,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
             console.log(data)
             const responseBody = JSON.parse(data)
             if (responseBody.success) {
-                window.location.assign(ctxUrl("/"))
+                window.location.reload()
             }
             else {
                 console.error(JSON.parse(data).message)
