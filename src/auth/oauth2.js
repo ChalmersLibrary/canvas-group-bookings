@@ -297,7 +297,7 @@ async function persistAccessToken(token) {
     log.debug("Persisting access token for user " + userId + ", domain " + domain + ", client " +
         client + ", refresh_token " + log.fingerprint(token.refresh_token));
 
-    if (token.user.global_id.startsWith(process.env.USERID_PREFIX_FORCE_GLOBAL_ID)) {
+    if (userId === token.user.global_id) {
         token.user.id = token.user.global_id;
         log.debug("Fixed user.id in token, copied from user.global_id: " + token.user.global_id);
     }

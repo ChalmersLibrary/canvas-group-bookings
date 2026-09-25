@@ -213,4 +213,50 @@ test('the stored OAuth token', async (t) => {
         assert.equal(stored.user.id, CANVAS_USER.id);
         assert.equal(stored.user.global_id, CANVAS_USER.global_id);
     });
+
+    await t.test('a token without a global id is stored under the user id', async () => {
+        const token = storedToken(new Date(Date.now() + hour).toISOString());
+
+        token.user = { id: 4711 };
+        process.env.USERID_PREFIX_FORCE_GLOBAL_ID = '12523';
+        t.after(() => { delete process.env.USERID_PREFIX_FORCE_GLOBAL_ID; });
+        queries.length = 0;
+
+        await auth.persistAccessToken(token);
+
+        const insert = queries.find((q) => q.text.startsWith('INSERT INTO user_token'));
+
+        assert.equal(insert.params[0], 4711);
+        assert.equal(stored.user.id, 4711);
+    });
+
+    await t.test('a global id with the configured prefix replaces the user id', async () => {
+        const token = storedToken(new Date(Date.now() + hour).toISOString());
+
+        token.user = { ...CANVAS_USER };
+        process.env.USERID_PREFIX_FORCE_GLOBAL_ID = '12523';
+        queries.length = 0;
+
+        await auth.persistAccessToken(token);
+
+        const insert = queries.find((q) => q.text.startsWith('INSERT INTO user_token'));
+
+        assert.equal(insert.params[0], CANVAS_USER.global_id);
+        assert.equal(stored.user.id, CANVAS_USER.global_id);
+    });
+
+    await t.test('a global id without the prefix leaves the user id alone', async () => {
+        const token = storedToken(new Date(Date.now() + hour).toISOString());
+
+        token.user = { ...CANVAS_USER };
+        process.env.USERID_PREFIX_FORCE_GLOBAL_ID = '99999';
+        queries.length = 0;
+
+        await auth.persistAccessToken(token);
+
+        const insert = queries.find((q) => q.text.startsWith('INSERT INTO user_token'));
+
+        assert.equal(insert.params[0], CANVAS_USER.id);
+        assert.equal(stored.user.id, CANVAS_USER.id);
+    });
 });
