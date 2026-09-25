@@ -580,25 +580,6 @@ async function createSlotReservation(res, canvas_course_id, slot_id, user_id, us
     return data;
 }
 
-/**
- * BUG: this will collect ALL reservations among all Canvas courses!
- */
-async function getNumberOfReservations(user_id, groups) {
-    let data;
-    
-    await query("SELECT count(*) FROM reservations_view WHERE (canvas_user_id=$1 OR canvas_group_id=ANY($2))", [ 
-        user_id,
-        groups
-    ]).then((result) => {
-        data = result.rows;
-    }).catch((error) => {
-        log.error(error);
-        throw new Error(error);
-    });
-
-    return data[0];
-}
-
 async function getValidCourses(canvas_course_id) {
     let data;
 
@@ -1504,7 +1485,6 @@ module.exports = {
     getReservation,
     createSlotReservation,
     deleteReservation,
-    getNumberOfReservations,
     getValidCourses,
     getCourseWithStatistics,
     getAllCoursesWithStatistics,

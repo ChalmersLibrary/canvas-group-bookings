@@ -2,7 +2,6 @@
 
 const log = require('../logging')
 const lti = require('ims-lti');
-const session = require('express-session');
 const NodeCache = require('node-cache');
 const nodeCacheNonceStore = require('../node-cache-nonce');
 const context = require('./context');

@@ -46,8 +46,6 @@ const sessionOptions = {
 
 const app = express();
 
-app.disable('X-Powered-By');
-
 app.set('json spaces', 2);
 
 app.use("/assets",
