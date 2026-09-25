@@ -78,18 +78,14 @@ morgan.token('user-groups', function getUserGroups (req) {
     return req.session?.user?.groups_human_readable ? req.session.user.groups_human_readable : "-";
 });
 morgan.token('url-redacted', function getRedactedUrl (req) {
-    const url = req.originalUrl || req.url;
-
-    if (!url) {
-        return "-";
-    }
-
-    return url.replace(/([?&](?:code|access_token|refresh_token|client_secret)=)[^&]*/gi,
-        "$1[redacted]");
+    return log.redactUrl(req.originalUrl || req.url);
+});
+morgan.token('referrer-redacted', function getRedactedReferrer (req) {
+    return log.redactUrl(req.headers.referer || req.headers.referrer);
 });
 
 // Setup https request logging
-app.use(morgan(':remote-addr [:date[clf]] ":method :url-redacted" :status :res[content-length] - :course-id :user-id ":user-groups" ":response-time ms" ":referrer" ":user-agent"', { stream: accessLogStream }))
+app.use(morgan(':remote-addr [:date[clf]] ":method :url-redacted" :status :res[content-length] - :course-id :user-id ":user-groups" ":response-time ms" ":referrer-redacted" ":user-agent"', { stream: accessLogStream }))
 
 /* Every page builds its links with ctxUrl, including the error pages, which render without a
    launch. Defined for every request so a template can call it unconditionally; the LTI middleware

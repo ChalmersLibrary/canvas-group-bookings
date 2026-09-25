@@ -15,7 +15,7 @@ require('dotenv').config();
  *
  * Deliberately not matching a key called "code": error objects carry `code` ('ECONNRESET' and
  * such) and fingerprinting those would throw away the diagnosis. The authorization code in the
- * OAuth callback is redacted where it actually appears, in the morgan url token in app.js.
+ * OAuth callback is redacted where it actually appears, in the access log, by redactUrl below.
  */
 const SECRET_KEY = /^(access_token|refresh_token|api_token|client_secret|password|secret|authorization|cookie)$/i;
 
@@ -37,6 +37,20 @@ const fingerprint = (value) => {
 
     return 'sha256:' + crypto.createHash('sha256').update(text).digest('hex').slice(0, 12) +
         ' len=' + text.length;
+};
+
+/*
+ * The query parameters that carry a credential in a url the access log writes: the OAuth callback
+ * carries the authorization code, and the referrer of a launch from the Canvas mobile app carries a
+ * sessionless launch verifier, which authorizes a launch as that user.
+ */
+const redactUrl = (url) => {
+    if (!url) {
+        return "-";
+    }
+
+    return url.replace(/([?&](?:code|access_token|refresh_token|client_secret|verifier)=)[^&]*/gi,
+        "$1[redacted]");
 };
 
 /* One key/value pair: a credential becomes a fingerprint, personal data goes entirely. */
@@ -239,5 +253,6 @@ module.exports = {
     error,
     debug,
     fingerprint,
+    redactUrl,
     logstashTarget
 }

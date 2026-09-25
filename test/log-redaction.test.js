@@ -140,6 +140,17 @@ test('what the log does with a token', async (t) => {
         assert.deepEqual(entry.data, [{ a: 1 }, { b: 2 }]);
     });
 
+    /* The access log writes the url and the referrer through this, and morgan writes whatever it
+       returns, so an empty header has to come back as morgan's own placeholder. */
+    await t.test('a url for the access log loses its credentials and keeps the rest', async () => {
+        assert.equal(log.redactUrl('/callback?code=AUTH-CODE&state=abc'),
+            '/callback?code=[redacted]&state=abc');
+        assert.equal(log.redactUrl('https://canvas.example/courses/1/external_tools/sessionless_launch?verifier=VERIFIER&platform=mobile'),
+            'https://canvas.example/courses/1/external_tools/sessionless_launch?verifier=[redacted]&platform=mobile');
+        assert.equal(log.redactUrl('/?course=12&page=2'), '/?course=12&page=2');
+        assert.equal(log.redactUrl(undefined), '-');
+    });
+
     await t.test('a call with no detail carries no key at all', async () => {
         /* Most lines pass nothing, and they are meant to be unchanged by any of this. */
         await log.error('nothing to add');
